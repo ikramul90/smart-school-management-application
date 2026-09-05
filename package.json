@@ -1,0 +1,19 @@
+{
+  "name": "smart-school-management-software",
+  "version": "1.0.0",
+  "description": "This Application is developed by Ikramul ALam Chowdhury, a passionate developer looking to solve problems. The idea comes from generating bulk Report Cards for schools at once, removing the painful process the class teachers undergo while making report cards manually by hands. Request him to get new versions.",
+  "main": "main.js",
+  "scripts": {
+  "start": "electron ."
+  },
+  "keywords": ["electron", "desktop", "app", "management", "admin", "tcsac"],
+  "author": "Ikramul Alam Chowdhury",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0"
+  }
+}
