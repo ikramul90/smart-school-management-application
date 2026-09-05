@@ -78,6 +78,19 @@ db.serialize(() => {
         FOREIGN KEY(exam_id) REFERENCES exams(id)
     )`);
 
+    // 7. Admin Settings Table (Stores the single admin account and recovery questions)
+    db.run(`CREATE TABLE IF NOT EXISTS admin_profile (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT NOT NULL DEFAULT 'admin',
+        password_hash TEXT NOT NULL,
+        q1 TEXT, a1 TEXT,
+        q2 TEXT, a2 TEXT,
+        q3 TEXT, a3 TEXT,
+        q4 TEXT, a4 TEXT,
+        q5 TEXT, a5 TEXT
+    )`);
+
+
     console.log("🎉 Database tables successfully initialized!");
 });
 
