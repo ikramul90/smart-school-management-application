@@ -7,7 +7,56 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Welcome to, TCSAC Management Portal</h1>
-    <p>Step 1 Skeleton is successfully running!</p>
+
+    <!-- 1. FIRST TIME SETUP SCREEN -->
+    <div id="setup-screen" class="card">
+        <h2>TCSAC Portal Setup</h2>
+        <p>Configure your administrator profile for first-time use.</p>
+        <div class="error" id="setup-error"></div>
+        <div class="input-group">
+            <label>Admin Username</label>
+            <input type="text" id="setup-username" value="admin">
+        </div>
+        <div class="input-group">
+            <label>Admin Password</label>
+            <input type="password" id="setup-password" placeholder="Create strong password">
+        </div>
+        <hr>
+        <label>Security Questions (Max 5 for recovery)</label>
+        <div class="input-group">
+            <input type="text" id="q1" value="What was your first school's name?" readonly>
+            <input type="text" id="a1" placeholder="Your Answer">
+        </div>
+        <div class="input-group">
+            <input type="text" id="q2" value="What is your favorite book?" readonly>
+            <input type="text" id="a2" placeholder="Your Answer">
+        </div>
+        <button id="btn-save-setup">Initialize System</button>
+    </div>
+
+    <!-- 2. MAIN LOGIN SCREEN -->
+    <div id="login-screen" class="card">
+        <h2>TCSAC Management Portal</h2>
+        <div class="error" id="login-error"></div>
+        <div class="input-group">
+            <label>Username</label>
+            <input type="text" id="login-username" placeholder="Enter username">
+        </div>
+        <div class="input-group">
+            <label>Password</label>
+            <input type="password" id="login-password" placeholder="Enter password">
+        </div>
+        <button id="btn-login">Login</button>
+    </div>
+
+    <!-- 3. DASHBOARD SKELETON (TEMPORARY VIEW FOR LOGGED IN USERS) -->
+    <div id="dashboard-screen" class="card">
+        <h2>Welcome to, TCSAC Management Portal</h2>
+        <p>🔓 Access Granted! You are logged in successfully.</p>
+        <button onclick="location.reload()">Log Out</button>
+    </div>
+
+    <!-- Wire up our frontend actions -->
+    <script src="renderer.js"></script>
 </body>
 </html>
