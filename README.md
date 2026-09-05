@@ -1,0 +1,1 @@
+# smart-school-management-application
