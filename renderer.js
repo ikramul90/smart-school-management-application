@@ -62,3 +62,18 @@ document.getElementById('btn-login').addEventListener('click', async () => {
         document.getElementById('login-error').innerText = response.message;
     }
 });
+
+// --- LAYOUT NAVIGATION TAB SWITCHER ---
+window.switchTab = function(tabId) {
+    // Hide all tab contents
+    const tabs = document.querySelectorAll('.tab-content');
+    tabs.forEach(tab => {
+        tab.style.display = 'none';
+    });
+
+    // Show the specific clicked tab
+    const targetTab = document.getElementById(tabId);
+    if (targetTab) {
+        targetTab.style.display = 'block';
+    }
+};
