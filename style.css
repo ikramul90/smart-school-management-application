@@ -58,20 +58,6 @@ label {
     margin-top: 5px;
 }
 
-#dashboard-screen {
-    width: 600px;
-}
-
-#dashboard-screen p:nth-of-type(1) {
-    text-align: center;
-    color: green;
-    font-weight: bold;
-}
-
-#dashboard-screen button:nth-of-type(1) {
-    background-color: #64748b;
-}
-
 input,
 select {
     width: 100%;
