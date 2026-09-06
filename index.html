@@ -95,11 +95,11 @@
                     </div>
                 </div>
 
-                <!-- TAB CONTENT: DEVELOPER INFO (PROTECTED BASE64 IMAGE AREA) -->
+                <!-- TAB CONTENT: DEVELOPER INFO -->
                 <div id="settings-developer" class="tab-content" style="display: none;">
                     <h2>Developer Profile</h2>
                     <div style="background: white; padding: 30px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; gap: 30px; align-items: center; max-width: 650px;">
-                        <!-- The avatar image reads code directly instead of an external file folder! -->
+                        
                         <img id="dev-avatar" src="uploads/dev-image.jpeg" style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid #2563eb; background-color: #f1f5f9;" />
                         <div>
                             <h3 style="margin: 0 0 5px 0; color: #1e293b; font-size: 22px;">Ikramul Alam Chowdhury</h3>
@@ -111,15 +111,88 @@
 
                 <!-- TAB CONTENT: EXAMS SKELETON HOLDER -->
                 <div id="exams-tab" class="tab-content" style="display: block;">
-                    <h2>Exams Module</h2>
-                    <p style="color: #64748b;">This screen will pull database columns for automatic student marks input matrix scoring.</p>
+                <h2>Exams Module</h2>
+
+                <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end;">
+                    <div style="flex:1;"><label>Year</label><input type="number" id="exam-year" value="2026"></div>
+                    <div style="flex:1;">
+                        <label>Test</label>
+                        <select id="exam-type-select">
+                            <option>1st Monthly Exam</option>
+                            <option>2nd Monthly Exam</option>
+                            <option>Half Yearly Exam</option>
+                            <option>3rd Monthly Exam</option>
+                            <option>4th Monthly Exam</option>
+                            <option>Yearly Exam</option>
+                        </select>
+                    </div>
                 </div>
+
+                <div id="exam-class-buttons" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;"></div>
+
+                <div id="marks-entry-container"></div>
+            </div>
                 
                 <!-- OTHER TABS PLACEHOLDERS -->
-                <div id="db-students" class="tab-content" style="display: none;"><h2>Students Databases</h2><p>Student registry overview coming in step 4...</p></div>
+                <!-- TAB CONTENT: STUDENTS DATABASE (WITH REMOVAL CONFIGURATOR) -->
+                <div id="db-students" class="tab-content" style="display: none;">
+                    <h2>Student Registry Matrix</h2>
+                    
+                    <!-- ADVANCED CLASSIFICATION FILTERS -->
+                    <div style="background:#e2e8f0; padding:15px; border-radius:6px; margin-bottom:20px; display:flex; gap:20px; align-items:center;">
+                        <strong>Filter View:</strong>
+                        <div>Class: <select id="filter-student-class" onchange="loadStudents()"><option value="">All 16 Classes</option></select></div>
+                        <div>Status: <select id="filter-student-status" onchange="loadStudents()"><option value="Active">Active Enrolled</option><option value="Graduated">Completed Studies</option><option value="Removed">Removed with Cause</option></select></div>
+                    </div>
+
+                    <!-- DATA ENROLLMENT TRIGGER -->
+                    <details style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                        <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">➕ Enroll New Cadet Student</summary>
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;" id="student-form">
+                            <div><label>Class ID</label><select id="st-class"></select></div>
+                            <div><label>Class Roll</label><input type="number" id="st-roll"></div>
+                            <div><label>Full Name</label><input type="text" id="st-name"></div>
+                            <div><label>Blood Group</label><input type="text" id="st-blood" placeholder="e.g. O+"></div>
+                            <div><label>Guardian Name</label><input type="text" id="st-guardian"></div>
+                            <div><label>Guardian Contact #</label><input type="text" id="st-phone"></div>
+                            <div style="grid-column: span 3;"><label>Residential Address</label><input type="text" id="st-address"></div>
+                        </div>
+                        <button id="btn-save-student" style="margin-top:15px; background-color:#2563eb; width:200px;">Register Student</button>
+                    </details>
+
+                    <table style="width:100%; border-collapse:collapse; background:white;" border="1" cellpadding="8" bordercolor="#e2e8f0">
+                        <thead style="background:#f8fafc;">
+                            <tr><th>Roll</th><th>Name</th><th>Class</th><th>Blood</th><th>Guardian Contact</th><th>Status</th><th>Management Actions</th></tr>
+                        </thead>
+                        <tbody id="student-table-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- TAB CONTENT: TEACHERS DATABASE -->
                 <div id="db-teachers" class="tab-content" style="display: none;"><h2>Teachers Databases</h2><p>Teacher directory overview coming in step 4...</p></div>
-                <div id="db-subjects" class="tab-content" style="display: none;"><h2>Subject Databases</h2><p>Subject structural curriculum matrix coming in step 4...</p></div>
+
+                <!-- TAB CONTENT: SUBJECT DATABASE -->
+                <div id="db-subjects" class="tab-content" style="display: none;">
+                    <h2>Curriculum Subject Settings</h2>
+                    <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end;">
+                        <div style="flex:1;"><label>Target Class</label><select id="sub-class-select"><option value="1">Class 6</option><option value="2">Class 7</option></select></div>
+                        <div style="flex:1;"><label>Class Teacher</label><select id="sub-teacher-select"><option value="">No Teacher Allocated</option></select></div>
+                        <div style="flex:1;"><label>Subject Name</label><input type="text" id="sub-name-input" placeholder="e.g. Bangla 1st"></div>
+                        <div style="width:100px;"><label>Sequence</label><input type="number" id="sub-seq-input" value="1"></div>
+                        <button id="btn-add-subject" style="background-color:#10b981; width:auto; padding:10px 20px;">Save Subject</button>
+                    </div>
+                    <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden;" border="1" cellpadding="10" bordercolor="#e2e8f0">
+                        <thead style="background:#f1f5f9; text-align:left;">
+                            <tr><th>Class Name</th><th>Class Teacher Assigned</th><th>Subject Name</th><th>Row Sequence</th></tr>
+                        </thead>
+                        <tbody id="subject-table-body">
+                            <!-- Rows loaded live via database scripts -->
+                        </tbody>
+                    </table>
+                </div>
+
                 <div id="db-grades" class="tab-content" style="display: none;"><h2>Grading System</h2><p>Grade boundaries and definitions coming in step 4...</p></div>
+
                 <div id="settings-admin" class="tab-content" style="display: none;"><h2>Admin Info & Controls</h2><p>Password changes and security overrides block coming in step 4...</p></div>
             </div>
 

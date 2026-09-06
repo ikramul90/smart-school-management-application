@@ -13,19 +13,35 @@ db.serialize(() => {
         department TEXT DEFAULT NULL -- 'Science', 'Humanities', or NULL
     )`);
 
+    // Seed the 16 distinct school classes if they don't exist yet
+    db.get("SELECT COUNT(*) as count FROM classes", [], (err, row) => {
+        if (row && row.count === 0) {
+            const classNames = [
+                "Play", "Nursery", "Class One", "Class Two", "Class Three", 
+                "Class Four", "Class Five", "Class Six", "Class Seven", "Class Eight", 
+                "Class Nine (Science)", "Class Nine (Humanities)", 
+                "Class Ten (Science)", "Class Ten (Humanities)"
+            ];
+            const stmt = db.prepare(`INSERT INTO classes (class_name) VALUES (?)`);
+            classNames.forEach(name => stmt.run(name));
+            stmt.finalize();
+            console.log("🌱 Seeded classes successfully into database!");
+        }
+    });
+
     // 2. Students Table
     db.run(`CREATE TABLE IF NOT EXISTS students (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         roll INTEGER NOT NULL,
         name TEXT NOT NULL,
         blood_group TEXT,
-        photo_path TEXT NOT NULL,
-        fathers_name TEXT NOT NULL,
-        mothers_name TEXT NOT NULL,
+        photo_path TEXT,
+        fathers_name TEXT,
+        mothers_name TEXT,
         guardian_name TEXT,
         guardian_contact TEXT NOT NULL,
         address TEXT,
-        dob TEXT NOT NULL,
+        dob TEXT,
         birth_reg_number TEXT,
         class_id INTEGER,
         status TEXT DEFAULT 'Active', -- 'Active', 'Graduated', 'Removed'
@@ -77,6 +93,11 @@ db.serialize(() => {
         FOREIGN KEY(subject_id) REFERENCES subjects(id),
         FOREIGN KEY(exam_id) REFERENCES exams(id)
     )`);
+
+    // Ensure one mark per student+subject+exam so re-saving a class updates in place
+    db.run(`CREATE UNIQUE INDEX IF NOT EXISTS idx_marks_unique ON marks (
+        student_id, subject_id, exam_id
+        )`);
 
     // 7. Admin Settings Table (Stores the single admin account and recovery questions)
     db.run(`CREATE TABLE IF NOT EXISTS admin_profile (
