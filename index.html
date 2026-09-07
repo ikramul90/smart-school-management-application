@@ -59,18 +59,18 @@
                     <h3 style="margin-top: 0; color: #38bdf8; font-size: 16px;">NAVIGATION</h3>
                     <hr style="border: 0; border-top: 1px solid #334155; margin-bottom: 20px;">
                     
-                    <button class="nav-btn" onclick="switchTab('exams-tab')" style="background-color: #3b82f6; text-align: left; margin-bottom: 10px;">📄 Exams Module</button>
-                    
+                    <button class="nav-btn active" data-tab="exams-tab" onclick="switchTab('exams-tab')" style="text-align: left; margin-bottom: 10px;">📄 Exams Module</button>
+
                     <p style="font-size: 12px; color: #94a3b8; text-transform: uppercase; margin: 20px 0 5px 0px; font-weight: bold; text-align: left;">Databases</p>
-                    <button class="nav-btn" onclick="switchTab('db-students')">Students</button>
-                    <button class="nav-btn" onclick="switchTab('db-teachers')">Teachers</button>
-                    <button class="nav-btn" onclick="switchTab('db-subjects')">Subject</button>
-                    <button class="nav-btn" onclick="switchTab('db-grades')">Grade</button>
-                    
+                    <button class="nav-btn" data-tab="db-students" onclick="switchTab('db-students')">Students</button>
+                    <button class="nav-btn" data-tab="db-teachers" onclick="switchTab('db-teachers')">Teachers</button>
+                    <button class="nav-btn" data-tab="db-subjects" onclick="switchTab('db-subjects')">Subject</button>
+                    <button class="nav-btn" data-tab="db-grades" onclick="switchTab('db-grades')">Grade</button>
+
                     <p style="font-size: 12px; color: #94a3b8; text-transform: uppercase; margin: 20px 0 5px 0px; font-weight: bold; text-align: left;">Settings Panel</p>
-                    <button class="nav-btn" onclick="switchTab('settings-school')">School Info</button>
-                    <button class="nav-btn" onclick="switchTab('settings-developer')">Developer Info</button>
-                    <button class="nav-btn" onclick="switchTab('settings-admin')">Admin Info</button>
+                    <button class="nav-btn" data-tab="settings-school" onclick="switchTab('settings-school')">School Info</button>
+                    <button class="nav-btn" data-tab="settings-developer" onclick="switchTab('settings-developer')">Developer Info</button>
+                    <button class="nav-btn" data-tab="settings-admin" onclick="switchTab('settings-admin')">Admin Info</button>
                 </div>
                 
                 <!-- CUSTOM BOTTOM LEFT WATERMARK -->

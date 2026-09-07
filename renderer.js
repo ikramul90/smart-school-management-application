@@ -76,6 +76,11 @@ window.switchTab = function(tabId) {
     if (targetTab) {
         targetTab.style.display = 'block';
     }
+
+    // Highlight the matching sidebar button
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.querySelector(`.nav-btn[data-tab="${tabId}"]`);
+    if (activeBtn) activeBtn.classList.add('active');
 };
 
 // --- STEP 4: CRUD MANAGEMENT OPERATORS ---
