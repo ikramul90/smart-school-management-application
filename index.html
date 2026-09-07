@@ -50,43 +50,43 @@
     </div>
 
         <!-- 3. REAL DASHBOARD & PORTAL MAIN LAYOUT -->
-    <div id="dashboard-screen" style="display: none; width: 100vw; height: 100vh; margin: 0; box-shadow: none; border-radius: 0;">
-        <div style="display: flex; width: 100%; height: 100%;">
+    <div id="dashboard-screen">
+        <div>
             
             <!-- LEFT SIDEBAR -->
-            <div style="width: 280px; background-color: #1e293b; color: white; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; box-sizing: border-box;">
-                <div>
-                    <h3 style="margin-top: 0; color: #38bdf8; font-size: 16px;">NAVIGATION</h3>
-                    <hr style="border: 0; border-top: 1px solid #334155; margin-bottom: 20px;">
+            <div class="dashboard-sidebar">
+                <div class="dashboard-sidebar-nav">
+                    <h3>NAVIGATION</h3>
+                    <hr>
                     
-                    <button class="nav-btn active" data-tab="exams-tab" onclick="switchTab('exams-tab')" style="text-align: left; margin-bottom: 10px;">📄 Exams Module</button>
+                    <button class="nav-btn active" data-tab="exams-tab" onclick="switchTab('exams-tab')">📄 Exams Module</button>
 
-                    <p style="font-size: 12px; color: #94a3b8; text-transform: uppercase; margin: 20px 0 5px 0px; font-weight: bold; text-align: left;">Databases</p>
+                    <p>Databases</p>
                     <button class="nav-btn" data-tab="db-students" onclick="switchTab('db-students')">Students</button>
                     <button class="nav-btn" data-tab="db-teachers" onclick="switchTab('db-teachers')">Teachers</button>
                     <button class="nav-btn" data-tab="db-subjects" onclick="switchTab('db-subjects')">Subject</button>
                     <button class="nav-btn" data-tab="db-grades" onclick="switchTab('db-grades')">Grade</button>
 
-                    <p style="font-size: 12px; color: #94a3b8; text-transform: uppercase; margin: 20px 0 5px 0px; font-weight: bold; text-align: left;">Settings Panel</p>
+                    <p>Settings Panel</p>
                     <button class="nav-btn" data-tab="settings-school" onclick="switchTab('settings-school')">School Info</button>
                     <button class="nav-btn" data-tab="settings-developer" onclick="switchTab('settings-developer')">Developer Info</button>
                     <button class="nav-btn" data-tab="settings-admin" onclick="switchTab('settings-admin')">Admin Info</button>
                 </div>
                 
                 <!-- CUSTOM BOTTOM LEFT WATERMARK -->
-                <div style="font-size: 11px; color: #64748b; line-height: 1.4; border-top: 1px solid #334155; padding-top: 10px; font-style: italic;">
+                <div class="dashboard-sidebar-watermark">
                     "An internal digital initiative designed by <br>Ikramul Alam Chowdhury"
                 </div>
             </div>
             
             <!-- MAIN CONTENT DISPLAY AREA -->
-            <div style="flex: 1; background-color: #f8fafc; padding: 40px; box-sizing: border-box; overflow-y: auto;">
+            <div class="dashboard-main">
                 <h1 style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Welcome to, TCSAC Management Portal</h1>
                 
                 <!-- TAB CONTENT: SCHOOL INFO -->
-                <div id="settings-school" class="tab-content" style="display: none;">
+                <div id="settings-school" class="tab-content">
                     <h2>School Information Profile</h2>
-                    <div style="background: white; padding: 25px; border-radius: 8px; border: 1px solid #e2e8f0; max-width: 600px;">
+                    <div>
                         <div class="input-group"><label>Institute Name</label><input type="text" value="The Cadet School & College (TCSAC)"></div>
                         <div class="input-group"><label>Institute Address</label><input type="text" placeholder="Enter school physical address"></div>
                         <div class="input-group"><label>Head Teacher Name</label><input type="text" placeholder="Enter Headmaster Name"></div>
@@ -96,9 +96,9 @@
                 </div>
 
                 <!-- TAB CONTENT: DEVELOPER INFO -->
-                <div id="settings-developer" class="tab-content" style="display: none;">
+                <div id="settings-developer" class="tab-content">
                     <h2>Developer Profile</h2>
-                    <div style="background: white; padding: 30px; border-radius: 8px; border: 1px solid #e2e8f0; display: flex; gap: 30px; align-items: center; max-width: 650px;">
+                    <div>
                         
                         <img id="dev-avatar" src="uploads/dev-image.jpeg" style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid #2563eb; background-color: #f1f5f9;" />
                         <div>
@@ -110,7 +110,7 @@
                 </div>
 
                 <!-- TAB CONTENT: EXAMS SKELETON HOLDER -->
-                <div id="exams-tab" class="tab-content" style="display: block;">
+                <div id="exams-tab" class="tab-content">
                 <h2>Exams Module</h2>
 
                 <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end;">
@@ -131,11 +131,10 @@
                 <div id="exam-class-buttons" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;"></div>
 
                 <div id="marks-entry-container"></div>
-            </div>
+                </div>
                 
-                <!-- OTHER TABS PLACEHOLDERS -->
                 <!-- TAB CONTENT: STUDENTS DATABASE (WITH REMOVAL CONFIGURATOR) -->
-                <div id="db-students" class="tab-content" style="display: none;">
+                <div id="db-students" class="tab-content">
                     <h2>Student Registry Matrix</h2>
                     
                     <!-- ADVANCED CLASSIFICATION FILTERS -->
@@ -169,10 +168,13 @@
                 </div>
 
                 <!-- TAB CONTENT: TEACHERS DATABASE -->
-                <div id="db-teachers" class="tab-content" style="display: none;"><h2>Teachers Databases</h2><p>Teacher directory overview coming in step 4...</p></div>
+                <div id="db-teachers" class="tab-content">
+                    <h2>Teachers Databases</h2>
+                    <p>Teacher directory overview coming in step 4...</p>
+                </div>
 
                 <!-- TAB CONTENT: SUBJECT DATABASE -->
-                <div id="db-subjects" class="tab-content" style="display: none;">
+                <div id="db-subjects" class="tab-content">
                     <h2>Curriculum Subject Settings</h2>
                     <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end;">
                         <div style="flex:1;"><label>Target Class</label><select id="sub-class-select"><option value="1">Class 6</option><option value="2">Class 7</option></select></div>
@@ -191,9 +193,16 @@
                     </table>
                 </div>
 
-                <div id="db-grades" class="tab-content" style="display: none;"><h2>Grading System</h2><p>Grade boundaries and definitions coming in step 4...</p></div>
+                <div id="db-grades" class="tab-content">
+                    <h2>Grading System</h2>
+                    <p>Grade boundaries and definitions coming in step 4...</p>
+                </div>
 
-                <div id="settings-admin" class="tab-content" style="display: none;"><h2>Admin Info & Controls</h2><p>Password changes and security overrides block coming in step 4...</p></div>
+                <!-- TAB CONTENT: ADMIN INFO -->
+                <div id="settings-admin" class="tab-content">
+                    <h2>Admin Info & Controls</h2>
+                    <p>Password changes and security overrides block coming in step 4...</p>
+                </div>
             </div>
 
         </div>

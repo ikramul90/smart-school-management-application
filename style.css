@@ -97,6 +97,102 @@ button:hover {
     margin-bottom: 10px;
 }
 
+#dashboard-screen {
+     display: none; 
+     width: 100vw; 
+     height: 100vh; 
+     margin: 0; 
+     box-shadow: none; 
+     border-radius: 0;
+}
+
+#dashboard-screen > div {
+     display: flex; 
+     width: 100%; 
+     height: 100%;
+}
+
+.dashboard-sidebar {
+    width: 280px; 
+    background-color: #1e293b; 
+    color: white; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    padding: 20px; 
+    box-sizing: border-box;
+}
+
+.dashboard-sidebar-nav > h3 {
+    margin-top: 0; 
+    color: #38bdf8; 
+    font-size: 16px;
+}
+
+.dashboard-sidebar-nav > hr {
+    border: 0; 
+    border-top: 1px solid #334155; 
+    margin-bottom: 20px;
+}
+
+.dashboard-sidebar-nav > button {
+    text-align: left; 
+    margin-bottom: 10px;
+}
+
+.dashboard-sidebar-nav > p {
+    font-size: 12px; 
+    color: #94a3b8; 
+    text-transform: uppercase; 
+    margin: 20px 0 5px 0px; 
+    font-weight: bold; 
+    text-align: left;
+}
+
+.dashboard-sidebar-watermark {
+    font-size: 11px; 
+    color: #64748b; 
+    line-height: 1.4; 
+    border-top: 1px solid #334155; 
+    padding-top: 10px; 
+    font-style: italic;
+}
+
+.dashboard-main {
+    flex: 1; 
+    background-color: #f8fafc; 
+    padding: 40px; 
+    box-sizing: border-box; 
+    overflow-y: auto;
+}
+
+#settings-school, #settings-developer, #settings-admin,  #db-students, #db-teachers, #db-grades #db-subjects {
+    display: none;
+}
+
+#exams-tab {
+    display: block;
+}
+
+#settings-school > div {
+    background: white; 
+    padding: 25px; 
+    border-radius: 8px; 
+    border: 1px solid #e2e8f0; 
+    max-width: 600px;
+}
+
+#settings-developer > div {
+    background: white; 
+    padding: 30px; 
+    border-radius: 8px; 
+    border: 1px solid #e2e8f0; 
+    display: flex; 
+    gap: 30px; 
+    align-items: center; 
+    max-width: 650px;
+}
+
 .nav-btn { 
     background: none; 
     border: none; 
