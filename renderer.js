@@ -1,11 +1,15 @@
+// RENDERER.JS — runs inside the app window itself (the UI side).
 const { ipcRenderer } = require('electron');
 
+
+// Grab references to the three full-screen "views" of the app: setup (first run only), login, and the main dashboard.
 // Get window elements
 const setupScreen = document.getElementById('setup-screen');
 const loginScreen = document.getElementById('login-screen');
 const dashboardScreen = document.getElementById('dashboard-screen');
 
-// On system boot: Ask the database if an admin account exists
+
+// On app startup: Ask the database if an admin account exists
 window.addEventListener('DOMContentLoaded', async () => {
     const adminExists = await ipcRenderer.invoke('check-admin-exists');
     
@@ -16,7 +20,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Handle saving setup credentials
+// Verify saving setup credentials
 document.getElementById('btn-save-setup').addEventListener('click', async () => {
     const username = document.getElementById('setup-username').value.trim();
     const password = document.getElementById('setup-password').value.trim();
@@ -83,7 +87,7 @@ window.switchTab = function(tabId) {
     if (activeBtn) activeBtn.classList.add('active');
 };
 
-// --- STEP 4: CRUD MANAGEMENT OPERATORS ---
+//  CRUD MANAGEMENT OPERATORS 
 
 // Load data automatically when entering a database tab
 const originalSwitchTab = window.switchTab;

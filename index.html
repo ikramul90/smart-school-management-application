@@ -58,8 +58,22 @@
                 <div class="dashboard-sidebar-nav">
                     <h3>NAVIGATION</h3>
                     <hr>
+
+                    <button class="nav-btn active" data-tab="home-tab"  onclick="switchTab('home-tab')">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                        <defs>
+                            <!-- The userSpaceOnUse setting stops the button wrapper from crushing the mask boundaries -->
+                            <mask id="door-cutout" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                                <rect width="24" height="24" fill="white" />
+                                <path d="M10 20C9.44772 20 9 19.5523 9 19V16C9 14.3431 10.3431 13 12 13C13.6569 13 15 14.3431 15 16V19C15 19.5523 14.5523 20 14 20H10Z" fill="black" />
+                            </mask>
+                        </defs>
+                        <path mask="url(#door-cutout)" fill-rule="evenodd" clip-rule="evenodd" d="M13.2081 2.80235C12.526 2.20306 11.474 2.20306 10.7919 2.80235L2.33565 10.2526C1.92286 10.6195 1.88568 11.2516 2.2526 11.6644C2.61952 12.0771 3.25159 12.1143 3.66437 11.7474L4.00001 11.4491L4.00001 21C4.00001 21.5523 4.44772 22 5 22H19C19.5523 22 20 21.5523 20 21L20 11.4491L20.3356 11.7474C20.7484 12.1143 21.3805 12.0771 21.7474 11.6644C22.1143 11.2516 22.0772 10.6195 21.6644 10.2526L13.2081 2.80235Z" fill="currentColor"/>
+                        </svg>
+                        <span>Home</span>
+                    </button>
                     
-                    <button class="nav-btn active" data-tab="exams-tab" onclick="switchTab('exams-tab')">📄 Exams Module</button>
+                    <button class="nav-btn" data-tab="exams-tab" onclick="switchTab('exams-tab')">📄 Exams Module</button>
 
                     <p>Databases</p>
                     <button class="nav-btn" data-tab="db-students" onclick="switchTab('db-students')">Students</button>
@@ -81,8 +95,11 @@
             
             <!-- MAIN CONTENT DISPLAY AREA -->
             <div class="dashboard-main">
-                <h1 style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Welcome to, TCSAC Management Portal</h1>
-                
+
+                <!-- TAB CONTENT: HOME TAB -->
+                <div id="home-tab" class="tab-content">
+                    <h1 style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Welcome to, TCSAC Management Portal</h1>
+                </div>
                 <!-- TAB CONTENT: SCHOOL INFO -->
                 <div id="settings-school" class="tab-content">
                     <h2>School Information Profile</h2>
@@ -135,7 +152,7 @@
                 
                 <!-- TAB CONTENT: STUDENTS DATABASE (WITH REMOVAL CONFIGURATOR) -->
                 <div id="db-students" class="tab-content">
-                    <h2>Student Registry Matrix</h2>
+                    <h2>Student Registry</h2>
                     
                     <!-- ADVANCED CLASSIFICATION FILTERS -->
                     <div style="background:#e2e8f0; padding:15px; border-radius:6px; margin-bottom:20px; display:flex; gap:20px; align-items:center;">
@@ -146,7 +163,7 @@
 
                     <!-- DATA ENROLLMENT TRIGGER -->
                     <details style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
-                        <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">➕ Enroll New Cadet Student</summary>
+                        <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Enroll New Student</summary>
                         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;" id="student-form">
                             <div><label>Class ID</label><select id="st-class"></select></div>
                             <div><label>Class Roll</label><input type="number" id="st-roll"></div>
@@ -193,6 +210,7 @@
                     </table>
                 </div>
 
+                <!-- TAB CONTENT: GRADES -->
                 <div id="db-grades" class="tab-content">
                     <h2>Grading System</h2>
                     <p>Grade boundaries and definitions coming in step 4...</p>
