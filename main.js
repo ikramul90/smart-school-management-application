@@ -106,6 +106,15 @@ ipcMain.handle('add-subject', async (event, data) => {
     });
 });
 
+ipcMain.handle('delete-subject', async (event, id) => {
+    return new Promise((resolve) => {
+        db.run(`DELETE FROM subjects WHERE id = ?`, [id], (err) => {
+            if (err) resolve({ success: false, error: err.message });
+            else resolve({ success: true });
+        });
+    });
+});
+
 // 2. STUDENTS DATABASE WORKERS (WITH ADVANCED STATUS FILTERS)
 ipcMain.handle('get-students', async (event, filters) => {
     return new Promise((resolve) => {
@@ -152,9 +161,39 @@ ipcMain.handle('get-classes-list', async () => {
         db.all("SELECT * FROM classes", [], (err, rows) => resolve(rows || []));
     });
 });
+
+// Lightweight version used by dropdowns (Subjects form, etc.)
 ipcMain.handle('get-teachers-list', async () => {
     return new Promise((resolve) => {
         db.all("SELECT id, name FROM teachers", [], (err, rows) => resolve(rows || []));
+    });
+});
+
+// 3. TEACHERS DATABASE WORKERS
+ipcMain.handle('get-teachers', async () => {
+    return new Promise((resolve) => {
+        db.all(`SELECT * FROM teachers ORDER BY name`, [], (err, rows) => {
+            resolve(rows || []);
+        });
+    });
+});
+
+ipcMain.handle('add-teacher', async (event, t) => {
+    return new Promise((resolve) => {
+        db.run(`INSERT INTO teachers (name, title, fathers_name, mothers_name, contact_number, blood_group, nid_number) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null], (err) => {
+            if (err) resolve({ success: false, error: err.message });
+            else resolve({ success: true });
+        });
+    });
+});
+
+ipcMain.handle('delete-teacher', async (event, id) => {
+    return new Promise((resolve) => {
+        db.run(`DELETE FROM teachers WHERE id = ?`, [id], (err) => {
+            if (err) resolve({ success: false, error: err.message });
+            else resolve({ success: true });
+        });
     });
 });
 

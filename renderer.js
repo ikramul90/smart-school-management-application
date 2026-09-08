@@ -1,15 +1,21 @@
+// ============================================================
 // RENDERER.JS — runs inside the app window itself (the UI side).
+// Cannot touch the database directly — every data operation goes
+// through ipcRenderer.invoke() to ask main.js to do it instead.
+// ============================================================
 const { ipcRenderer } = require('electron');
 
 
-// Grab references to the three full-screen "views" of the app: setup (first run only), login, and the main dashboard.
-// Get window elements
+// Grab references to the three full-screen "views" of the app:
+// setup (first run only), login, and the main dashboard.
 const setupScreen = document.getElementById('setup-screen');
 const loginScreen = document.getElementById('login-screen');
 const dashboardScreen = document.getElementById('dashboard-screen');
 
 
-// On app startup: Ask the database if an admin account exists
+// On app startup: ask main.js whether an admin account already
+// exists, and show either the first-time Setup screen or the
+// normal Login screen accordingly.
 window.addEventListener('DOMContentLoaded', async () => {
     const adminExists = await ipcRenderer.invoke('check-admin-exists');
     
@@ -20,7 +26,10 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Verify saving setup credentials
+// First-time setup form: collects the new admin's username,
+// password, and two security-question answers, then sends them
+// to main.js to be saved. Reloads the page into the login screen
+// on success.
 document.getElementById('btn-save-setup').addEventListener('click', async () => {
     const username = document.getElementById('setup-username').value.trim();
     const password = document.getElementById('setup-password').value.trim();
@@ -47,7 +56,9 @@ document.getElementById('btn-save-setup').addEventListener('click', async () => 
     }
 });
 
-// Handle Login Button Clicks
+// Login form: sends the entered username/password to main.js for
+// verification, then swaps the login screen out for the dashboard
+// if correct.
 document.getElementById('btn-login').addEventListener('click', async () => {
     const username = document.getElementById('login-username').value.trim();
     const password = document.getElementById('login-password').value.trim();
@@ -67,7 +78,9 @@ document.getElementById('btn-login').addEventListener('click', async () => {
     }
 });
 
-// --- LAYOUT NAVIGATION TAB SWITCHER ---
+// Login form: sends the entered username/password to main.js for
+// verification, then swaps the login screen out for the dashboard
+// if correct.
 window.switchTab = function(tabId) {
     // Hide all tab contents
     const tabs = document.querySelectorAll('.tab-content');
@@ -95,8 +108,12 @@ window.switchTab = function(tabId) {
     originalSwitchTab(tabId);
     if (tabId === 'db-subjects') loadSubjectsPage();
     if (tabId === 'db-students') loadStudentsPage();
+    if (tabId === 'db-teachers') loadTeachersPage();
 };
 
+
+// Fetches the class list and teacher list to populate the two
+// dropdowns on the Subjects form, then draws the subjects table.
 // --- SUBJECT MATRICES GENERATOR ---
 async function loadSubjectsPage() {
     const classes = await ipcRenderer.invoke('get-classes-list');
@@ -113,6 +130,9 @@ async function loadSubjectsPage() {
     renderSubjectsTable();
 }
 
+
+// Pulls the full subjects list (already joined with class name
+// and teacher name by main.js) and redraws the table rows.
 async function renderSubjectsTable() {
     const subjects = await ipcRenderer.invoke('get-subjects');
     const tbody = document.getElementById('subject-table-body');
@@ -122,10 +142,22 @@ async function renderSubjectsTable() {
             <td>${s.teacher_name || '<i style="color:gray;">None Assigned</i>'}</td>
             <td>${s.subject_name}</td>
             <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-size:12px;">Row ${s.sequence_order}</span></td>
+            <td><button onclick="deleteSubject(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">Delete</button></td>
         </tr>
     `).join('');
 }
 
+window.deleteSubject = async function (id) {
+    if (confirm("Delete this subject? This can't be undone.")) {
+        await ipcRenderer.invoke('delete-subject', id);
+        renderSubjectsTable();
+    }
+};
+
+
+// "Save Subject" button: reads the form fields, sends a new
+// subject row to main.js, clears the name field, and refreshes
+// the table on success.
 document.getElementById('btn-add-subject').addEventListener('click', async () => {
     const class_id = document.getElementById('sub-class-select').value;
     const class_teacher_id = document.getElementById('sub-teacher-select').value || null;
@@ -141,6 +173,11 @@ document.getElementById('btn-add-subject').addEventListener('click', async () =>
     }
 });
 
+
+// ------------------------------------------------------------
+// Populates the class dropdown used by both the student filter
+// and the enrollment form, then loads the student table.
+// ------------------------------------------------------------
 // --- STUDENT REGISTRY CONTROLLERS ---
 async function loadStudentsPage() {
     const classes = await ipcRenderer.invoke('get-classes-list');
@@ -156,6 +193,10 @@ async function loadStudentsPage() {
     loadStudents();
 }
 
+
+// Re-fetches students from the database using whatever class/
+// status filters are currently selected, and redraws the table
+// — including the Graduate/Drop Out action buttons per row.
 window.loadStudents = async function() {
     const class_id = document.getElementById('filter-student-class').value;
     const status = document.getElementById('filter-student-status').value;
@@ -173,14 +214,18 @@ window.loadStudents = async function() {
             <td><span style="padding:2px 6px; border-radius:4px; font-size:12px; background:${s.status==='Active'?'#dcfce7':'#fee2e2'}; color:${s.status==='Active'?'#16a34a':'#dc2626'};">${s.status}</span></td>
             <td>
                 ${s.status === 'Active' ? `
-                    <button onclick="changeStudentStatus(${s.id}, 'Graduated', 'Graduated Program')" style="padding:4px 8px; background:#10b981; font-size:11px; width:auto; display:inline-block; margin-right:4px;">🎓 Graduate</button>
-                    <button onclick="kickStudent(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">❌ Drop Out</button>
+                    <button onclick="changeStudentStatus(${s.id}, 'Graduated', 'Graduated Program')" style="padding:4px 8px; background:#10b981; font-size:11px; width:auto; display:inline-block; margin-right:4px;">Graduate</button>
+                    <button onclick="kickStudent(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">Drop Out</button>
                 ` : `<small style="color:gray;">History Logged</small>`}
             </td>
         </tr>
-    `).join('');
+    `).join('');    
 };
 
+
+// "Register Student" button: gathers the enrollment form fields
+// into one object and sends it to main.js to insert. Shows an
+// alert with the exact database error if the save fails.
 document.getElementById('btn-save-student').addEventListener('click', async () => {
     const s = {
         class_id: document.getElementById('st-class').value,
@@ -212,16 +257,84 @@ window.changeStudentStatus = async function(id, status, cause) {
     }
 };
 
+
+// "Drop Out" button handler: asks for a reason via prompt(),
+// then hands off to changeStudentStatus() with status "Removed".
 window.kickStudent = function(id) {
     const cause = prompt("Enter cause of student removal/drop-out:");
     if (cause) changeStudentStatus(id, 'Removed', cause);
 };
 
-// --- STEP 5: EXAMS MODULE — MARKS ENTRY ---
 
+// --- TEACHER REGISTRY CONTROLLERS ---
+async function loadTeachersPage() {
+    renderTeachersTable();
+}
+
+async function renderTeachersTable() {
+    const teachers = await ipcRenderer.invoke('get-teachers');
+    const tbody = document.getElementById('teacher-table-body');
+    tbody.innerHTML = teachers.map(t => `
+        <tr>
+            <td><b>${t.name}</b></td>
+            <td>${t.title || ''}</td>
+            <td>${t.contact_number || ''}</td>
+            <td><span style="color:red; font-weight:bold;">${t.blood_group || 'N/A'}</span></td>
+            <td>${t.nid_number || ''}</td>
+            <td><button onclick="deleteTeacher(${t.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">Delete</button></td>
+        </tr>
+    `).join('');
+}
+
+document.getElementById('btn-save-teacher').addEventListener('click', async () => {
+    const t = {
+        name: document.getElementById('tc-name').value.trim(),
+        title: document.getElementById('tc-title').value.trim(),
+        contact_number: document.getElementById('tc-contact').value.trim(),
+        blood_group: document.getElementById('tc-blood').value.trim(),
+        fathers_name: document.getElementById('tc-father').value.trim(),
+        mothers_name: document.getElementById('tc-mother').value.trim(),
+        nid_number: document.getElementById('tc-nid').value.trim()
+    };
+
+    if (!t.name) return alert("Teacher name is required!");
+
+    const res = await ipcRenderer.invoke('add-teacher', t);
+    if (res.success) {
+        document.getElementById('tc-name').value = "";
+        document.getElementById('tc-title').value = "";
+        document.getElementById('tc-contact').value = "";
+        document.getElementById('tc-blood').value = "";
+        document.getElementById('tc-father').value = "";
+        document.getElementById('tc-mother').value = "";
+        document.getElementById('tc-nid').value = "";
+        renderTeachersTable();
+    } else {
+        console.error('add-teacher failed:', res.error);
+        alert('Could not save teacher: ' + res.error);
+    }
+});
+
+window.deleteTeacher = async function (id) {
+    if (confirm("Delete this teacher? This can't be undone.")) {
+        await ipcRenderer.invoke('delete-teacher', id);
+        renderTeachersTable();
+    }
+};
+
+// --- STEP 5: EXAMS MODULE — MARKS ENTRY ---
+// ============================================================
+// STEP 5: MARKS ENTRY
+// Lets the admin pick a year+test, click a class button, and
+// fill in a marks grid (students × subjects) for that exam.
+// currentExam / currentClassId track what's currently open.
+// ============================================================
 let currentExam = null;
 let currentClassId = null;
 
+
+// Draws one button per class in the Exams tab. Clicking a class
+// button opens the marks-entry grid for that class.
 async function loadExamClassButtons() {
     const classes = await ipcRenderer.invoke('get-classes-list');
     const container = document.getElementById('exam-class-buttons');
@@ -230,12 +343,19 @@ async function loadExamClassButtons() {
     ).join('');
 }
 
+
+// STEP 5 ADD-ON: wraps switchTab again so opening the Exams tab
+// also (re)loads the class buttons above.
 const originalSwitchTabStep5 = window.switchTab;
 window.switchTab = function (tabId) {
     originalSwitchTabStep5(tabId);
     if (tabId === 'exams-tab') loadExamClassButtons();
 };
 
+
+// Runs when a class button is clicked: finds or creates the
+// exam record for the selected year+test, then fetches that
+// class's students, subjects, and any marks already saved.
 window.openMarksEntry = async function (classId, className) {
     const year = document.getElementById('exam-year').value;
     const exam_type = document.getElementById('exam-type-select').value;
@@ -246,6 +366,10 @@ window.openMarksEntry = async function (classId, className) {
     renderMarksTable(className, sheet);
 };
 
+
+// Builds the actual marks grid: one row per student, one column
+// per subject, plus an "Absent" checkbox per student. Pre-fills
+// any marks that were already saved for this exam.
 function renderMarksTable(className, sheet) {
     const { students, subjects, marks } = sheet;
     const markMap = {};
@@ -285,6 +409,10 @@ function renderMarksTable(className, sheet) {
     document.getElementById('btn-save-marks').addEventListener('click', saveMarksEntry);
 }
 
+
+// "Save Marks" button: reads every mark input and absent
+// checkbox currently on screen, bundles them into one batch,
+// and sends them to main.js to be saved/updated in one go.
 async function saveMarksEntry() {
     const absentStudents = new Set(
         Array.from(document.querySelectorAll('.absent-check:checked')).map(el => el.dataset.student)
