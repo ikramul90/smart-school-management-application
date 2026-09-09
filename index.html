@@ -194,12 +194,12 @@
                         <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Add / Edit Subject</summary>
                         <div id="subject-form" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-top:15px;">
                             <input type="hidden" id="sub-edit-id" value="">
+                            <div style="width:100px; position: relative;"><label class="no-select">Sequence</label><input type="text" id="sub-seq-input" inputmode="numeric" value="1"><small id="sub-seq-error" class="field-error"></small></div>
                             <div style="flex:1; min-width:150px;"><label>Target Class</label><select id="sub-class-select"></select></div>
                             <div style="flex:1; min-width:150px;"><label>Class Teacher</label><select id="sub-teacher-select"><option value="">No Teacher Allocated</option></select></div>
                             <div style="flex:1; min-width:150px;"><label>Subject Name</label><select id="sub-name-select"></select></div>
-                            <div style="width:100px;"><label>Sequence</label><input type="number" id="sub-seq-input" value="1"></div>
-                            <div style="width:120px;"><label>Monthly Total</label><input type="number" id="sub-monthly-input" placeholder="e.g. 25"></div>
-                            <div style="width:120px;"><label>Yearly Total</label><input type="number" id="sub-yearly-input" placeholder="e.g. 100"></div>
+                            <div style="width:120px; position: relative;"><label>Monthly Total</label><input type="text" id="sub-monthly-input" placeholder="e.g. 25" inputmode="numeric"><small id="sub-monthly-error" class="field-error"></small></div>
+                            <div style="width:120px; position: relative;"><label>Yearly Total</label><input type="text" id="sub-yearly-input" placeholder="e.g. 100" inputmode="numeric"><small id="sub-yearly-error" class="field-error"></small></div>
                             <button id="btn-add-subject" style="background-color:#10b981; width:auto; padding:10px 20px;">Save Subject</button>
                         </div>
                     </details>
@@ -208,7 +208,7 @@
 
                     <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden;" border="1" cellpadding="10" bordercolor="#e2e8f0">
                         <thead class="no-select" style="background:#f1f5f9; text-align:left;">
-                            <tr><th>Class Name</th><th>Class Teacher Assigned</th><th>Subject Name</th><th>Sequence</th><th>Monthly</th><th>Yearly</th><th>Actions</th></tr>
+                            <tr><th>Sequence</th><th>Class Name</th><th>Class Teacher Assigned</th><th>Subject Name</th><th>Monthly</th><th>Yearly</th><th>Actions</th></tr>
                         </thead>
                         <tbody id="subject-table-body">
                             <!-- Rows loaded live via database scripts -->

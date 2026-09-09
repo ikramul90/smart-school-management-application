@@ -187,12 +187,12 @@ async function renderSubjectsTable() {
     const subjects = await ipcRenderer.invoke('get-subjects');
     const filtered = subjectClassFilter === '' ? subjects : subjects.filter(s => String(s.class_id) === String(subjectClassFilter));
     const tbody = document.getElementById('subject-table-body');
-    tbody.innerHTML = filtered.map(s => `
+            tbody.innerHTML = filtered.map(s => `
         <tr>
+            <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-size:12px;">${s.sequence_order}</span></td>
             <td><b>${s.class_name || 'Unassigned'}</b></td>
             <td>${s.teacher_name || '<i style="color:gray;">None Assigned</i>'}</td>
             <td>${s.subject_name}</td>
-            <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-size:12px;">Row ${s.sequence_order}</span></td>
             <td>${s.monthly_marks ?? '<i style="color:gray;">—</i>'}</td>
             <td>${s.yearly_marks ?? '<i style="color:gray;">—</i>'}</td>
             <td>
@@ -544,3 +544,29 @@ enableEnterNavigation(document.getElementById('login-screen'), document.getEleme
 enableEnterNavigation(document.getElementById('student-form'), document.getElementById('btn-save-student'));
 enableEnterNavigation(document.getElementById('teacher-form'), document.getElementById('btn-save-teacher'));
 enableEnterNavigation(document.getElementById('subject-form'), document.getElementById('btn-add-subject'));
+
+// --- NUMERIC-ONLY VALIDATION FOR SEQUENCE / MONTHLY / YEARLY FIELDS ---
+function enforceNumericInput(inputId, errorId) {
+    const input = document.getElementById(inputId);
+    const errorEl = document.getElementById(errorId);
+    if (!input) return;
+
+    input.addEventListener('keydown', (e) => {
+        const allowedKeys = ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Enter', 'Home', 'End'];
+        if (allowedKeys.includes(e.key)) return;
+        if (!/^[0-9]$/.test(e.key)) {
+            e.preventDefault();
+            if (errorEl) errorEl.textContent = 'Numbers only';
+        }
+    });
+
+    input.addEventListener('input', () => {
+        const cleaned = input.value.replace(/[^0-9]/g, '');
+        if (cleaned !== input.value) input.value = cleaned;
+        if (errorEl) errorEl.textContent = '';
+    });
+}
+
+enforceNumericInput('sub-seq-input', 'sub-seq-error');
+enforceNumericInput('sub-monthly-input', 'sub-monthly-error');
+enforceNumericInput('sub-yearly-input', 'sub-yearly-error');

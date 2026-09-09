@@ -102,6 +102,16 @@ button:hover {
     margin-bottom: 10px;
 }
 
+.field-error {
+    display: block;
+    color: #dc2626;
+    font-size: 12px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    white-space: nowrap;
+}
+
 #dashboard-screen {
      display: none; 
      width: 100vw; 
