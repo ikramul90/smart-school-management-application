@@ -517,3 +517,30 @@ async function saveMarksEntry() {
         alert('Error saving marks: ' + res.error);
     }
 }
+
+
+// --- ENTER-KEY FORM NAVIGATION ---
+// Pressing Enter in any input/select moves focus to the next one in the
+// same container; pressing Enter on the last one clicks the submit button.
+function enableEnterNavigation(container, submitBtn) {
+    if (!container) return;
+    const fields = Array.from(container.querySelectorAll('input, select')).filter(el => el.type !== 'hidden');
+    fields.forEach((field, idx) => {
+        field.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter') return;
+            e.preventDefault();
+            const next = fields[idx + 1];
+            if (next) {
+                next.focus();
+            } else if (submitBtn) {
+                submitBtn.click();
+            }
+        });
+    });
+}
+
+enableEnterNavigation(document.getElementById('setup-screen'), document.getElementById('btn-save-setup'));
+enableEnterNavigation(document.getElementById('login-screen'), document.getElementById('btn-login'));
+enableEnterNavigation(document.getElementById('student-form'), document.getElementById('btn-save-student'));
+enableEnterNavigation(document.getElementById('teacher-form'), document.getElementById('btn-save-teacher'));
+enableEnterNavigation(document.getElementById('subject-form'), document.getElementById('btn-add-subject'));

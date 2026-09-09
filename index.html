@@ -140,7 +140,7 @@
                     <!-- DATA ENROLLMENT TRIGGER -->
                     <details class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Enroll New Student</summary>
-                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;" id="student-form">
+                        <div id="student-form" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
                             <div><label>Class ID</label><select id="st-class"></select></div>
                             <div><label>Class Roll</label><input type="number" id="st-roll"></div>
                             <div><label>Full Name</label><input type="text" id="st-name"></div>
@@ -166,7 +166,7 @@
 
                     <details class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary class="no-select" style="font-weight:bold; cursor:pointer; color:#2563eb;">Add New Teacher</summary>
-                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
+                        <div id="teacher-form" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
                             <div><label>Full Name</label><input type="text" id="tc-name"></div>
                             <div><label>Title</label><input type="text" id="tc-title" placeholder="e.g. Senior Teacher"></div>
                             <div><label>Contact Number</label><input type="text" id="tc-contact"></div>
@@ -192,7 +192,7 @@
 
                     <details class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Add / Edit Subject</summary>
-                        <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-top:15px;">
+                        <div id="subject-form" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-top:15px;">
                             <input type="hidden" id="sub-edit-id" value="">
                             <div style="flex:1; min-width:150px;"><label>Target Class</label><select id="sub-class-select"></select></div>
                             <div style="flex:1; min-width:150px;"><label>Class Teacher</label><select id="sub-teacher-select"><option value="">No Teacher Allocated</option></select></div>
