@@ -188,16 +188,26 @@
                 <!-- TAB CONTENT: SUBJECT DATABASE -->
                 <div id="db-subjects" class="tab-content">
                     <h2>Curriculum Subject Settings</h2>
-                    <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end;">
-                        <div style="flex:1;"><label>Target Class</label><select id="sub-class-select"><option value="1">Class 6</option><option value="2">Class 7</option></select></div>
-                        <div style="flex:1;"><label>Class Teacher</label><select id="sub-teacher-select"><option value="">No Teacher Allocated</option></select></div>
-                        <div style="flex:1;"><label>Subject Name</label><input type="text" id="sub-name-input" placeholder="e.g. Bangla 1st"></div>
-                        <div style="width:100px;"><label>Sequence</label><input type="number" id="sub-seq-input" value="1"></div>
-                        <button id="btn-add-subject" style="background-color:#10b981; width:auto; padding:10px 20px;">Save Subject</button>
-                    </div>
+
+                    <details style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                        <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Add / Edit Subject</summary>
+                        <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-top:15px;">
+                            <input type="hidden" id="sub-edit-id" value="">
+                            <div style="flex:1; min-width:150px;"><label>Target Class</label><select id="sub-class-select"></select></div>
+                            <div style="flex:1; min-width:150px;"><label>Class Teacher</label><select id="sub-teacher-select"><option value="">No Teacher Allocated</option></select></div>
+                            <div style="flex:1; min-width:150px;"><label>Subject Name</label><select id="sub-name-select"></select></div>
+                            <div style="width:100px;"><label>Sequence</label><input type="number" id="sub-seq-input" value="1"></div>
+                            <div style="width:120px;"><label>Monthly Total</label><input type="number" id="sub-monthly-input" placeholder="e.g. 25"></div>
+                            <div style="width:120px;"><label>Yearly Total</label><input type="number" id="sub-yearly-input" placeholder="e.g. 100"></div>
+                            <button id="btn-add-subject" style="background-color:#10b981; width:auto; padding:10px 20px;">Save Subject</button>
+                        </div>
+                    </details>
+
+                    <div id="subject-class-filters" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;"></div>
+
                     <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden;" border="1" cellpadding="10" bordercolor="#e2e8f0">
                         <thead style="background:#f1f5f9; text-align:left;">
-                            <tr><th>Class Name</th><th>Class Teacher Assigned</th><th>Subject Name</th><th>Row Sequence</th><th>Actions</th></tr>
+                            <tr><th>Class Name</th><th>Class Teacher Assigned</th><th>Subject Name</th><th>Sequence</th><th>Monthly</th><th>Yearly</th><th>Actions</th></tr>
                         </thead>
                         <tbody id="subject-table-body">
                             <!-- Rows loaded live via database scripts -->

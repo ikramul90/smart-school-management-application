@@ -112,40 +112,136 @@ window.switchTab = function(tabId) {
 };
 
 
-// Fetches the class list and teacher list to populate the two
-// dropdowns on the Subjects form, then draws the subjects table.
+// --- SUBJECT CATALOG LOOKUP (per class subject list) ---
+// Edit these arrays once the official curriculum is confirmed — nothing
+// else in the app needs to change when these lists are updated.
+const SUBJECT_CATALOG = {
+    playNurseryOneTwo: ["Bangla", "English", "Math", "General Knowledge", "Drawing", "Spoken", "Religious Education", "Clothes/Manner/Presence"],
+    threeFourFive: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math", "Science", "Bangladesh & Global Studies", "General Knowledge", "Drawing", "Spoken", "Religious Education", "Clothes/Manner/Presence"],
+    sixSevenEight: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math", "Science", "Bangladesh & Global Studies", "Agriculture/Domestic Science", "Religious Education", "ICT", "Clothes/Manner/Presence"],
+    nineTenScience: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "General Math", "Religious Education", "ICT", "Bangladesh & Global Studies", "Physics", "Chemistry", "Higher Math", "Biology", "Agriculture/Domestic Science", "Clothes/Manner/Presence"],
+    nineTenHumanities: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "General Math", "Religious Education", "ICT", "General Science", "History", "Geography & Environment", "Civics & Citizenship", "Economics", "Agriculture/Domestic Science", "Clothes/Manner/Presence"]
+};
+
+// Maps each exact class_name (as stored in the classes table) to its catalog list above
+const CLASS_TO_CATALOG = {
+    "Play": SUBJECT_CATALOG.playNurseryOneTwo,
+    "Nursery": SUBJECT_CATALOG.playNurseryOneTwo,
+    "Class One": SUBJECT_CATALOG.playNurseryOneTwo,
+    "Class Two": SUBJECT_CATALOG.playNurseryOneTwo,
+    "Class Three": SUBJECT_CATALOG.threeFourFive,
+    "Class Four": SUBJECT_CATALOG.threeFourFive,
+    "Class Five": SUBJECT_CATALOG.threeFourFive,
+    "Class Six": SUBJECT_CATALOG.sixSevenEight,
+    "Class Seven": SUBJECT_CATALOG.sixSevenEight,
+    "Class Eight": SUBJECT_CATALOG.sixSevenEight,
+    "Class Nine (Science)": SUBJECT_CATALOG.nineTenScience,
+    "Class Ten (Science)": SUBJECT_CATALOG.nineTenScience,
+    "Class Nine (Humanities)": SUBJECT_CATALOG.nineTenHumanities,
+    "Class Ten (Humanities)": SUBJECT_CATALOG.nineTenHumanities
+};
+
+let allClassesCache = []; // filled by loadSubjectsPage, reused for filters + name dropdown
+let subjectClassFilter = ""; // "" = show all classes
+
 // --- SUBJECT MATRICES GENERATOR ---
 async function loadSubjectsPage() {
     const classes = await ipcRenderer.invoke('get-classes-list');
     const teachers = await ipcRenderer.invoke('get-teachers-list');
-    
-    // Populate select fields
+    allClassesCache = classes;
+
     const classSelect = document.getElementById('sub-class-select');
     classSelect.innerHTML = classes.map(c => `<option value="${c.id}">${c.class_name}</option>`).join('');
-    
+
     const teacherSelect = document.getElementById('sub-teacher-select');
-    teacherSelect.innerHTML = `<option value="">No Teacher Allocated</option>` + 
+    teacherSelect.innerHTML = `<option value="">No Teacher Allocated</option>` +
         teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
 
+    // Populate the class filter button row
+    const filterContainer = document.getElementById('subject-class-filters');
+    filterContainer.innerHTML = `<button class="nav-btn" style="background:${subjectClassFilter === '' ? '#3b82f6' : '#e2e8f0'}; color:${subjectClassFilter === '' ? 'white' : '#1e293b'}; width:auto; padding:8px 16px;" onclick="filterSubjectsByClass('')">All Classes</button>` +
+        classes.map(c => `<button class="nav-btn" style="background:${subjectClassFilter == c.id ? '#3b82f6' : '#e2e8f0'}; color:${subjectClassFilter == c.id ? 'white' : '#1e293b'}; width:auto; padding:8px 16px;" onclick="filterSubjectsByClass(${c.id})">${c.class_name}</button>`).join('');
+
+    updateSubjectNameOptions();
     renderSubjectsTable();
 }
 
+// Refills the Subject Name dropdown based on whichever class is selected in the form
+function updateSubjectNameOptions() {
+    const classId = document.getElementById('sub-class-select').value;
+    const cls = allClassesCache.find(c => String(c.id) === String(classId));
+    const nameSelect = document.getElementById('sub-name-select');
+    const list = (cls && CLASS_TO_CATALOG[cls.class_name]) || [];
+    nameSelect.innerHTML = list.length
+        ? list.map(name => `<option value="${name}">${name}</option>`).join('')
+        : `<option value="">No catalog set for this class</option>`;
+}
+document.getElementById('sub-class-select').addEventListener('change', updateSubjectNameOptions);
 
-// Pulls the full subjects list (already joined with class name
-// and teacher name by main.js) and redraws the table rows.
+window.filterSubjectsByClass = function (classId) {
+    subjectClassFilter = classId;
+    loadSubjectsPage();
+};
+
 async function renderSubjectsTable() {
     const subjects = await ipcRenderer.invoke('get-subjects');
+    const filtered = subjectClassFilter === '' ? subjects : subjects.filter(s => String(s.class_id) === String(subjectClassFilter));
     const tbody = document.getElementById('subject-table-body');
-    tbody.innerHTML = subjects.map(s => `
+    tbody.innerHTML = filtered.map(s => `
         <tr>
             <td><b>${s.class_name || 'Unassigned'}</b></td>
             <td>${s.teacher_name || '<i style="color:gray;">None Assigned</i>'}</td>
             <td>${s.subject_name}</td>
             <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-size:12px;">Row ${s.sequence_order}</span></td>
-            <td><button onclick="deleteSubject(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">Delete</button></td>
+            <td>${s.monthly_marks ?? '<i style="color:gray;">—</i>'}</td>
+            <td>${s.yearly_marks ?? '<i style="color:gray;">—</i>'}</td>
+            <td>
+                <button onclick="editSubject(${s.id}, ${s.class_id}, ${s.class_teacher_id || 'null'}, '${s.subject_name.replace(/'/g, "\\'")}', ${s.sequence_order}, ${s.monthly_marks || 'null'}, ${s.yearly_marks || 'null'})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
+                <button onclick="deleteSubject(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">🗑 Delete</button>
+            </td>
         </tr>
     `).join('');
 }
+
+window.editSubject = function (id, classId, teacherId, subjectName, sequence, monthlyMarks, yearlyMarks) {
+    document.getElementById('sub-edit-id').value = id;
+    document.getElementById('sub-class-select').value = classId;
+    updateSubjectNameOptions();
+    document.getElementById('sub-teacher-select').value = teacherId || '';
+    document.getElementById('sub-name-select').value = subjectName;
+    document.getElementById('sub-seq-input').value = sequence;
+    document.getElementById('sub-monthly-input').value = monthlyMarks || '';
+    document.getElementById('sub-yearly-input').value = yearlyMarks || '';
+    document.getElementById('btn-add-subject').textContent = 'Update Subject';
+};
+
+document.getElementById('btn-add-subject').addEventListener('click', async () => {
+    const editId = document.getElementById('sub-edit-id').value;
+    const class_id = document.getElementById('sub-class-select').value;
+    const class_teacher_id = document.getElementById('sub-teacher-select').value || null;
+    const subject_name = document.getElementById('sub-name-select').value;
+    const sequence_order = document.getElementById('sub-seq-input').value;
+    const monthly_marks = document.getElementById('sub-monthly-input').value || null;
+    const yearly_marks = document.getElementById('sub-yearly-input').value || null;
+
+    if (!subject_name) return alert("Pick a subject from the list first!");
+
+    const payload = { class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks };
+    const res = editId
+        ? await ipcRenderer.invoke('update-subject', { ...payload, id: editId })
+        : await ipcRenderer.invoke('add-subject', payload);
+
+    if (res.success) {
+        document.getElementById('sub-edit-id').value = '';
+        document.getElementById('sub-seq-input').value = '1';
+        document.getElementById('sub-monthly-input').value = '';
+        document.getElementById('sub-yearly-input').value = '';
+        document.getElementById('btn-add-subject').textContent = 'Save Subject';
+        renderSubjectsTable();
+    } else {
+        alert('Could not save subject: ' + res.error);
+    }
+});
 
 window.deleteSubject = async function (id) {
     if (confirm("Delete this subject? This can't be undone.")) {
@@ -155,23 +251,12 @@ window.deleteSubject = async function (id) {
 };
 
 
-// "Save Subject" button: reads the form fields, sends a new
-// subject row to main.js, clears the name field, and refreshes
-// the table on success.
-document.getElementById('btn-add-subject').addEventListener('click', async () => {
-    const class_id = document.getElementById('sub-class-select').value;
-    const class_teacher_id = document.getElementById('sub-teacher-select').value || null;
-    const subject_name = document.getElementById('sub-name-input').value.trim();
-    const sequence_order = document.getElementById('sub-seq-input').value;
 
-    if (!subject_name) return alert("Type a subject name first!");
 
-    const res = await ipcRenderer.invoke('add-subject', { class_id, class_teacher_id, subject_name, sequence_order });
-    if(res.success) {
-        document.getElementById('sub-name-input').value = "";
-        renderSubjectsTable();
-    }
-});
+
+
+
+
 
 
 // ------------------------------------------------------------

@@ -74,6 +74,18 @@ db.serialize(() => {
         FOREIGN KEY(class_teacher_id) REFERENCES teachers(id)
     )`);
 
+        // Migration: add marks-total columns to subjects if they don't exist yet (safe to run every startup)
+        db.all("PRAGMA table_info(subjects)", [], (err, columns) => {
+            if (err || !columns) return;
+            const columnNames = columns.map(c => c.name);
+            if (!columnNames.includes('monthly_marks')) {
+                db.run(`ALTER TABLE subjects ADD COLUMN monthly_marks INTEGER`);
+            }
+            if (!columnNames.includes('yearly_marks')) {
+                db.run(`ALTER TABLE subjects ADD COLUMN yearly_marks INTEGER`);
+            }
+        });
+
     // 5. Exams Table (Tracks individual assessment sessions)
     db.run(`CREATE TABLE IF NOT EXISTS exams (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

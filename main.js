@@ -96,16 +96,6 @@ ipcMain.handle('get-subjects', async () => {
     });
 });
 
-ipcMain.handle('add-subject', async (event, data) => {
-    return new Promise((resolve) => {
-        db.run(`INSERT INTO subjects (class_id, class_teacher_id, subject_name, sequence_order) VALUES (?, ?, ?, ?)`,
-            [data.class_id, data.class_teacher_id, data.subject_name, data.sequence_order], (err) => {
-            if (err) resolve({ success: false, error: err.message });
-            else resolve({ success: true });
-        });
-    });
-});
-
 ipcMain.handle('delete-subject', async (event, id) => {
     return new Promise((resolve) => {
         db.run(`DELETE FROM subjects WHERE id = ?`, [id], (err) => {
@@ -182,6 +172,26 @@ ipcMain.handle('add-teacher', async (event, t) => {
     return new Promise((resolve) => {
         db.run(`INSERT INTO teachers (name, title, fathers_name, mothers_name, contact_number, blood_group, nid_number) VALUES (?, ?, ?, ?, ?, ?, ?)`,
             [t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null], (err) => {
+            if (err) resolve({ success: false, error: err.message });
+            else resolve({ success: true });
+        });
+    });
+});
+
+ipcMain.handle('add-subject', async (event, data) => {
+    return new Promise((resolve) => {
+        db.run(`INSERT INTO subjects (class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (?, ?, ?, ?, ?, ?)`,
+            [data.class_id, data.class_teacher_id, data.subject_name, data.sequence_order, data.monthly_marks || null, data.yearly_marks || null], (err) => {
+            if (err) resolve({ success: false, error: err.message });
+            else resolve({ success: true });
+        });
+    });
+});
+
+ipcMain.handle('update-subject', async (event, data) => {
+    return new Promise((resolve) => {
+        db.run(`UPDATE subjects SET class_id = ?, class_teacher_id = ?, subject_name = ?, sequence_order = ?, monthly_marks = ?, yearly_marks = ? WHERE id = ?`,
+            [data.class_id, data.class_teacher_id, data.subject_name, data.sequence_order, data.monthly_marks || null, data.yearly_marks || null, data.id], (err) => {
             if (err) resolve({ success: false, error: err.message });
             else resolve({ success: true });
         });
