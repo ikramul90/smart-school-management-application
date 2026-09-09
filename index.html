@@ -36,14 +36,14 @@
 
     <!-- 2. MAIN LOGIN SCREEN -->
     <div id="login-screen" class="card">
-        <h2>TCSAC Management Portal</h2>
+        <h2 class="no-select">TCSAC Management Portal</h2>
         <div class="error" id="login-error"></div>
         <div class="input-group">
-            <label>Username</label>
+            <label class="no-select">Username</label>
             <input type="text" id="login-username" placeholder="Enter username">
         </div>
         <div class="input-group">
-            <label>Password</label>
+            <label class="no-select">Password</label>
             <input type="password" id="login-password" placeholder="Enter password">
         </div>
         <button id="btn-login">Login</button>
@@ -56,7 +56,7 @@
             <!-- LEFT SIDEBAR -->
             <div class="dashboard-sidebar">
                 <div class="dashboard-sidebar-nav">
-                    <h3>NAVIGATION</h3>
+                    <h3 class="no-select">NAVIGATION</h3>
                     <hr>
 
                     <button class="nav-btn active" data-tab="home-tab"  onclick="switchTab('home-tab')">
@@ -73,23 +73,24 @@
                         <span>Home</span>
                     </button>
                     
-                    <button class="nav-btn" data-tab="exams-tab" onclick="switchTab('exams-tab')">📄 Exams Module</button>
+                    <button class="nav-btn no-select" data-tab="exams-tab" onclick="switchTab('exams-tab')">📄 Exams Module</button>
 
-                    <p>Databases</p>
-                    <button class="nav-btn" data-tab="db-students" onclick="switchTab('db-students')">Students</button>
-                    <button class="nav-btn" data-tab="db-teachers" onclick="switchTab('db-teachers')">Teachers</button>
-                    <button class="nav-btn" data-tab="db-subjects" onclick="switchTab('db-subjects')">Subject</button>
-                    <button class="nav-btn" data-tab="db-grades" onclick="switchTab('db-grades')">Grade</button>
+                    <p class="no-select">Databases</p>
+                    <button class="nav-btn no-select" data-tab="db-students" onclick="switchTab('db-students')">Students</button>
+                    <button class="nav-btn no-select" data-tab="db-teachers" onclick="switchTab('db-teachers')">Teachers</button>
+                    <button class="nav-btn no-select" data-tab="db-subjects" onclick="switchTab('db-subjects')">Subject</button>
+                    <button class="nav-btn no-select" data-tab="db-grades" onclick="switchTab('db-grades')">Grade</button>
 
-                    <p>Settings Panel</p>
-                    <button class="nav-btn" data-tab="settings-school" onclick="switchTab('settings-school')">School Info</button>
-                    <button class="nav-btn" data-tab="settings-developer" onclick="switchTab('settings-developer')">Developer Info</button>
-                    <button class="nav-btn" data-tab="settings-admin" onclick="switchTab('settings-admin')">Admin Info</button>
+                    <p class="no-select">Settings Panel</p>
+                    <button class="nav-btn no-select" data-tab="settings-school" onclick="switchTab('settings-school')">School Info</button>
+                    <button class="nav-btn no-select" data-tab="settings-developer" onclick="switchTab('settings-developer')">Developer Info</button>
+                    <button class="nav-btn no-select" data-tab="settings-admin" onclick="switchTab('settings-admin')">Admin Info</button>
                 </div>
                 
                 <!-- CUSTOM BOTTOM LEFT WATERMARK -->
                 <div class="dashboard-sidebar-watermark">
-                    "An internal digital initiative designed by <br>Ikramul Alam Chowdhury"
+                    <div class="no-select">An internal digital initiative designed by </div>
+                    <div>Ikramul Alam Chowdhury</div>
                 </div>
             </div>
             
@@ -98,7 +99,7 @@
 
                 <!-- TAB CONTENT: HOME TAB -->
                 <div id="home-tab" class="tab-content">
-                    <h1 style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Welcome to, TCSAC Management Portal</h1>
+                    <h1 class="no-select" style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Welcome to, TCSAC Management Portal</h1>
                 </div>
 
                 <!-- TAB CONTENT: EXAMS SKELETON HOLDER -->
@@ -127,17 +128,17 @@
                                
                 <!-- TAB CONTENT: STUDENTS DATABASE (WITH REMOVAL CONFIGURATOR) -->
                 <div id="db-students" class="tab-content">
-                    <h2>Student Registry</h2>
+                    <h2 class="no-select">Student Registry</h2>
                     
                     <!-- ADVANCED CLASSIFICATION FILTERS -->
                     <div style="background:#e2e8f0; padding:15px; border-radius:6px; margin-bottom:20px; display:flex; gap:20px; align-items:center;">
-                        <strong>Filter View:</strong>
-                        <div>Class: <select id="filter-student-class" onchange="loadStudents()"><option value="">All 14 Classes</option></select></div>
-                        <div>Status: <select id="filter-student-status" onchange="loadStudents()"><option value="Active">Active Enrolled</option><option value="Graduated">Completed Studies</option><option value="Removed">Removed with Cause</option></select></div>
+                        <strong class="no-select">Filter View:</strong>
+                        <div class="no-select">Class: <select id="filter-student-class" onchange="loadStudents()"><option value="">All 14 Classes</option></select></div>
+                        <div class="no-select">Status: <select id="filter-student-status" onchange="loadStudents()"><option value="Active">Active Enrolled</option><option value="Graduated">Completed Studies</option><option value="Removed">Removed with Cause</option></select></div>
                     </div>
 
                     <!-- DATA ENROLLMENT TRIGGER -->
-                    <details style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                    <details class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Enroll New Student</summary>
                         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;" id="student-form">
                             <div><label>Class ID</label><select id="st-class"></select></div>
@@ -146,13 +147,13 @@
                             <div><label>Blood Group</label><input type="text" id="st-blood" placeholder="e.g. O+"></div>
                             <div><label>Guardian Name</label><input type="text" id="st-guardian"></div>
                             <div><label>Guardian Contact</label><input type="text" id="st-phone"></div>
-                            <div style="grid-column: span 3;"><label>Residential Address</label><input type="text" id="st-address"></div>
+                            <div style="grid-column: span 3;"><label class="no-select">Residential Address</label><input type="text" id="st-address"></div>
                         </div>
                         <button id="btn-save-student" style="margin-top:15px; background-color:#2563eb; width:200px;">Register Student</button>
                     </details>
 
                     <table style="width:100%; border-collapse:collapse; background:white;" border="1" cellpadding="8" bordercolor="#e2e8f0">
-                        <thead style="background:#f8fafc;">
+                        <thead class="no-select" style="background:#f8fafc;">
                             <tr><th>Roll</th><th>Name</th><th>Class</th><th>Blood</th><th>Guardian Contact</th><th>Status</th><th>Management Actions</th></tr>
                         </thead>
                         <tbody id="student-table-body"></tbody>
@@ -161,16 +162,16 @@
 
                 <!-- TAB CONTENT: TEACHERS DATABASE -->
                 <div id="db-teachers" class="tab-content">
-                    <h2>Teacher Registry</h2>
+                    <h2 class="no-select">Teacher Registry</h2>
 
-                    <details style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
-                        <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Add New Teacher</summary>
+                    <details class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                        <summary class="no-select" style="font-weight:bold; cursor:pointer; color:#2563eb;">Add New Teacher</summary>
                         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
                             <div><label>Full Name</label><input type="text" id="tc-name"></div>
                             <div><label>Title</label><input type="text" id="tc-title" placeholder="e.g. Senior Teacher"></div>
                             <div><label>Contact Number</label><input type="text" id="tc-contact"></div>
                             <div><label>Blood Group</label><input type="text" id="tc-blood" placeholder="e.g. O+"></div>
-                            <div><label>Father's Name</label><input type="text" id="tc-father"></div>
+                            <div><label> Father's Name</label><input type="text" id="tc-father"></div>
                             <div><label>Mother's Name</label><input type="text" id="tc-mother"></div>
                             <div><label>NID Number</label><input type="text" id="tc-nid"></div>
                         </div>
@@ -178,7 +179,7 @@
                     </details>
 
                     <table style="width:100%; border-collapse:collapse; background:white;" border="1" cellpadding="8" bordercolor="#e2e8f0">
-                        <thead style="background:#f8fafc;">
+                        <thead class="no-select" style="background:#f8fafc;">
                             <tr><th>Name</th><th>Title</th><th>Contact</th><th>Blood</th><th>NID</th><th>Actions</th></tr>
                         </thead>
                         <tbody id="teacher-table-body"></tbody>
@@ -187,9 +188,9 @@
 
                 <!-- TAB CONTENT: SUBJECT DATABASE -->
                 <div id="db-subjects" class="tab-content">
-                    <h2>Curriculum Subject Settings</h2>
+                    <h2 class="no-select">Curriculum Subject Settings</h2>
 
-                    <details style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                    <details class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Add / Edit Subject</summary>
                         <div style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-top:15px;">
                             <input type="hidden" id="sub-edit-id" value="">
@@ -206,7 +207,7 @@
                     <div id="subject-class-filters" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;"></div>
 
                     <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden;" border="1" cellpadding="10" bordercolor="#e2e8f0">
-                        <thead style="background:#f1f5f9; text-align:left;">
+                        <thead class="no-select" style="background:#f1f5f9; text-align:left;">
                             <tr><th>Class Name</th><th>Class Teacher Assigned</th><th>Subject Name</th><th>Sequence</th><th>Monthly</th><th>Yearly</th><th>Actions</th></tr>
                         </thead>
                         <tbody id="subject-table-body">
