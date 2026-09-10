@@ -423,8 +423,10 @@ window.editTeacher = function(id, name, title, contact, bloodGroup, fathersName,
     });
 
     document.getElementById('btn-save-teacher').textContent = 'Update Teacher';
+    document.getElementById('btn-cancel-teacher').style.display = 'inline-block';
     const details = document.getElementById('teacher-details');
     if (details) details.open = true;
+
 };
 
 document.getElementById('btn-save-teacher').addEventListener('click', async () => {
@@ -471,6 +473,7 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
         document.getElementById('tc-nid').value = "";
         document.getElementById('tc-classes').selectedIndex = -1;
         document.getElementById('btn-save-teacher').textContent = 'Save Teacher';
+        document.getElementById('btn-cancel-teacher').style.display = 'none';
         loadTeachersPage();
     } else {
         console.error('save-teacher failed:', res.error);

@@ -86,10 +86,9 @@ ipcMain.handle('save-school-info', async (event, info) => {
 // 1. SUBJECTS DATABASE WORKERS
 ipcMain.handle('get-subjects', async () => {
     return new Promise((resolve) => {
-        db.all(`SELECT subjects.*, classes.class_name, teachers.name as teacher_name 
-                FROM subjects 
+        db.all(`SELECT subjects.*, classes.class_name
+                FROM subjects
                 LEFT JOIN classes ON subjects.class_id = classes.id
-                LEFT JOIN teachers ON subjects.class_teacher_id = teachers.id
                 ORDER BY classes.class_name, subjects.sequence_order`, [], (err, rows) => {
             resolve(rows || []);
         });
@@ -181,9 +180,29 @@ ipcMain.handle('get-teachers', async () => {
 ipcMain.handle('add-teacher', async (event, t) => {
     return new Promise((resolve) => {
         db.run(`INSERT INTO teachers (name, title, fathers_name, mothers_name, contact_number, blood_group, nid_number) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null], (err) => {
+            [t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null], function (err) {
             if (err) resolve({ success: false, error: err.message });
-            else resolve({ success: true });
+            else resolve({ success: true, id: this.lastID });
+        });
+    });
+});
+
+ipcMain.handle('set-teacher-classes', async (event, { teacher_id, class_ids }) => {
+    return new Promise((resolve) => {
+        const idList = class_ids && class_ids.length ? class_ids : [];
+        const excludeClause = idList.length ? `AND id NOT IN (${idList.map(() => '?').join(',')})` : '';
+        // Step 1: unassign this teacher from any class no longer in their selected list
+        db.run(`UPDATE classes SET class_teacher_id = NULL WHERE class_teacher_id = ? ${excludeClause}`,
+            [teacher_id, ...idList], (err) => {
+            if (err) return resolve({ success: false, error: err.message });
+            if (!idList.length) return resolve({ success: true });
+            // Step 2: assign this teacher to every selected class
+            const placeholders = idList.map(() => '?').join(',');
+            db.run(`UPDATE classes SET class_teacher_id = ? WHERE id IN (${placeholders})`,
+                [teacher_id, ...idList], (err2) => {
+                if (err2) resolve({ success: false, error: err2.message });
+                else resolve({ success: true });
+            });
         });
     });
 });
@@ -200,8 +219,8 @@ ipcMain.handle('update-teacher', async (event, t) => {
 
 ipcMain.handle('add-subject', async (event, data) => {
     return new Promise((resolve) => {
-        db.run(`INSERT INTO subjects (class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (?, ?, ?, ?, ?, ?)`,
-            [data.class_id, data.class_teacher_id, data.subject_name, data.sequence_order, data.monthly_marks || null, data.yearly_marks || null], (err) => {
+        db.run(`INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (?, ?, ?, ?, ?)`,
+            [data.class_id, data.subject_name, data.sequence_order, data.monthly_marks || null, data.yearly_marks || null], (err) => {
             if (err) resolve({ success: false, error: err.message });
             else resolve({ success: true });
         });
@@ -210,8 +229,8 @@ ipcMain.handle('add-subject', async (event, data) => {
 
 ipcMain.handle('update-subject', async (event, data) => {
     return new Promise((resolve) => {
-        db.run(`UPDATE subjects SET class_id = ?, class_teacher_id = ?, subject_name = ?, sequence_order = ?, monthly_marks = ?, yearly_marks = ? WHERE id = ?`,
-            [data.class_id, data.class_teacher_id, data.subject_name, data.sequence_order, data.monthly_marks || null, data.yearly_marks || null, data.id], (err) => {
+        db.run(`UPDATE subjects SET class_id = ?, subject_name = ?, sequence_order = ?, monthly_marks = ?, yearly_marks = ? WHERE id = ?`,
+            [data.class_id, data.subject_name, data.sequence_order, data.monthly_marks || null, data.yearly_marks || null, data.id], (err) => {
             if (err) resolve({ success: false, error: err.message });
             else resolve({ success: true });
         });
@@ -220,9 +239,12 @@ ipcMain.handle('update-subject', async (event, data) => {
 
 ipcMain.handle('delete-teacher', async (event, id) => {
     return new Promise((resolve) => {
-        db.run(`DELETE FROM teachers WHERE id = ?`, [id], (err) => {
-            if (err) resolve({ success: false, error: err.message });
-            else resolve({ success: true });
+        db.run(`UPDATE classes SET class_teacher_id = NULL WHERE class_teacher_id = ?`, [id], (err) => {
+            if (err) return resolve({ success: false, error: err.message });
+            db.run(`DELETE FROM teachers WHERE id = ?`, [id], (err2) => {
+                if (err2) resolve({ success: false, error: err2.message });
+                else resolve({ success: true });
+            });
         });
     });
 });
