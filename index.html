@@ -138,9 +138,10 @@
                     </div>
 
                     <!-- DATA ENROLLMENT TRIGGER -->
-                    <details class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                    <details id="student-details" class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Enroll New Student</summary>
                         <div id="student-form" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
+                            <input type="hidden" id="st-edit-id" value="">
                             <div><label>Class ID</label><select id="st-class"></select></div>
                             <div><label>Class Roll</label><input type="number" id="st-roll"></div>
                             <div><label>Full Name</label><input type="text" id="st-name"></div>
@@ -150,6 +151,7 @@
                             <div style="grid-column: span 3;"><label class="no-select">Residential Address</label><input type="text" id="st-address"></div>
                         </div>
                         <button id="btn-save-student" style="margin-top:15px; background-color:#2563eb; width:200px;">Register Student</button>
+                        <button id="btn-cancel-student" type="button" style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
                     </details>
 
                     <table style="width:100%; border-collapse:collapse; background:white;" border="1" cellpadding="8" bordercolor="#e2e8f0">
@@ -164,10 +166,11 @@
                 <div id="db-teachers" class="tab-content">
                     <h2 class="no-select">Teacher Registry</h2>
 
-                    <details class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                    <details id="teacher-details" class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary class="no-select" style="font-weight:bold; cursor:pointer; color:#2563eb;">Add New Teacher</summary>
                         <div id="teacher-form" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
-                            <div><label>Full Name</label><input type="text" id="tc-name"></div>
+                            <input type="hidden" id="tc-edit-id" value="">
+                            <div><label class="no-select">Full Name</label><input type="text" id="tc-name"></div>
                             <div><label>Title</label><input type="text" id="tc-title" placeholder="e.g. Senior Teacher"></div>
                             <div><label>Contact Number</label><input type="text" id="tc-contact"></div>
                             <div><label>Blood Group</label><input type="text" id="tc-blood" placeholder="e.g. O+"></div>
@@ -176,6 +179,7 @@
                             <div><label>NID Number</label><input type="text" id="tc-nid"></div>
                         </div>
                         <button id="btn-save-teacher" style="margin-top:15px; background-color:#2563eb; width:200px;">Save Teacher</button>
+                        <button id="btn-cancel-teacher" type="button" style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
                     </details>
 
                     <table style="width:100%; border-collapse:collapse; background:white;" border="1" cellpadding="8" bordercolor="#e2e8f0">
@@ -190,7 +194,7 @@
                 <div id="db-subjects" class="tab-content">
                     <h2 class="no-select">Curriculum Subject Settings</h2>
 
-                    <details class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                    <details id="subject-details" class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Add / Edit Subject</summary>
                         <div id="subject-form" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-top:15px;">
                             <input type="hidden" id="sub-edit-id" value="">
@@ -201,6 +205,7 @@
                             <div style="width:120px; position: relative;"><label>Monthly Total</label><input type="text" id="sub-monthly-input" placeholder="e.g. 25" inputmode="numeric"><small id="sub-monthly-error" class="field-error"></small></div>
                             <div style="width:120px; position: relative;"><label>Yearly Total</label><input type="text" id="sub-yearly-input" placeholder="e.g. 100" inputmode="numeric"><small id="sub-yearly-error" class="field-error"></small></div>
                             <button id="btn-add-subject" style="background-color:#10b981; width:auto; padding:10px 20px;">Save Subject</button>
+                            <button id="btn-cancel-subject" type="button" style="background-color:#64748b; width:auto; padding:10px 20px; display:none;">Cancel Edit</button>
                         </div>
                     </details>
 

@@ -134,6 +134,16 @@ ipcMain.handle('add-student', async (event, s) => {
             else resolve({ success: true });
         });
     });
+}); 
+
+ipcMain.handle('update-student', async (event, s) => {
+    return new Promise((resolve) => {
+        db.run(`UPDATE students SET roll = ?, name = ?, blood_group = ?, fathers_name = ?, mothers_name = ?, guardian_name = ?, guardian_contact = ?, address = ?, dob = ?, birth_reg_number = ?, class_id = ? WHERE id = ?`,
+            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, s.dob || null, s.birth_reg_number || null, s.class_id, s.id], (err) => {
+            if (err) resolve({ success: false, error: err.message });
+            else resolve({ success: true });
+        });
+    });
 });
 
 ipcMain.handle('remove-student-with-cause', async (event, data) => {
@@ -172,6 +182,16 @@ ipcMain.handle('add-teacher', async (event, t) => {
     return new Promise((resolve) => {
         db.run(`INSERT INTO teachers (name, title, fathers_name, mothers_name, contact_number, blood_group, nid_number) VALUES (?, ?, ?, ?, ?, ?, ?)`,
             [t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null], (err) => {
+            if (err) resolve({ success: false, error: err.message });
+            else resolve({ success: true });
+        });
+    });
+});
+
+ipcMain.handle('update-teacher', async (event, t) => {
+    return new Promise((resolve) => {
+        db.run(`UPDATE teachers SET name = ?, title = ?, fathers_name = ?, mothers_name = ?, contact_number = ?, blood_group = ?, nid_number = ? WHERE id = ?`,
+            [t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null, t.id], (err) => {
             if (err) resolve({ success: false, error: err.message });
             else resolve({ success: true });
         });

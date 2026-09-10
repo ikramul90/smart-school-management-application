@@ -213,6 +213,9 @@ window.editSubject = function (id, classId, teacherId, subjectName, sequence, mo
     document.getElementById('sub-monthly-input').value = monthlyMarks || '';
     document.getElementById('sub-yearly-input').value = yearlyMarks || '';
     document.getElementById('btn-add-subject').textContent = 'Update Subject';
+    document.getElementById('btn-cancel-subject').style.display = 'inline-block';
+    const details = document.getElementById('subject-details');
+    if (details) details.open = true;
 };
 
 document.getElementById('btn-add-subject').addEventListener('click', async () => {
@@ -237,6 +240,7 @@ document.getElementById('btn-add-subject').addEventListener('click', async () =>
         document.getElementById('sub-monthly-input').value = '';
         document.getElementById('sub-yearly-input').value = '';
         document.getElementById('btn-add-subject').textContent = 'Save Subject';
+        document.getElementById('btn-cancel-subject').style.display = 'none';
         renderSubjectsTable();
     } else {
         alert('Could not save subject: ' + res.error);
@@ -298,10 +302,11 @@ window.loadStudents = async function() {
             <td>${s.guardian_contact}</td>
             <td><span style="padding:2px 6px; border-radius:4px; font-size:12px; background:${s.status==='Active'?'#dcfce7':'#fee2e2'}; color:${s.status==='Active'?'#16a34a':'#dc2626'};">${s.status}</span></td>
             <td>
-                ${s.status === 'Active' ? `
-                    <button onclick="changeStudentStatus(${s.id}, 'Graduated', 'Graduated Program')" style="padding:4px 8px; background:#10b981; font-size:11px; width:auto; display:inline-block; margin-right:4px;">Graduate</button>
-                    <button onclick="kickStudent(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">Drop Out</button>
-                ` : `<small style="color:gray;">History Logged</small>`}
+            <button onclick="editStudent(${s.id}, ${s.class_id || 'null'}, ${s.roll}, '${(s.name||'').replace(/'/g, "\\'")}', '${(s.blood_group||'').replace(/'/g, "\\'")}', '${(s.guardian_name||'').replace(/'/g, "\\'")}', '${(s.guardian_contact||'').replace(/'/g, "\\'")}', '${(s.address||'').replace(/'/g, "\\'")}')" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
+            ${s.status === 'Active' ? `
+                <button onclick="changeStudentStatus(${s.id}, 'Graduated', 'Graduated Program')" style="padding:4px 8px; background:#10b981; font-size:11px; width:auto; display:inline-block; margin-right:4px;">🎓 Graduate</button>
+                <button onclick="kickStudent(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">❌ Drop Out</button>
+            ` : `<small style="color:gray;">History Logged</small>`}
             </td>
         </tr>
     `).join('');    
@@ -311,7 +316,23 @@ window.loadStudents = async function() {
 // "Register Student" button: gathers the enrollment form fields
 // into one object and sends it to main.js to insert. Shows an
 // alert with the exact database error if the save fails.
+window.editStudent = function(id, classId, roll, name, bloodGroup, guardianName, guardianContact, address) {
+    document.getElementById('st-edit-id').value = id;
+    document.getElementById('st-class').value = classId || '';
+    document.getElementById('st-roll').value = roll;
+    document.getElementById('st-name').value = name;
+    document.getElementById('st-blood').value = bloodGroup;
+    document.getElementById('st-guardian').value = guardianName;
+    document.getElementById('st-phone').value = guardianContact;
+    document.getElementById('st-address').value = address;
+    document.getElementById('btn-save-student').textContent = 'Update Student';
+    document.getElementById('btn-cancel-student').style.display = 'inline-block';
+    const details = document.getElementById('student-details');
+    if (details) details.open = true;
+};
+
 document.getElementById('btn-save-student').addEventListener('click', async () => {
+    const editId = document.getElementById('st-edit-id').value;
     const s = {
         class_id: document.getElementById('st-class').value,
         roll: document.getElementById('st-roll').value,
@@ -323,14 +344,24 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
     };
 
     if(!s.roll || !s.name) return alert("Roll and Name are required!");
-    
-    const res = await ipcRenderer.invoke('add-student', s);
+
+    const res = editId
+        ? await ipcRenderer.invoke('update-student', { ...s, id: editId })
+        : await ipcRenderer.invoke('add-student', s);
+
     if(res.success) {
+        document.getElementById('st-edit-id').value = '';
         document.getElementById('st-roll').value = "";
         document.getElementById('st-name').value = "";
+        document.getElementById('st-blood').value = "";
+        document.getElementById('st-guardian').value = "";
+        document.getElementById('st-phone').value = "";
+        document.getElementById('st-address').value = "";
+        document.getElementById('btn-save-student').textContent = 'Register Student';
+        document.getElementById('btn-cancel-student').style.display = 'none';
         loadStudents();
     } else {
-        console.error('add-student failed:', res.error);
+        console.error('save-student failed:', res.error);
         alert('Could not save student: ' + res.error);
     }
 });
@@ -366,12 +397,31 @@ async function renderTeachersTable() {
             <td>${t.contact_number || ''}</td>
             <td><span style="color:red; font-weight:bold;">${t.blood_group || 'N/A'}</span></td>
             <td>${t.nid_number || ''}</td>
-            <td><button onclick="deleteTeacher(${t.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">Delete</button></td>
+            <td>
+                <button onclick="editTeacher(${t.id}, '${(t.name||'').replace(/'/g, "\\'")}', '${(t.title||'').replace(/'/g, "\\'")}', '${(t.contact_number||'').replace(/'/g, "\\'")}', '${(t.blood_group||'').replace(/'/g, "\\'")}', '${(t.fathers_name||'').replace(/'/g, "\\'")}', '${(t.mothers_name||'').replace(/'/g, "\\'")}', '${(t.nid_number||'').replace(/'/g, "\\'")}')" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
+                <button onclick="deleteTeacher(${t.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">🗑 Delete</button>
+            </td>
         </tr>
     `).join('');
 }
 
+window.editTeacher = function(id, name, title, contact, bloodGroup, fathersName, mothersName, nid) {
+    document.getElementById('tc-edit-id').value = id;
+    document.getElementById('tc-name').value = name;
+    document.getElementById('tc-title').value = title;
+    document.getElementById('tc-contact').value = contact;
+    document.getElementById('tc-blood').value = bloodGroup;
+    document.getElementById('tc-father').value = fathersName;
+    document.getElementById('tc-mother').value = mothersName;
+    document.getElementById('tc-nid').value = nid;
+    document.getElementById('btn-save-teacher').textContent = 'Update Teacher';
+    document.getElementById('btn-cancel-teacher').style.display = 'inline-block';
+    const details = document.getElementById('teacher-details');
+    if (details) details.open = true;
+};
+
 document.getElementById('btn-save-teacher').addEventListener('click', async () => {
+    const editId = document.getElementById('tc-edit-id').value;
     const t = {
         name: document.getElementById('tc-name').value.trim(),
         title: document.getElementById('tc-title').value.trim(),
@@ -384,8 +434,12 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
 
     if (!t.name) return alert("Teacher name is required!");
 
-    const res = await ipcRenderer.invoke('add-teacher', t);
+    const res = editId
+        ? await ipcRenderer.invoke('update-teacher', { ...t, id: editId })
+        : await ipcRenderer.invoke('add-teacher', t);
+
     if (res.success) {
+        document.getElementById('tc-edit-id').value = '';
         document.getElementById('tc-name').value = "";
         document.getElementById('tc-title').value = "";
         document.getElementById('tc-contact').value = "";
@@ -393,9 +447,11 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
         document.getElementById('tc-father').value = "";
         document.getElementById('tc-mother').value = "";
         document.getElementById('tc-nid').value = "";
+        document.getElementById('btn-save-teacher').textContent = 'Save Teacher';
+        document.getElementById('btn-cancel-teacher').style.display = 'none';
         renderTeachersTable();
     } else {
-        console.error('add-teacher failed:', res.error);
+        console.error('save-teacher failed:', res.error);
         alert('Could not save teacher: ' + res.error);
     }
 });
@@ -570,3 +626,26 @@ function enforceNumericInput(inputId, errorId) {
 enforceNumericInput('sub-seq-input', 'sub-seq-error');
 enforceNumericInput('sub-monthly-input', 'sub-monthly-error');
 enforceNumericInput('sub-yearly-input', 'sub-yearly-error');
+
+
+
+// --- CANCEL EDIT BUTTONS (Student / Teacher / Subject) ---
+function setupCancelEdit(editIdField, formFields, saveBtnId, saveLabel, cancelBtnId) {
+    const cancelBtn = document.getElementById(cancelBtnId);
+    const saveBtn = document.getElementById(saveBtnId);
+    if (!cancelBtn || !saveBtn) return;
+
+    cancelBtn.addEventListener('click', () => {
+        document.getElementById(editIdField).value = '';
+        formFields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
+        saveBtn.textContent = saveLabel;
+        cancelBtn.style.display = 'none';
+    });
+}
+
+setupCancelEdit('st-edit-id', ['st-class', 'st-roll', 'st-name', 'st-blood', 'st-guardian', 'st-phone', 'st-address'], 'btn-save-student', 'Register Student', 'btn-cancel-student');
+setupCancelEdit('tc-edit-id', ['tc-name', 'tc-title', 'tc-contact', 'tc-blood', 'tc-father', 'tc-mother', 'tc-nid'], 'btn-save-teacher', 'Save Teacher', 'btn-cancel-teacher');
+setupCancelEdit('sub-edit-id', ['sub-class-select', 'sub-teacher-select', 'sub-name-select', 'sub-seq-input', 'sub-monthly-input', 'sub-yearly-input'], 'btn-add-subject', 'Save Subject', 'btn-cancel-subject');
