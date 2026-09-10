@@ -86,6 +86,15 @@ db.serialize(() => {
             }
         });
 
+        // Migration: add class_teacher_id to classes if it doesn't exist yet
+        db.all("PRAGMA table_info(classes)", [], (err, columns) => {
+            if (err || !columns) return;
+            const columnNames = columns.map(c => c.name);
+            if (!columnNames.includes('class_teacher_id')) {
+                db.run(`ALTER TABLE classes ADD COLUMN class_teacher_id INTEGER REFERENCES teachers(id)`);
+            }
+        });
+
     // 5. Exams Table (Tracks individual assessment sessions)
     db.run(`CREATE TABLE IF NOT EXISTS exams (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

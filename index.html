@@ -171,7 +171,8 @@
                         <div id="teacher-form" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
                             <input type="hidden" id="tc-edit-id" value="">
                             <div><label class="no-select">Full Name</label><input type="text" id="tc-name"></div>
-                            <div><label>Title</label><input type="text" id="tc-title" placeholder="e.g. Senior Teacher"></div>
+                            <div><label class="no-select">Title</label><input type="text" id="tc-title" placeholder="e.g. Senior Teacher"></div>
+                            <div><label class="no-select">Class Teacher Of</label><select id="tc-classes" multiple size="4"></select></div>
                             <div><label>Contact Number</label><input type="text" id="tc-contact"></div>
                             <div><label>Blood Group</label><input type="text" id="tc-blood" placeholder="e.g. O+"></div>
                             <div><label> Father's Name</label><input type="text" id="tc-father"></div>
@@ -184,7 +185,7 @@
 
                     <table style="width:100%; border-collapse:collapse; background:white;" border="1" cellpadding="8" bordercolor="#e2e8f0">
                         <thead class="no-select" style="background:#f8fafc;">
-                            <tr><th>Name</th><th>Title</th><th>Contact</th><th>Blood</th><th>NID</th><th>Actions</th></tr>
+                            <tr><th>Name</th><th>Title</th><th>Class Teacher Of</th><th>Contact</th><th>Blood</th><th>NID</th><th>Actions</th></tr>
                         </thead>
                         <tbody id="teacher-table-body"></tbody>
                     </table>
@@ -200,7 +201,6 @@
                             <input type="hidden" id="sub-edit-id" value="">
                             <div style="width:100px; position: relative;"><label class="no-select">Sequence</label><input type="text" id="sub-seq-input" inputmode="numeric" value="1"><small id="sub-seq-error" class="field-error"></small></div>
                             <div style="flex:1; min-width:150px;"><label>Target Class</label><select id="sub-class-select"></select></div>
-                            <div style="flex:1; min-width:150px;"><label>Class Teacher</label><select id="sub-teacher-select"><option value="">No Teacher Allocated</option></select></div>
                             <div style="flex:1; min-width:150px;"><label>Subject Name</label><select id="sub-name-select"></select></div>
                             <div style="width:120px; position: relative;"><label>Monthly Total</label><input type="text" id="sub-monthly-input" placeholder="e.g. 25" inputmode="numeric"><small id="sub-monthly-error" class="field-error"></small></div>
                             <div style="width:120px; position: relative;"><label>Yearly Total</label><input type="text" id="sub-yearly-input" placeholder="e.g. 100" inputmode="numeric"><small id="sub-yearly-error" class="field-error"></small></div>
@@ -213,7 +213,7 @@
 
                     <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden;" border="1" cellpadding="10" bordercolor="#e2e8f0">
                         <thead class="no-select" style="background:#f1f5f9; text-align:left;">
-                            <tr><th>Sequence</th><th>Class Name</th><th>Class Teacher Assigned</th><th>Subject Name</th><th>Monthly</th><th>Yearly</th><th>Actions</th></tr>
+                            <tr><th>Sequence</th><th>Class Name</th><th>Subject Name</th><th>Monthly</th><th>Yearly</th><th>Actions</th></tr>
                         </thead>
                         <tbody id="subject-table-body">
                             <!-- Rows loaded live via database scripts -->

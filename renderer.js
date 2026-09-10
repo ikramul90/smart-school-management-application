@@ -143,19 +143,15 @@ const CLASS_TO_CATALOG = {
 
 let allClassesCache = []; // filled by loadSubjectsPage, reused for filters + name dropdown
 let subjectClassFilter = ""; // "" = show all classes
+let allClassesForTeachers = []; // filled by loadTeachersPage, tracks which class belongs to which teacher
 
 // --- SUBJECT MATRICES GENERATOR ---
 async function loadSubjectsPage() {
     const classes = await ipcRenderer.invoke('get-classes-list');
-    const teachers = await ipcRenderer.invoke('get-teachers-list');
     allClassesCache = classes;
 
     const classSelect = document.getElementById('sub-class-select');
     classSelect.innerHTML = classes.map(c => `<option value="${c.id}">${c.class_name}</option>`).join('');
-
-    const teacherSelect = document.getElementById('sub-teacher-select');
-    teacherSelect.innerHTML = `<option value="">No Teacher Allocated</option>` +
-        teachers.map(t => `<option value="${t.id}">${t.name}</option>`).join('');
 
     // Populate the class filter button row
     const filterContainer = document.getElementById('subject-class-filters');
@@ -187,27 +183,25 @@ async function renderSubjectsTable() {
     const subjects = await ipcRenderer.invoke('get-subjects');
     const filtered = subjectClassFilter === '' ? subjects : subjects.filter(s => String(s.class_id) === String(subjectClassFilter));
     const tbody = document.getElementById('subject-table-body');
-            tbody.innerHTML = filtered.map(s => `
-        <tr>
-            <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-size:12px;">${s.sequence_order}</span></td>
-            <td><b>${s.class_name || 'Unassigned'}</b></td>
-            <td>${s.teacher_name || '<i style="color:gray;">None Assigned</i>'}</td>
-            <td>${s.subject_name}</td>
-            <td>${s.monthly_marks ?? '<i style="color:gray;">—</i>'}</td>
-            <td>${s.yearly_marks ?? '<i style="color:gray;">—</i>'}</td>
-            <td>
-                <button onclick="editSubject(${s.id}, ${s.class_id}, ${s.class_teacher_id || 'null'}, '${s.subject_name.replace(/'/g, "\\'")}', ${s.sequence_order}, ${s.monthly_marks || 'null'}, ${s.yearly_marks || 'null'})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
-                <button onclick="deleteSubject(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">🗑 Delete</button>
-            </td>
-        </tr>
-    `).join('');
+        tbody.innerHTML = filtered.map(s => `
+            <tr>
+                <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-size:12px;">${s.sequence_order}</span></td>
+                <td><b>${s.class_name || 'Unassigned'}</b></td>
+                <td>${s.subject_name}</td>
+                <td>${s.monthly_marks ?? '<i style="color:gray;">—</i>'}</td>
+                <td>${s.yearly_marks ?? '<i style="color:gray;">—</i>'}</td>
+                <td>
+                    <button onclick="editSubject(${s.id}, ${s.class_id}, '${s.subject_name.replace(/'/g, "\\'")}', ${s.sequence_order}, ${s.monthly_marks || 'null'}, ${s.yearly_marks || 'null'})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
+                    <button onclick="deleteSubject(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">🗑 Delete</button>
+                </td>
+            </tr>
+        `).join('');
 }
 
-window.editSubject = function (id, classId, teacherId, subjectName, sequence, monthlyMarks, yearlyMarks) {
+window.editSubject = function (id, classId, subjectName, sequence, monthlyMarks, yearlyMarks) {
     document.getElementById('sub-edit-id').value = id;
     document.getElementById('sub-class-select').value = classId;
     updateSubjectNameOptions();
-    document.getElementById('sub-teacher-select').value = teacherId || '';
     document.getElementById('sub-name-select').value = subjectName;
     document.getElementById('sub-seq-input').value = sequence;
     document.getElementById('sub-monthly-input').value = monthlyMarks || '';
@@ -221,7 +215,6 @@ window.editSubject = function (id, classId, teacherId, subjectName, sequence, mo
 document.getElementById('btn-add-subject').addEventListener('click', async () => {
     const editId = document.getElementById('sub-edit-id').value;
     const class_id = document.getElementById('sub-class-select').value;
-    const class_teacher_id = document.getElementById('sub-teacher-select').value || null;
     const subject_name = document.getElementById('sub-name-select').value;
     const sequence_order = document.getElementById('sub-seq-input').value;
     const monthly_marks = document.getElementById('sub-monthly-input').value || null;
@@ -229,7 +222,7 @@ document.getElementById('btn-add-subject').addEventListener('click', async () =>
 
     if (!subject_name) return alert("Pick a subject from the list first!");
 
-    const payload = { class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks };
+    const payload = { class_id, subject_name, sequence_order, monthly_marks, yearly_marks };
     const res = editId
         ? await ipcRenderer.invoke('update-subject', { ...payload, id: editId })
         : await ipcRenderer.invoke('add-subject', payload);
@@ -384,16 +377,22 @@ window.kickStudent = function(id) {
 
 // --- TEACHER REGISTRY CONTROLLERS ---
 async function loadTeachersPage() {
+    allClassesForTeachers = await ipcRenderer.invoke('get-classes-list');
+    const classSelect = document.getElementById('tc-classes');
+    classSelect.innerHTML = allClassesForTeachers.map(c => `<option value="${c.id}">${c.class_name}</option>`).join('');
     renderTeachersTable();
 }
 
 async function renderTeachersTable() {
     const teachers = await ipcRenderer.invoke('get-teachers');
     const tbody = document.getElementById('teacher-table-body');
-    tbody.innerHTML = teachers.map(t => `
+    tbody.innerHTML = teachers.map(t => {
+        const assignedClasses = allClassesForTeachers.filter(c => c.class_teacher_id === t.id).map(c => c.class_name);
+        return `
         <tr>
             <td><b>${t.name}</b></td>
             <td>${t.title || ''}</td>
+            <td>${assignedClasses.length ? assignedClasses.join(', ') : '<i style="color:gray;">None</i>'}</td>
             <td>${t.contact_number || ''}</td>
             <td><span style="color:red; font-weight:bold;">${t.blood_group || 'N/A'}</span></td>
             <td>${t.nid_number || ''}</td>
@@ -402,7 +401,8 @@ async function renderTeachersTable() {
                 <button onclick="deleteTeacher(${t.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">🗑 Delete</button>
             </td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 }
 
 window.editTeacher = function(id, name, title, contact, bloodGroup, fathersName, mothersName, nid) {
@@ -414,8 +414,15 @@ window.editTeacher = function(id, name, title, contact, bloodGroup, fathersName,
     document.getElementById('tc-father').value = fathersName;
     document.getElementById('tc-mother').value = mothersName;
     document.getElementById('tc-nid').value = nid;
+
+    // Pre-select this teacher's currently assigned classes
+    const classSelect = document.getElementById('tc-classes');
+    const assignedIds = allClassesForTeachers.filter(c => c.class_teacher_id === id).map(c => String(c.id));
+    Array.from(classSelect.options).forEach(opt => {
+        opt.selected = assignedIds.includes(opt.value);
+    });
+
     document.getElementById('btn-save-teacher').textContent = 'Update Teacher';
-    document.getElementById('btn-cancel-teacher').style.display = 'inline-block';
     const details = document.getElementById('teacher-details');
     if (details) details.open = true;
 };
@@ -434,11 +441,26 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
 
     if (!t.name) return alert("Teacher name is required!");
 
+    const selectedClassIds = Array.from(document.getElementById('tc-classes').selectedOptions).map(opt => parseInt(opt.value));
+
+    // Warn if any selected class already belongs to a different teacher
+    const conflicts = allClassesForTeachers.filter(c =>
+        selectedClassIds.includes(c.id) && c.class_teacher_id && String(c.class_teacher_id) !== String(editId)
+    );
+    if (conflicts.length) {
+        const names = conflicts.map(c => c.class_name).join(', ');
+        const ok = confirm(`${names} ${conflicts.length > 1 ? 'are' : 'is'} already assigned to another teacher. Reassign to this teacher instead?`);
+        if (!ok) return;
+    }
+
     const res = editId
         ? await ipcRenderer.invoke('update-teacher', { ...t, id: editId })
         : await ipcRenderer.invoke('add-teacher', t);
 
     if (res.success) {
+        const teacherId = editId || res.id;
+        await ipcRenderer.invoke('set-teacher-classes', { teacher_id: teacherId, class_ids: selectedClassIds });
+
         document.getElementById('tc-edit-id').value = '';
         document.getElementById('tc-name').value = "";
         document.getElementById('tc-title').value = "";
@@ -447,9 +469,9 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
         document.getElementById('tc-father').value = "";
         document.getElementById('tc-mother').value = "";
         document.getElementById('tc-nid').value = "";
+        document.getElementById('tc-classes').selectedIndex = -1;
         document.getElementById('btn-save-teacher').textContent = 'Save Teacher';
-        document.getElementById('btn-cancel-teacher').style.display = 'none';
-        renderTeachersTable();
+        loadTeachersPage();
     } else {
         console.error('save-teacher failed:', res.error);
         alert('Could not save teacher: ' + res.error);
