@@ -109,6 +109,7 @@ window.switchTab = function(tabId) {
     if (tabId === 'db-subjects') loadSubjectsPage();
     if (tabId === 'db-students') loadStudentsPage();
     if (tabId === 'db-teachers') loadTeachersPage();
+    if (tabId === 'db-grades') loadGradesPage();
 };
 
 
@@ -247,7 +248,105 @@ window.deleteSubject = async function (id) {
     }
 };
 
+// --- GRADE SCALE CONTROLLERS (Step 4d) ---
+let allClassesForGrades = [];
+let gradeClassFilter = "";
 
+async function loadGradesPage() {
+    const classes = await ipcRenderer.invoke('get-classes-list');
+    allClassesForGrades = classes;
+
+    const classSelect = document.getElementById('gr-class-select');
+    classSelect.innerHTML = classes.map(c => `<option value="${c.id}">${c.class_name}</option>`).join('');
+
+    const filterContainer = document.getElementById('grade-class-filters');
+    filterContainer.innerHTML = `<button class="nav-btn" style="background:${gradeClassFilter === '' ? '#3b82f6' : '#e2e8f0'}; color:${gradeClassFilter === '' ? 'white' : '#1e293b'}; width:auto; padding:8px 16px;" onclick="filterGradesByClass('')">All Classes</button>` +
+        classes.map(c => `<button class="nav-btn" style="background:${gradeClassFilter == c.id ? '#3b82f6' : '#e2e8f0'}; color:${gradeClassFilter == c.id ? 'white' : '#1e293b'}; width:auto; padding:8px 16px;" onclick="filterGradesByClass(${c.id})">${c.class_name}</button>`).join('');
+
+    renderGradesTable();
+}
+
+window.filterGradesByClass = function (classId) {
+    gradeClassFilter = classId;
+    loadGradesPage();
+};
+
+async function renderGradesTable() {
+    const grades = await ipcRenderer.invoke('get-grades', gradeClassFilter || null);
+    const tbody = document.getElementById('grade-table-body');
+    tbody.innerHTML = grades.map(g => `
+        <tr>
+            <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-size:12px;">${g.sequence_order}</span></td>
+            <td><b>${g.class_name || 'Unassigned'}</b></td>
+            <td>${g.grade_letter}</td>
+            <td>${g.grade_point}</td>
+            <td>${g.min_percentage}%</td>
+            <td>${g.max_percentage}%</td>
+            <td>
+                <button onclick="editGrade(${g.id}, ${g.class_id}, '${g.grade_letter.replace(/'/g, "\\'")}', ${g.grade_point}, ${g.min_percentage}, ${g.max_percentage}, ${g.sequence_order})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
+                <button onclick="deleteGrade(${g.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">🗑 Delete</button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+window.editGrade = function (id, classId, letter, point, min, max, seq) {
+    document.getElementById('gr-edit-id').value = id;
+    document.getElementById('gr-class-select').value = classId;
+    document.getElementById('gr-letter-input').value = letter;
+    document.getElementById('gr-point-input').value = point;
+    document.getElementById('gr-min-input').value = min;
+    document.getElementById('gr-max-input').value = max;
+    document.getElementById('gr-seq-input').value = seq;
+    document.getElementById('btn-save-grade').textContent = 'Update Grade';
+    document.getElementById('btn-cancel-grade').style.display = 'inline-block';
+    const details = document.getElementById('grade-details');
+    if (details) details.open = true;
+};
+
+document.getElementById('btn-save-grade').addEventListener('click', async () => {
+    const editId = document.getElementById('gr-edit-id').value;
+    const payload = {
+        class_id: document.getElementById('gr-class-select').value,
+        grade_letter: document.getElementById('gr-letter-input').value.trim(),
+        grade_point: parseFloat(document.getElementById('gr-point-input').value),
+        min_percentage: parseFloat(document.getElementById('gr-min-input').value),
+        max_percentage: parseFloat(document.getElementById('gr-max-input').value),
+        sequence_order: document.getElementById('gr-seq-input').value
+    };
+
+    if (!payload.grade_letter || isNaN(payload.grade_point) || isNaN(payload.min_percentage) || isNaN(payload.max_percentage)) {
+        return alert("Letter, Point, Min % and Max % are all required!");
+    }
+    if (payload.min_percentage > payload.max_percentage) {
+        return alert("Min % can't be greater than Max %!");
+    }
+
+    const res = editId
+        ? await ipcRenderer.invoke('update-grade', { ...payload, id: editId })
+        : await ipcRenderer.invoke('add-grade', payload);
+
+    if (res.success) {
+        document.getElementById('gr-edit-id').value = '';
+        document.getElementById('gr-letter-input').value = '';
+        document.getElementById('gr-point-input').value = '';
+        document.getElementById('gr-min-input').value = '';
+        document.getElementById('gr-max-input').value = '';
+        document.getElementById('gr-seq-input').value = '1';
+        document.getElementById('btn-save-grade').textContent = 'Save Grade';
+        document.getElementById('btn-cancel-grade').style.display = 'none';
+        renderGradesTable();
+    } else {
+        alert('Could not save grade band: ' + res.error);
+    }
+});
+
+window.deleteGrade = async function (id) {
+    if (confirm("Delete this grade band? This can't be undone.")) {
+        await ipcRenderer.invoke('delete-grade', id);
+        renderGradesTable();
+    }
+};
 
 
 
@@ -625,6 +724,7 @@ enableEnterNavigation(document.getElementById('login-screen'), document.getEleme
 enableEnterNavigation(document.getElementById('student-form'), document.getElementById('btn-save-student'));
 enableEnterNavigation(document.getElementById('teacher-form'), document.getElementById('btn-save-teacher'));
 enableEnterNavigation(document.getElementById('subject-form'), document.getElementById('btn-add-subject'));
+enableEnterNavigation(document.getElementById('grade-form'), document.getElementById('btn-save-grade'));
 
 // --- NUMERIC-ONLY VALIDATION FOR SEQUENCE / MONTHLY / YEARLY FIELDS ---
 function enforceNumericInput(inputId, errorId) {
@@ -651,6 +751,9 @@ function enforceNumericInput(inputId, errorId) {
 enforceNumericInput('sub-seq-input', 'sub-seq-error');
 enforceNumericInput('sub-monthly-input', 'sub-monthly-error');
 enforceNumericInput('sub-yearly-input', 'sub-yearly-error');
+enforceNumericInput('gr-min-input', 'gr-min-error');
+enforceNumericInput('gr-max-input', 'gr-max-error');
+enforceNumericInput('gr-seq-input', 'gr-seq-error');
 
 
 
@@ -674,3 +777,4 @@ function setupCancelEdit(editIdField, formFields, saveBtnId, saveLabel, cancelBt
 setupCancelEdit('st-edit-id', ['st-class', 'st-roll', 'st-name', 'st-blood', 'st-guardian', 'st-phone', 'st-address'], 'btn-save-student', 'Register Student', 'btn-cancel-student');
 setupCancelEdit('tc-edit-id', ['tc-name', 'tc-title', 'tc-contact', 'tc-blood', 'tc-father', 'tc-mother', 'tc-nid'], 'btn-save-teacher', 'Save Teacher', 'btn-cancel-teacher');
 setupCancelEdit('sub-edit-id', ['sub-class-select', 'sub-teacher-select', 'sub-name-select', 'sub-seq-input', 'sub-monthly-input', 'sub-yearly-input'], 'btn-add-subject', 'Save Subject', 'btn-cancel-subject');
+setupCancelEdit('gr-edit-id', ['gr-class-select', 'gr-letter-input', 'gr-point-input', 'gr-min-input', 'gr-max-input', 'gr-seq-input'], 'btn-save-grade', 'Save Grade', 'btn-cancel-grade');
