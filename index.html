@@ -229,24 +229,36 @@
                         <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Add / Edit Grade Band</summary>
                         <div id="grade-form" style="display:flex; gap:15px; align-items:flex-end; flex-wrap:wrap; margin-top:15px;">
                             <input type="hidden" id="gr-edit-id" value="">
-                            <div style="flex:1; min-width:150px;"><label>Class</label><select id="gr-class-select"></select></div>
+                            <input type="hidden" id="gr-scale-group" value="general">
                             <div style="width:100px;"><label>Grade Letter</label><input type="text" id="gr-letter-input" placeholder="e.g. A+"></div>
                             <div style="width:100px; position:relative;"><label>Grade Point</label><input type="text" id="gr-point-input" placeholder="e.g. 5.00"><small id="gr-point-error" class="field-error"></small></div>
                             <div style="width:100px; position:relative;"><label>Min %</label><input type="text" id="gr-min-input" inputmode="numeric"><small id="gr-min-error" class="field-error"></small></div>
                             <div style="width:100px; position:relative;"><label>Max %</label><input type="text" id="gr-max-input" inputmode="numeric"><small id="gr-max-error" class="field-error"></small></div>
-                            <div style="width:100px; position:relative;"><label>Sequence</label><input type="text" id="gr-seq-input" inputmode="numeric" value="1"><small id="gr-seq-error" class="field-error"></small></div>
                             <button id="btn-save-grade" style="background-color:#10b981; width:auto; padding:10px 20px;">Save Grade</button>
                             <button id="btn-cancel-grade" type="button" style="background-color:#64748b; width:auto; padding:10px 20px; display:none;">Cancel Edit</button>
                         </div>
                     </details>
 
-                    <div id="grade-class-filters" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;"></div>
+                    <h3 class="no-select" style="display:flex; align-items:center; gap:12px;">
+                        General Scale <span style="font-size:12px; color:#64748b; font-weight:normal;">(Play – Eight)</span>
+                        <button onclick="openGradeForm('general')" style="width:auto; padding:6px 14px; font-size:12px; background:#3b82f6;">+ Add Grade</button>
+                    </h3>
+                    <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; margin-bottom:30px;" border="1" cellpadding="10" bordercolor="#e2e8f0">
+                        <thead class="no-select" style="background:#f1f5f9; text-align:left;">
+                            <tr><th>Grade Letter</th><th>Min %</th><th>Max %</th><th>Grade Point</th><th>Actions</th></tr>
+                        </thead>
+                        <tbody id="grade-table-general"></tbody>
+                    </table>
 
+                    <h3 class="no-select" style="display:flex; align-items:center; gap:12px;">
+                        Science/Humanities Scale <span style="font-size:12px; color:#64748b; font-weight:normal;">(Nine – Ten)</span>
+                        <button onclick="openGradeForm('nine_ten')" style="width:auto; padding:6px 14px; font-size:12px; background:#3b82f6;">+ Add Grade</button>
+                    </h3>
                     <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden;" border="1" cellpadding="10" bordercolor="#e2e8f0">
                         <thead class="no-select" style="background:#f1f5f9; text-align:left;">
-                            <tr><th>Sequence</th><th>Class Name</th><th>Letter</th><th>Point</th><th>Min %</th><th>Max %</th><th>Actions</th></tr>
+                            <tr><th>Grade Letter</th><th>Min %</th><th>Max %</th><th>Grade Point</th><th>Actions</th></tr>
                         </thead>
-                        <tbody id="grade-table-body"></tbody>
+                        <tbody id="grade-table-nine-ten"></tbody>
                     </table>
                 </div>
 

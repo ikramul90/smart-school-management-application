@@ -251,25 +251,20 @@ ipcMain.handle('delete-teacher', async (event, id) => {
 
 // --- STEP 4d: GRADES DATABASE WORKERS ---
 
-ipcMain.handle('get-grades', async (event, class_id) => {
+ipcMain.handle('get-grades', async (event, scale_group) => {
     return new Promise((resolve) => {
-        let query = `SELECT grades.*, classes.class_name FROM grades LEFT JOIN classes ON grades.class_id = classes.id WHERE 1=1`;
-        let params = [];
-        if (class_id) {
-            query += ` AND grades.class_id = ?`;
-            params.push(class_id);
-        }
-        query += ` ORDER BY classes.class_name, grades.sequence_order`;
-        db.all(query, params, (err, rows) => resolve(rows || []));
+        db.all(`SELECT * FROM grades WHERE scale_group = ? ORDER BY min_percentage DESC`, [scale_group], (err, rows) => {
+            resolve(rows || []);
+        });
     });
 });
 
 ipcMain.handle('add-grade', async (event, g) => {
     return new Promise((resolve) => {
-        checkGradeOverlap(g.class_id, g.min_percentage, g.max_percentage, null, (overlapError) => {
+        checkGradeOverlap(g.scale_group, g.min_percentage, g.max_percentage, null, (overlapError) => {
             if (overlapError) return resolve({ success: false, error: overlapError });
-            db.run(`INSERT INTO grades (class_id, grade_letter, grade_point, min_percentage, max_percentage, sequence_order) VALUES (?, ?, ?, ?, ?, ?)`,
-                [g.class_id, g.grade_letter, g.grade_point, g.min_percentage, g.max_percentage, g.sequence_order], (err) => {
+            db.run(`INSERT INTO grades (scale_group, grade_letter, grade_point, min_percentage, max_percentage) VALUES (?, ?, ?, ?, ?)`,
+                [g.scale_group, g.grade_letter, g.grade_point, g.min_percentage, g.max_percentage], (err) => {
                 if (err) resolve({ success: false, error: err.message });
                 else resolve({ success: true });
             });
@@ -279,10 +274,10 @@ ipcMain.handle('add-grade', async (event, g) => {
 
 ipcMain.handle('update-grade', async (event, g) => {
     return new Promise((resolve) => {
-        checkGradeOverlap(g.class_id, g.min_percentage, g.max_percentage, g.id, (overlapError) => {
+        checkGradeOverlap(g.scale_group, g.min_percentage, g.max_percentage, g.id, (overlapError) => {
             if (overlapError) return resolve({ success: false, error: overlapError });
-            db.run(`UPDATE grades SET class_id = ?, grade_letter = ?, grade_point = ?, min_percentage = ?, max_percentage = ?, sequence_order = ? WHERE id = ?`,
-                [g.class_id, g.grade_letter, g.grade_point, g.min_percentage, g.max_percentage, g.sequence_order, g.id], (err) => {
+            db.run(`UPDATE grades SET grade_letter = ?, grade_point = ?, min_percentage = ?, max_percentage = ? WHERE id = ?`,
+                [g.grade_letter, g.grade_point, g.min_percentage, g.max_percentage, g.id], (err) => {
                 if (err) resolve({ success: false, error: err.message });
                 else resolve({ success: true });
             });
@@ -290,26 +285,17 @@ ipcMain.handle('update-grade', async (event, g) => {
     });
 });
 
-ipcMain.handle('delete-grade', async (event, id) => {
-    return new Promise((resolve) => {
-        db.run(`DELETE FROM grades WHERE id = ?`, [id], (err) => {
-            if (err) resolve({ success: false, error: err.message });
-            else resolve({ success: true });
-        });
-    });
-});
-
 // Checks a new/edited band against every other band already saved for
-// the same class, so two rows can never claim overlapping percentages.
-function checkGradeOverlap(class_id, min, max, excludeId, callback) {
-    let query = `SELECT * FROM grades WHERE class_id = ?`;
-    let params = [class_id];
+// the same scale group, so two rows can never claim overlapping percentages.
+function checkGradeOverlap(scale_group, min, max, excludeId, callback) {
+    let query = `SELECT * FROM grades WHERE scale_group = ?`;
+    let params = [scale_group];
     if (excludeId) {
         query += ` AND id != ?`;
         params.push(excludeId);
     }
     db.all(query, params, (err, rows) => {
-        if (err) return callback(null); // fail open on db error, the insert itself will surface it
+        if (err) return callback(null);
         const newMin = parseFloat(min), newMax = parseFloat(max);
         const clash = (rows || []).find(r => newMin <= r.max_percentage && newMax >= r.min_percentage);
         if (clash) {
