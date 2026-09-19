@@ -244,3 +244,19 @@ button:hover {
 @keyframes fadeIn { 
     from { opacity: 0; } to { opacity: 1; } 
 }
+
+#db-grades table {
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+#db-grades th,
+#db-grades td {
+    border: 1px solid black;
+    padding: 8px 12px;
+}
+
+#db-grades th {
+    font-weight: bold;
+}

@@ -132,37 +132,6 @@ db.serialize(() => {
         q5 TEXT, a5 TEXT
     )`);
 
-    // 8. Grades Table (two fixed scales: 'general' for Play–Eight, 'nine_ten' for Nine/Ten)
-    db.run(`CREATE TABLE IF NOT EXISTS grades (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        scale_group TEXT NOT NULL, -- 'general' or 'nine_ten'
-        grade_letter TEXT NOT NULL,
-        grade_point REAL NOT NULL,
-        min_percentage REAL NOT NULL,
-        max_percentage REAL NOT NULL
-    )`);
-
-    // Seed the standard Bangladeshi grade scale for both groups if empty
-    db.get("SELECT COUNT(*) as count FROM grades", [], (err, row) => {
-        if (row && row.count === 0) {
-            const standardScale = [
-                { letter: 'A+', point: 5.00, min: 80, max: 100 },
-                { letter: 'A',  point: 4.00, min: 70, max: 79 },
-                { letter: 'A-', point: 3.50, min: 60, max: 69 },
-                { letter: 'B',  point: 3.00, min: 50, max: 59 },
-                { letter: 'C',  point: 2.00, min: 40, max: 49 },
-                { letter: 'D',  point: 1.00, min: 33, max: 39 },
-                { letter: 'F',  point: 0.00, min: 0,  max: 32 }
-            ];
-            const stmt = db.prepare(`INSERT INTO grades (scale_group, grade_letter, grade_point, min_percentage, max_percentage) VALUES (?, ?, ?, ?, ?)`);
-            ['general', 'nine_ten'].forEach(group => {
-                standardScale.forEach(g => stmt.run(group, g.letter, g.point, g.min, g.max));
-            });
-            stmt.finalize();
-            console.log("🌱 Seeded default grade scales (general + nine_ten)!");
-        }
-    });
-
 
     console.log("🎉 Database tables successfully initialized!");
 });

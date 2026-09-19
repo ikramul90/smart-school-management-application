@@ -162,6 +162,58 @@
                     </table>
                 </div>
 
+                <!-- TAB CONTENT: GRADES -->
+                <div id="db-grades" class="tab-content">
+                    <h2 class="no-select">Grading System</h2>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Letter<br>Grade</th>
+                                <th>Class<br>Interval (%)</th>
+                                <th>Grade<br>Point</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="grade-row-Aplus">
+                                <td id="grade-letter-Aplus">A+</td>
+                                <td id="grade-interval-Aplus">80 - 100</td>
+                                <td id="grade-point-Aplus">5.0</td>
+                            </tr>
+                            <tr id="grade-row-A">
+                                <td id="grade-letter-A">A</td>
+                                <td id="grade-interval-A">70 - 79</td>
+                                <td id="grade-point-A">4.0</td>
+                            </tr>
+                            <tr id="grade-row-Aminus">
+                                <td id="grade-letter-Aminus">A-</td>
+                                <td id="grade-interval-Aminus">60 - 69</td>
+                                <td id="grade-point-Aminus">3.5</td>
+                            </tr>
+                            <tr id="grade-row-B">
+                                <td id="grade-letter-B">B</td>
+                                <td id="grade-interval-B">50 - 59</td>
+                                <td id="grade-point-B">3.0</td>
+                            </tr>
+                            <tr id="grade-row-C">
+                                <td id="grade-letter-C">C</td>
+                                <td id="grade-interval-C">40 - 49</td>
+                                <td id="grade-point-C">2.0</td>
+                            </tr>
+                            <tr id="grade-row-D">
+                                <td id="grade-letter-D">D</td>
+                                <td id="grade-interval-D">33 - 39</td>
+                                <td id="grade-point-D">1.0</td>
+                            </tr>
+                            <tr id="grade-row-F">
+                                <td id="grade-letter-F">F</td>
+                                <td id="grade-interval-F">00 - 32</td>
+                                <td id="grade-point-F">0.0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
                 <!-- TAB CONTENT: TEACHERS DATABASE -->
                 <div id="db-teachers" class="tab-content">
                     <h2 class="no-select">Teacher Registry</h2>
@@ -182,13 +234,6 @@
                         <button id="btn-save-teacher" style="margin-top:15px; background-color:#2563eb; width:200px;">Save Teacher</button>
                         <button id="btn-cancel-teacher" type="button" style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
                     </details>
-
-                    <table style="width:100%; border-collapse:collapse; background:white;" border="1" cellpadding="8" bordercolor="#e2e8f0">
-                        <thead class="no-select" style="background:#f8fafc;">
-                            <tr><th>Name</th><th>Title</th><th>Class Teacher Of</th><th>Contact</th><th>Blood</th><th>NID</th><th>Actions</th></tr>
-                        </thead>
-                        <tbody id="teacher-table-body"></tbody>
-                    </table>
                 </div>
 
                 <!-- TAB CONTENT: SUBJECT DATABASE -->
@@ -225,40 +270,15 @@
                 <div id="db-grades" class="tab-content">
                     <h2 class="no-select">Grading System</h2>
 
-                    <details id="grade-details" class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
-                        <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Add / Edit Grade Band</summary>
-                        <div id="grade-form" style="display:flex; gap:15px; align-items:flex-end; flex-wrap:wrap; margin-top:15px;">
-                            <input type="hidden" id="gr-edit-id" value="">
-                            <input type="hidden" id="gr-scale-group" value="general">
-                            <div style="width:100px;"><label>Grade Letter</label><input type="text" id="gr-letter-input" placeholder="e.g. A+"></div>
-                            <div style="width:100px; position:relative;"><label>Grade Point</label><input type="text" id="gr-point-input" placeholder="e.g. 5.00"><small id="gr-point-error" class="field-error"></small></div>
-                            <div style="width:100px; position:relative;"><label>Min %</label><input type="text" id="gr-min-input" inputmode="numeric"><small id="gr-min-error" class="field-error"></small></div>
-                            <div style="width:100px; position:relative;"><label>Max %</label><input type="text" id="gr-max-input" inputmode="numeric"><small id="gr-max-error" class="field-error"></small></div>
-                            <button id="btn-save-grade" style="background-color:#10b981; width:auto; padding:10px 20px;">Save Grade</button>
-                            <button id="btn-cancel-grade" type="button" style="background-color:#64748b; width:auto; padding:10px 20px; display:none;">Cancel Edit</button>
-                        </div>
-                    </details>
-
-                    <h3 class="no-select" style="display:flex; align-items:center; gap:12px;">
-                        General Scale <span style="font-size:12px; color:#64748b; font-weight:normal;">(Play – Eight)</span>
-                        <button onclick="openGradeForm('general')" style="width:auto; padding:6px 14px; font-size:12px; background:#3b82f6;">+ Add Grade</button>
-                    </h3>
-                    <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden; margin-bottom:30px;" border="1" cellpadding="10" bordercolor="#e2e8f0">
-                        <thead class="no-select" style="background:#f1f5f9; text-align:left;">
-                            <tr><th>Grade Letter</th><th>Min %</th><th>Max %</th><th>Grade Point</th><th>Actions</th></tr>
+                    <table style="border-collapse:collapse; font-family:Arial, sans-serif; text-align:center;">
+                        <thead>
+                            <tr>
+                                <th style="border:1px solid black; padding:8px 12px; font-weight:bold;">Letter<br>Grade</th>
+                                <th style="border:1px solid black; padding:8px 12px; font-weight:bold;">Class<br>Interval (%)</th>
+                                <th style="border:1px solid black; padding:8px 12px; font-weight:bold;">Grade<br>Point</th>
+                            </tr>
                         </thead>
-                        <tbody id="grade-table-general"></tbody>
-                    </table>
-
-                    <h3 class="no-select" style="display:flex; align-items:center; gap:12px;">
-                        Science/Humanities Scale <span style="font-size:12px; color:#64748b; font-weight:normal;">(Nine – Ten)</span>
-                        <button onclick="openGradeForm('nine_ten')" style="width:auto; padding:6px 14px; font-size:12px; background:#3b82f6;">+ Add Grade</button>
-                    </h3>
-                    <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden;" border="1" cellpadding="10" bordercolor="#e2e8f0">
-                        <thead class="no-select" style="background:#f1f5f9; text-align:left;">
-                            <tr><th>Grade Letter</th><th>Min %</th><th>Max %</th><th>Grade Point</th><th>Actions</th></tr>
-                        </thead>
-                        <tbody id="grade-table-nine-ten"></tbody>
+                        <tbody id="grade-table-body"></tbody>
                     </table>
                 </div>
 

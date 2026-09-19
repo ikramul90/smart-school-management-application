@@ -89,7 +89,7 @@ ipcMain.handle('get-subjects', async () => {
         db.all(`SELECT subjects.*, classes.class_name
                 FROM subjects
                 LEFT JOIN classes ON subjects.class_id = classes.id
-                ORDER BY classes.class_name, subjects.sequence_order`, [], (err, rows) => {
+                ORDER BY classes.id, subjects.sequence_order`, [], (err, rows) => {
             resolve(rows || []);
         });
     });
@@ -249,62 +249,7 @@ ipcMain.handle('delete-teacher', async (event, id) => {
     });
 });
 
-// --- STEP 4d: GRADES DATABASE WORKERS ---
 
-ipcMain.handle('get-grades', async (event, scale_group) => {
-    return new Promise((resolve) => {
-        db.all(`SELECT * FROM grades WHERE scale_group = ? ORDER BY min_percentage DESC`, [scale_group], (err, rows) => {
-            resolve(rows || []);
-        });
-    });
-});
-
-ipcMain.handle('add-grade', async (event, g) => {
-    return new Promise((resolve) => {
-        checkGradeOverlap(g.scale_group, g.min_percentage, g.max_percentage, null, (overlapError) => {
-            if (overlapError) return resolve({ success: false, error: overlapError });
-            db.run(`INSERT INTO grades (scale_group, grade_letter, grade_point, min_percentage, max_percentage) VALUES (?, ?, ?, ?, ?)`,
-                [g.scale_group, g.grade_letter, g.grade_point, g.min_percentage, g.max_percentage], (err) => {
-                if (err) resolve({ success: false, error: err.message });
-                else resolve({ success: true });
-            });
-        });
-    });
-});
-
-ipcMain.handle('update-grade', async (event, g) => {
-    return new Promise((resolve) => {
-        checkGradeOverlap(g.scale_group, g.min_percentage, g.max_percentage, g.id, (overlapError) => {
-            if (overlapError) return resolve({ success: false, error: overlapError });
-            db.run(`UPDATE grades SET grade_letter = ?, grade_point = ?, min_percentage = ?, max_percentage = ? WHERE id = ?`,
-                [g.grade_letter, g.grade_point, g.min_percentage, g.max_percentage, g.id], (err) => {
-                if (err) resolve({ success: false, error: err.message });
-                else resolve({ success: true });
-            });
-        });
-    });
-});
-
-// Checks a new/edited band against every other band already saved for
-// the same scale group, so two rows can never claim overlapping percentages.
-function checkGradeOverlap(scale_group, min, max, excludeId, callback) {
-    let query = `SELECT * FROM grades WHERE scale_group = ?`;
-    let params = [scale_group];
-    if (excludeId) {
-        query += ` AND id != ?`;
-        params.push(excludeId);
-    }
-    db.all(query, params, (err, rows) => {
-        if (err) return callback(null);
-        const newMin = parseFloat(min), newMax = parseFloat(max);
-        const clash = (rows || []).find(r => newMin <= r.max_percentage && newMax >= r.min_percentage);
-        if (clash) {
-            callback(`Overlaps with existing band ${clash.grade_letter} (${clash.min_percentage}–${clash.max_percentage}%)`);
-        } else {
-            callback(null);
-        }
-    });
-}
 
 // --- STEP 5: EXAMS MODULE ---
 
