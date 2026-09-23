@@ -128,9 +128,9 @@ ipcMain.handle('get-students', async (event, filters) => {
 ipcMain.handle('add-student', async (event, s) => {
     return new Promise((resolve) => {
         db.run(`INSERT INTO students (roll, name, blood_group, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')`,
-            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, s.dob || null, s.birth_reg_number || null, s.class_id], (err) => {
+            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, s.dob || null, s.birth_reg_number || null, s.class_id], function (err) {
             if (err) resolve({ success: false, error: err.message });
-            else resolve({ success: true });
+            else resolve({ success: true, id: this.lastID });
         });
     });
 }); 
@@ -150,6 +150,29 @@ ipcMain.handle('remove-student-with-cause', async (event, data) => {
         db.run(`UPDATE students SET status = ?, removal_cause = ? WHERE id = ?`, [data.status, data.cause, data.id], (err) => {
             if (err) resolve({ success: false });
             else resolve({ success: true });
+        });
+    });
+});
+
+ipcMain.handle('get-student-subjects', async (event, student_id) => {
+    return new Promise((resolve) => {
+        db.all(`SELECT subject_name, role FROM student_subjects WHERE student_id = ?`, [student_id], (err, rows) => {
+            resolve(rows || []);
+        });
+    });
+});
+
+ipcMain.handle('save-student-subjects', async (event, { student_id, subjects }) => {
+    return new Promise((resolve) => {
+        db.run(`DELETE FROM student_subjects WHERE student_id = ?`, [student_id], (err) => {
+            if (err) return resolve({ success: false, error: err.message });
+            if (!subjects || !subjects.length) return resolve({ success: true });
+            const stmt = db.prepare(`INSERT INTO student_subjects (student_id, subject_name, role) VALUES (?, ?, ?)`);
+            subjects.forEach(s => stmt.run(student_id, s.subject_name, s.role));
+            stmt.finalize((err2) => {
+                if (err2) resolve({ success: false, error: err2.message });
+                else resolve({ success: true });
+            });
         });
     });
 });

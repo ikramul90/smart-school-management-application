@@ -141,6 +141,15 @@ const CLASS_TO_CATALOG = {
     "Class Ten (Humanities)": SUBJECT_CATALOG.nineTenHumanities
 };
 
+const MAIN_SUBJECT_POOLS = {
+    "Class Nine (Science)": ["Physics", "Chemistry", "Biology", "Higher Math"],
+    "Class Ten (Science)": ["Physics", "Chemistry", "Biology", "Higher Math"],
+    "Class Nine (Humanities)": ["History", "Geography & Environment", "Civics & Citizenship", "Economics"],
+    "Class Ten (Humanities)": ["History", "Geography & Environment", "Civics & Citizenship", "Economics"]
+};
+const OPTIONAL_FALLBACK_SUBJECT = "Agriculture/Domestic Science";
+let allClassesForStudents = [];
+
 let allClassesCache = []; // filled by loadSubjectsPage, reused for filters + name dropdown
 let subjectClassFilter = ""; // "" = show all classes
 let allClassesForTeachers = []; // filled by loadTeachersPage, tracks which class belongs to which teacher
@@ -258,16 +267,77 @@ window.deleteSubject = async function (id) {
 // --- STUDENT REGISTRY CONTROLLERS ---
 async function loadStudentsPage() {
     const classes = await ipcRenderer.invoke('get-classes-list');
-    
+    allClassesForStudents = classes;
+
     // Setup class options for filters and enrollment form forms
     const filterClass = document.getElementById('filter-student-class');
     const formClass = document.getElementById('st-class');
-    
+
     const optionsHtml = classes.map(c => `<option value="${c.id}">${c.class_name}</option>`).join('');
     filterClass.innerHTML = `<option value="">All 16 Classes</option>` + optionsHtml;
     formClass.innerHTML = optionsHtml;
 
     loadStudents();
+}
+
+// Shows/hides and (re)builds the Main/Optional subject panel based on
+// whichever class is currently picked in the enrollment form.
+window.updateStudentSubjectSelection = function () {
+    const classId = document.getElementById('st-class').value;
+    const cls = allClassesForStudents.find(c => String(c.id) === String(classId));
+    const pool = cls && MAIN_SUBJECT_POOLS[cls.class_name];
+    const panel = document.getElementById('stu-subject-selection');
+
+    if (!pool) {
+        panel.style.display = 'none';
+        document.getElementById('stu-main-subjects-list').innerHTML = '';
+        document.getElementById('stu-optional-select').innerHTML = '<option value="">-- pick 3 main subjects first --</option>';
+        return;
+    }
+
+    panel.style.display = 'block';
+    document.getElementById('stu-main-subjects-list').innerHTML = pool.map(subj => `
+        <label style="font-weight:normal; display:flex; align-items:center; gap:5px;">
+            <input type="checkbox" class="stu-main-checkbox" value="${subj}" onchange="handleMainSubjectToggle(this)"> ${subj}
+        </label>
+    `).join('');
+    updateOptionalSubjectOptions();
+};
+
+// A checked box past 3 gets auto-unchecked with a warning, so the
+// count can never exceed 3.
+window.handleMainSubjectToggle = function (checkbox) {
+    const checked = document.querySelectorAll('.stu-main-checkbox:checked');
+    if (checked.length > 3) {
+        checkbox.checked = false;
+        alert("You can only select 3 main subjects.");
+        return;
+    }
+    updateOptionalSubjectOptions();
+};
+
+// Optional dropdown = whichever pool subject wasn't picked as Main,
+// plus Agriculture/Domestic Science — only once exactly 3 are checked.
+function updateOptionalSubjectOptions() {
+    const classId = document.getElementById('st-class').value;
+    const cls = allClassesForStudents.find(c => String(c.id) === String(classId));
+    const pool = cls && MAIN_SUBJECT_POOLS[cls.class_name];
+    const select = document.getElementById('stu-optional-select');
+    if (!pool) return;
+
+    const checkedMains = Array.from(document.querySelectorAll('.stu-main-checkbox:checked')).map(cb => cb.value);
+    if (checkedMains.length !== 3) {
+        select.innerHTML = '<option value="">-- pick 3 main subjects first --</option>';
+        select.disabled = true;
+        return;
+    }
+
+    const leftover = pool.find(subj => !checkedMains.includes(subj));
+    const options = [leftover, OPTIONAL_FALLBACK_SUBJECT].filter(Boolean);
+    const previousValue = select.value;
+    select.disabled = false;
+    select.innerHTML = options.map(o => `<option value="${o}">${o}</option>`).join('');
+    if (options.includes(previousValue)) select.value = previousValue;
 }
 
 
@@ -304,7 +374,7 @@ window.loadStudents = async function() {
 // "Register Student" button: gathers the enrollment form fields
 // into one object and sends it to main.js to insert. Shows an
 // alert with the exact database error if the save fails.
-window.editStudent = function(id, classId, roll, name, bloodGroup, guardianName, guardianContact, address) {
+window.editStudent = async function(id, classId, roll, name, bloodGroup, guardianName, guardianContact, address) {
     document.getElementById('st-edit-id').value = id;
     document.getElementById('st-class').value = classId || '';
     document.getElementById('st-roll').value = roll;
@@ -317,6 +387,16 @@ window.editStudent = function(id, classId, roll, name, bloodGroup, guardianName,
     document.getElementById('btn-cancel-student').style.display = 'inline-block';
     const details = document.getElementById('student-details');
     if (details) details.open = true;
+
+    updateStudentSubjectSelection();
+    const existing = await ipcRenderer.invoke('get-student-subjects', id);
+    existing.filter(r => r.role === 'main').forEach(r => {
+        const cb = document.querySelector(`.stu-main-checkbox[value="${CSS.escape(r.subject_name)}"]`);
+        if (cb) cb.checked = true;
+    });
+    updateOptionalSubjectOptions();
+    const optionalRow = existing.find(r => r.role === 'optional');
+    if (optionalRow) document.getElementById('stu-optional-select').value = optionalRow.subject_name;
 };
 
 document.getElementById('btn-save-student').addEventListener('click', async () => {
@@ -333,11 +413,29 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
 
     if(!s.roll || !s.name) return alert("Roll and Name are required!");
 
+    // Nine/Ten Main + Optional subject validation
+    const cls = allClassesForStudents.find(c => String(c.id) === String(s.class_id));
+    const pool = cls && MAIN_SUBJECT_POOLS[cls.class_name];
+    let subjectSelections = null;
+    if (pool) {
+        const mains = Array.from(document.querySelectorAll('.stu-main-checkbox:checked')).map(cb => cb.value);
+        const optional = document.getElementById('stu-optional-select').value;
+        if (mains.length !== 3 || !optional) {
+            return alert("Please select exactly 3 Main subjects and 1 Optional subject.");
+        }
+        subjectSelections = mains.map(name => ({ subject_name: name, role: 'main' }))
+            .concat([{ subject_name: optional, role: 'optional' }]);
+    }
+
     const res = editId
         ? await ipcRenderer.invoke('update-student', { ...s, id: editId })
         : await ipcRenderer.invoke('add-student', s);
 
     if(res.success) {
+        const studentId = editId || res.id;
+        if (subjectSelections) {
+            await ipcRenderer.invoke('save-student-subjects', { student_id: studentId, subjects: subjectSelections });
+        }
         document.getElementById('st-edit-id').value = '';
         document.getElementById('st-roll').value = "";
         document.getElementById('st-name').value = "";
@@ -345,6 +443,9 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
         document.getElementById('st-guardian').value = "";
         document.getElementById('st-phone').value = "";
         document.getElementById('st-address').value = "";
+        document.getElementById('stu-main-subjects-list').innerHTML = '';
+        document.getElementById('stu-optional-select').innerHTML = '<option value="">-- pick 3 main subjects first --</option>';
+        document.getElementById('stu-subject-selection').style.display = 'none';
         document.getElementById('btn-save-student').textContent = 'Register Student';
         document.getElementById('btn-cancel-student').style.display = 'none';
         loadStudents();

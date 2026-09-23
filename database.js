@@ -133,6 +133,16 @@ db.serialize(() => {
     )`);
 
 
+        // 9. Student Subjects Table (Nine/Ten Main + Optional subject selections)
+    db.run(`CREATE TABLE IF NOT EXISTS student_subjects (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        student_id INTEGER NOT NULL,
+        subject_name TEXT NOT NULL,
+        role TEXT NOT NULL, -- 'main' or 'optional'
+        FOREIGN KEY(student_id) REFERENCES students(id)
+    )`);
+
+
     console.log("🎉 Database tables successfully initialized!");
 });
 
