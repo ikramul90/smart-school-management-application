@@ -356,11 +356,10 @@ window.loadStudents = async function() {
             <td>${s.roll}</td>
             <td><b>${s.name}</b></td>
             <td>${s.class_name}</td>
-            <td><span style="color:red; font-weight:bold;">${s.blood_group || 'N/A'}</span></td>
             <td>${s.guardian_contact}</td>
             <td><span style="padding:2px 6px; border-radius:4px; font-size:12px; background:${s.status==='Active'?'#dcfce7':'#fee2e2'}; color:${s.status==='Active'?'#16a34a':'#dc2626'};">${s.status}</span></td>
             <td>
-            <button onclick="editStudent(${s.id}, ${s.class_id || 'null'}, ${s.roll}, '${(s.name||'').replace(/'/g, "\\'")}', '${(s.blood_group||'').replace(/'/g, "\\'")}', '${(s.guardian_name||'').replace(/'/g, "\\'")}', '${(s.guardian_contact||'').replace(/'/g, "\\'")}', '${(s.address||'').replace(/'/g, "\\'")}')" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
+            <button onclick="editStudent(${s.id}, ${s.class_id || 'null'}, ${s.roll}, '${(s.name||'').replace(/'/g, "\\'")}', '${(s.blood_group||'').replace(/'/g, "\\'")}', '${(s.guardian_contact||'').replace(/'/g, "\\'")}', '${(s.address||'').replace(/'/g, "\\'")}', '${(s.dob||'').replace(/'/g, "\\'")}', '${(s.fathers_name||'').replace(/'/g, "\\'")}', '${(s.mothers_name||'').replace(/'/g, "\\'")}', '${(s.birth_reg_number||'').replace(/'/g, "\\'")}')" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
             ${s.status === 'Active' ? `
                 <button onclick="changeStudentStatus(${s.id}, 'Graduated', 'Graduated Program')" style="padding:4px 8px; background:#10b981; font-size:11px; width:auto; display:inline-block; margin-right:4px;">🎓 Graduate</button>
                 <button onclick="kickStudent(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">❌ Drop Out</button>
@@ -374,15 +373,18 @@ window.loadStudents = async function() {
 // "Register Student" button: gathers the enrollment form fields
 // into one object and sends it to main.js to insert. Shows an
 // alert with the exact database error if the save fails.
-window.editStudent = async function(id, classId, roll, name, bloodGroup, guardianName, guardianContact, address) {
+window.editStudent = async function(id, classId, roll, name, bloodGroup, guardianContact, address, dob, fathersName, mothersName, birthRegNumber) {
     document.getElementById('st-edit-id').value = id;
     document.getElementById('st-class').value = classId || '';
     document.getElementById('st-roll').value = roll;
     document.getElementById('st-name').value = name;
     document.getElementById('st-blood').value = bloodGroup;
-    document.getElementById('st-guardian').value = guardianName;
     document.getElementById('st-phone').value = guardianContact;
     document.getElementById('st-address').value = address;
+    document.getElementById('st-dob').value = dob || '';
+    document.getElementById('st-father').value = fathersName || '';
+    document.getElementById('st-mother').value = mothersName || '';
+    document.getElementById('st-birth-reg').value = birthRegNumber || '';
     document.getElementById('btn-save-student').textContent = 'Update Student';
     document.getElementById('btn-cancel-student').style.display = 'inline-block';
     const details = document.getElementById('student-details');
@@ -406,9 +408,13 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
         roll: document.getElementById('st-roll').value,
         name: document.getElementById('st-name').value.trim(),
         blood_group: document.getElementById('st-blood').value.trim(),
-        fathers_name: '', mothers_name: '', guardian_name: document.getElementById('st-guardian').value.trim(),
+        fathers_name: document.getElementById('st-father').value.trim(),
+        mothers_name: document.getElementById('st-mother').value.trim(),
+        guardian_name: '',
         guardian_contact: document.getElementById('st-phone').value.trim(),
-        address: document.getElementById('st-address').value.trim(), dob: '', birth_reg_number: ''
+        address: document.getElementById('st-address').value.trim(),
+        dob: document.getElementById('st-dob').value || '',
+        birth_reg_number: document.getElementById('st-birth-reg').value.trim()
     };
 
     if(!s.roll || !s.name) return alert("Roll and Name are required!");
@@ -440,9 +446,12 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
         document.getElementById('st-roll').value = "";
         document.getElementById('st-name').value = "";
         document.getElementById('st-blood').value = "";
-        document.getElementById('st-guardian').value = "";
         document.getElementById('st-phone').value = "";
         document.getElementById('st-address').value = "";
+        document.getElementById('st-dob').value = "";
+        document.getElementById('st-father').value = "";
+        document.getElementById('st-mother').value = "";
+        document.getElementById('st-birth-reg').value = "";
         document.getElementById('stu-main-subjects-list').innerHTML = '';
         document.getElementById('stu-optional-select').innerHTML = '<option value="">-- pick 3 main subjects first --</option>';
         document.getElementById('stu-subject-selection').style.display = 'none';
@@ -767,6 +776,6 @@ function setupCancelEdit(editIdField, formFields, saveBtnId, saveLabel, cancelBt
     });
 }
 
-setupCancelEdit('st-edit-id', ['st-class', 'st-roll', 'st-name', 'st-blood', 'st-guardian', 'st-phone', 'st-address'], 'btn-save-student', 'Register Student', 'btn-cancel-student');
+setupCancelEdit('st-edit-id', ['st-class', 'st-roll', 'st-name', 'st-blood', 'st-phone', 'st-address', 'st-dob', 'st-father', 'st-mother', 'st-birth-reg'], 'btn-save-student', 'Register Student', 'btn-cancel-student');
 setupCancelEdit('tc-edit-id', ['tc-name', 'tc-title', 'tc-contact', 'tc-blood', 'tc-father', 'tc-mother', 'tc-nid'], 'btn-save-teacher', 'Save Teacher', 'btn-cancel-teacher');
 setupCancelEdit('sub-edit-id', ['sub-class-select', 'sub-teacher-select', 'sub-name-select', 'sub-seq-input', 'sub-monthly-input', 'sub-yearly-input'], 'btn-add-subject', 'Save Subject', 'btn-cancel-subject');
