@@ -341,6 +341,27 @@ function updateOptionalSubjectOptions() {
 }
 
 
+// --- CLASS ROLL FIELD: manual digits only, padded to 2 digits (2 -> 02) ---
+// The database still stores the roll as a plain number (2), so sorting and
+// duplicate checks are unaffected. Padding is only for display.
+function formatRoll(roll) {
+    const n = parseInt(roll, 10);
+    if (Number.isNaN(n)) return '';
+    return String(n).padStart(2, '0');
+}
+
+(function setupRollInput() {
+    const rollInput = document.getElementById('st-roll');
+    if (!rollInput) return;
+    rollInput.addEventListener('input', () => {
+        rollInput.value = rollInput.value.replace(/[^0-9]/g, '');
+    });
+    rollInput.addEventListener('blur', () => {
+        rollInput.value = formatRoll(rollInput.value);
+    });
+})();
+
+
 // Re-fetches students from the database using whatever class/
 // status filters are currently selected, and redraws the table
 // — including the Graduate/Drop Out action buttons per row.
@@ -353,7 +374,7 @@ window.loadStudents = async function() {
     
     tbody.innerHTML = students.map(s => `
         <tr>
-            <td>${s.roll}</td>
+            <td>${formatRoll(s.roll)}</td>
             <td><b>${s.name}</b></td>
             <td>${s.class_name}</td>
             <td>${s.guardian_contact}</td>
@@ -376,7 +397,7 @@ window.loadStudents = async function() {
 window.editStudent = async function(id, classId, roll, name, bloodGroup, guardianContact, address, dob, fathersName, mothersName, birthRegNumber) {
     document.getElementById('st-edit-id').value = id;
     document.getElementById('st-class').value = classId || '';
-    document.getElementById('st-roll').value = roll;
+    document.getElementById('st-roll').value = formatRoll(roll);
     document.getElementById('st-name').value = name;
     document.getElementById('st-blood').value = bloodGroup;
     document.getElementById('st-phone').value = guardianContact;
@@ -405,7 +426,7 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
     const editId = document.getElementById('st-edit-id').value;
     const s = {
         class_id: document.getElementById('st-class').value,
-        roll: document.getElementById('st-roll').value,
+        roll: parseInt(document.getElementById('st-roll').value, 10),
         name: document.getElementById('st-name').value.trim(),
         blood_group: document.getElementById('st-blood').value.trim(),
         fathers_name: document.getElementById('st-father').value.trim(),
@@ -894,7 +915,7 @@ function renderMarkRows(sub, total) {
         const row = document.createElement('div');
         row.className = 'marks-row';
         row.innerHTML = `
-            <span class="marks-roll">${escapeHtml(st.roll)}</span>
+            <span class="marks-roll">${formatRoll(st.roll)}</span>
             <span class="marks-name">${escapeHtml(st.name)}</span>
             <span><input type="text" class="mark-cell" inputmode="decimal" autocomplete="off"></span>
             <span class="marks-status"></span>`;
