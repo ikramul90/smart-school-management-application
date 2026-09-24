@@ -57,6 +57,10 @@
             <div class="dashboard-sidebar">
                 <div class="dashboard-sidebar-nav">
                     <h3 class="no-select">NAVIGATION</h3>
+                    <button id="notif-bell" type="button" aria-label="Notifications" title="Notifications">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        <span id="notif-badge" style="display:none;">0</span>
+                    </button>
                     <hr>
 
                     <button class="nav-btn active" data-tab="home-tab"  onclick="switchTab('home-tab')">
@@ -163,6 +167,10 @@
                             <div><label>Guardian Contact</label><input type="text" id="st-phone"></div>
                             <div><label>Birth Registration No.</label><input type="text" id="st-birth-reg"></div>
                             <div style="grid-column: span 3;"><label class="no-select">Residential Address</label><input type="text" id="st-address"></div>
+                            <div id="st-archive-fields" style="display:none; grid-column: span 3; grid-template-columns:1fr 2fr; gap:15px; background:#fef3c7; padding:12px; border-radius:6px; border:1px solid #fde68a;">
+                                <div><label id="st-archive-date-label">Graduation Date</label><input type="date" id="st-status-date"></div>
+                                <div id="st-archive-cause-wrap"><label>Reason for Dropping Out</label><input type="text" id="st-removal-cause"></div>
+                            </div>
                         </div>
                         <button id="btn-save-student" style="margin-top:15px; background-color:#2563eb; width:200px;">Register Student</button>
                         <button id="btn-cancel-student" type="button" style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
@@ -349,6 +357,7 @@
                 <label>Reason</label>
                 <input type="text" id="sam-cause" autocomplete="off">
             </div>
+            <div id="sam-warning" class="marks-warn" style="display:none;"></div>
             <div id="sam-error" class="error"></div>
             <div style="display:flex; gap:10px;">
                 <button id="sam-confirm" type="button">Confirm</button>
@@ -357,8 +366,22 @@
         </div>
     </div>
 
+    <!-- NOTIFICATION CENTER: panel (opened by the bell) and pop-up area -->
+    <div id="notif-panel">
+        <div id="notif-head">
+            <span>Notifications</span>
+            <span>
+                <button id="notif-clear" type="button">Clear all</button>
+                <button id="notif-close" type="button" aria-label="Close">&times;</button>
+            </span>
+        </div>
+        <div id="notif-list"></div>
+    </div>
+    <div id="notif-toasts"></div>
+
 
     <!-- Wire up our frontend actions -->
     <script src="renderer.js"></script>
+
 </body>
 </html>

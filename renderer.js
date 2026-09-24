@@ -73,6 +73,7 @@ document.getElementById('btn-login').addEventListener('click', async () => {
     if (response.success) {
         loginScreen.style.display = 'none';
         dashboardScreen.style.display = 'block';
+        startNotificationCenter();
     } else {
         document.getElementById('login-error').innerText = response.message;
     }
@@ -440,9 +441,35 @@ document.querySelectorAll('#student-view-tabs .chip-btn').forEach(btn => {
 });
 
 // Fills the enrollment form with a student's data so it can be edited.
+// --- Extra fields shown when editing a Graduated or Dropped Out student ---
+let editingArchiveStatus = null;   // null | 'Graduated' | 'Removed'
+
+function hideArchiveFields() {
+    editingArchiveStatus = null;
+    document.getElementById('st-archive-fields').style.display = 'none';
+    document.getElementById('st-status-date').value = '';
+    document.getElementById('st-removal-cause').value = '';
+}
+
+function showArchiveFields(s) {
+    editingArchiveStatus = s.status;
+    const graduated = s.status === 'Graduated';
+    document.getElementById('st-archive-date-label').textContent = graduated ? 'Graduation Date' : 'Drop Out Date';
+    document.getElementById('st-archive-cause-wrap').style.display = graduated ? 'none' : 'block';
+    document.getElementById('st-status-date').value = s.status_date ? String(s.status_date).slice(0, 10) : '';
+    document.getElementById('st-removal-cause').value = graduated ? '' : (s.removal_cause || '');
+    document.getElementById('st-archive-fields').style.display = 'grid';
+}
+
+document.getElementById('btn-cancel-student').addEventListener('click', hideArchiveFields);
+
+// Fills the enrollment form with a student's data so it can be edited.
+// Graduated / Dropped Out students also get their date (and reason) fields.
 window.editStudentFromRow = function(s) {
     editStudent(s.id, s.class_id, s.roll, s.name || '', s.blood_group || '', s.guardian_contact || '',
         s.address || '', s.dob || '', s.fathers_name || '', s.mothers_name || '', s.birth_reg_number || '');
+    if (s.status === 'Graduated' || s.status === 'Removed') showArchiveFields(s);
+    else hideArchiveFields();
 };
 
 // Edit button on a table row.
@@ -504,7 +531,7 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
     const cls = allClassesForStudents.find(c => String(c.id) === String(s.class_id));
     const pool = cls && MAIN_SUBJECT_POOLS[cls.class_name];
     let subjectSelections = null;
-    if (pool) {
+    if (pool && !editingArchiveStatus) {
         const mains = Array.from(document.querySelectorAll('.stu-main-checkbox:checked')).map(cb => cb.value);
         const optional = document.getElementById('stu-optional-select').value;
         if (mains.length !== 3 || !optional) {
@@ -514,8 +541,19 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
             .concat([{ subject_name: optional, role: 'optional' }]);
     }
 
+        const updateData = { ...s, id: editId };
+    if (editId && editingArchiveStatus) {
+        updateData.archive = {
+            date: document.getElementById('st-status-date').value || '',
+            cause: document.getElementById('st-removal-cause').value.trim()
+        };
+        if (editingArchiveStatus === 'Removed' && !updateData.archive.cause) {
+            return alert('Please enter the reason for dropping out.');
+        }
+    }
+
     const res = editId
-        ? await ipcRenderer.invoke('update-student', { ...s, id: editId })
+        ? await ipcRenderer.invoke('update-student', updateData)
         : await ipcRenderer.invoke('add-student', s);
 
     if(res.success) {
@@ -538,12 +576,14 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
         document.getElementById('stu-subject-selection').style.display = 'none';
         document.getElementById('btn-save-student').textContent = 'Register Student';
         document.getElementById('btn-cancel-student').style.display = 'none';
+        hideArchiveFields();
         loadStudents();
     } else {
         console.error('save-student failed:', res.error);
         alert('Could not save student: ' + res.error);
     }
 });
+
 // --- STUDENT ACTIONS: Promote / Graduate / Drop Out / Reinstate ---
 
 // Roll box inside the pop-up: digits only, padded to 2 digits (same as the enrollment form).
@@ -562,6 +602,8 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
 //   cfg.title / cfg.message   text shown at the top
 //   cfg.targets               [{id, label}] classes to choose from (dropdown shows only if 2+)
 //   cfg.rollValue / rollLabel show a roll box, pre-filled with rollValue
+//   cfg.rollHolders(roll, targetId)  optional async; returns the names of students who already
+//                             use that roll, shown as a warning (it does not block saving)
 //   cfg.askCause              show a required "reason" box
 //   cfg.onConfirm(values)     async; must return {success, error?}. The pop-up stays open and
 //                             shows the error if success is false.
@@ -574,12 +616,14 @@ function showStudentDialog(cfg) {
     const causeInput = $('sam-cause');
     const confirmBtn = $('sam-confirm');
     const cancelBtn = $('sam-cancel');
+    const warnEl = $('sam-warning');
     const targets = cfg.targets || [];
     const asksRoll = cfg.rollValue !== undefined;
 
     $('sam-title').textContent = cfg.title;
     $('sam-message').textContent = cfg.message;
     $('sam-error').textContent = '';
+    warnEl.style.display = 'none';
 
     targetSel.innerHTML = '';
     targets.forEach(t => {
@@ -602,6 +646,23 @@ function showStudentDialog(cfg) {
     confirmBtn.textContent = cfg.confirmText || 'Confirm';
     confirmBtn.style.background = cfg.confirmColor || '#2563eb';
     confirmBtn.disabled = false;
+
+    // Warn (but never block) when the chosen roll is already used in the target class.
+    let warnToken = 0;
+    async function updateRollWarning() {
+        warnEl.style.display = 'none';
+        if (!asksRoll || !cfg.rollHolders) return;
+        const roll = parseInt(rollInput.value, 10);
+        if (!Number.isInteger(roll) || roll <= 0) return;
+        const token = ++warnToken;
+        const names = await cfg.rollHolders(roll, targets.length ? Number(targetSel.value) : null);
+        if (token !== warnToken || !names || !names.length) return;
+        warnEl.textContent = `Roll ${formatRoll(roll)} is already used by ${names.join(', ')} in that class. ` +
+            `You can still continue, and a notification will remind you to fix it.`;
+        warnEl.style.display = 'block';
+    }
+    rollInput.oninput = updateRollWarning;
+    targetSel.onchange = updateRollWarning;
 
     const close = () => { overlay.style.display = 'none'; };
     cancelBtn.onclick = close;
@@ -640,6 +701,7 @@ function showStudentDialog(cfg) {
 
     overlay.style.display = 'flex';
     (cfg.askCause ? causeInput : asksRoll ? rollInput : confirmBtn).focus();
+    updateRollWarning();
 }
 
 // Looks up a student on screen by id (the row buttons only carry the id).
@@ -665,6 +727,7 @@ window.promoteStudent = async function(id) {
         targets: info.targets.map(t => ({ id: t.id, label: t.class_name })),
         rollLabel: 'Roll in the new class',
         rollValue: st.roll,
+        rollHolders: (roll, targetId) => ipcRenderer.invoke('get-roll-holders', { class_id: targetId, roll, except_id: id }),
         confirmText: 'Promote',
         onConfirm: (v) => ipcRenderer.invoke('promote-student', { id, to_class_id: v.target_id, new_roll: v.roll }),
         onDone: async (v, res) => {
@@ -716,6 +779,7 @@ window.reinstateStudent = function(id) {
         message: `${s.name} will return to ${s.class_name} as a current student.`,
         rollLabel: 'Roll',
         rollValue: s.roll,
+        rollHolders: (roll) => ipcRenderer.invoke('get-roll-holders', { class_id: s.class_id, roll, except_id: id }),
         confirmText: 'Reinstate',
         confirmColor: '#f59e0b',
         onConfirm: (v) => ipcRenderer.invoke('reinstate-student', { id, new_roll: v.roll }),
@@ -1248,6 +1312,143 @@ async function commitMark(input, sub, total, statusEl) {
 });
 
 
+// ============================================================
+// NOTIFICATION CENTER (the bell button in the sidebar)
+//   - New messages slide in at the bottom-right for a few seconds.
+//   - Every message is kept in the bell's panel, newest on top.
+//   - The red badge counts messages you have not opened yet.
+//   - The panel closes with the x button, Escape, or a click anywhere outside it.
+// Messages are created by main.js (for example the duplicate-roll check) and
+// arrive through the 'notifications-changed' event.
+// ============================================================
+let notificationList = [];
+let notificationsStarted = false;
+const MAX_VISIBLE_TOASTS = 3;
+const TOAST_SECONDS = 6;
+
+// "2026-09-24 14:05:00" -> "5 min ago"
+function notificationTimeAgo(text) {
+    const t = new Date(String(text || '').replace(' ', 'T'));
+    if (isNaN(t.getTime())) return '';
+    const seconds = Math.round((Date.now() - t.getTime()) / 1000);
+    if (seconds < 60) return 'just now';
+    const minutes = Math.round(seconds / 60);
+    if (minutes < 60) return `${minutes} min ago`;
+    const hours = Math.round(minutes / 60);
+    if (hours < 24) return `${hours} hr ago`;
+    return `${Math.round(hours / 24)} day(s) ago`;
+}
+
+function notificationPanelIsOpen() {
+    return document.getElementById('notif-panel').classList.contains('open');
+}
+
+function updateNotificationBadge() {
+    const badge = document.getElementById('notif-badge');
+    const unread = notificationList.filter(n => !n.is_read).length;
+    badge.style.display = unread ? 'flex' : 'none';
+    badge.textContent = unread > 99 ? '99+' : String(unread);
+}
+
+function renderNotificationPanel() {
+    const list = document.getElementById('notif-list');
+    list.innerHTML = '';
+    if (!notificationList.length) {
+        list.innerHTML = '<div class="notif-empty">No notifications</div>';
+    }
+    notificationList.forEach(n => {
+        const item = document.createElement('div');
+        item.className = 'notif-item ' + n.severity + (n.is_read ? '' : ' unread');
+        item.innerHTML = `<b>${escapeHtml(n.title)}</b>${escapeHtml(n.message)}<small>${escapeHtml(notificationTimeAgo(n.created_at))}</small>`;
+        list.appendChild(item);
+    });
+    updateNotificationBadge();
+}
+
+async function refreshNotifications() {
+    notificationList = await ipcRenderer.invoke('get-notifications');
+    renderNotificationPanel();
+}
+
+// Everything on screen counts as read once the panel has been shown.
+async function markNotificationsRead() {
+    await ipcRenderer.invoke('mark-notifications-read');
+    notificationList.forEach(n => { n.is_read = 1; });
+    updateNotificationBadge();
+}
+
+async function openNotificationPanel() {
+    const bell = document.getElementById('notif-bell');
+    const panel = document.getElementById('notif-panel');
+    const rect = bell.getBoundingClientRect();
+    panel.style.top = (rect.bottom + 8) + 'px';
+    panel.style.left = Math.max(8, rect.right - 340) + 'px';
+    panel.classList.add('open');
+    await refreshNotifications();     // shows the unread dots
+    await markNotificationsRead();    // clears the badge; the dots go away next time
+}
+
+function closeNotificationPanel() {
+    document.getElementById('notif-panel').classList.remove('open');
+}
+
+// A small pop-up that slides in, waits, then slides out to the right.
+function showNotificationToast(n) {
+    const wrap = document.getElementById('notif-toasts');
+    while (wrap.children.length >= MAX_VISIBLE_TOASTS) wrap.removeChild(wrap.firstChild);
+
+    const toast = document.createElement('div');
+    toast.className = 'notif-toast ' + n.severity;
+    toast.innerHTML = `<b>${escapeHtml(n.title)}</b>${escapeHtml(n.message)}`;
+    wrap.appendChild(toast);
+    requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('in')));
+
+    let timer;
+    const dismiss = () => {
+        toast.classList.remove('in');
+        toast.classList.add('out');
+        setTimeout(() => toast.remove(), 450);
+    };
+    const startTimer = () => { timer = setTimeout(dismiss, TOAST_SECONDS * 1000); };
+    toast.addEventListener('mouseenter', () => clearTimeout(timer));   // hovering keeps it on screen
+    toast.addEventListener('mouseleave', startTimer);
+    startTimer();
+}
+
+// main.js says something changed: refresh, and slide in the brand-new messages.
+ipcRenderer.on('notifications-changed', async (event, payload) => {
+    await refreshNotifications();
+    if (notificationPanelIsOpen()) await markNotificationsRead();
+    ((payload && payload.newOnes) || []).forEach(showNotificationToast);
+});
+
+document.getElementById('notif-bell').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (notificationPanelIsOpen()) closeNotificationPanel();
+    else openNotificationPanel();
+});
+document.getElementById('notif-close').addEventListener('click', closeNotificationPanel);
+document.getElementById('notif-clear').addEventListener('click', async () => {
+    await ipcRenderer.invoke('clear-notifications');
+    await refreshNotifications();
+});
+document.addEventListener('click', (e) => {
+    const panel = document.getElementById('notif-panel');
+    if (notificationPanelIsOpen() && !panel.contains(e.target)) closeNotificationPanel();
+});
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && notificationPanelIsOpen()) closeNotificationPanel();
+});
+
+// Called once, right after a successful login.
+async function startNotificationCenter() {
+    if (notificationsStarted) return;
+    notificationsStarted = true;
+    await refreshNotifications();                      // existing messages: badge only, no pop-up
+    await ipcRenderer.invoke('run-data-checks');       // new problems found now slide in
+}
+
+
 // --- ENTER-KEY FORM NAVIGATION ---
 // Pressing Enter in any input/select moves focus to the next one in the
 // same container; pressing Enter on the last one clicks the submit button.
@@ -1258,7 +1459,11 @@ function enableEnterNavigation(container, submitBtn) {
         field.addEventListener('keydown', (e) => {
             if (e.key !== 'Enter') return;
             e.preventDefault();
-            const next = fields[idx + 1];
+            // skip fields that are currently hidden (they cannot take focus)
+            let next = null;
+            for (let i = idx + 1; i < fields.length; i++) {
+                if (fields[i].offsetParent !== null) { next = fields[i]; break; }
+            }
             if (next) {
                 next.focus();
             } else if (submitBtn) {

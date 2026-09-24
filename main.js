@@ -130,25 +130,174 @@ ipcMain.handle('get-students', async (event, filters) => {
     });
 });
 
+// --- SMALL DATABASE HELPERS (promise versions) ---
+const dbGet = (sql, params = []) => new Promise((res, rej) => db.get(sql, params, (e, r) => e ? rej(e) : res(r)));
+const dbAll = (sql, params = []) => new Promise((res, rej) => db.all(sql, params, (e, r) => e ? rej(e) : res(r)));
+const dbRun = (sql, params = []) => new Promise((res, rej) => db.run(sql, params, function (e) { e ? rej(e) : res(this); }));
+const pad2 = (n) => String(n).padStart(2, '0');
+
+
+// --- NOTIFICATIONS (the bell button) ---
+// Two kinds of message:
+//   event      (key = NULL)  "something happened". Stays until the admin clears it.
+//   condition  (key = text)  "something is wrong". Created once, updated if the problem
+//                            changes, and removed automatically when the problem is fixed.
+//                            "Clear all" only hides it, so it does not keep coming back.
+
+// Tells the open window to refresh the bell and slide in pop-ups for newOnes.
+function broadcastNotifications(newOnes) {
+    if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send('notifications-changed', { newOnes: newOnes || [] });
+    }
+}
+
+// Makes the stored "condition" messages that start with `prefix` match `wanted` exactly:
+// adds missing ones, updates changed ones, deletes ones whose problem is gone.
+async function syncConditionNotifications(prefix, wanted) {
+    const existing = await dbAll(`SELECT * FROM notifications WHERE key LIKE ?`, [prefix + '%']);
+    const wantedKeys = wanted.map(w => w.key);
+    let changed = false;
+
+    for (const e of existing) {
+        if (!wantedKeys.includes(e.key)) {
+            await dbRun(`DELETE FROM notifications WHERE id = ?`, [e.id]);
+            changed = true;
+        }
+    }
+
+    const toPopUp = [];
+    for (const w of wanted) {
+        const found = existing.find(e => e.key === w.key);
+        if (!found) {
+            const r = await dbRun(`INSERT INTO notifications (key, severity, title, message, target) VALUES (?, ?, ?, ?, ?)`,
+                [w.key, w.severity, w.title, w.message, w.target || null]);
+            toPopUp.push(await dbGet(`SELECT * FROM notifications WHERE id = ?`, [r.lastID]));
+        } else if (found.message !== w.message || found.title !== w.title) {
+            await dbRun(`UPDATE notifications SET title = ?, message = ?, is_read = 0, is_dismissed = 0 WHERE id = ?`,
+                [w.title, w.message, found.id]);
+            toPopUp.push(await dbGet(`SELECT * FROM notifications WHERE id = ?`, [found.id]));
+        }
+    }
+
+    if (toPopUp.length || changed) broadcastNotifications(toPopUp);
+    return toPopUp;
+}
+
+// Looks for two or more ACTIVE students with the same roll in the same class.
+async function runDuplicateRollCheck() {
+    const dups = await dbAll(`SELECT s.class_id, c.class_name, s.roll, GROUP_CONCAT(s.name, char(31)) AS names
+        FROM students s LEFT JOIN classes c ON c.id = s.class_id
+        WHERE s.status = 'Active'
+        GROUP BY s.class_id, s.roll HAVING COUNT(*) > 1
+        ORDER BY s.class_id, s.roll`);
+
+    const wanted = dups.map(d => ({
+        key: `dup-roll:${d.class_id}:${d.roll}`,
+        severity: 'warning',
+        title: `Duplicate roll in ${d.class_name || 'a class'}`,
+        message: `Roll ${pad2(d.roll)} is used by ${String(d.names).split(String.fromCharCode(31)).join(', ')}. Please give one of them a different roll.`,
+        target: JSON.stringify({ tab: 'db-students', class_id: d.class_id })
+    }));
+    return syncConditionNotifications('dup-roll:', wanted);
+}
+
+// Runs every data check. A failed check must never break the action that triggered it.
+async function runDataChecks() {
+    try { await runDuplicateRollCheck(); } catch (e) { console.error('Data check failed:', e.message); }
+}
+
+ipcMain.handle('get-notifications', async () => {
+    try {
+        return await dbAll(`SELECT * FROM notifications WHERE is_dismissed = 0 ORDER BY id DESC LIMIT 100`);
+    } catch (e) { return []; }
+});
+
+ipcMain.handle('mark-notifications-read', async () => {
+    try {
+        await dbRun(`UPDATE notifications SET is_read = 1 WHERE is_read = 0`);
+        return { success: true };
+    } catch (e) { return { success: false, error: e.message }; }
+});
+
+// "Clear all": one-time events are deleted; "something is wrong" messages are only hidden.
+ipcMain.handle('clear-notifications', async () => {
+    try {
+        await dbRun(`DELETE FROM notifications WHERE key IS NULL`);
+        await dbRun(`UPDATE notifications SET is_dismissed = 1, is_read = 1 WHERE key IS NOT NULL`);
+        return { success: true };
+    } catch (e) { return { success: false, error: e.message }; }
+});
+
+// Called once after login.
+ipcMain.handle('run-data-checks', async () => {
+    await runDataChecks();
+    return { success: true };
+});
+
+// Which active students already use this roll in that class? (for the warning in the pop-up)
+ipcMain.handle('get-roll-holders', async (event, { class_id, roll, except_id }) => {
+    try {
+        const rows = await dbAll(`SELECT name FROM students WHERE class_id = ? AND roll = ? AND status = 'Active' AND id != ?`,
+            [class_id, roll, except_id || 0]);
+        return rows.map(r => r.name);
+    } catch (e) { return []; }
+});
+
+
+// --- ADD / EDIT STUDENT ---
 ipcMain.handle('add-student', async (event, s) => {
-    return new Promise((resolve) => {
-        db.run(`INSERT INTO students (roll, name, blood_group, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')`,
-            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, s.dob || null, s.birth_reg_number || null, s.class_id], function (err) {
-            if (err) resolve({ success: false, error: err.message });
-            else resolve({ success: true, id: this.lastID });
-        });
-    });
-}); 
+    try {
+        const r = await dbRun(`INSERT INTO students (roll, name, blood_group, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')`,
+            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, s.dob || null, s.birth_reg_number || null, s.class_id]);
+        await runDataChecks();
+        return { success: true, id: r.lastID };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
+});
+
+// Saves the graduation / drop-out date (and the drop-out reason) of an archived student.
+// The date lives in the history log; the reason also lives on the student record.
+async function saveArchiveDetails(st, archive) {
+    const action = st.status === 'Graduated' ? 'Graduated' : 'Dropped Out';
+    const reason = action === 'Dropped Out' ? String(archive.cause || '').trim() : null;
+    if (action === 'Dropped Out') {
+        await dbRun(`UPDATE students SET removal_cause = ? WHERE id = ?`, [reason, st.id]);
+    }
+    const dateText = archive.date ? `${archive.date} 00:00:00` : null;
+    const row = await dbGet(`SELECT id FROM student_history WHERE student_id = ? AND action = ? ORDER BY id DESC LIMIT 1`, [st.id, action]);
+    if (row) {
+        await dbRun(`UPDATE student_history SET action_date = COALESCE(?, action_date), cause = ? WHERE id = ?`, [dateText, reason, row.id]);
+    } else {
+        // Records made before the history log existed: create the entry now.
+        await dbRun(`INSERT INTO student_history (student_id, action, from_class_id, roll, cause, action_date)
+                     VALUES (?, ?, ?, ?, ?, COALESCE(?, datetime('now', 'localtime')))`,
+            [st.id, action, st.class_id, st.roll, reason, dateText]);
+    }
+}
 
 ipcMain.handle('update-student', async (event, s) => {
-    return new Promise((resolve) => {
-        db.run(`UPDATE students SET roll = ?, name = ?, blood_group = ?, fathers_name = ?, mothers_name = ?, guardian_name = ?, guardian_contact = ?, address = ?, dob = ?, birth_reg_number = ?, class_id = ? WHERE id = ?`,
-            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, s.dob || null, s.birth_reg_number || null, s.class_id, s.id], (err) => {
-            if (err) resolve({ success: false, error: err.message });
-            else resolve({ success: true });
-        });
-    });
+    try {
+        const current = await dbGet(`SELECT * FROM students WHERE id = ?`, [s.id]);
+        if (!current) return { success: false, error: 'Student not found.' };
+
+        const archived = current.status === 'Graduated' || current.status === 'Removed';
+        if (s.archive && current.status === 'Removed' && !String(s.archive.cause || '').trim()) {
+            return { success: false, error: 'Please enter the reason for dropping out.' };
+        }
+
+        await dbRun(`UPDATE students SET roll = ?, name = ?, blood_group = ?, fathers_name = ?, mothers_name = ?, guardian_name = ?, guardian_contact = ?, address = ?, dob = ?, birth_reg_number = ?, class_id = ? WHERE id = ?`,
+            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, s.dob || null, s.birth_reg_number || null, s.class_id, s.id]);
+
+        if (s.archive && archived) await saveArchiveDetails(current, s.archive);
+
+        await runDataChecks();
+        return { success: true };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
 });
+
 
 // --- STUDENT LIFECYCLE: PROMOTE / GRADUATE / DROP OUT / REINSTATE ---
 
@@ -170,29 +319,15 @@ const PROMOTION_PATH = {
 };
 const GRADUATING_CLASSES = ['Class Ten (Science)', 'Class Ten (Humanities)'];
 
-// Small promise wrappers so the multi-step handlers below read top to bottom.
-const dbGet = (sql, params = []) => new Promise((res, rej) => db.get(sql, params, (e, r) => e ? rej(e) : res(r)));
-const dbAll = (sql, params = []) => new Promise((res, rej) => db.all(sql, params, (e, r) => e ? rej(e) : res(r)));
-const dbRun = (sql, params = []) => new Promise((res, rej) => db.run(sql, params, function (e) { e ? rej(e) : res(this); }));
-
 function getStudentWithClass(id) {
     return dbGet(`SELECT students.*, classes.class_name FROM students
                   LEFT JOIN classes ON students.class_id = classes.id WHERE students.id = ?`, [id]);
-}
-
-// Is this roll already used by another ACTIVE student in that class?
-async function rollIsTaken(classId, roll, exceptStudentId) {
-    const row = await dbGet(`SELECT id FROM students WHERE class_id = ? AND roll = ? AND status = 'Active' AND id != ?`,
-        [classId, roll, exceptStudentId]);
-    return !!row;
 }
 
 function logStudentHistory(studentId, action, fromClassId, toClassId, roll, cause) {
     return dbRun(`INSERT INTO student_history (student_id, action, from_class_id, to_class_id, roll, cause) VALUES (?, ?, ?, ?, ?, ?)`,
         [studentId, action, fromClassId, toClassId, roll, cause || null]);
 }
-
-const pad2 = (n) => String(n).padStart(2, '0');
 
 // Which class(es) can this student be promoted into?
 ipcMain.handle('get-promotion-targets', async (event, studentId) => {
@@ -211,6 +346,7 @@ ipcMain.handle('get-promotion-targets', async (event, studentId) => {
 });
 
 // Move a student into the next class (with a roll for the new class).
+// A roll that is already used is allowed; the duplicate-roll notification will flag it.
 ipcMain.handle('promote-student', async (event, { id, to_class_id, new_roll }) => {
     try {
         const st = await getStudentWithClass(id);
@@ -224,12 +360,10 @@ ipcMain.handle('promote-student', async (event, { id, to_class_id, new_roll }) =
 
         const roll = parseInt(new_roll, 10);
         if (!Number.isInteger(roll) || roll <= 0) return { success: false, error: 'Enter a valid roll number.' };
-        if (await rollIsTaken(target.id, roll, id)) {
-            return { success: false, error: `Roll ${pad2(roll)} is already used in ${target.class_name}. Choose a different roll.` };
-        }
 
         await dbRun(`UPDATE students SET class_id = ?, roll = ? WHERE id = ?`, [target.id, roll, id]);
         await logStudentHistory(id, 'Promoted', st.class_id, target.id, roll, null);
+        await runDataChecks();
         return { success: true, student: await getStudentWithClass(id) };
     } catch (e) {
         return { success: false, error: e.message };
@@ -244,6 +378,7 @@ ipcMain.handle('graduate-student', async (event, { id }) => {
         if (!GRADUATING_CLASSES.includes(st.class_name)) return { success: false, error: 'Only Class Ten students can graduate.' };
         await dbRun(`UPDATE students SET status = 'Graduated', removal_cause = NULL WHERE id = ?`, [id]);
         await logStudentHistory(id, 'Graduated', st.class_id, null, st.roll, null);
+        await runDataChecks();
         return { success: true };
     } catch (e) {
         return { success: false, error: e.message };
@@ -259,6 +394,7 @@ ipcMain.handle('drop-out-student', async (event, { id, cause }) => {
         if (!st || st.status !== 'Active') return { success: false, error: 'Only active students can be dropped out.' };
         await dbRun(`UPDATE students SET status = 'Removed', removal_cause = ? WHERE id = ?`, [reason, id]);
         await logStudentHistory(id, 'Dropped Out', st.class_id, null, st.roll, reason);
+        await runDataChecks();
         return { success: true };
     } catch (e) {
         return { success: false, error: e.message };
@@ -266,6 +402,7 @@ ipcMain.handle('drop-out-student', async (event, { id, cause }) => {
 });
 
 // Bring a graduated / dropped-out student back into their last class.
+// A roll that is already used is allowed; the duplicate-roll notification will flag it.
 ipcMain.handle('reinstate-student', async (event, { id, new_roll }) => {
     try {
         const st = await getStudentWithClass(id);
@@ -273,12 +410,10 @@ ipcMain.handle('reinstate-student', async (event, { id, new_roll }) => {
 
         const roll = parseInt(new_roll, 10);
         if (!Number.isInteger(roll) || roll <= 0) return { success: false, error: 'Enter a valid roll number.' };
-        if (await rollIsTaken(st.class_id, roll, id)) {
-            return { success: false, error: `Roll ${pad2(roll)} is already used in ${st.class_name}. Choose a different roll.` };
-        }
 
         await dbRun(`UPDATE students SET status = 'Active', removal_cause = NULL, roll = ? WHERE id = ?`, [roll, id]);
         await logStudentHistory(id, 'Reinstated', null, st.class_id, roll, null);
+        await runDataChecks();
         return { success: true };
     } catch (e) {
         return { success: false, error: e.message };

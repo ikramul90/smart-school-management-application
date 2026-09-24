@@ -155,6 +155,21 @@ db.serialize(() => {
         FOREIGN KEY(student_id) REFERENCES students(id)
     )`);
 
+    // 11. Notifications Table (messages shown by the bell button)
+    // key = NULL   -> a one-time event
+    // key = text   -> a "something is wrong" message that is removed automatically once fixed
+    db.run(`CREATE TABLE IF NOT EXISTS notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        key TEXT,
+        severity TEXT NOT NULL DEFAULT 'info', -- 'info', 'success', 'warning', 'error'
+        title TEXT NOT NULL,
+        message TEXT NOT NULL,
+        target TEXT, -- JSON like {"tab":"db-students","class_id":5}; reserved for click-through later
+        created_at TEXT DEFAULT (datetime('now', 'localtime')),
+        is_read INTEGER DEFAULT 0,
+        is_dismissed INTEGER DEFAULT 0
+    )`);
+
 
     console.log("🎉 Database tables successfully initialized!");
 });
