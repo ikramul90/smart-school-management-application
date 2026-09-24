@@ -276,43 +276,95 @@ ipcMain.handle('delete-teacher', async (event, id) => {
 
 // --- STEP 5: EXAMS MODULE ---
 
+const VALID_EXAM_TYPES = ['1st Monthly Exam', '2nd Monthly Exam', 'Half Yearly Exam', '3rd Monthly Exam', '4th Monthly Exam', 'Yearly Exam'];
+
 // Find an exam by year+type, or create it if it doesn't exist yet
 ipcMain.handle('get-or-create-exam', async (event, data) => {
     return new Promise((resolve) => {
-        db.get(`SELECT * FROM exams WHERE year = ? AND exam_type = ?`, [data.year, data.exam_type], (err, row) => {
+        const year = parseInt(data.year, 10);
+        if (!Number.isInteger(year) || year < 2000 || year > 2100) {
+            return resolve({ success: false, error: 'Enter a valid year between 2000 and 2100.' });
+        }
+        if (!VALID_EXAM_TYPES.includes(data.exam_type)) {
+            return resolve({ success: false, error: 'Unknown exam type.' });
+        }
+        db.get(`SELECT * FROM exams WHERE year = ? AND exam_type = ?`, [year, data.exam_type], (err, row) => {
+            if (err) return resolve({ success: false, error: err.message });
             if (row) return resolve(row);
-            db.run(`INSERT INTO exams (year, exam_type) VALUES (?, ?)`, [data.year, data.exam_type], function (err) {
-                if (err) return resolve({ success: false, error: err.message });
-                resolve({ id: this.lastID, year: data.year, exam_type: data.exam_type });
+            db.run(`INSERT INTO exams (year, exam_type) VALUES (?, ?)`, [year, data.exam_type], function (err2) {
+                if (err2) return resolve({ success: false, error: err2.message });
+                resolve({ id: this.lastID, year: year, exam_type: data.exam_type });
             });
         });
     });
 });
 
-// Pull students + subjects + existing marks for one class+exam in one shot
+// Pull students + subjects (with their totals) + saved marks + each student's
+// Nine/Ten subject choices for one class+exam in one shot
 ipcMain.handle('get-marks-sheet', async (event, { class_id, exam_id }) => {
     return new Promise((resolve) => {
         db.all(`SELECT id, roll, name FROM students WHERE class_id = ? AND status = 'Active' ORDER BY roll`, [class_id], (err, students) => {
-            db.all(`SELECT id, subject_name, sequence_order FROM subjects WHERE class_id = ? ORDER BY sequence_order`, [class_id], (err2, subjects) => {
-                db.all(`SELECT student_id, subject_id, marks_obtained, is_present FROM marks WHERE exam_id = ?`, [exam_id], (err3, marks) => {
-                    resolve({ students: students || [], subjects: subjects || [], marks: marks || [] });
+            db.all(`SELECT id, subject_name, sequence_order, monthly_marks, yearly_marks FROM subjects WHERE class_id = ? ORDER BY sequence_order, id`, [class_id], (err2, subjects) => {
+                db.all(`SELECT m.student_id, m.subject_id, m.marks_obtained, m.is_present
+                        FROM marks m JOIN students s ON s.id = m.student_id
+                        WHERE m.exam_id = ? AND s.class_id = ?`, [exam_id, class_id], (err3, marks) => {
+                    db.all(`SELECT ss.student_id, ss.subject_name
+                            FROM student_subjects ss JOIN students s ON s.id = ss.student_id
+                            WHERE s.class_id = ? AND s.status = 'Active'`, [class_id], (err4, studentSubjects) => {
+                        resolve({
+                            students: students || [],
+                            subjects: subjects || [],
+                            marks: marks || [],
+                            studentSubjects: studentSubjects || []
+                        });
+                    });
                 });
             });
         });
     });
 });
 
-// Upsert a batch of marks for one class+exam
-ipcMain.handle('save-marks', async (event, { exam_id, entries }) => {
+// Save ONE mark. value is: '' (clear it), 'A' (absent) or a number as text.
+// Rule: no row in the marks table = not entered yet.
+ipcMain.handle('save-mark', async (event, { exam_id, student_id, subject_id, value }) => {
     return new Promise((resolve) => {
-        const stmt = db.prepare(`INSERT INTO marks (student_id, subject_id, exam_id, marks_obtained, is_present)
-            VALUES (?, ?, ?, ?, ?)
-            ON CONFLICT(student_id, subject_id, exam_id)
-            DO UPDATE SET marks_obtained = excluded.marks_obtained, is_present = excluded.is_present`);
-        entries.forEach(e => stmt.run(e.student_id, e.subject_id, exam_id, e.marks_obtained, e.is_present));
-        stmt.finalize((err) => {
-            if (err) resolve({ success: false, error: err.message });
-            else resolve({ success: true });
+        const v = String(value === undefined || value === null ? '' : value).trim().toUpperCase();
+
+        if (v === '') {
+            db.run(`DELETE FROM marks WHERE exam_id = ? AND student_id = ? AND subject_id = ?`,
+                [exam_id, student_id, subject_id], (err) => {
+                if (err) resolve({ success: false, error: err.message });
+                else resolve({ success: true });
+            });
+            return;
+        }
+
+        let marks = 0;
+        let present = 1;
+        if (v === 'A') {
+            present = 0;
+        } else {
+            marks = parseFloat(v);
+            if (!Number.isFinite(marks) || marks < 0) {
+                return resolve({ success: false, error: 'Invalid mark.' });
+            }
+        }
+
+        db.get(`SELECT e.exam_type, s.monthly_marks, s.yearly_marks
+                FROM exams e, subjects s WHERE e.id = ? AND s.id = ?`, [exam_id, subject_id], (err, row) => {
+            if (err || !row) return resolve({ success: false, error: 'Exam or subject not found.' });
+            const max = row.exam_type.includes('Monthly') ? row.monthly_marks : row.yearly_marks;
+            if (present && max && marks > max) {
+                return resolve({ success: false, error: `Mark cannot be more than ${max}.` });
+            }
+            db.run(`INSERT INTO marks (student_id, subject_id, exam_id, marks_obtained, is_present)
+                VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(student_id, subject_id, exam_id)
+                DO UPDATE SET marks_obtained = excluded.marks_obtained, is_present = excluded.is_present`,
+                [student_id, subject_id, exam_id, marks, present], (err2) => {
+                if (err2) resolve({ success: false, error: err2.message });
+                else resolve({ success: true });
+            });
         });
     });
 });

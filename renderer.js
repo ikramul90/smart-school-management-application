@@ -593,25 +593,119 @@ window.deleteTeacher = async function (id) {
     }
 };
 
-// --- STEP 5: EXAMS MODULE — MARKS ENTRY ---
+// --- STEP 5: EXAMS MODULE — SUBJECT-WISE MARKS ENTRY ---
 // ============================================================
 // STEP 5: MARKS ENTRY
-// Lets the admin pick a year+test, click a class button, and
-// fill in a marks grid (students × subjects) for that exam.
-// currentExam / currentClassId track what's currently open.
+// Pick a year + test, click a class, click a subject chip, then
+// type marks down the roll list (one subject at a time).
+// Every mark is saved the moment you leave the box or press Enter.
+//   blank  = not entered yet (no row in the database)
+//   A      = absent in that subject
+//   number = marks (the maximum is that subject's own total)
 // ============================================================
 let currentExam = null;
 let currentClassId = null;
+let currentClassName = '';
+let currentSubjectId = null;
+let marksSheet = null;   // everything about the class that is currently open
 
+
+// ---------- small helpers ----------
+
+function escapeHtml(text) {
+    return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Monthly exams use each subject's Monthly Total; Half Yearly and
+// Yearly use its Yearly Total.
+function examUsesMonthlyTotal(examType) {
+    return examType.includes('Monthly');
+}
+
+// Returns the subject's total for this exam type, or null if none is set
+// (a subject with no total for this exam type is hidden from the screen).
+function totalForSubject(sub, examType) {
+    const total = examUsesMonthlyTotal(examType) ? sub.monthly_marks : sub.yearly_marks;
+    return total > 0 ? total : null;
+}
+
+// Keeps only what a mark box may contain: digits with one decimal place,
+// or a single "A" for absent.
+function sanitizeMarkInput(raw) {
+    let t = String(raw).toUpperCase().replace(/[^0-9.A]/g, '');
+    if (t.startsWith('A')) return 'A';
+    t = t.replace(/A/g, '');
+    const dot = t.indexOf('.');
+    if (dot === -1) return t.slice(0, 3);
+    const intPart = t.slice(0, dot).slice(0, 3);
+    const decPart = t.slice(dot + 1).replace(/\./g, '').slice(0, 1);
+    return intPart + '.' + decPart;
+}
+
+// Final tidy-up before saving: "12." -> "12", "007" -> "7", "." -> ""
+function normalizeMarkText(raw) {
+    const t = sanitizeMarkInput(raw);
+    if (t === '' || t === 'A') return t;
+    const n = parseFloat(t);
+    return Number.isNaN(n) ? '' : String(n);
+}
+
+function getCell(studentId, subjectId) {
+    const row = marksSheet.cells[studentId];
+    return row && row[subjectId] !== undefined ? row[subjectId] : '';
+}
+
+function setCell(sheet, studentId, subjectId, value) {
+    if (!sheet.cells[studentId]) sheet.cells[studentId] = {};
+    if (value === '') delete sheet.cells[studentId][subjectId];
+    else sheet.cells[studentId][subjectId] = value;
+}
+
+// Nine/Ten only: a student sits a choosable subject (Physics, Biology,
+// Economics, Agriculture/Domestic Science, etc.) only if it is in their
+// saved selections. Every other subject applies to all students.
+function studentTakesSubject(studentId, subjectName) {
+    const pool = MAIN_SUBJECT_POOLS[currentClassName];
+    if (!pool) return true;
+    const choosable = pool.concat([OPTIONAL_FALLBACK_SUBJECT]);
+    if (!choosable.includes(subjectName)) return true;
+    return (marksSheet.selMap[studentId] || []).includes(subjectName);
+}
+
+function studentsForSubject(sub) {
+    return marksSheet.students.filter(st => studentTakesSubject(st.id, sub.subject_name));
+}
+
+function subjectProgress(sub) {
+    const list = studentsForSubject(sub);
+    const done = list.filter(st => getCell(st.id, sub.id) !== '').length;
+    return { done, total: list.length };
+}
+
+function setSaveStatus(text, isError) {
+    const el = document.getElementById('marks-save-status');
+    if (!el) return;
+    el.textContent = text;
+    el.style.color = isError ? '#dc2626' : '#16a34a';
+}
+
+
+// ---------- class buttons ----------
 
 // Draws one button per class in the Exams tab. Clicking a class
-// button opens the marks-entry grid for that class.
+// button opens the marks-entry screen for that class.
 async function loadExamClassButtons() {
     const classes = await ipcRenderer.invoke('get-classes-list');
     const container = document.getElementById('exam-class-buttons');
-    container.innerHTML = classes.map(c =>
-        `<button class="nav-btn" style="background:#e2e8f0; color:#1e293b; width:auto; padding:8px 16px;" onclick="openMarksEntry(${c.id}, '${c.class_name.replace(/'/g, "\\'")}')">${c.class_name}</button>`
-    ).join('');
+    container.innerHTML = '';
+    classes.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'chip-btn' + (c.id === currentClassId ? ' active' : '');
+        btn.textContent = c.class_name;
+        btn.dataset.classId = c.id;
+        btn.addEventListener('click', () => openMarksEntry(c.id, c.class_name));
+        container.appendChild(btn);
+    });
 }
 
 
@@ -624,85 +718,290 @@ window.switchTab = function (tabId) {
 };
 
 
-// Runs when a class button is clicked: finds or creates the
-// exam record for the selected year+test, then fetches that
-// class's students, subjects, and any marks already saved.
+// ---------- opening a class ----------
+
+// Runs when a class button is clicked (or the Year/Test changes while a
+// class is open): finds or creates the exam record, then fetches that
+// class's students, subjects, saved marks and Nine/Ten subject choices.
 window.openMarksEntry = async function (classId, className) {
+    const container = document.getElementById('marks-entry-container');
     const year = document.getElementById('exam-year').value;
     const exam_type = document.getElementById('exam-type-select').value;
-    currentExam = await ipcRenderer.invoke('get-or-create-exam', { year, exam_type });
-    currentClassId = classId;
 
-    const sheet = await ipcRenderer.invoke('get-marks-sheet', { class_id: classId, exam_id: currentExam.id });
-    renderMarksTable(className, sheet);
-};
-
-
-// Builds the actual marks grid: one row per student, one column
-// per subject, plus an "Absent" checkbox per student. Pre-fills
-// any marks that were already saved for this exam.
-function renderMarksTable(className, sheet) {
-    const { students, subjects, marks } = sheet;
-    const markMap = {};
-    marks.forEach(m => { markMap[`${m.student_id}_${m.subject_id}`] = m; });
-
-    const container = document.getElementById('marks-entry-container');
-    if (!students.length || !subjects.length) {
-        container.innerHTML = `<p style="color:#dc2626;">This class needs students and subjects set up before marks can be entered.</p>`;
+    const exam = await ipcRenderer.invoke('get-or-create-exam', { year, exam_type });
+    if (!exam || exam.success === false) {
+        container.innerHTML = `<p class="marks-msg-error">${escapeHtml((exam && exam.error) || 'Could not open this exam.')}</p>`;
         return;
     }
 
-    let header = `<th>Roll</th><th>Name</th>` + subjects.map(s => `<th>${s.subject_name}</th>`).join('') + `<th>Absent</th>`;
-    let rows = students.map(st => {
-        const cells = subjects.map(sub => {
-            const existing = markMap[`${st.id}_${sub.id}`];
-            const val = existing ? existing.marks_obtained : '';
-            return `<td><input type="number" data-student="${st.id}" data-subject="${sub.id}" class="mark-input" value="${val}" style="width:70px;"></td>`;
-        }).join('');
-        const wasAbsent = subjects.length && markMap[`${st.id}_${subjects[0].id}`] && markMap[`${st.id}_${subjects[0].id}`].is_present === 0;
-        return `<tr>
-            <td>${st.roll}</td>
-            <td>${st.name}</td>
-            ${cells}
-            <td style="text-align:center;"><input type="checkbox" class="absent-check" data-student="${st.id}" ${wasAbsent ? 'checked' : ''}></td>
-        </tr>`;
-    }).join('');
+    if (classId !== currentClassId) currentSubjectId = null;
+    currentExam = exam;
+    currentClassId = classId;
+    currentClassName = className;
+
+    document.querySelectorAll('#exam-class-buttons .chip-btn').forEach(b => {
+        b.classList.toggle('active', Number(b.dataset.classId) === classId);
+    });
+
+    const sheet = await ipcRenderer.invoke('get-marks-sheet', { class_id: classId, exam_id: exam.id });
+    buildMarksSheetState(sheet, exam.exam_type);
+    renderMarksScreen();
+};
+
+// Turns the raw database rows into the in-memory structure the screen uses.
+function buildMarksSheetState(sheet, examType) {
+    const cells = {};
+    sheet.marks.forEach(m => {
+        if (!cells[m.student_id]) cells[m.student_id] = {};
+        cells[m.student_id][m.subject_id] = m.is_present === 0 ? 'A' : String(m.marks_obtained);
+    });
+
+    const selMap = {};
+    sheet.studentSubjects.forEach(r => {
+        if (!selMap[r.student_id]) selMap[r.student_id] = [];
+        selMap[r.student_id].push(r.subject_name);
+    });
+
+    const pool = MAIN_SUBJECT_POOLS[currentClassName];
+    marksSheet = {
+        examType,
+        students: sheet.students,
+        allSubjectCount: sheet.subjects.length,
+        subjects: sheet.subjects.filter(s => totalForSubject(s, examType) !== null),
+        hiddenSubjects: sheet.subjects.filter(s => totalForSubject(s, examType) === null).map(s => s.subject_name),
+        missingSelections: pool ? sheet.students.filter(st => !selMap[st.id]).length : 0,
+        cells,
+        selMap
+    };
+}
+
+
+// ---------- drawing the screen ----------
+
+function renderMarksScreen() {
+    const container = document.getElementById('marks-entry-container');
+    const s = marksSheet;
+    const heading = `<h3 style="margin-top:0;">${escapeHtml(currentClassName)} — ${escapeHtml(s.examType)} (${escapeHtml(currentExam.year)})</h3>`;
+    const kind = examUsesMonthlyTotal(s.examType) ? 'monthly' : 'yearly';
+
+    if (!s.students.length) {
+        container.innerHTML = heading + `<p class="marks-msg-error">This class has no active students. Add students in the Students tab first.</p>`;
+        return;
+    }
+    if (!s.allSubjectCount) {
+        container.innerHTML = heading + `<p class="marks-msg-error">This class has no subjects yet. Add them in the Subjects tab first.</p>`;
+        return;
+    }
+    if (!s.subjects.length) {
+        container.innerHTML = heading + `<p class="marks-msg-error">None of this class's subjects have a ${kind} total set, so there is nothing to enter for this exam. Set the totals in the Subjects tab.</p>`;
+        return;
+    }
+
+    if (!s.subjects.some(sub => sub.id === currentSubjectId)) currentSubjectId = s.subjects[0].id;
+    const sub = s.subjects.find(x => x.id === currentSubjectId);
+    const total = totalForSubject(sub, s.examType);
+
+    let notes = '';
+    if (s.missingSelections > 0) {
+        notes += `<div class="marks-warn">${s.missingSelections} student(s) in this class have no subject selection saved, so they will not appear under Physics, Biology, Economics, etc. Set their subjects in the Students tab.</div>`;
+    }
+    if (s.hiddenSubjects.length) {
+        notes += `<div class="marks-note">Not shown (no ${kind} total set): ${escapeHtml(s.hiddenSubjects.join(', '))}</div>`;
+    }
 
     container.innerHTML = `
-        <h3 style="margin-top:0;">${className} — ${document.getElementById('exam-type-select').value} (${document.getElementById('exam-year').value})</h3>
-        <table style="width:100%; border-collapse:collapse; background:white;" border="1" cellpadding="6" bordercolor="#e2e8f0">
-            <thead style="background:#f8fafc;"><tr>${header}</tr></thead>
-            <tbody>${rows}</tbody>
-        </table>
-        <button id="btn-save-marks" style="margin-top:15px; width:200px; background-color:#10b981;">Save Marks</button>
+        ${heading}
+        <div id="subject-chips" class="chip-row"></div>
+        <div class="marks-head">
+            <div><span class="marks-subject-title">${escapeHtml(sub.subject_name)}</span> <span class="marks-outof">out of ${total}</span></div>
+            <div id="marks-progress" class="marks-progress"></div>
+        </div>
+        ${notes}
+        <div class="marks-card">
+            <div class="marks-row marks-row-head"><span>Roll</span><span>Name</span><span>Marks</span><span>Status</span></div>
+            <div id="marks-rows"></div>
+        </div>
+        <div class="marks-foot">
+            <span>Enter moves down. Type <b>A</b> for absent. Leave blank if not entered yet.</span>
+            <span id="marks-save-status"></span>
+        </div>
     `;
 
-    document.getElementById('btn-save-marks').addEventListener('click', saveMarksEntry);
+    renderSubjectChips();
+    renderMarkRows(sub, total);
+    updateProgressText();
+    focusFirstEmptyMark();
 }
 
+function renderSubjectChips() {
+    const wrap = document.getElementById('subject-chips');
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    marksSheet.subjects.forEach(sub => {
+        const p = subjectProgress(sub);
+        const btn = document.createElement('button');
+        let cls = 'chip-btn';
+        if (p.total > 0 && p.done === p.total) cls += ' done';
+        if (sub.id === currentSubjectId) cls += ' active';
+        btn.className = cls;
+        btn.textContent = `${sub.subject_name}  ${p.done}/${p.total}`;
+        btn.addEventListener('click', () => {
+            currentSubjectId = sub.id;
+            renderMarksScreen();
+        });
+        wrap.appendChild(btn);
+    });
+}
 
-// "Save Marks" button: reads every mark input and absent
-// checkbox currently on screen, bundles them into one batch,
-// and sends them to main.js to be saved/updated in one go.
-async function saveMarksEntry() {
-    const absentStudents = new Set(
-        Array.from(document.querySelectorAll('.absent-check:checked')).map(el => el.dataset.student)
-    );
+function updateProgressText() {
+    const el = document.getElementById('marks-progress');
+    if (!el || !marksSheet) return;
+    const sub = marksSheet.subjects.find(x => x.id === currentSubjectId);
+    if (!sub) return;
+    const p = subjectProgress(sub);
+    el.textContent = `${p.done} of ${p.total} done`;
+}
 
-    const entries = Array.from(document.querySelectorAll('.mark-input')).map(input => ({
-        student_id: input.dataset.student,
-        subject_id: input.dataset.subject,
-        marks_obtained: parseFloat(input.value) || 0,
-        is_present: absentStudents.has(input.dataset.student) ? 0 : 1
-    }));
+function focusFirstEmptyMark() {
+    const inputs = Array.from(document.querySelectorAll('#marks-rows .mark-cell'));
+    const target = inputs.find(i => i.value === '') || inputs[0];
+    if (target) target.focus();
+}
 
-    const res = await ipcRenderer.invoke('save-marks', { exam_id: currentExam.id, entries });
-    if (res.success) {
-        alert('Marks saved!');
-    } else {
-        alert('Error saving marks: ' + res.error);
+// Colours the little status label beside each mark box.
+function paintMarkStatus(statusEl, text, total) {
+    let label = 'Empty';
+    let cls = 'st-empty';
+    if (text === 'A') { label = 'Absent'; cls = 'st-absent'; }
+    else if (text !== '' && parseFloat(text) > total) { label = `Max ${total}`; cls = 'st-error'; }
+    else if (text !== '') { label = 'Entered'; cls = 'st-ok'; }
+    statusEl.textContent = label;
+    statusEl.className = 'marks-status ' + cls;
+}
+
+// One row per student who sits this subject, with a single mark box.
+function renderMarkRows(sub, total) {
+    const rowsEl = document.getElementById('marks-rows');
+    rowsEl.innerHTML = '';
+    const list = studentsForSubject(sub);
+
+    if (!list.length) {
+        rowsEl.innerHTML = `<div class="marks-empty-row">No student in this class has been assigned ${escapeHtml(sub.subject_name)}.</div>`;
+        return;
     }
+
+    list.forEach(st => {
+        const row = document.createElement('div');
+        row.className = 'marks-row';
+        row.innerHTML = `
+            <span class="marks-roll">${escapeHtml(st.roll)}</span>
+            <span class="marks-name">${escapeHtml(st.name)}</span>
+            <span><input type="text" class="mark-cell" inputmode="decimal" autocomplete="off"></span>
+            <span class="marks-status"></span>`;
+        const input = row.querySelector('.mark-cell');
+        const statusEl = row.querySelector('.marks-status');
+        input.dataset.student = st.id;
+        input.value = getCell(st.id, sub.id);
+        paintMarkStatus(statusEl, input.value, total);
+
+        input.addEventListener('focus', () => input.select());
+
+        input.addEventListener('input', () => {
+            input.value = sanitizeMarkInput(input.value);
+            paintMarkStatus(statusEl, input.value, total);
+        });
+
+        input.addEventListener('change', () => commitMark(input, sub, total, statusEl));
+
+        input.addEventListener('keydown', async (e) => {
+            const inputs = Array.from(document.querySelectorAll('#marks-rows .mark-cell'));
+            const idx = inputs.indexOf(input);
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (inputs[idx - 1]) inputs[idx - 1].focus();
+                return;
+            }
+            if (e.key !== 'Enter' && e.key !== 'ArrowDown') return;
+            e.preventDefault();
+            if (inputs[idx + 1]) {
+                inputs[idx + 1].focus();
+                return;
+            }
+            if (e.key === 'Enter') {
+                const ok = await commitMark(input, sub, total, statusEl);
+                if (ok) goToNextSubject();
+            }
+        });
+
+        rowsEl.appendChild(row);
+    });
 }
+
+// After the last student of a subject, Enter jumps to the next subject chip.
+function goToNextSubject() {
+    const subs = marksSheet.subjects;
+    const idx = subs.findIndex(x => x.id === currentSubjectId);
+    if (idx === -1 || idx === subs.length - 1) {
+        setSaveStatus('That was the last subject.', false);
+        return;
+    }
+    currentSubjectId = subs[idx + 1].id;
+    renderMarksScreen();
+}
+
+
+// ---------- saving ----------
+
+// Saves one mark box. Safe to call twice: if nothing changed since the
+// last save it does nothing. Returns true if the box is fine (saved or
+// unchanged) and false if it was rejected.
+async function commitMark(input, sub, total, statusEl) {
+    const sheet = marksSheet;
+    const studentId = Number(input.dataset.student);
+    const text = normalizeMarkText(input.value);
+    input.value = text;
+
+    if (text === getCell(studentId, sub.id)) {
+        paintMarkStatus(statusEl, text, total);
+        return true;
+    }
+
+    if (text !== '' && text !== 'A' && parseFloat(text) > total) {
+        paintMarkStatus(statusEl, text, total);
+        setSaveStatus(`Not saved: ${sub.subject_name} is out of ${total}.`, true);
+        return false;
+    }
+
+    setSaveStatus('Saving…', false);
+    const res = await ipcRenderer.invoke('save-mark', {
+        exam_id: currentExam.id,
+        student_id: studentId,
+        subject_id: sub.id,
+        value: text
+    });
+
+    if (!res || !res.success) {
+        setSaveStatus('Not saved: ' + ((res && res.error) || 'unknown error'), true);
+        return false;
+    }
+
+    setCell(sheet, studentId, sub.id, text);
+    if (marksSheet !== sheet) return true;
+    paintMarkStatus(statusEl, text, total);
+    setSaveStatus('Saved', false);
+    renderSubjectChips();
+    updateProgressText();
+    return true;
+}
+
+
+// Changing the Year or Test while a class is open reloads that class for
+// the newly chosen exam, so the screen never disagrees with the dropdowns.
+['exam-year', 'exam-type-select'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => {
+        if (currentClassId) openMarksEntry(currentClassId, currentClassName);
+    });
+});
 
 
 // --- ENTER-KEY FORM NAVIGATION ---
