@@ -104,10 +104,14 @@ ipcMain.handle('delete-subject', async (event, id) => {
     });
 });
 
-// 2. STUDENTS DATABASE WORKERS (WITH ADVANCED STATUS FILTERS)
 ipcMain.handle('get-students', async (event, filters) => {
     return new Promise((resolve) => {
-        let query = `SELECT students.*, classes.class_name FROM students LEFT JOIN classes ON students.class_id = classes.id WHERE 1=1`;
+        // status_date = when the student was last graduated / dropped out (from the history log)
+        let query = `SELECT students.*, classes.class_name,
+                (SELECT h.action_date FROM student_history h
+                 WHERE h.student_id = students.id AND h.action IN ('Graduated', 'Dropped Out')
+                 ORDER BY h.id DESC LIMIT 1) AS status_date
+            FROM students LEFT JOIN classes ON students.class_id = classes.id WHERE 1=1`;
         let params = [];
         
         if (filters && filters.class_id) {
@@ -118,6 +122,7 @@ ipcMain.handle('get-students', async (event, filters) => {
             query += ` AND students.status = ?`;
             params.push(filters.status);
         }
+        query += ` ORDER BY students.class_id, students.roll`;
 
         db.all(query, params, (err, rows) => {
             resolve(rows || []);
@@ -145,13 +150,139 @@ ipcMain.handle('update-student', async (event, s) => {
     });
 });
 
-ipcMain.handle('remove-student-with-cause', async (event, data) => {
-    return new Promise((resolve) => {
-        db.run(`UPDATE students SET status = ?, removal_cause = ? WHERE id = ?`, [data.status, data.cause, data.id], (err) => {
-            if (err) resolve({ success: false });
-            else resolve({ success: true });
-        });
-    });
+// --- STUDENT LIFECYCLE: PROMOTE / GRADUATE / DROP OUT / REINSTATE ---
+
+// Which class(es) a student can be promoted into, by class name.
+// Class Eight has two options because Nine splits into Science / Humanities.
+const PROMOTION_PATH = {
+    'Play': ['Nursery'],
+    'Nursery': ['Class One'],
+    'Class One': ['Class Two'],
+    'Class Two': ['Class Three'],
+    'Class Three': ['Class Four'],
+    'Class Four': ['Class Five'],
+    'Class Five': ['Class Six'],
+    'Class Six': ['Class Seven'],
+    'Class Seven': ['Class Eight'],
+    'Class Eight': ['Class Nine (Science)', 'Class Nine (Humanities)'],
+    'Class Nine (Science)': ['Class Ten (Science)'],
+    'Class Nine (Humanities)': ['Class Ten (Humanities)']
+};
+const GRADUATING_CLASSES = ['Class Ten (Science)', 'Class Ten (Humanities)'];
+
+// Small promise wrappers so the multi-step handlers below read top to bottom.
+const dbGet = (sql, params = []) => new Promise((res, rej) => db.get(sql, params, (e, r) => e ? rej(e) : res(r)));
+const dbAll = (sql, params = []) => new Promise((res, rej) => db.all(sql, params, (e, r) => e ? rej(e) : res(r)));
+const dbRun = (sql, params = []) => new Promise((res, rej) => db.run(sql, params, function (e) { e ? rej(e) : res(this); }));
+
+function getStudentWithClass(id) {
+    return dbGet(`SELECT students.*, classes.class_name FROM students
+                  LEFT JOIN classes ON students.class_id = classes.id WHERE students.id = ?`, [id]);
+}
+
+// Is this roll already used by another ACTIVE student in that class?
+async function rollIsTaken(classId, roll, exceptStudentId) {
+    const row = await dbGet(`SELECT id FROM students WHERE class_id = ? AND roll = ? AND status = 'Active' AND id != ?`,
+        [classId, roll, exceptStudentId]);
+    return !!row;
+}
+
+function logStudentHistory(studentId, action, fromClassId, toClassId, roll, cause) {
+    return dbRun(`INSERT INTO student_history (student_id, action, from_class_id, to_class_id, roll, cause) VALUES (?, ?, ?, ?, ?, ?)`,
+        [studentId, action, fromClassId, toClassId, roll, cause || null]);
+}
+
+const pad2 = (n) => String(n).padStart(2, '0');
+
+// Which class(es) can this student be promoted into?
+ipcMain.handle('get-promotion-targets', async (event, studentId) => {
+    try {
+        const st = await getStudentWithClass(studentId);
+        if (!st) return { success: false, error: 'Student not found.' };
+        if (st.status !== 'Active') return { success: false, error: 'Only active students can be promoted.' };
+        const names = PROMOTION_PATH[st.class_name];
+        if (!names) return { success: false, error: 'This class has no next class. Use Graduate instead.' };
+        const targets = await dbAll(`SELECT id, class_name FROM classes WHERE class_name IN (${names.map(() => '?').join(',')}) ORDER BY id`, names);
+        if (!targets.length) return { success: false, error: 'The next class was not found in the database.' };
+        return { success: true, student: st, targets };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
+});
+
+// Move a student into the next class (with a roll for the new class).
+ipcMain.handle('promote-student', async (event, { id, to_class_id, new_roll }) => {
+    try {
+        const st = await getStudentWithClass(id);
+        if (!st || st.status !== 'Active') return { success: false, error: 'Only active students can be promoted.' };
+
+        const allowed = PROMOTION_PATH[st.class_name] || [];
+        const target = await dbGet(`SELECT id, class_name FROM classes WHERE id = ?`, [to_class_id]);
+        if (!target || !allowed.includes(target.class_name)) {
+            return { success: false, error: 'That is not the next class for this student.' };
+        }
+
+        const roll = parseInt(new_roll, 10);
+        if (!Number.isInteger(roll) || roll <= 0) return { success: false, error: 'Enter a valid roll number.' };
+        if (await rollIsTaken(target.id, roll, id)) {
+            return { success: false, error: `Roll ${pad2(roll)} is already used in ${target.class_name}. Choose a different roll.` };
+        }
+
+        await dbRun(`UPDATE students SET class_id = ?, roll = ? WHERE id = ?`, [target.id, roll, id]);
+        await logStudentHistory(id, 'Promoted', st.class_id, target.id, roll, null);
+        return { success: true, student: await getStudentWithClass(id) };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
+});
+
+// Class Ten only: the student stays on record but leaves the Current list.
+ipcMain.handle('graduate-student', async (event, { id }) => {
+    try {
+        const st = await getStudentWithClass(id);
+        if (!st || st.status !== 'Active') return { success: false, error: 'Only active students can graduate.' };
+        if (!GRADUATING_CLASSES.includes(st.class_name)) return { success: false, error: 'Only Class Ten students can graduate.' };
+        await dbRun(`UPDATE students SET status = 'Graduated', removal_cause = NULL WHERE id = ?`, [id]);
+        await logStudentHistory(id, 'Graduated', st.class_id, null, st.roll, null);
+        return { success: true };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
+});
+
+// Any class: the student stays on record with a reason, but leaves the Current list.
+ipcMain.handle('drop-out-student', async (event, { id, cause }) => {
+    try {
+        const reason = String(cause || '').trim();
+        if (!reason) return { success: false, error: 'Please enter a reason.' };
+        const st = await getStudentWithClass(id);
+        if (!st || st.status !== 'Active') return { success: false, error: 'Only active students can be dropped out.' };
+        await dbRun(`UPDATE students SET status = 'Removed', removal_cause = ? WHERE id = ?`, [reason, id]);
+        await logStudentHistory(id, 'Dropped Out', st.class_id, null, st.roll, reason);
+        return { success: true };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
+});
+
+// Bring a graduated / dropped-out student back into their last class.
+ipcMain.handle('reinstate-student', async (event, { id, new_roll }) => {
+    try {
+        const st = await getStudentWithClass(id);
+        if (!st || st.status === 'Active') return { success: false, error: 'This student is already active.' };
+
+        const roll = parseInt(new_roll, 10);
+        if (!Number.isInteger(roll) || roll <= 0) return { success: false, error: 'Enter a valid roll number.' };
+        if (await rollIsTaken(st.class_id, roll, id)) {
+            return { success: false, error: `Roll ${pad2(roll)} is already used in ${st.class_name}. Choose a different roll.` };
+        }
+
+        await dbRun(`UPDATE students SET status = 'Active', removal_cause = NULL, roll = ? WHERE id = ?`, [roll, id]);
+        await logStudentHistory(id, 'Reinstated', null, st.class_id, roll, null);
+        return { success: true };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
 });
 
 ipcMain.handle('get-student-subjects', async (event, student_id) => {

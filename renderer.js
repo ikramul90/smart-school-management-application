@@ -362,34 +362,94 @@ function formatRoll(roll) {
 })();
 
 
-// Re-fetches students from the database using whatever class/
-// status filters are currently selected, and redraws the table
-// — including the Graduate/Drop Out action buttons per row.
-window.loadStudents = async function() {
-    const class_id = document.getElementById('filter-student-class').value;
-    const status = document.getElementById('filter-student-status').value;
+// --- STUDENT LIST: Current / Graduated / Dropped Out views ---
+// The three small tabs above the table decide which students are listed
+// and which columns and buttons each row gets.
+let currentStudentView = 'Active';   // 'Active' | 'Graduated' | 'Removed'
+let studentListCache = [];           // the rows currently on screen (used by the row buttons)
 
-    const students = await ipcRenderer.invoke('get-students', { class_id, status });
-    const tbody = document.getElementById('student-table-body');
-    
-    tbody.innerHTML = students.map(s => `
-        <tr>
-            <td>${formatRoll(s.roll)}</td>
-            <td><b>${s.name}</b></td>
-            <td>${s.class_name}</td>
-            <td>${s.guardian_contact}</td>
-            <td><span style="padding:2px 6px; border-radius:4px; font-size:12px; background:${s.status==='Active'?'#dcfce7':'#fee2e2'}; color:${s.status==='Active'?'#16a34a':'#dc2626'};">${s.status}</span></td>
-            <td>
-            <button onclick="editStudent(${s.id}, ${s.class_id || 'null'}, ${s.roll}, '${(s.name||'').replace(/'/g, "\\'")}', '${(s.blood_group||'').replace(/'/g, "\\'")}', '${(s.guardian_contact||'').replace(/'/g, "\\'")}', '${(s.address||'').replace(/'/g, "\\'")}', '${(s.dob||'').replace(/'/g, "\\'")}', '${(s.fathers_name||'').replace(/'/g, "\\'")}', '${(s.mothers_name||'').replace(/'/g, "\\'")}', '${(s.birth_reg_number||'').replace(/'/g, "\\'")}')" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
-            ${s.status === 'Active' ? `
-                <button onclick="changeStudentStatus(${s.id}, 'Graduated', 'Graduated Program')" style="padding:4px 8px; background:#10b981; font-size:11px; width:auto; display:inline-block; margin-right:4px;">🎓 Graduate</button>
-                <button onclick="kickStudent(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">❌ Drop Out</button>
-            ` : `<small style="color:gray;">History Logged</small>`}
-            </td>
-        </tr>
-    `).join('');    
+const STUDENT_VIEW_HEADERS = {
+    Active:    ['Roll', 'Name', 'Class', 'Guardian Contact', 'Management Actions'],
+    Graduated: ['Roll', 'Name', 'Last Class', 'Guardian Contact', 'Graduated On', 'Actions'],
+    Removed:   ['Roll', 'Name', 'Last Class', 'Guardian Contact', 'Dropped Out On', 'Reason', 'Actions']
 };
 
+const STUDENT_BTN_STYLE = 'padding:4px 8px; font-size:11px; width:auto; display:inline-block; margin-right:4px; ';
+
+// "2026-03-05 14:20:11" -> "05-03-2026" (blank for old records with no date)
+function formatHistoryDate(text) {
+    if (!text) return '—';
+    const parts = String(text).slice(0, 10).split('-');
+    return parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : '—';
+}
+
+function studentRowHtml(s, view) {
+    const editBtn = `<button onclick="editStudentById(${s.id})" style="${STUDENT_BTN_STYLE}background:#2563eb;">✏️ Edit</button>`;
+    let html = `
+        <td>${formatRoll(s.roll)}</td>
+        <td><b>${escapeHtml(s.name || '')}</b></td>
+        <td>${escapeHtml(s.class_name || '')}</td>
+        <td>${escapeHtml(s.guardian_contact || '')}</td>`;
+
+    if (view === 'Active') {
+        const isTen = (s.class_name || '').startsWith('Class Ten');
+        const mainBtn = isTen
+            ? `<button onclick="graduateStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#10b981;">🎓 Graduate</button>`
+            : `<button onclick="promoteStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#0ea5e9;">⬆️ Promote</button>`;
+        const dropBtn = `<button onclick="dropOutStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#ef4444;">❌ Drop Out</button>`;
+        html += `<td>${editBtn}${mainBtn}${dropBtn}</td>`;
+    } else {
+        const reinstateBtn = `<button onclick="reinstateStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#f59e0b;">↩️ Reinstate</button>`;
+        html += `<td>${formatHistoryDate(s.status_date)}</td>`;
+        if (view === 'Removed') html += `<td>${escapeHtml(s.removal_cause || '')}</td>`;
+        html += `<td>${editBtn}${reinstateBtn}</td>`;
+    }
+    return `<tr>${html}</tr>`;
+}
+
+// Re-fetches students from the database using the selected view (tab)
+// and class filter, then redraws the table header and rows.
+window.loadStudents = async function() {
+    const class_id = document.getElementById('filter-student-class').value;
+    const view = currentStudentView;
+
+    const students = await ipcRenderer.invoke('get-students', { class_id, status: view });
+    studentListCache = students;
+
+    const headers = STUDENT_VIEW_HEADERS[view];
+    document.getElementById('student-table-head-row').innerHTML = headers.map(h => `<th>${h}</th>`).join('');
+
+    const tbody = document.getElementById('student-table-body');
+    if (!students.length) {
+        const emptyText = { Active: 'No current students match this filter.', Graduated: 'No graduated students yet.', Removed: 'No dropped-out students.' }[view];
+        tbody.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; color:#64748b; padding:20px;">${emptyText}</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = students.map(s => studentRowHtml(s, view)).join('');
+};
+
+// Switching the Current / Graduated / Dropped Out tabs
+document.querySelectorAll('#student-view-tabs .chip-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        currentStudentView = btn.dataset.view;
+        document.querySelectorAll('#student-view-tabs .chip-btn').forEach(b => {
+            b.classList.toggle('active', b === btn);
+        });
+        loadStudents();
+    });
+});
+
+// Fills the enrollment form with a student's data so it can be edited.
+window.editStudentFromRow = function(s) {
+    editStudent(s.id, s.class_id, s.roll, s.name || '', s.blood_group || '', s.guardian_contact || '',
+        s.address || '', s.dob || '', s.fathers_name || '', s.mothers_name || '', s.birth_reg_number || '');
+};
+
+// Edit button on a table row.
+window.editStudentById = function(id) {
+    const s = studentListCache.find(x => x.id === id);
+    if (s) editStudentFromRow(s);
+};
 
 // "Register Student" button: gathers the enrollment form fields
 // into one object and sends it to main.js to insert. Shows an
@@ -484,20 +544,183 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
         alert('Could not save student: ' + res.error);
     }
 });
+// --- STUDENT ACTIONS: Promote / Graduate / Drop Out / Reinstate ---
 
-window.changeStudentStatus = async function(id, status, cause) {
-    if(confirm(`Are you sure you want to alter this student status to ${status}?`)) {
-        await ipcRenderer.invoke('remove-student-with-cause', { id, status, cause });
-        loadStudents();
+// Roll box inside the pop-up: digits only, padded to 2 digits (same as the enrollment form).
+(function setupDialogRollInput() {
+    const rollInput = document.getElementById('sam-roll');
+    if (!rollInput) return;
+    rollInput.addEventListener('input', () => {
+        rollInput.value = rollInput.value.replace(/[^0-9]/g, '');
+    });
+    rollInput.addEventListener('blur', () => {
+        rollInput.value = formatRoll(rollInput.value);
+    });
+})();
+
+// One reusable pop-up for all four actions (Electron does not support prompt()).
+//   cfg.title / cfg.message   text shown at the top
+//   cfg.targets               [{id, label}] classes to choose from (dropdown shows only if 2+)
+//   cfg.rollValue / rollLabel show a roll box, pre-filled with rollValue
+//   cfg.askCause              show a required "reason" box
+//   cfg.onConfirm(values)     async; must return {success, error?}. The pop-up stays open and
+//                             shows the error if success is false.
+//   cfg.onDone(values, res)   runs after a successful save
+function showStudentDialog(cfg) {
+    const $ = (id) => document.getElementById(id);
+    const overlay = $('student-action-modal');
+    const targetSel = $('sam-target');
+    const rollInput = $('sam-roll');
+    const causeInput = $('sam-cause');
+    const confirmBtn = $('sam-confirm');
+    const cancelBtn = $('sam-cancel');
+    const targets = cfg.targets || [];
+    const asksRoll = cfg.rollValue !== undefined;
+
+    $('sam-title').textContent = cfg.title;
+    $('sam-message').textContent = cfg.message;
+    $('sam-error').textContent = '';
+
+    targetSel.innerHTML = '';
+    targets.forEach(t => {
+        const opt = document.createElement('option');
+        opt.value = t.id;
+        opt.textContent = t.label;
+        targetSel.appendChild(opt);
+    });
+    $('sam-target-row').style.display = targets.length > 1 ? 'block' : 'none';
+
+    $('sam-roll-row').style.display = asksRoll ? 'block' : 'none';
+    if (asksRoll) {
+        $('sam-roll-label').textContent = cfg.rollLabel || 'Roll';
+        rollInput.value = formatRoll(cfg.rollValue);
     }
+
+    $('sam-cause-row').style.display = cfg.askCause ? 'block' : 'none';
+    causeInput.value = '';
+
+    confirmBtn.textContent = cfg.confirmText || 'Confirm';
+    confirmBtn.style.background = cfg.confirmColor || '#2563eb';
+    confirmBtn.disabled = false;
+
+    const close = () => { overlay.style.display = 'none'; };
+    cancelBtn.onclick = close;
+
+    confirmBtn.onclick = async () => {
+        const values = {
+            target_id: targets.length ? Number(targetSel.value) : null,
+            roll: parseInt(rollInput.value, 10),
+            cause: causeInput.value.trim()
+        };
+        if (asksRoll && (!Number.isInteger(values.roll) || values.roll <= 0)) {
+            $('sam-error').textContent = 'Enter a valid roll number.';
+            return;
+        }
+        if (cfg.askCause && !values.cause) {
+            $('sam-error').textContent = 'Please enter a reason.';
+            return;
+        }
+        $('sam-error').textContent = '';
+        confirmBtn.disabled = true;
+        const res = await cfg.onConfirm(values);
+        confirmBtn.disabled = false;
+        if (res && res.success) {
+            close();
+            if (cfg.onDone) await cfg.onDone(values, res);
+        } else {
+            $('sam-error').textContent = (res && res.error) || 'Something went wrong.';
+        }
+    };
+
+    // Enter confirms, Escape cancels
+    overlay.onkeydown = (e) => {
+        if (e.key === 'Enter' && !confirmBtn.disabled) { e.preventDefault(); confirmBtn.click(); }
+        else if (e.key === 'Escape') close();
+    };
+
+    overlay.style.display = 'flex';
+    (cfg.askCause ? causeInput : asksRoll ? rollInput : confirmBtn).focus();
+}
+
+// Looks up a student on screen by id (the row buttons only carry the id).
+function studentOnScreen(id) {
+    return studentListCache.find(x => x.id === id);
+}
+
+// "Promote" button (Play to Class Nine).
+window.promoteStudent = async function(id) {
+    const info = await ipcRenderer.invoke('get-promotion-targets', id);
+    if (!info || !info.success) return alert((info && info.error) || 'Could not promote this student.');
+    const st = info.student;
+    const fromEight = st.class_name === 'Class Eight';
+
+    let message = `${st.name} is in ${st.class_name}. ` + (info.targets.length > 1
+        ? 'Choose the group they are moving into.'
+        : `They will move to ${info.targets[0].class_name}.`);
+    if (fromEight) message += ' Next you will set their Main and Optional subjects.';
+
+    showStudentDialog({
+        title: 'Promote Student',
+        message,
+        targets: info.targets.map(t => ({ id: t.id, label: t.class_name })),
+        rollLabel: 'Roll in the new class',
+        rollValue: st.roll,
+        confirmText: 'Promote',
+        onConfirm: (v) => ipcRenderer.invoke('promote-student', { id, to_class_id: v.target_id, new_roll: v.roll }),
+        onDone: async (v, res) => {
+            await loadStudents();
+            if (fromEight) {
+                // Class Nine needs Main/Optional subjects, so open the Edit form right away.
+                editStudentFromRow(res.student);
+                document.getElementById('student-details').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    });
 };
 
+// "Graduate" button (Class Ten only).
+window.graduateStudent = function(id) {
+    const s = studentOnScreen(id);
+    if (!s) return;
+    showStudentDialog({
+        title: 'Graduate Student',
+        message: `${s.name} (${s.class_name}, roll ${formatRoll(s.roll)}) has completed Class Ten. They will move to the Graduated tab.`,
+        confirmText: 'Graduate',
+        confirmColor: '#10b981',
+        onConfirm: () => ipcRenderer.invoke('graduate-student', { id }),
+        onDone: () => loadStudents()
+    });
+};
 
-// "Drop Out" button handler: asks for a reason via prompt(),
-// then hands off to changeStudentStatus() with status "Removed".
-window.kickStudent = function(id) {
-    const cause = prompt("Enter cause of student removal/drop-out:");
-    if (cause) changeStudentStatus(id, 'Removed', cause);
+// "Drop Out" button (any class). A reason is required.
+window.dropOutStudent = function(id) {
+    const s = studentOnScreen(id);
+    if (!s) return;
+    showStudentDialog({
+        title: 'Drop Out Student',
+        message: `${s.name} (${s.class_name}, roll ${formatRoll(s.roll)}) will leave the Current list and be kept in the Dropped Out tab.`,
+        askCause: true,
+        confirmText: 'Drop Out',
+        confirmColor: '#ef4444',
+        onConfirm: (v) => ipcRenderer.invoke('drop-out-student', { id, cause: v.cause }),
+        onDone: () => loadStudents()
+    });
+};
+
+// "Reinstate" button (Graduated and Dropped Out tabs).
+window.reinstateStudent = function(id) {
+    const s = studentOnScreen(id);
+    if (!s) return;
+    showStudentDialog({
+        title: 'Reinstate Student',
+        message: `${s.name} will return to ${s.class_name} as a current student.`,
+        rollLabel: 'Roll',
+        rollValue: s.roll,
+        confirmText: 'Reinstate',
+        confirmColor: '#f59e0b',
+        onConfirm: (v) => ipcRenderer.invoke('reinstate-student', { id, new_roll: v.roll }),
+        onDone: () => loadStudents()
+    });
 };
 
 

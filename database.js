@@ -142,6 +142,19 @@ db.serialize(() => {
         FOREIGN KEY(student_id) REFERENCES students(id)
     )`);
 
+    // 10. Student History Table (log of every promote / graduate / drop out / reinstate)
+    db.run(`CREATE TABLE IF NOT EXISTS student_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        student_id INTEGER NOT NULL,
+        action TEXT NOT NULL, -- 'Promoted', 'Graduated', 'Dropped Out', 'Reinstated'
+        from_class_id INTEGER,
+        to_class_id INTEGER,
+        roll INTEGER,
+        cause TEXT,
+        action_date TEXT DEFAULT (datetime('now', 'localtime')),
+        FOREIGN KEY(student_id) REFERENCES students(id)
+    )`);
+
 
     console.log("🎉 Database tables successfully initialized!");
 });

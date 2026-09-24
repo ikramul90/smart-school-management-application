@@ -129,12 +129,17 @@
                 <!-- TAB CONTENT: STUDENTS DATABASE (WITH REMOVAL CONFIGURATOR) -->
                 <div id="db-students" class="tab-content">
                     <h2 class="no-select">Student Registry</h2>
+
+                    <div id="student-view-tabs" class="chip-row no-select">
+                        <button class="chip-btn active" data-view="Active">Current</button>
+                        <button class="chip-btn" data-view="Graduated">Graduated</button>
+                        <button class="chip-btn" data-view="Removed">Dropped Out</button>
+                    </div>
                     
                     <!-- ADVANCED CLASSIFICATION FILTERS -->
                     <div style="background:#e2e8f0; padding:15px; border-radius:6px; margin-bottom:20px; display:flex; gap:20px; align-items:center;">
                         <strong class="no-select">Filter View:</strong>
                         <div class="no-select">Class: <select id="filter-student-class" onchange="loadStudents()"><option value="">All 14 Classes</option></select></div>
-                        <div class="no-select">Status: <select id="filter-student-status" onchange="loadStudents()"><option value="Active">Active Enrolled</option><option value="Graduated">Completed Studies</option><option value="Removed">Removed with Cause</option></select></div>
                     </div>
 
                     <!-- DATA ENROLLMENT TRIGGER -->
@@ -165,7 +170,7 @@
 
                     <table style="width:100%; border-collapse:collapse; background:white;" border="1" cellpadding="8" bordercolor="#e2e8f0">
                         <thead class="no-select" style="background:#f8fafc;">
-                            <tr><th>Roll</th><th>Name</th><th>Class</th><th>Guardian Contact</th><th>Status</th><th>Management Actions</th></tr>
+                            <tr id="student-table-head-row"><th>Roll</th><th>Name</th><th>Class</th><th>Guardian Contact</th><th>Status</th><th>Management Actions</th></tr>
                         </thead>
                         <tbody id="student-table-body"></tbody>
                     </table>
@@ -324,6 +329,31 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- POP-UP for Promote / Graduate / Drop Out / Reinstate -->
+    <div id="student-action-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-box">
+            <h3 id="sam-title" style="margin-top:0;"></h3>
+            <p id="sam-message" style="font-size:14px; color:#475569;"></p>
+            <div id="sam-target-row" class="input-group" style="display:none;">
+                <label>Move to</label>
+                <select id="sam-target"></select>
+            </div>
+            <div id="sam-roll-row" class="input-group" style="display:none;">
+                <label id="sam-roll-label">Roll</label>
+                <input type="text" id="sam-roll" inputmode="numeric" maxlength="3" autocomplete="off">
+            </div>
+            <div id="sam-cause-row" class="input-group" style="display:none;">
+                <label>Reason</label>
+                <input type="text" id="sam-cause" autocomplete="off">
+            </div>
+            <div id="sam-error" class="error"></div>
+            <div style="display:flex; gap:10px;">
+                <button id="sam-confirm" type="button">Confirm</button>
+                <button id="sam-cancel" type="button" style="background:#64748b;">Cancel</button>
+            </div>
         </div>
     </div>
 
