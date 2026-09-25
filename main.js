@@ -201,9 +201,80 @@ async function runDuplicateRollCheck() {
     return syncConditionNotifications('dup-roll:', wanted);
 }
 
+// --- MISSING-DETAILS CHECK (students and teachers with an empty optional field) ---
+// Fields that are enforced by the form already (Name, Roll, Guardian Contact,
+// Teacher Name) are not checked here — they can never be empty.
+const STUDENT_MISSING_FIELDS = [
+    ['blood_group', 'Blood Group'],
+    ['fathers_name', "Father's Name"],
+    ['mothers_name', "Mother's Name"],
+    ['address', 'Address'],
+    ['dob', 'Date of Birth'],
+    ['birth_reg_number', 'Birth Registration No.']
+];
+const TEACHER_MISSING_FIELDS = [
+    ['title', 'Title'],
+    ['contact_number', 'Contact Number'],
+    ['blood_group', 'Blood Group'],
+    ['nid_number', 'NID Number'],
+    ['fathers_name', "Father's Name"],
+    ['mothers_name', "Mother's Name"]
+];
+const MAX_MISSING_NOTIFICATIONS = 10; // keeps a freshly-imported database from flooding the bell
+
+function missingFieldLabels(row, fields) {
+    return fields.filter(([col]) => !row[col] || !String(row[col]).trim()).map(([, label]) => label);
+}
+
+// Only ACTIVE students are checked (Graduated/Removed records are no longer being edited).
+async function runMissingFieldsCheck() {
+    const students = await dbAll(`SELECT students.*, classes.class_name FROM students
+        LEFT JOIN classes ON students.class_id = classes.id
+        WHERE students.status = 'Active' ORDER BY students.class_id, students.roll`);
+    const teachers = await dbAll(`SELECT * FROM teachers ORDER BY name`);
+
+    const wanted = [];
+    students.forEach(s => {
+        const missing = missingFieldLabels(s, STUDENT_MISSING_FIELDS);
+        if (missing.length) wanted.push({
+            key: `missing:student:${s.id}`,
+            severity: 'info',
+            title: `${s.name} is missing details`,
+            message: `${s.name} (${s.class_name || 'no class'}, roll ${pad2(s.roll)}) is missing: ${missing.join(', ')}.`,
+            target: JSON.stringify({ tab: 'db-students', student_id: s.id })
+        });
+    });
+    teachers.forEach(t => {
+        const missing = missingFieldLabels(t, TEACHER_MISSING_FIELDS);
+        if (missing.length) wanted.push({
+            key: `missing:teacher:${t.id}`,
+            severity: 'info',
+            title: `${t.name} is missing details`,
+            message: `${t.name} is missing: ${missing.join(', ')}.`,
+            target: JSON.stringify({ tab: 'db-teachers', teacher_id: t.id })
+        });
+    });
+
+    // Cap how many individual messages appear; fold the rest into one summary line.
+    let toKeep = wanted;
+    let summary = [];
+    if (wanted.length > MAX_MISSING_NOTIFICATIONS) {
+        toKeep = wanted.slice(0, MAX_MISSING_NOTIFICATIONS);
+        summary = [{
+            key: 'missing:more',
+            severity: 'info',
+            title: 'More records need details',
+            message: `${wanted.length - MAX_MISSING_NOTIFICATIONS} more student(s)/teacher(s) are missing details. Fill them in from the Students and Teachers tabs.`,
+            target: null
+        }];
+    }
+    return syncConditionNotifications('missing:', toKeep.concat(summary));
+}
+
 // Runs every data check. A failed check must never break the action that triggered it.
 async function runDataChecks() {
     try { await runDuplicateRollCheck(); } catch (e) { console.error('Data check failed:', e.message); }
+    try { await runMissingFieldsCheck(); } catch (e) { console.error('Data check failed:', e.message); }
 }
 
 ipcMain.handle('get-notifications', async () => {
@@ -467,13 +538,14 @@ ipcMain.handle('get-teachers', async () => {
 });
 
 ipcMain.handle('add-teacher', async (event, t) => {
-    return new Promise((resolve) => {
-        db.run(`INSERT INTO teachers (name, title, fathers_name, mothers_name, contact_number, blood_group, nid_number) VALUES (?, ?, ?, ?, ?, ?, ?)`,
-            [t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null], function (err) {
-            if (err) resolve({ success: false, error: err.message });
-            else resolve({ success: true, id: this.lastID });
-        });
-    });
+    try {
+        const r = await dbRun(`INSERT INTO teachers (name, title, fathers_name, mothers_name, contact_number, blood_group, nid_number) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            [t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null]);
+        await runDataChecks();
+        return { success: true, id: r.lastID };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
 });
 
 ipcMain.handle('set-teacher-classes', async (event, { teacher_id, class_ids }) => {
@@ -497,13 +569,14 @@ ipcMain.handle('set-teacher-classes', async (event, { teacher_id, class_ids }) =
 });
 
 ipcMain.handle('update-teacher', async (event, t) => {
-    return new Promise((resolve) => {
-        db.run(`UPDATE teachers SET name = ?, title = ?, fathers_name = ?, mothers_name = ?, contact_number = ?, blood_group = ?, nid_number = ? WHERE id = ?`,
-            [t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null, t.id], (err) => {
-            if (err) resolve({ success: false, error: err.message });
-            else resolve({ success: true });
-        });
-    });
+    try {
+        await dbRun(`UPDATE teachers SET name = ?, title = ?, fathers_name = ?, mothers_name = ?, contact_number = ?, blood_group = ?, nid_number = ? WHERE id = ?`,
+            [t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null, t.id]);
+        await runDataChecks();
+        return { success: true };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
 });
 
 ipcMain.handle('add-subject', async (event, data) => {
