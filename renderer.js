@@ -1042,10 +1042,18 @@ const ALL_MARKS_EXAM_TYPES = [
 ];
 
 let allMarksClasses = [];
+let allMarksSelectedClassId = null;
+let allMarksSelectedSubject = null;
+let allMarksClassSubjects = [];
 
 function showExamsHomeView() {
     document.getElementById('exams-home-view').style.display = 'block';
     document.getElementById('marks-view-page').style.display = 'none';
+}
+
+function clearAllMarksResults(message = 'Select a class and subject to view marks.') {
+    document.getElementById('marks-view-status').textContent = message;
+    document.getElementById('marks-view-table-wrap').innerHTML = '';
 }
 
 async function openAllMarksView() {
@@ -1054,64 +1062,87 @@ async function openAllMarksView() {
 
     if (!allMarksClasses.length) {
         allMarksClasses = await ipcRenderer.invoke('get-classes-list');
-        const classSelect = document.getElementById('marks-view-class');
-        classSelect.innerHTML = '<option value="">-- Select Class --</option>' +
-            allMarksClasses.map(c => `<option value="${c.id}">${escapeHtml(c.class_name)}</option>`).join('');
     }
 
-    document.getElementById('marks-view-subject').innerHTML = '<option value="">-- Select Subject --</option>';
-    document.getElementById('marks-view-status').textContent = 'Select a class and subject to view marks.';
-    document.getElementById('marks-view-table-wrap').innerHTML = '';
+    allMarksSelectedClassId = null;
+    allMarksSelectedSubject = null;
+    allMarksClassSubjects = [];
+
+    renderAllMarksClassButtons();
+    document.getElementById('marks-view-subject-section').style.display = 'none';
+    document.getElementById('marks-view-subject-buttons').innerHTML = '';
+    clearAllMarksResults();
 }
 
-async function updateAllMarksSubjectFilter() {
-    const classId = document.getElementById('marks-view-class').value;
-    const subjectSelect = document.getElementById('marks-view-subject');
-    subjectSelect.innerHTML = '<option value="">-- Select Subject --</option>';
+function renderAllMarksClassButtons() {
+    const container = document.getElementById('marks-view-class-buttons');
+    container.innerHTML = '';
+
+    allMarksClasses.forEach(c => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'chip-btn' + (String(c.id) === String(allMarksSelectedClassId) ? ' active' : '');
+        btn.textContent = c.class_name;
+        btn.addEventListener('click', () => selectAllMarksClass(c.id));
+        container.appendChild(btn);
+    });
+}
+
+async function selectAllMarksClass(classId) {
+    allMarksSelectedClassId = classId;
+    allMarksSelectedSubject = null;
+    renderAllMarksClassButtons();
+
+    const subjectSection = document.getElementById('marks-view-subject-section');
+    const subjectContainer = document.getElementById('marks-view-subject-buttons');
+    subjectSection.style.display = 'block';
+    subjectContainer.innerHTML = '';
     document.getElementById('marks-view-table-wrap').innerHTML = '';
 
-    if (!classId) {
-        document.getElementById('marks-view-status').textContent = 'Select a class and subject to view marks.';
-        return;
-    }
-
     const subjects = await ipcRenderer.invoke('get-subjects');
-    const classSubjects = subjects
+    allMarksClassSubjects = subjects
         .filter(s => String(s.class_id) === String(classId))
         .sort((a, b) => (Number(a.sequence_order) || 0) - (Number(b.sequence_order) || 0) || a.id - b.id);
 
-    subjectSelect.innerHTML += classSubjects
-        .map(s => `<option value="${escapeHtml(s.subject_name)}">${escapeHtml(s.subject_name)}</option>`)
-        .join('');
+    allMarksClassSubjects.forEach(subject => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'chip-btn';
+        btn.textContent = subject.subject_name;
+        btn.addEventListener('click', () => selectAllMarksSubject(subject));
+        subjectContainer.appendChild(btn);
+    });
 
-    document.getElementById('marks-view-status').textContent = classSubjects.length
+    clearAllMarksResults(allMarksClassSubjects.length
         ? 'Now select a subject.'
-        : 'No subjects are configured for this class.';
+        : 'No subjects are configured for this class.');
+}
+
+function selectAllMarksSubject(subject) {
+    allMarksSelectedSubject = subject;
+
+    document.querySelectorAll('#marks-view-subject-buttons .chip-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent === subject.subject_name);
+    });
+
+    renderAllMarksView();
 }
 
 async function renderAllMarksView() {
     const year = document.getElementById('marks-view-year').value;
-    const classId = document.getElementById('marks-view-class').value;
-    const subjectName = document.getElementById('marks-view-subject').value;
+    const classId = allMarksSelectedClassId;
+    const subject = allMarksSelectedSubject;
     const status = document.getElementById('marks-view-status');
     const wrap = document.getElementById('marks-view-table-wrap');
 
-    if (!classId || !subjectName) {
-        status.textContent = 'Select a class and subject to view marks.';
-        wrap.innerHTML = '';
+    if (!classId || !subject) {
+        clearAllMarksResults(classId ? 'Now select a subject.' : 'Select a class and subject to view marks.');
         return;
     }
 
     const cls = allMarksClasses.find(c => String(c.id) === String(classId));
     status.textContent = 'Loading marks…';
     wrap.innerHTML = '';
-
-    const subjects = await ipcRenderer.invoke('get-subjects');
-    const subject = subjects.find(s => String(s.class_id) === String(classId) && s.subject_name === subjectName);
-    if (!subject) {
-        status.textContent = `No database subject named “${subjectName}” exists for this class.`;
-        return;
-    }
 
     const result = await ipcRenderer.invoke('get-all-marks-view', {
         year, class_id: Number(classId), subject_id: subject.id
@@ -1135,7 +1166,7 @@ async function renderAllMarksView() {
     }).join('');
 
     const className = cls ? cls.class_name : 'Class';
-    status.textContent = `${className} — ${subjectName} — ${year} (${result.students.length} active student${result.students.length === 1 ? '' : 's'})`;
+    status.textContent = `${className} — ${subject.subject_name} — ${year} (${result.students.length} active student${result.students.length === 1 ? '' : 's'})`;
     wrap.innerHTML = `
         <table class="marks-view-table">
             <thead><tr><th>Roll</th><th>Name</th>${ALL_MARKS_EXAM_TYPES.map(type => `<th>${escapeHtml(type.replace(' Exam', ''))}</th>`).join('')}</tr></thead>
@@ -1145,8 +1176,6 @@ async function renderAllMarksView() {
 
 document.getElementById('btn-open-marks-view').addEventListener('click', openAllMarksView);
 document.getElementById('btn-back-marks-view').addEventListener('click', showExamsHomeView);
-document.getElementById('marks-view-class').addEventListener('change', updateAllMarksSubjectFilter);
-document.getElementById('marks-view-subject').addEventListener('change', renderAllMarksView);
 document.getElementById('marks-view-year').addEventListener('change', renderAllMarksView);
 
 

@@ -619,7 +619,8 @@ button:hover {
 .marks-back-btn { background:#64748b; }
 .marks-view-title-row { justify-content:flex-start; margin-bottom:18px; }
 .marks-view-title-row h2 { margin:0; }
-.marks-view-filters { background:white; padding:18px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:16px; display:grid; grid-template-columns:1fr 1.5fr 1.5fr; gap:15px; align-items:end; }
+.marks-view-year-filter { background:white; padding:20px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:20px; display:flex; gap:15px; align-items:flex-end; }
+.marks-view-year-filter > div { flex:1; }
 .marks-view-status { margin-bottom:10px; color:#64748b; font-size:13px; }
 .marks-view-table-wrap { width:100%; overflow-x:auto; background:white; border:1px solid #e2e8f0; border-radius:8px; }
 .marks-view-table { width:100%; min-width:980px; border-collapse:collapse; text-align:center; }
@@ -628,4 +629,4 @@ button:hover {
 .marks-view-table td:first-child, .marks-view-table th:first-child { width:70px; }
 .marks-view-table td:nth-child(2), .marks-view-table th:nth-child(2) { text-align:left; min-width:180px; }
 .marks-view-mark { font-weight:600; }
-@media (max-width:800px) { .marks-view-filters { grid-template-columns:1fr; } }
+@media (max-width:800px) { .marks-view-year-filter { display:block; } }
