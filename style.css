@@ -615,8 +615,26 @@ button:hover {
 
 /* ---------- EXAMS: all-marks read-only view ---------- */
 .exams-title-row, .marks-view-title-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-.marks-view-btn, .marks-back-btn { width:auto; padding:8px 12px; font-size:13px; font-weight:600; }
-.marks-back-btn { background:#64748b; }
+.marks-view-btn, .marks-back-btn {
+    width: auto;
+    padding: 6px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+}
+
+.marks-back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.marks-back-btn svg {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+}
 .marks-view-title-row { justify-content:flex-start; margin-bottom:18px; }
 .marks-view-title-row h2 { margin:0; }
 .marks-view-year-filter { background:white; padding:20px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:20px; display:flex; gap:15px; align-items:flex-end; }
