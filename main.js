@@ -663,6 +663,43 @@ ipcMain.handle('get-marks-sheet', async (event, { class_id, exam_id }) => {
     });
 });
 
+// Read-only marks matrix for one year + class + subject.
+ipcMain.handle('get-all-marks-view', async (event, { year, class_id, subject_id }) => {
+    return new Promise((resolve) => {
+        const parsedYear = parseInt(year, 10);
+        if (!Number.isInteger(parsedYear) || parsedYear < 2000 || parsedYear > 2100) {
+            return resolve({ success: false, error: 'Enter a valid year between 2000 and 2100.' });
+        }
+        if (!class_id || !subject_id) {
+            return resolve({ success: false, error: 'Class and subject are required.' });
+        }
+
+        db.all(`SELECT id, roll, name
+                FROM students
+                WHERE class_id = ? AND status = 'Active'
+                ORDER BY roll`, [class_id], (err, students) => {
+            if (err) return resolve({ success: false, error: err.message });
+
+            db.get(`SELECT id, subject_name, monthly_marks, yearly_marks
+                    FROM subjects WHERE id = ? AND class_id = ?`, [subject_id, class_id], (err2, subject) => {
+                if (err2) return resolve({ success: false, error: err2.message });
+                if (!subject) return resolve({ success: false, error: 'Subject not found for this class.' });
+
+                db.all(`SELECT e.exam_type, m.student_id, m.marks_obtained, m.is_present
+                        FROM exams e
+                        LEFT JOIN marks m ON m.exam_id = e.id AND m.subject_id = ?
+                        LEFT JOIN students s ON s.id = m.student_id AND s.class_id = ?
+                        WHERE e.year = ?
+                          AND e.exam_type IN ('1st Monthly Exam', '2nd Monthly Exam', 'Half Yearly Exam', '3rd Monthly Exam', '4th Monthly Exam', 'Yearly Exam')
+                          AND (m.id IS NULL OR s.status = 'Active')`, [subject_id, class_id, parsedYear], (err3, rows) => {
+                    if (err3) return resolve({ success: false, error: err3.message });
+                    resolve({ success: true, students: students || [], subject, marks: rows || [] });
+                });
+            });
+        });
+    });
+});
+
 // Save ONE mark. value is: '' (clear it), 'A' (absent) or a number as text.
 // Rule: no row in the marks table = not entered yet.
 ipcMain.handle('save-mark', async (event, { exam_id, student_id, subject_id, value }) => {

@@ -612,3 +612,20 @@ button:hover {
         transform: none;
     }
 }
+
+/* ---------- EXAMS: all-marks read-only view ---------- */
+.exams-title-row, .marks-view-title-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.marks-view-btn, .marks-back-btn { width:auto; padding:8px 12px; font-size:13px; font-weight:600; }
+.marks-back-btn { background:#64748b; }
+.marks-view-title-row { justify-content:flex-start; margin-bottom:18px; }
+.marks-view-title-row h2 { margin:0; }
+.marks-view-filters { background:white; padding:18px; border-radius:8px; border:1px solid #e2e8f0; margin-bottom:16px; display:grid; grid-template-columns:1fr 1.5fr 1.5fr; gap:15px; align-items:end; }
+.marks-view-status { margin-bottom:10px; color:#64748b; font-size:13px; }
+.marks-view-table-wrap { width:100%; overflow-x:auto; background:white; border:1px solid #e2e8f0; border-radius:8px; }
+.marks-view-table { width:100%; min-width:980px; border-collapse:collapse; text-align:center; }
+.marks-view-table th, .marks-view-table td { border-bottom:1px solid #e2e8f0; border-right:1px solid #e2e8f0; padding:9px 12px; white-space:nowrap; }
+.marks-view-table th { background:#f8fafc; color:#475569; font-size:12px; }
+.marks-view-table td:first-child, .marks-view-table th:first-child { width:70px; }
+.marks-view-table td:nth-child(2), .marks-view-table th:nth-child(2) { text-align:left; min-width:180px; }
+.marks-view-mark { font-weight:600; }
+@media (max-width:800px) { .marks-view-filters { grid-template-columns:1fr; } }
