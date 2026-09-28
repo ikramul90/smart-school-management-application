@@ -1198,7 +1198,7 @@ let transcriptStudents = [];
 let transcriptSubjects = [];
 let transcriptHiddenColumns = new Set();   // keys of unchecked columns
 let transcriptLoadToken = 0;               // ignores stale async loads
-
+let transcriptMarksData = {};              // studentId -> subjectId -> { m1, m2, m3, total }
 function getTranscriptColumns(test) {
     const [t1, t2, t3] = TRANSCRIPT_TESTS[test] || TRANSCRIPT_TESTS['Half Yearly'];
     return [
@@ -1273,7 +1273,7 @@ function renderTranscriptToggles() {
     });
 }
 
-function buildTranscriptTable() {
+function buildTranscriptTable(studentId) {
     const test = document.getElementById('transcript-test').value;
     const visible = getTranscriptColumns(test).filter(c => !transcriptHiddenColumns.has(c.key));
     const marksCount = visible.filter(c => c.marks).length;
@@ -1288,11 +1288,26 @@ function buildTranscriptTable() {
         }
     });
 
+    let totalMarksAgg = { m1: 0, m2: 0, m3: 0, total: 0 };
+
     const body = transcriptSubjects.map((sub, i) => {
+        const subMarks = transcriptMarksData[studentId]?.[sub.id] || { m1: '', m2: '', m3: '', total: '' };
+
+        if (typeof subMarks.m1 === 'number') totalMarksAgg.m1 += subMarks.m1;
+        if (typeof subMarks.m2 === 'number') totalMarksAgg.m2 += subMarks.m2;
+        if (typeof subMarks.m3 === 'number') totalMarksAgg.m3 += subMarks.m3;
+        if (typeof subMarks.total === 'number') totalMarksAgg.total += subMarks.total;
+
         const cells = visible.map(c => {
             if (c.key === 'sn') return `<td>${String(i + 1).padStart(2, '0')}</td>`;
             if (c.key === 'subject') return `<td class="transcript-subject">${escapeHtml(sub.subject_name)}</td>`;
-            return '<td></td>';   // marks/totals/grades come in the next step
+            if (c.key === 'm1') return `<td>${subMarks.m1 !== '' ? subMarks.m1 : '-'}</td>`;
+            if (c.key === 'm2') return `<td>${subMarks.m2 !== '' ? subMarks.m2 : '-'}</td>`;
+            if (c.key === 'm3') return `<td>${subMarks.m3 !== '' ? subMarks.m3 : '-'}</td>`;
+            if (c.key === 'total') return `<td>${subMarks.total !== '' ? subMarks.total : '-'}</td>`;
+            if (c.key === 'grade') return `<td>-</td>`;
+            if (c.key === 'gp') return `<td>-</td>`;
+            return '<td></td>';
         }).join('');
         return `<tr>${cells}</tr>`;
     }).join('');
@@ -1300,7 +1315,13 @@ function buildTranscriptTable() {
     const leadCount = visible.filter(c => c.key === 'sn' || c.key === 'subject').length;
     const totalCells = visible
         .filter(c => c.key !== 'sn' && c.key !== 'subject')
-        .map(() => '<td></td>').join('');
+        .map((c) => {
+            if (c.key === 'm1') return `<td>${totalMarksAgg.m1}</td>`;
+            if (c.key === 'm2') return `<td>${totalMarksAgg.m2}</td>`;
+            if (c.key === 'm3') return `<td>${totalMarksAgg.m3}</td>`;
+            if (c.key === 'total') return `<td>${totalMarksAgg.total}</td>`;
+            return '<td></td>';
+        }).join('');
     const totalRow = `<tr class="transcript-total-row">${leadCount ? `<td colspan="${leadCount}">Total</td>` : ''}${totalCells}</tr>`;
 
     return `<table class="transcript-table">
@@ -1312,11 +1333,10 @@ function buildTranscriptTable() {
 function paintTranscriptPreview() {
     const preview = document.getElementById('transcript-preview');
     if (!transcriptStudents.length) { preview.innerHTML = ''; return; }
-    const tableHtml = buildTranscriptTable();
     preview.innerHTML = transcriptStudents.map(st => `
         <div class="transcript-page">
             <div class="transcript-student-name">${escapeHtml(st.name)}</div>
-            <div class="transcript-table-wrap">${tableHtml}</div>
+            <div class="transcript-table-wrap">${buildTranscriptTable(st.id)}</div>
         </div>`).join('');
 }
 
@@ -1347,7 +1367,7 @@ async function loadTranscriptPreview() {
     }
 
     const token = ++transcriptLoadToken;
-    status.textContent = 'Loading students…';
+    status.textContent = 'Loading students...';
 
     const [students, allSubjects] = await Promise.all([
         ipcRenderer.invoke('get-students', { class_id: cls.id, status: 'Active' }),
@@ -1362,6 +1382,41 @@ async function loadTranscriptPreview() {
 
     if (!transcriptStudents.length) { status.textContent = `No active students in ${cls.class_name}.`; return; }
     if (!transcriptSubjects.length) { status.textContent = `No subjects are configured for ${cls.class_name}.`; return; }
+
+    status.textContent = 'Loading marks...';
+
+    const [t1, t2, t3] = TRANSCRIPT_TESTS[test] || TRANSCRIPT_TESTS['Half Yearly'];
+    const transcriptExamTypes = [t1 + ' Exam', t2 + ' Exam', t3 + ' Exam'];
+
+    const exams = await Promise.all(
+        transcriptExamTypes.map(type => ipcRenderer.invoke('get-or-create-exam', { year, exam_type: type }))
+    );
+
+    const marksSheets = await Promise.all(
+        exams.map(exam => ipcRenderer.invoke('get-marks-sheet', { class_id: cls.id, exam_id: exam.id }))
+    );
+
+    if (token !== transcriptLoadToken) return;
+
+    transcriptMarksData = {};
+    transcriptStudents.forEach(st => transcriptMarksData[st.id] = {});
+
+    marksSheets.forEach((sheet, idx) => {
+        const mKey = 'm' + (idx + 1);
+        if (sheet.marks) {
+            sheet.marks.forEach(m => {
+                if (!transcriptMarksData[m.student_id]) return;
+                if (!transcriptMarksData[m.student_id][m.subject_id]) {
+                    transcriptMarksData[m.student_id][m.subject_id] = { m1: '', m2: '', m3: '', total: 0 };
+                }
+                const val = m.marks_obtained;
+                transcriptMarksData[m.student_id][m.subject_id][mKey] = (val !== null && val !== undefined) ? val : '';
+                if (typeof val === 'number') {
+                    transcriptMarksData[m.student_id][m.subject_id].total += val;
+                }
+            });
+        }
+    });
 
     status.textContent = `${cls.class_name} — ${test} Transcript — ${year} (${transcriptStudents.length} student${transcriptStudents.length === 1 ? '' : 's'}, one page each)`;
     columnsSection.style.display = 'block';
