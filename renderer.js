@@ -1049,6 +1049,7 @@ let allMarksClassSubjects = [];
 function showExamsHomeView() {
     document.getElementById('exams-home-view').style.display = 'block';
     document.getElementById('marks-view-page').style.display = 'none';
+    document.getElementById('transcript-page').style.display = 'none';
 }
 
 function clearAllMarksResults(message = 'Select a class and subject to view marks.') {
@@ -1178,6 +1179,204 @@ document.getElementById('btn-open-marks-view').addEventListener('click', openAll
 document.getElementById('btn-back-marks-view').addEventListener('click', showExamsHomeView);
 document.getElementById('marks-view-year').addEventListener('change', renderAllMarksView);
 
+
+
+
+// ============================================================
+// GENERATE TRANSCRIPT PAGE — V1.0.0 shell (Classes 6–8).
+// Preview is a skeleton for now: names + subject rows, blank cells.
+// ============================================================
+const TRANSCRIPT_TESTS = {
+    'Half Yearly': ['1st Monthly', '2nd Monthly', 'Half Yearly'],
+    'Yearly':      ['3rd Monthly', '4th Monthly', 'Yearly']
+};
+const TRANSCRIPT_V100_CLASSES = ['Class Six', 'Class Seven', 'Class Eight'];
+
+let transcriptClasses = [];
+let transcriptSelectedClassId = null;
+let transcriptStudents = [];
+let transcriptSubjects = [];
+let transcriptHiddenColumns = new Set();   // keys of unchecked columns
+let transcriptLoadToken = 0;               // ignores stale async loads
+
+function getTranscriptColumns(test) {
+    const [t1, t2, t3] = TRANSCRIPT_TESTS[test] || TRANSCRIPT_TESTS['Half Yearly'];
+    return [
+        { key: 'sn',      label: 'S/N' },
+        { key: 'subject', label: 'Subject Name' },
+        { key: 'm1',      label: t1, marks: true },
+        { key: 'm2',      label: t2, marks: true },
+        { key: 'm3',      label: t3, marks: true },
+        { key: 'total',   label: 'Total', marks: true },
+        { key: 'pct',     label: 'Percentage' },
+        { key: 'st',      label: 'Subject Total' },
+        { key: 'high',    label: 'Highest Marks' },
+        { key: 'grade',   label: 'Letter Grade' },
+        { key: 'gp',      label: 'Grade Points' }
+    ];
+}
+
+function openTranscriptPage() {
+    document.getElementById('exams-home-view').style.display = 'none';
+    document.getElementById('marks-view-page').style.display = 'none';
+    document.getElementById('transcript-page').style.display = 'block';
+
+    transcriptSelectedClassId = null;
+    transcriptStudents = [];
+    transcriptSubjects = [];
+    document.getElementById('transcript-columns-section').style.display = 'none';
+    document.getElementById('btn-generate-transcript').style.display = 'none';
+    document.getElementById('transcript-preview').innerHTML = '';
+    document.getElementById('transcript-status').textContent = 'Select a class to preview transcripts.';
+
+    ipcRenderer.invoke('get-classes-list').then(classes => {
+        transcriptClasses = classes;
+        renderTranscriptClassButtons();
+    });
+}
+
+function renderTranscriptClassButtons() {
+    const container = document.getElementById('transcript-class-buttons');
+    container.innerHTML = '';
+    transcriptClasses.forEach(c => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'chip-btn' + (String(c.id) === String(transcriptSelectedClassId) ? ' active' : '');
+        btn.textContent = c.class_name;
+        btn.addEventListener('click', () => {
+            transcriptSelectedClassId = c.id;
+            renderTranscriptClassButtons();
+            loadTranscriptPreview();
+        });
+        container.appendChild(btn);
+    });
+}
+
+function renderTranscriptToggles() {
+    const test = document.getElementById('transcript-test').value;
+    const box = document.getElementById('transcript-column-toggles');
+    box.innerHTML = '';
+    getTranscriptColumns(test).forEach(col => {
+        const label = document.createElement('label');
+        label.className = 'transcript-toggle';
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = !transcriptHiddenColumns.has(col.key);
+        cb.addEventListener('change', () => {
+            if (cb.checked) transcriptHiddenColumns.delete(col.key);
+            else transcriptHiddenColumns.add(col.key);
+            paintTranscriptPreview();          // no re-fetch, just redraw
+        });
+        label.appendChild(cb);
+        label.appendChild(document.createTextNode(' ' + col.label));
+        box.appendChild(label);
+    });
+}
+
+function buildTranscriptTable() {
+    const test = document.getElementById('transcript-test').value;
+    const visible = getTranscriptColumns(test).filter(c => !transcriptHiddenColumns.has(c.key));
+    const marksCount = visible.filter(c => c.marks).length;
+
+    let head1 = '', head2 = '', groupDone = false;
+    visible.forEach(c => {
+        if (c.marks) {
+            if (!groupDone) { head1 += `<th colspan="${marksCount}">Marks Obtained</th>`; groupDone = true; }
+            head2 += `<th>${escapeHtml(c.label)}</th>`;
+        } else {
+            head1 += `<th${marksCount ? ' rowspan="2"' : ''}>${escapeHtml(c.label)}</th>`;
+        }
+    });
+
+    const body = transcriptSubjects.map((sub, i) => {
+        const cells = visible.map(c => {
+            if (c.key === 'sn') return `<td>${String(i + 1).padStart(2, '0')}</td>`;
+            if (c.key === 'subject') return `<td class="transcript-subject">${escapeHtml(sub.subject_name)}</td>`;
+            return '<td></td>';   // marks/totals/grades come in the next step
+        }).join('');
+        return `<tr>${cells}</tr>`;
+    }).join('');
+
+    const leadCount = visible.filter(c => c.key === 'sn' || c.key === 'subject').length;
+    const totalCells = visible
+        .filter(c => c.key !== 'sn' && c.key !== 'subject')
+        .map(() => '<td></td>').join('');
+    const totalRow = `<tr class="transcript-total-row">${leadCount ? `<td colspan="${leadCount}">Total</td>` : ''}${totalCells}</tr>`;
+
+    return `<table class="transcript-table">
+        <thead><tr>${head1}</tr>${marksCount ? `<tr>${head2}</tr>` : ''}</thead>
+        <tbody>${body}${totalRow}</tbody>
+    </table>`;
+}
+
+function paintTranscriptPreview() {
+    const preview = document.getElementById('transcript-preview');
+    if (!transcriptStudents.length) { preview.innerHTML = ''; return; }
+    const tableHtml = buildTranscriptTable();
+    preview.innerHTML = transcriptStudents.map(st => `
+        <div class="transcript-page">
+            <div class="transcript-student-name">${escapeHtml(st.name)}</div>
+            <div class="transcript-table-wrap">${tableHtml}</div>
+        </div>`).join('');
+}
+
+async function loadTranscriptPreview() {
+    const status = document.getElementById('transcript-status');
+    const generateBtn = document.getElementById('btn-generate-transcript');
+    const columnsSection = document.getElementById('transcript-columns-section');
+    const preview = document.getElementById('transcript-preview');
+
+    const year = parseInt(document.getElementById('transcript-year').value, 10);
+    const test = document.getElementById('transcript-test').value;
+    const cls = transcriptClasses.find(c => String(c.id) === String(transcriptSelectedClassId));
+
+    generateBtn.style.display = 'none';
+    columnsSection.style.display = 'none';
+    preview.innerHTML = '';
+    transcriptStudents = [];
+    transcriptSubjects = [];
+
+    if (!cls) { status.textContent = 'Select a class to preview transcripts.'; return; }
+    if (!Number.isInteger(year) || year < 2000 || year > 2100) {
+        status.textContent = 'Enter a valid year between 2000 and 2100.';
+        return;
+    }
+    if (!TRANSCRIPT_V100_CLASSES.includes(cls.class_name)) {
+        status.textContent = `The transcript template for ${cls.class_name} is not available yet (V1.0.0 covers Classes 6–8).`;
+        return;
+    }
+
+    const token = ++transcriptLoadToken;
+    status.textContent = 'Loading students…';
+
+    const [students, allSubjects] = await Promise.all([
+        ipcRenderer.invoke('get-students', { class_id: cls.id, status: 'Active' }),
+        ipcRenderer.invoke('get-subjects')
+    ]);
+    if (token !== transcriptLoadToken) return;   // a newer click replaced this one
+
+    transcriptStudents = students.slice().sort((a, b) => a.roll - b.roll);
+    transcriptSubjects = allSubjects
+        .filter(s => String(s.class_id) === String(cls.id))
+        .sort((a, b) => (Number(a.sequence_order) || 0) - (Number(b.sequence_order) || 0) || a.id - b.id);
+
+    if (!transcriptStudents.length) { status.textContent = `No active students in ${cls.class_name}.`; return; }
+    if (!transcriptSubjects.length) { status.textContent = `No subjects are configured for ${cls.class_name}.`; return; }
+
+    status.textContent = `${cls.class_name} — ${test} Transcript — ${year} (${transcriptStudents.length} student${transcriptStudents.length === 1 ? '' : 's'}, one page each)`;
+    columnsSection.style.display = 'block';
+    generateBtn.style.display = 'inline-block';
+    renderTranscriptToggles();
+    paintTranscriptPreview();
+}
+
+document.getElementById('btn-open-transcript').addEventListener('click', openTranscriptPage);
+document.getElementById('btn-back-transcript').addEventListener('click', showExamsHomeView);
+document.getElementById('transcript-year').addEventListener('change', loadTranscriptPreview);
+document.getElementById('transcript-test').addEventListener('change', loadTranscriptPreview);
+document.getElementById('btn-generate-transcript').addEventListener('click', () => {
+    document.getElementById('transcript-status').textContent = 'PDF generation will be added in the next step.';
+});
 
 // ---------- opening a class ----------
 

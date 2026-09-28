@@ -108,67 +108,111 @@
 
                 <!-- TAB CONTENT: EXAMS SKELETON HOLDER -->
                 <div id="exams-tab" class="tab-content">
-                <div id="exams-home-view">
-                <div class="exams-title-row">
-                    <h2>Exams Module</h2>
-                    <button id="btn-open-marks-view" type="button" class="marks-view-btn">View All Marks</button>
-                </div>
-
-                <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end;">
-                    <div style="flex:1;"><label>Year</label><input type="number" id="exam-year" value="2026"></div>
-                    <div style="flex:1;">
-                        <label>Test</label>
-                        <select id="exam-type-select">
-                            <option>1st Monthly Exam</option>
-                            <option>2nd Monthly Exam</option>
-                            <option>Half Yearly Exam</option>
-                            <option>3rd Monthly Exam</option>
-                            <option>4th Monthly Exam</option>
-                            <option>Yearly Exam</option>
-                        </select>
+                    <div id="exams-home-view">
+                    <div class="exams-title-row">
+                        <h2>Exams Module</h2>
+                        <div class="exams-title-actions">
+                            <button id="btn-open-transcript" type="button" class="marks-view-btn">Generate Transcript</button>
+                            <button id="btn-open-marks-view" type="button" class="marks-view-btn">View All Marks</button>
+                        </div>
                     </div>
-                </div>
 
-                <div id="exam-class-buttons" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;"></div>
+                    <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end;">
+                        <div style="flex:1;"><label>Year</label><input type="number" id="exam-year" value="2026"></div>
+                        <div style="flex:1;">
+                            <label>Test</label>
+                            <select id="exam-type-select">
+                                <option>1st Monthly Exam</option>
+                                <option>2nd Monthly Exam</option>
+                                <option>Half Yearly Exam</option>
+                                <option>3rd Monthly Exam</option>
+                                <option>4th Monthly Exam</option>
+                                <option>Yearly Exam</option>
+                            </select>
+                        </div>
+                    </div>
 
-                <div id="marks-entry-container"></div>
-                </div>
+                    <div id="exam-class-buttons" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;"></div>
 
-                <div id="marks-view-page" style="display:none;">
+                    <div id="marks-entry-container"></div>
+                    </div>
+
+                    <div id="marks-view-page" style="display:none;">
+                        <div class="marks-view-title-row">
+                            <button id="btn-back-marks-view" type="button" class="marks-back-btn">
+                                <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <g clip-path="url(#clip0_429_11257)">
+                                        <path d="M14 7L9 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M9 12L14 17" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </g>
+                                    <defs>
+                                        <clipPath id="clip0_429_11257">
+                                            <rect width="24" height="24" fill="white"/>
+                                        </clipPath>
+                                    </defs>
+                                </svg>
+                                <span>Back</span>
+                            </button>
+                            <h2>All Marks</h2>
+                        </div>
+
+                        <div class="marks-view-year-filter">
+                            <div>
+                                <label for="marks-view-year">Year</label>
+                                <input type="number" id="marks-view-year" value="2026" min="2000" max="2100">
+                            </div>
+                        </div>
+
+                        <div style="padding: 0px 0px 10px 5px;">Classes</div>
+                        <div id="marks-view-class-buttons" class="chip-row"></div>
+                        <div id="marks-view-subject-section" style="display:none;">
+                            <div style="padding: 0px 0px 10px 5px;">Subjects</div>
+                            <div id="marks-view-subject-buttons" class="chip-row"></div>
+                        </div>
+
+                        <div id="marks-view-status" class="marks-view-status">Select a class and subject to view marks.</div>
+                        <div id="marks-view-table-wrap" class="marks-view-table-wrap"></div>
+                    </div>
+                                    <!-- GENERATE TRANSCRIPT PAGE -->
+                <div id="transcript-page" style="display:none;">
                     <div class="marks-view-title-row">
-                        <button id="btn-back-marks-view" type="button" class="marks-back-btn">
+                        <button id="btn-back-transcript" type="button" class="marks-back-btn">
                             <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                <g clip-path="url(#clip0_429_11257)">
-                                    <path d="M14 7L9 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <path d="M9 12L14 17" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                </g>
-                                <defs>
-                                    <clipPath id="clip0_429_11257">
-                                        <rect width="24" height="24" fill="white"/>
-                                    </clipPath>
-                                </defs>
+                                <path d="M14 7L9 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M9 12L14 17" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                             <span>Back</span>
                         </button>
-                        <h2>All Marks</h2>
+                        <h2>Generate Transcript</h2>
                     </div>
 
                     <div class="marks-view-year-filter">
                         <div>
-                            <label for="marks-view-year">Year</label>
-                            <input type="number" id="marks-view-year" value="2026" min="2000" max="2100">
+                            <label for="transcript-year">Year</label>
+                            <input type="number" id="transcript-year" value="2026" min="2000" max="2100">
+                        </div>
+                        <div>
+                            <label for="transcript-test">Test</label>
+                            <select id="transcript-test">
+                                <option value="Half Yearly">Half Yearly</option>
+                                <option value="Yearly">Yearly</option>
+                            </select>
                         </div>
                     </div>
 
                     <div style="padding: 0px 0px 10px 5px;">Classes</div>
-                    <div id="marks-view-class-buttons" class="chip-row"></div>
-                    <div id="marks-view-subject-section" style="display:none;">
-                        <div style="padding: 0px 0px 10px 5px;">Subjects</div>
-                        <div id="marks-view-subject-buttons" class="chip-row"></div>
+                    <div id="transcript-class-buttons" class="chip-row"></div>
+
+                    <div id="transcript-columns-section" style="display:none;">
+                        <div style="padding: 0px 0px 10px 5px;">Columns to show</div>
+                        <div id="transcript-column-toggles" class="transcript-toggles"></div>
                     </div>
 
-                    <div id="marks-view-status" class="marks-view-status">Select a class and subject to view marks.</div>
-                    <div id="marks-view-table-wrap" class="marks-view-table-wrap"></div>
+                    <div class="transcript-preview-head">
+                        <div id="transcript-status" class="marks-view-status">Select a class to preview transcripts.</div>
+                        <button id="btn-generate-transcript" type="button" class="marks-view-btn" style="display:none;">Generate</button>
+                    </div>
+                    <div id="transcript-preview" class="transcript-preview"></div>
                 </div>
                 </div>
                                

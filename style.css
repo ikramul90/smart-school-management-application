@@ -648,3 +648,27 @@ button:hover {
 .marks-view-table td:nth-child(2), .marks-view-table th:nth-child(2) { text-align:left; min-width:180px; }
 .marks-view-mark { font-weight:600; }
 @media (max-width:800px) { .marks-view-year-filter { display:block; } }
+
+
+
+
+
+/* ---------- EXAMS: Generate Transcript page ---------- */
+.exams-title-actions { display:flex; gap:8px; }
+
+.transcript-toggles { display:flex; flex-wrap:wrap; gap:6px 16px; background:white; border:1px solid #e2e8f0; border-radius:8px; padding:12px 16px; margin-bottom:16px; }
+.transcript-toggle { display:inline-flex; align-items:center; gap:4px; margin:0; font-size:13px; font-weight:normal; color:#334155; cursor:pointer; }
+.transcript-toggle input { width:auto; margin:0; padding:0; }
+
+.transcript-preview-head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px; }
+.transcript-preview-head .marks-view-status { margin-bottom:0; }
+
+.transcript-preview { display:flex; flex-direction:column; gap:20px; }
+.transcript-page { background:white; border:1px solid #cbd5e1; border-radius:4px; box-shadow:0 2px 8px rgba(0,0,0,0.08); padding:28px; width:100%; max-width:1000px; box-sizing:border-box; margin:0 auto; }
+.transcript-student-name { font-size:18px; font-weight:bold; color:#0f172a; margin-bottom:14px; }
+.transcript-table-wrap { width:100%; overflow-x:auto; }
+.transcript-table { width:100%; border-collapse:collapse; text-align:center; font-size:13px; }
+.transcript-table th, .transcript-table td { border:1px solid #000; padding:6px 8px; }
+.transcript-table th { background:#f1f5f9; }
+.transcript-table td.transcript-subject { text-align:left; }
+.transcript-total-row td { font-weight:bold; }
