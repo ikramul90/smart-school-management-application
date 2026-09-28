@@ -1199,6 +1199,25 @@ let transcriptSubjects = [];
 let transcriptHiddenColumns = new Set();   // keys of unchecked columns
 let transcriptLoadToken = 0;               // ignores stale async loads
 let transcriptMarksData = {};              // studentId -> subjectId -> { m1, m2, m3, total }
+let transcriptHighestBySubject = {};       // subjectId -> max total marks across class
+
+const TRANSCRIPT_GRADING_SCALE = [
+    { min: 79.5, letter: 'A+', point: '5.0' },
+    { min: 69.5, letter: 'A',  point: '4.0' },
+    { min: 59.5, letter: 'A-', point: '3.5' },
+    { min: 49.5, letter: 'B',  point: '3.0' },
+    { min: 39.5, letter: 'C',  point: '2.0' },
+    { min: 32.5, letter: 'D',  point: '1.0' },
+    { min: 0,    letter: 'F',  point: '0.0' }
+];
+
+function getGradeFromPercentage(pct) {
+    if (typeof pct !== 'number' || Number.isNaN(pct)) return { letter: '-', point: '-' };
+    for (const g of TRANSCRIPT_GRADING_SCALE) {
+        if (pct >= g.min) return g;
+    }
+    return { letter: 'F', point: '0.0' };
+}
 function getTranscriptColumns(test) {
     const [t1, t2, t3] = TRANSCRIPT_TESTS[test] || TRANSCRIPT_TESTS['Half Yearly'];
     return [
@@ -1224,6 +1243,7 @@ function openTranscriptPage() {
     transcriptSelectedClassId = null;
     transcriptStudents = [];
     transcriptSubjects = [];
+    transcriptHighestBySubject = {};
     document.getElementById('transcript-columns-section').style.display = 'none';
     document.getElementById('btn-generate-transcript').style.display = 'none';
     document.getElementById('transcript-preview').innerHTML = '';
@@ -1278,40 +1298,6 @@ function buildTranscriptTable(studentId) {
     const visible = getTranscriptColumns(test).filter(c => !transcriptHiddenColumns.has(c.key));
     const marksCount = visible.filter(c => c.marks).length;
 
-    // Calculate highest total marks across the class for each subject, and overall highest total marks
-    const highestBySubject = {};
-    let highestTotalOverall = null;
-
-    transcriptSubjects.forEach(sub => {
-        let maxSubTotal = null;
-        transcriptStudents.forEach(st => {
-            const m = transcriptMarksData[st.id]?.[sub.id];
-            if (m && typeof m.total === 'number') {
-                if (maxSubTotal === null || m.total > maxSubTotal) {
-                    maxSubTotal = m.total;
-                }
-            }
-        });
-        highestBySubject[sub.id] = maxSubTotal;
-    });
-
-    transcriptStudents.forEach(st => {
-        let stGrandTotal = 0;
-        let hasAnyMarks = false;
-        transcriptSubjects.forEach(sub => {
-            const m = transcriptMarksData[st.id]?.[sub.id];
-            if (m && typeof m.total === 'number') {
-                stGrandTotal += m.total;
-                hasAnyMarks = true;
-            }
-        });
-        if (hasAnyMarks) {
-            if (highestTotalOverall === null || stGrandTotal > highestTotalOverall) {
-                highestTotalOverall = stGrandTotal;
-            }
-        }
-    });
-
     let head1 = '', head2 = '', groupDone = false;
     visible.forEach(c => {
         if (c.marks) {
@@ -1325,7 +1311,7 @@ function buildTranscriptTable(studentId) {
     let totalMarksAgg = { m1: 0, m2: 0, m3: 0, total: 0, stotal: 0, pctSum: 0, pctCount: 0 };
 
     const body = transcriptSubjects.map((sub, i) => {
-        const subMarks = transcriptMarksData[studentId]?.[sub.id] || { m1: '', m2: '', m3: '', total: '' };
+        const subMarks = transcriptMarksData[studentId]?.[sub.id] || { m1: '', m2: '', m3: '', total: null };
 
         if (typeof subMarks.m1 === 'number') totalMarksAgg.m1 += subMarks.m1;
         if (typeof subMarks.m2 === 'number') totalMarksAgg.m2 += subMarks.m2;
@@ -1336,14 +1322,16 @@ function buildTranscriptTable(studentId) {
         totalMarksAgg.stotal += stotal;
 
         let pct = '-';
+        let rowGrade = { letter: '-', point: '-' };
         if (typeof subMarks.total === 'number' && stotal > 0) {
             const rawPct = (subMarks.total / stotal) * 100;
             pct = Math.round(rawPct);
             totalMarksAgg.pctSum += rawPct;
             totalMarksAgg.pctCount += 1;
+            rowGrade = getGradeFromPercentage(rawPct);
         }
 
-        const highVal = highestBySubject[sub.id];
+        const highVal = transcriptHighestBySubject[sub.id];
 
         const cells = visible.map(c => {
             if (c.key === 'sn') return `<td>${String(i + 1).padStart(2, '0')}</td>`;
@@ -1351,12 +1339,12 @@ function buildTranscriptTable(studentId) {
             if (c.key === 'm1') return `<td>${subMarks.m1 !== '' ? subMarks.m1 : '-'}</td>`;
             if (c.key === 'm2') return `<td>${subMarks.m2 !== '' ? subMarks.m2 : '-'}</td>`;
             if (c.key === 'm3') return `<td>${subMarks.m3 !== '' ? subMarks.m3 : '-'}</td>`;
-            if (c.key === 'total') return `<td>${subMarks.total !== '' ? subMarks.total : '-'}</td>`;
+            if (c.key === 'total') return `<td>${subMarks.total !== null ? subMarks.total : '-'}</td>`;
             if (c.key === 'pct') return `<td>${pct !== '-' ? pct + '%' : '-'}</td>`;
             if (c.key === 'st') return `<td>${stotal > 0 ? stotal : '-'}</td>`;
             if (c.key === 'high') return `<td>${highVal !== null && highVal !== undefined ? highVal : '-'}</td>`;
-            if (c.key === 'grade') return `<td>-</td>`;
-            if (c.key === 'gp') return `<td>-</td>`;
+            if (c.key === 'grade') return `<td>${rowGrade.letter}</td>`;
+            if (c.key === 'gp') return `<td>${rowGrade.point}</td>`;
             return '<td></td>';
         }).join('');
         return `<tr>${cells}</tr>`;
@@ -1375,9 +1363,17 @@ function buildTranscriptTable(studentId) {
                 const avgPct = totalMarksAgg.pctCount > 0 ? Math.round(totalMarksAgg.pctSum / totalMarksAgg.pctCount) : '-';
                 return `<td>${avgPct !== '-' ? avgPct + '%' : '-'}</td>`;
             }
-            if (c.key === 'high') return `<td>${highestTotalOverall !== null ? highestTotalOverall : '-'}</td>`;
-            if (c.key === 'grade') return `<td>-</td>`;
-            if (c.key === 'gp') return `<td>-</td>`;
+            if (c.key === 'high') return `<td>-</td>`;
+            if (c.key === 'grade') {
+                const avgPct = totalMarksAgg.pctCount > 0 ? (totalMarksAgg.pctSum / totalMarksAgg.pctCount) : null;
+                const overallGrade = getGradeFromPercentage(avgPct);
+                return `<td>${overallGrade.letter}</td>`;
+            }
+            if (c.key === 'gp') {
+                const avgPct = totalMarksAgg.pctCount > 0 ? (totalMarksAgg.pctSum / totalMarksAgg.pctCount) : null;
+                const overallGrade = getGradeFromPercentage(avgPct);
+                return `<td>${overallGrade.point}</td>`;
+            }
             return '<td></td>';
         }).join('');
     const totalRow = `<tr class="transcript-total-row">${leadCount ? `<td colspan="${leadCount}">Total</td>` : ''}${totalCells}</tr>`;
@@ -1465,15 +1461,33 @@ async function loadTranscriptPreview() {
             sheet.marks.forEach(m => {
                 if (!transcriptMarksData[m.student_id]) return;
                 if (!transcriptMarksData[m.student_id][m.subject_id]) {
-                    transcriptMarksData[m.student_id][m.subject_id] = { m1: '', m2: '', m3: '', total: 0 };
+                    transcriptMarksData[m.student_id][m.subject_id] = { m1: '', m2: '', m3: '', total: null };
                 }
-                const val = m.marks_obtained;
-                transcriptMarksData[m.student_id][m.subject_id][mKey] = (val !== null && val !== undefined) ? val : '';
-                if (typeof val === 'number') {
-                    transcriptMarksData[m.student_id][m.subject_id].total += val;
+                const record = transcriptMarksData[m.student_id][m.subject_id];
+                if (m.is_present === 0) {
+                    record[mKey] = 'A';
+                } else if (typeof m.marks_obtained === 'number') {
+                    record[mKey] = m.marks_obtained;
+                    record.total = (record.total === null ? 0 : record.total) + m.marks_obtained;
+                } else {
+                    record[mKey] = '';
                 }
             });
         }
+    });
+
+    transcriptHighestBySubject = {};
+    transcriptSubjects.forEach(sub => {
+        let maxSubTotal = null;
+        transcriptStudents.forEach(st => {
+            const m = transcriptMarksData[st.id]?.[sub.id];
+            if (m && typeof m.total === 'number') {
+                if (maxSubTotal === null || m.total > maxSubTotal) {
+                    maxSubTotal = m.total;
+                }
+            }
+        });
+        transcriptHighestBySubject[sub.id] = maxSubTotal;
     });
 
     status.textContent = `${cls.class_name} — ${test} Transcript — ${year} (${transcriptStudents.length} student${transcriptStudents.length === 1 ? '' : 's'}, one page each)`;
