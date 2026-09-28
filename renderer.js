@@ -1278,6 +1278,40 @@ function buildTranscriptTable(studentId) {
     const visible = getTranscriptColumns(test).filter(c => !transcriptHiddenColumns.has(c.key));
     const marksCount = visible.filter(c => c.marks).length;
 
+    // Calculate highest total marks across the class for each subject, and overall highest total marks
+    const highestBySubject = {};
+    let highestTotalOverall = null;
+
+    transcriptSubjects.forEach(sub => {
+        let maxSubTotal = null;
+        transcriptStudents.forEach(st => {
+            const m = transcriptMarksData[st.id]?.[sub.id];
+            if (m && typeof m.total === 'number') {
+                if (maxSubTotal === null || m.total > maxSubTotal) {
+                    maxSubTotal = m.total;
+                }
+            }
+        });
+        highestBySubject[sub.id] = maxSubTotal;
+    });
+
+    transcriptStudents.forEach(st => {
+        let stGrandTotal = 0;
+        let hasAnyMarks = false;
+        transcriptSubjects.forEach(sub => {
+            const m = transcriptMarksData[st.id]?.[sub.id];
+            if (m && typeof m.total === 'number') {
+                stGrandTotal += m.total;
+                hasAnyMarks = true;
+            }
+        });
+        if (hasAnyMarks) {
+            if (highestTotalOverall === null || stGrandTotal > highestTotalOverall) {
+                highestTotalOverall = stGrandTotal;
+            }
+        }
+    });
+
     let head1 = '', head2 = '', groupDone = false;
     visible.forEach(c => {
         if (c.marks) {
@@ -1309,6 +1343,8 @@ function buildTranscriptTable(studentId) {
             totalMarksAgg.pctCount += 1;
         }
 
+        const highVal = highestBySubject[sub.id];
+
         const cells = visible.map(c => {
             if (c.key === 'sn') return `<td>${String(i + 1).padStart(2, '0')}</td>`;
             if (c.key === 'subject') return `<td class="transcript-subject">${escapeHtml(sub.subject_name)}</td>`;
@@ -1318,9 +1354,9 @@ function buildTranscriptTable(studentId) {
             if (c.key === 'total') return `<td>${subMarks.total !== '' ? subMarks.total : '-'}</td>`;
             if (c.key === 'pct') return `<td>${pct !== '-' ? pct + '%' : '-'}</td>`;
             if (c.key === 'st') return `<td>${stotal > 0 ? stotal : '-'}</td>`;
+            if (c.key === 'high') return `<td>${highVal !== null && highVal !== undefined ? highVal : '-'}</td>`;
             if (c.key === 'grade') return `<td>-</td>`;
             if (c.key === 'gp') return `<td>-</td>`;
-            if (c.key === 'high') return `<td>-</td>`;
             return '<td></td>';
         }).join('');
         return `<tr>${cells}</tr>`;
@@ -1339,9 +1375,9 @@ function buildTranscriptTable(studentId) {
                 const avgPct = totalMarksAgg.pctCount > 0 ? Math.round(totalMarksAgg.pctSum / totalMarksAgg.pctCount) : '-';
                 return `<td>${avgPct !== '-' ? avgPct + '%' : '-'}</td>`;
             }
+            if (c.key === 'high') return `<td>${highestTotalOverall !== null ? highestTotalOverall : '-'}</td>`;
             if (c.key === 'grade') return `<td>-</td>`;
             if (c.key === 'gp') return `<td>-</td>`;
-            if (c.key === 'high') return `<td>-</td>`;
             return '<td></td>';
         }).join('');
     const totalRow = `<tr class="transcript-total-row">${leadCount ? `<td colspan="${leadCount}">Total</td>` : ''}${totalCells}</tr>`;
