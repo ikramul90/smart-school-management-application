@@ -1288,7 +1288,7 @@ function buildTranscriptTable(studentId) {
         }
     });
 
-    let totalMarksAgg = { m1: 0, m2: 0, m3: 0, total: 0 };
+    let totalMarksAgg = { m1: 0, m2: 0, m3: 0, total: 0, stotal: 0, pctSum: 0, pctCount: 0 };
 
     const body = transcriptSubjects.map((sub, i) => {
         const subMarks = transcriptMarksData[studentId]?.[sub.id] || { m1: '', m2: '', m3: '', total: '' };
@@ -1298,6 +1298,17 @@ function buildTranscriptTable(studentId) {
         if (typeof subMarks.m3 === 'number') totalMarksAgg.m3 += subMarks.m3;
         if (typeof subMarks.total === 'number') totalMarksAgg.total += subMarks.total;
 
+        const stotal = (Number(sub.monthly_marks) || 0) * 2 + (Number(sub.yearly_marks) || 0);
+        totalMarksAgg.stotal += stotal;
+
+        let pct = '-';
+        if (typeof subMarks.total === 'number' && stotal > 0) {
+            const rawPct = (subMarks.total / stotal) * 100;
+            pct = Math.round(rawPct);
+            totalMarksAgg.pctSum += rawPct;
+            totalMarksAgg.pctCount += 1;
+        }
+
         const cells = visible.map(c => {
             if (c.key === 'sn') return `<td>${String(i + 1).padStart(2, '0')}</td>`;
             if (c.key === 'subject') return `<td class="transcript-subject">${escapeHtml(sub.subject_name)}</td>`;
@@ -1305,8 +1316,11 @@ function buildTranscriptTable(studentId) {
             if (c.key === 'm2') return `<td>${subMarks.m2 !== '' ? subMarks.m2 : '-'}</td>`;
             if (c.key === 'm3') return `<td>${subMarks.m3 !== '' ? subMarks.m3 : '-'}</td>`;
             if (c.key === 'total') return `<td>${subMarks.total !== '' ? subMarks.total : '-'}</td>`;
+            if (c.key === 'pct') return `<td>${pct !== '-' ? pct + '%' : '-'}</td>`;
+            if (c.key === 'st') return `<td>${stotal > 0 ? stotal : '-'}</td>`;
             if (c.key === 'grade') return `<td>-</td>`;
             if (c.key === 'gp') return `<td>-</td>`;
+            if (c.key === 'high') return `<td>-</td>`;
             return '<td></td>';
         }).join('');
         return `<tr>${cells}</tr>`;
@@ -1320,6 +1334,14 @@ function buildTranscriptTable(studentId) {
             if (c.key === 'm2') return `<td>${totalMarksAgg.m2}</td>`;
             if (c.key === 'm3') return `<td>${totalMarksAgg.m3}</td>`;
             if (c.key === 'total') return `<td>${totalMarksAgg.total}</td>`;
+            if (c.key === 'st') return `<td>${totalMarksAgg.stotal > 0 ? totalMarksAgg.stotal : '-'}</td>`;
+            if (c.key === 'pct') {
+                const avgPct = totalMarksAgg.pctCount > 0 ? Math.round(totalMarksAgg.pctSum / totalMarksAgg.pctCount) : '-';
+                return `<td>${avgPct !== '-' ? avgPct + '%' : '-'}</td>`;
+            }
+            if (c.key === 'grade') return `<td>-</td>`;
+            if (c.key === 'gp') return `<td>-</td>`;
+            if (c.key === 'high') return `<td>-</td>`;
             return '<td></td>';
         }).join('');
     const totalRow = `<tr class="transcript-total-row">${leadCount ? `<td colspan="${leadCount}">Total</td>` : ''}${totalCells}</tr>`;
