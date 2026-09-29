@@ -79,6 +79,24 @@ document.getElementById('btn-login').addEventListener('click', async () => {
     }
 });
 
+// Toggle password visibility on admin login screen
+const btnToggleLoginPassword = document.getElementById('btn-toggle-login-password');
+if (btnToggleLoginPassword) {
+    btnToggleLoginPassword.addEventListener('click', () => {
+        const passwordInput = document.getElementById('login-password');
+        if (!passwordInput) return;
+        const eyeIcon = btnToggleLoginPassword.querySelector('.eye-icon');
+        const eyeOffIcon = btnToggleLoginPassword.querySelector('.eye-off-icon');
+        const isPassword = passwordInput.type === 'password';
+
+        passwordInput.type = isPassword ? 'text' : 'password';
+        btnToggleLoginPassword.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+        btnToggleLoginPassword.setAttribute('title', isPassword ? 'Hide password' : 'Show password');
+        if (eyeIcon) eyeIcon.style.display = isPassword ? 'none' : 'block';
+        if (eyeOffIcon) eyeOffIcon.style.display = isPassword ? 'block' : 'none';
+    });
+}
+
 // Login form: sends the entered username/password to main.js for
 // verification, then swaps the login screen out for the dashboard
 // if correct.
