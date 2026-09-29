@@ -266,6 +266,56 @@ window.deleteSubject = async function (id) {
 // and the enrollment form, then loads the student table.
 // ------------------------------------------------------------
 // --- STUDENT REGISTRY CONTROLLERS ---
+let selectedStudentClassFilter = '';
+
+function renderStudentClassFilterChips(classes = allClassesForStudents) {
+    const container = document.getElementById('student-class-filter-buttons');
+    if (!container) return;
+    container.innerHTML = '';
+
+    const list = classes || [];
+
+    // Reset filter if previous class was removed
+    if (selectedStudentClassFilter && !list.some(c => String(c.id) === String(selectedStudentClassFilter))) {
+        selectedStudentClassFilter = '';
+    }
+
+    const filterSelect = document.getElementById('filter-student-class');
+    if (filterSelect) filterSelect.value = selectedStudentClassFilter;
+
+    // "All Classes" chip
+    const allBtn = document.createElement('button');
+    allBtn.type = 'button';
+    allBtn.className = 'chip-btn' + (!selectedStudentClassFilter ? ' active' : '');
+    allBtn.textContent = 'All Classes';
+    allBtn.addEventListener('click', () => {
+        selectedStudentClassFilter = '';
+        if (filterSelect) filterSelect.value = '';
+        renderStudentClassFilterChips(list);
+        loadStudents();
+    });
+    container.appendChild(allBtn);
+
+    // Individual class chips
+    list.forEach(c => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'chip-btn' + (String(c.id) === String(selectedStudentClassFilter) ? ' active' : '');
+        btn.textContent = c.class_name;
+        btn.addEventListener('click', () => {
+            if (String(selectedStudentClassFilter) === String(c.id)) {
+                selectedStudentClassFilter = '';
+            } else {
+                selectedStudentClassFilter = String(c.id);
+            }
+            if (filterSelect) filterSelect.value = selectedStudentClassFilter;
+            renderStudentClassFilterChips(list);
+            loadStudents();
+        });
+        container.appendChild(btn);
+    });
+}
+
 async function loadStudentsPage() {
     const classes = await ipcRenderer.invoke('get-classes-list');
     allClassesForStudents = classes;
@@ -275,8 +325,13 @@ async function loadStudentsPage() {
     const formClass = document.getElementById('st-class');
 
     const optionsHtml = classes.map(c => `<option value="${c.id}">${c.class_name}</option>`).join('');
-    filterClass.innerHTML = `<option value="">All 16 Classes</option>` + optionsHtml;
+    if (filterClass) {
+        filterClass.innerHTML = `<option value="">All Classes</option>` + optionsHtml;
+        filterClass.value = selectedStudentClassFilter;
+    }
     formClass.innerHTML = optionsHtml;
+
+    renderStudentClassFilterChips(classes);
 
     loadStudents();
 }
@@ -411,7 +466,8 @@ function studentRowHtml(s, view) {
 // Re-fetches students from the database using the selected view (tab)
 // and class filter, then redraws the table header and rows.
 window.loadStudents = async function() {
-    const class_id = document.getElementById('filter-student-class').value;
+    const filterSelect = document.getElementById('filter-student-class');
+    const class_id = filterSelect ? filterSelect.value : selectedStudentClassFilter;
     const view = currentStudentView;
 
     const students = await ipcRenderer.invoke('get-students', { class_id, status: view });

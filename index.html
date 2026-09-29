@@ -220,6 +220,7 @@
                 <div id="db-students" class="tab-content">
                     <h2 class="no-select">Student Registry</h2>
 
+                    <div style="padding: 0px 0px 10px 5px;" class="no-select">Status</div>
                     <div id="student-view-tabs" class="chip-row no-select">
                         <button class="chip-btn active" data-view="Active">Current</button>
                         <button class="chip-btn" data-view="Graduated">Graduated</button>
@@ -227,10 +228,9 @@
                     </div>
                     
                     <!-- ADVANCED CLASSIFICATION FILTERS -->
-                    <div style="background:#e2e8f0; padding:15px; border-radius:6px; margin-bottom:20px; display:flex; gap:20px; align-items:center;">
-                        <strong class="no-select">Filter View:</strong>
-                        <div class="no-select">Class: <select id="filter-student-class" onchange="loadStudents()"><option value="">All 14 Classes</option></select></div>
-                    </div>
+                    <div style="padding: 0px 0px 10px 5px;" class="no-select">Classes</div>
+                    <div id="student-class-filter-buttons" class="chip-row no-select"></div>
+                    <select id="filter-student-class" style="display:none;"></select>
 
                     <!-- DATA ENROLLMENT TRIGGER -->
                     <details id="student-details" class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
