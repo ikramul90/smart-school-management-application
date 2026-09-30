@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TCSAC Management Portal</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <!-- 1. FIRST TIME SETUP SCREEN -->
@@ -46,13 +48,19 @@
             <label class="no-select">Password</label>
             <div class="password-input-wrapper">
                 <input type="password" id="login-password" placeholder="Enter password">
-                <button type="button" id="btn-toggle-login-password" class="password-toggle-btn" aria-label="Show password" title="Show password" tabindex="-1">
-                    <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <button type="button" id="btn-toggle-login-password" class="password-toggle-btn"
+                    aria-label="Show password" title="Show password" tabindex="-1">
+                    <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                         <circle cx="12" cy="12" r="3"></circle>
                     </svg>
-                    <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                        </path>
                         <line x1="1" y1="1" x2="23" y2="23"></line>
                     </svg>
                 </button>
@@ -61,105 +69,131 @@
         <button id="btn-login">Login</button>
     </div>
 
-        <!-- 3. REAL DASHBOARD & PORTAL MAIN LAYOUT -->
+    <!-- 3. REAL DASHBOARD & PORTAL MAIN LAYOUT -->
     <div id="dashboard-screen">
         <div>
-            
+
             <!-- LEFT SIDEBAR -->
             <div class="dashboard-sidebar">
                 <div class="dashboard-sidebar-nav">
                     <h3 class="no-select">NAVIGATION</h3>
                     <button id="notif-bell" type="button" aria-label="Notifications" title="Notifications">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
                         <span id="notif-badge" style="display:none;">0</span>
                     </button>
                     <hr>
 
-                    <button class="nav-btn active" data-tab="home-tab"  onclick="switchTab('home-tab')">
+                    <button class="nav-btn active" data-tab="home-tab" onclick="switchTab('home-tab')">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
-                        <defs>
-                            <!-- The userSpaceOnUse setting stops the button wrapper from crushing the mask boundaries -->
-                            <mask id="door-cutout" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
-                                <rect width="24" height="24" fill="white" />
-                                <path d="M10 20C9.44772 20 9 19.5523 9 19V16C9 14.3431 10.3431 13 12 13C13.6569 13 15 14.3431 15 16V19C15 19.5523 14.5523 20 14 20H10Z" fill="black" />
-                            </mask>
-                        </defs>
-                        <path mask="url(#door-cutout)" fill-rule="evenodd" clip-rule="evenodd" d="M13.2081 2.80235C12.526 2.20306 11.474 2.20306 10.7919 2.80235L2.33565 10.2526C1.92286 10.6195 1.88568 11.2516 2.2526 11.6644C2.61952 12.0771 3.25159 12.1143 3.66437 11.7474L4.00001 11.4491L4.00001 21C4.00001 21.5523 4.44772 22 5 22H19C19.5523 22 20 21.5523 20 21L20 11.4491L20.3356 11.7474C20.7484 12.1143 21.3805 12.0771 21.7474 11.6644C22.1143 11.2516 22.0772 10.6195 21.6644 10.2526L13.2081 2.80235Z" fill="currentColor"/>
+                            <defs>
+                                <!-- The userSpaceOnUse setting stops the button wrapper from crushing the mask boundaries -->
+                                <mask id="door-cutout" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                                    <rect width="24" height="24" fill="white" />
+                                    <path
+                                        d="M10 20C9.44772 20 9 19.5523 9 19V16C9 14.3431 10.3431 13 12 13C13.6569 13 15 14.3431 15 16V19C15 19.5523 14.5523 20 14 20H10Z"
+                                        fill="black" />
+                                </mask>
+                            </defs>
+                            <path mask="url(#door-cutout)" fill-rule="evenodd" clip-rule="evenodd"
+                                d="M13.2081 2.80235C12.526 2.20306 11.474 2.20306 10.7919 2.80235L2.33565 10.2526C1.92286 10.6195 1.88568 11.2516 2.2526 11.6644C2.61952 12.0771 3.25159 12.1143 3.66437 11.7474L4.00001 11.4491L4.00001 21C4.00001 21.5523 4.44772 22 5 22H19C19.5523 22 20 21.5523 20 21L20 11.4491L20.3356 11.7474C20.7484 12.1143 21.3805 12.0771 21.7474 11.6644C22.1143 11.2516 22.0772 10.6195 21.6644 10.2526L13.2081 2.80235Z"
+                                fill="currentColor" />
                         </svg>
                         <span>Home</span>
                     </button>
-                    
-                    <button class="nav-btn no-select" data-tab="exams-tab" onclick="switchTab('exams-tab')">📄 Exams Module</button>
+
+                    <button class="nav-btn no-select" data-tab="exams-tab" onclick="switchTab('exams-tab')">📄 Exams
+                        Module</button>
 
                     <p class="no-select">Databases</p>
-                    <button class="nav-btn no-select" data-tab="db-students" onclick="switchTab('db-students')">Students</button>
-                    <button class="nav-btn no-select" data-tab="db-teachers" onclick="switchTab('db-teachers')">Teachers</button>
-                    <button class="nav-btn no-select" data-tab="db-subjects" onclick="switchTab('db-subjects')">Subject</button>
-                    <button class="nav-btn no-select" data-tab="db-grades" onclick="switchTab('db-grades')">Grade</button>
+                    <button class="nav-btn no-select" data-tab="db-students"
+                        onclick="switchTab('db-students')">Students</button>
+                    <button class="nav-btn no-select" data-tab="db-teachers"
+                        onclick="switchTab('db-teachers')">Teachers</button>
+                    <button class="nav-btn no-select" data-tab="db-subjects"
+                        onclick="switchTab('db-subjects')">Subject</button>
+                    <button class="nav-btn no-select" data-tab="db-grades"
+                        onclick="switchTab('db-grades')">Grade</button>
 
                     <p class="no-select">Settings Panel</p>
-                    <button class="nav-btn no-select" data-tab="settings-school" onclick="switchTab('settings-school')">School Info</button>
-                    <button class="nav-btn no-select" data-tab="settings-developer" onclick="switchTab('settings-developer')">Developer Info</button>
-                    <button class="nav-btn no-select" data-tab="settings-admin" onclick="switchTab('settings-admin')">Admin Info</button>
+                    <button class="nav-btn no-select" data-tab="settings-school"
+                        onclick="switchTab('settings-school')">School Info</button>
+                    <button class="nav-btn no-select" data-tab="settings-developer"
+                        onclick="switchTab('settings-developer')">Developer Info</button>
+                    <button class="nav-btn no-select" data-tab="settings-admin"
+                        onclick="switchTab('settings-admin')">Admin Info</button>
                 </div>
-                
+
                 <!-- CUSTOM BOTTOM LEFT WATERMARK -->
                 <div class="dashboard-sidebar-watermark">
                     <div class="no-select">An internal digital initiative designed by </div>
                     <div>Ikramul Alam Chowdhury</div>
                 </div>
             </div>
-            
+
             <!-- MAIN CONTENT DISPLAY AREA -->
             <div class="dashboard-main">
 
                 <!-- TAB CONTENT: HOME TAB -->
                 <div id="home-tab" class="tab-content">
-                    <h1 class="no-select" style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">Welcome to, TCSAC Management Portal</h1>
+                    <h1 class="no-select"
+                        style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
+                        Welcome to, TCSAC Management Portal</h1>
                 </div>
 
                 <!-- TAB CONTENT: EXAMS SKELETON HOLDER -->
                 <div id="exams-tab" class="tab-content">
                     <div id="exams-home-view">
-                    <div class="exams-title-row">
-                        <h2>Exams Module</h2>
-                        <div class="exams-title-actions">
-                            <button id="btn-open-transcript" type="button" class="marks-view-btn">Generate Transcript</button>
-                            <button id="btn-open-marks-view" type="button" class="marks-view-btn">View All Marks</button>
+                        <div class="exams-title-row">
+                            <h2>Exams Module</h2>
+                            <div class="exams-title-actions">
+                                <button id="btn-open-transcript" type="button" class="marks-view-btn">Generate
+                                    Transcript</button>
+                                <button id="btn-open-marks-view" type="button" class="marks-view-btn">View All
+                                    Marks</button>
+                            </div>
                         </div>
-                    </div>
 
-                    <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end;">
-                        <div style="flex:1;"><label>Year</label><input type="number" id="exam-year" value="2026"></div>
-                        <div style="flex:1;">
-                            <label>Test</label>
-                            <select id="exam-type-select">
-                                <option>1st Monthly Exam</option>
-                                <option>2nd Monthly Exam</option>
-                                <option>Half Yearly Exam</option>
-                                <option>3rd Monthly Exam</option>
-                                <option>4th Monthly Exam</option>
-                                <option>Yearly Exam</option>
-                            </select>
+                        <div
+                            style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-end;">
+                            <div style="flex:1;"><label>Year</label><input type="number" id="exam-year" value="2026">
+                            </div>
+                            <div style="flex:1;">
+                                <label>Test</label>
+                                <select id="exam-type-select">
+                                    <option>1st Monthly Exam</option>
+                                    <option>2nd Monthly Exam</option>
+                                    <option>Half Yearly Exam</option>
+                                    <option>3rd Monthly Exam</option>
+                                    <option>4th Monthly Exam</option>
+                                    <option>Yearly Exam</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
-                    <div id="exam-class-buttons" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;"></div>
+                        <div id="exam-class-buttons" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">
+                        </div>
 
-                    <div id="marks-entry-container"></div>
+                        <div id="marks-entry-container"></div>
                     </div>
 
                     <div id="marks-view-page" style="display:none;">
                         <div class="marks-view-title-row">
                             <button id="btn-back-marks-view" type="button" class="marks-back-btn">
-                                <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                     <g clip-path="url(#clip0_429_11257)">
-                                        <path d="M14 7L9 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                        <path d="M9 12L14 17" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M14 7L9 12" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                        <path d="M9 12L14 17" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                            stroke-linejoin="round" />
                                     </g>
                                     <defs>
                                         <clipPath id="clip0_429_11257">
-                                            <rect width="24" height="24" fill="white"/>
+                                            <rect width="24" height="24" fill="white" />
                                         </clipPath>
                                     </defs>
                                 </svg>
@@ -182,52 +216,58 @@
                             <div id="marks-view-subject-buttons" class="chip-row"></div>
                         </div>
 
-                        <div id="marks-view-status" class="marks-view-status">Select a class and subject to view marks.</div>
+                        <div id="marks-view-status" class="marks-view-status">Select a class and subject to view marks.
+                        </div>
                         <div id="marks-view-table-wrap" class="marks-view-table-wrap"></div>
                     </div>
-                                    <!-- GENERATE TRANSCRIPT PAGE -->
-                <div id="transcript-page" style="display:none;">
-                    <div class="marks-view-title-row">
-                        <button id="btn-back-transcript" type="button" class="marks-back-btn">
-                            <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                <path d="M14 7L9 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M9 12L14 17" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            <span>Back</span>
-                        </button>
-                        <h2>Generate Transcript</h2>
-                    </div>
-
-                    <div class="marks-view-year-filter">
-                        <div>
-                            <label for="transcript-year">Year</label>
-                            <input type="number" id="transcript-year" value="2026" min="2000" max="2100">
+                    <!-- GENERATE TRANSCRIPT PAGE -->
+                    <div id="transcript-page" style="display:none;">
+                        <div class="marks-view-title-row">
+                            <button id="btn-back-transcript" type="button" class="marks-back-btn">
+                                <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M14 7L9 12" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path d="M9 12L14 17" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                                <span>Back</span>
+                            </button>
+                            <h2>Generate Transcript</h2>
                         </div>
-                        <div>
-                            <label for="transcript-test">Test</label>
-                            <select id="transcript-test">
-                                <option value="Half Yearly">Half Yearly</option>
-                                <option value="Yearly">Yearly</option>
-                            </select>
+
+                        <div class="marks-view-year-filter">
+                            <div>
+                                <label for="transcript-year">Year</label>
+                                <input type="number" id="transcript-year" value="2026" min="2000" max="2100">
+                            </div>
+                            <div>
+                                <label for="transcript-test">Test</label>
+                                <select id="transcript-test">
+                                    <option value="Half Yearly">Half Yearly</option>
+                                    <option value="Yearly">Yearly</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
 
-                    <div style="padding: 0px 0px 10px 5px;">Classes</div>
-                    <div id="transcript-class-buttons" class="chip-row"></div>
+                        <div style="padding: 0px 0px 10px 5px;">Classes</div>
+                        <div id="transcript-class-buttons" class="chip-row"></div>
 
-                    <div id="transcript-columns-section" style="display:none;">
-                        <div style="padding: 0px 0px 10px 5px;">Columns to show</div>
-                        <div id="transcript-column-toggles" class="transcript-toggles"></div>
-                    </div>
+                        <div id="transcript-columns-section" style="display:none;">
+                            <div style="padding: 0px 0px 10px 5px;">Columns to show</div>
+                            <div id="transcript-column-toggles" class="transcript-toggles"></div>
+                        </div>
 
-                    <div class="transcript-preview-head">
-                        <div id="transcript-status" class="marks-view-status">Select a class to preview transcripts.</div>
-                        <button id="btn-generate-transcript" type="button" class="marks-view-btn" style="display:none;">Generate</button>
+                        <div class="transcript-preview-head">
+                            <div id="transcript-status" class="marks-view-status">Select a class to preview transcripts.
+                            </div>
+                            <button id="btn-generate-transcript" type="button" class="marks-view-btn"
+                                style="display:none;">Generate</button>
+                        </div>
+                        <div id="transcript-preview" class="transcript-preview"></div>
                     </div>
-                    <div id="transcript-preview" class="transcript-preview"></div>
                 </div>
-                </div>
-                               
+
                 <!-- TAB CONTENT: STUDENTS DATABASE (WITH REMOVAL CONFIGURATOR) -->
                 <div id="db-students" class="tab-content">
                     <h2 class="no-select">Student Registry</h2>
@@ -238,25 +278,35 @@
                         <button class="chip-btn" data-view="Graduated">Graduated</button>
                         <button class="chip-btn" data-view="Removed">Dropped Out</button>
                     </div>
-                    
+
                     <!-- ADVANCED CLASSIFICATION FILTERS -->
                     <div style="padding: 0px 0px 10px 5px;" class="no-select">Classes</div>
                     <div id="student-class-filter-buttons" class="chip-row no-select"></div>
                     <select id="filter-student-class" style="display:none;"></select>
 
                     <!-- DATA ENROLLMENT TRIGGER -->
-                    <details id="student-details" class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                    <details id="student-details" class="no-select"
+                        style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Enroll New Student</summary>
-                        <div id="student-form" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
+                        <div id="student-form"
+                            style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
                             <input type="hidden" id="st-edit-id" value="">
-                            <div><label>Class</label><select id="st-class" onchange="updateStudentSubjectSelection()"></select></div>
-                            <div id="stu-subject-selection" style="display:none; grid-column: span 3; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0;">
-                                <label class="no-select">Main Subjects <span style="font-weight:normal; color:#64748b;">(choose exactly 3)</span></label>
-                                <div id="stu-main-subjects-list" style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:12px;"></div>
-                                <label class="no-select">Optional Subject <span style="font-weight:normal; color:#64748b;">(choose 1)</span></label>
-                                <select id="stu-optional-select"><option value="">-- pick 3 main subjects first --</option></select>
+                            <div><label>Class</label><select id="st-class"
+                                    onchange="updateStudentSubjectSelection()"></select></div>
+                            <div id="stu-subject-selection"
+                                style="display:none; grid-column: span 3; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0;">
+                                <label class="no-select">Main Subjects <span
+                                        style="font-weight:normal; color:#64748b;">(choose exactly 3)</span></label>
+                                <div id="stu-main-subjects-list"
+                                    style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:12px;"></div>
+                                <label class="no-select">Optional Subject <span
+                                        style="font-weight:normal; color:#64748b;">(choose 1)</span></label>
+                                <select id="stu-optional-select">
+                                    <option value="">-- pick 3 main subjects first --</option>
+                                </select>
                             </div>
-                            <div><label>Class Roll</label><input type="text" id="st-roll" inputmode="numeric" maxlength="3" autocomplete="off"></div>
+                            <div><label>Class Roll</label><input type="text" id="st-roll" inputmode="numeric"
+                                    maxlength="3" autocomplete="off"></div>
                             <div><label>Full Name</label><input type="text" id="st-name"></div>
                             <div><label>Date of Birth</label><input type="date" id="st-dob"></div>
                             <div><label>Father's Name</label><input type="text" id="st-father"></div>
@@ -264,19 +314,34 @@
                             <div><label>Blood Group</label><input type="text" id="st-blood" placeholder="e.g. O+"></div>
                             <div><label>Guardian Contact</label><input type="text" id="st-phone"></div>
                             <div><label>Birth Registration No.</label><input type="text" id="st-birth-reg"></div>
-                            <div style="grid-column: span 3;"><label class="no-select">Residential Address</label><input type="text" id="st-address"></div>
-                            <div id="st-archive-fields" style="display:none; grid-column: span 3; grid-template-columns:1fr 2fr; gap:15px; background:#fef3c7; padding:12px; border-radius:6px; border:1px solid #fde68a;">
-                                <div><label id="st-archive-date-label">Graduation Date</label><input type="date" id="st-status-date"></div>
-                                <div id="st-archive-cause-wrap"><label>Reason for Dropping Out</label><input type="text" id="st-removal-cause"></div>
+                            <div style="grid-column: span 3;"><label class="no-select">Residential Address</label><input
+                                    type="text" id="st-address"></div>
+                            <div id="st-archive-fields"
+                                style="display:none; grid-column: span 3; grid-template-columns:1fr 2fr; gap:15px; background:#fef3c7; padding:12px; border-radius:6px; border:1px solid #fde68a;">
+                                <div><label id="st-archive-date-label">Graduation Date</label><input type="date"
+                                        id="st-status-date"></div>
+                                <div id="st-archive-cause-wrap"><label>Reason for Dropping Out</label><input type="text"
+                                        id="st-removal-cause"></div>
                             </div>
                         </div>
-                        <button id="btn-save-student" style="margin-top:15px; background-color:#2563eb; width:200px;">Register Student</button>
-                        <button id="btn-cancel-student" type="button" style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
+                        <button id="btn-save-student"
+                            style="margin-top:15px; background-color:#2563eb; width:200px;">Register Student</button>
+                        <button id="btn-cancel-student" type="button"
+                            style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel
+                            Edit</button>
                     </details>
 
-                    <table style="width:100%; border-collapse:collapse; background:white;" border="1" cellpadding="8" bordercolor="#e2e8f0">
+                    <table style="width:100%; border-collapse:collapse; background:white;" border="1" cellpadding="8"
+                        bordercolor="#e2e8f0">
                         <thead class="no-select" style="background:#f8fafc;">
-                            <tr id="student-table-head-row"><th>Roll</th><th>Name</th><th>Class</th><th>Guardian Contact</th><th>Status</th><th>Management Actions</th></tr>
+                            <tr id="student-table-head-row">
+                                <th>Roll</th>
+                                <th>Name</th>
+                                <th>Class</th>
+                                <th>Guardian Contact</th>
+                                <th>Status</th>
+                                <th>Management Actions</th>
+                            </tr>
                         </thead>
                         <tbody id="student-table-body"></tbody>
                     </table>
@@ -338,21 +403,29 @@
                 <div id="db-teachers" class="tab-content">
                     <h2 class="no-select">Teacher Registry</h2>
 
-                    <details id="teacher-details" class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
-                        <summary class="no-select" style="font-weight:bold; cursor:pointer; color:#2563eb;">Add New Teacher</summary>
-                        <div id="teacher-form" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
+                    <details id="teacher-details" class="no-select"
+                        style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                        <summary class="no-select" style="font-weight:bold; cursor:pointer; color:#2563eb;">Add New
+                            Teacher</summary>
+                        <div id="teacher-form"
+                            style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
                             <input type="hidden" id="tc-edit-id" value="">
                             <div><label class="no-select">Full Name</label><input type="text" id="tc-name"></div>
-                            <div><label class="no-select">Title</label><input type="text" id="tc-title" placeholder="e.g. Senior Teacher"></div>
-                            <div><label class="no-select">Class Teacher Of</label><select id="tc-classes" multiple size="4"></select></div>
+                            <div><label class="no-select">Title</label><input type="text" id="tc-title"
+                                    placeholder="e.g. Senior Teacher"></div>
+                            <div><label class="no-select">Class Teacher Of</label><select id="tc-classes" multiple
+                                    size="4"></select></div>
                             <div><label>Contact Number</label><input type="text" id="tc-contact"></div>
                             <div><label>Blood Group</label><input type="text" id="tc-blood" placeholder="e.g. O+"></div>
                             <div><label> Father's Name</label><input type="text" id="tc-father"></div>
                             <div><label>Mother's Name</label><input type="text" id="tc-mother"></div>
                             <div><label>NID Number</label><input type="text" id="tc-nid"></div>
                         </div>
-                        <button id="btn-save-teacher" style="margin-top:15px; background-color:#2563eb; width:200px;">Save Teacher</button>
-                        <button id="btn-cancel-teacher" type="button" style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
+                        <button id="btn-save-teacher"
+                            style="margin-top:15px; background-color:#2563eb; width:200px;">Save Teacher</button>
+                        <button id="btn-cancel-teacher" type="button"
+                            style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel
+                            Edit</button>
                     </details>
                 </div>
 
@@ -360,25 +433,54 @@
                 <div id="db-subjects" class="tab-content">
                     <h2 class="no-select">Curriculum Subject Settings</h2>
 
-                    <details id="subject-details" class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                    <details id="subject-details" class="no-select"
+                        style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Add / Edit Subject</summary>
-                        <div id="subject-form" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-top:15px;">
+                        <div id="subject-form"
+                            style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-top:15px;">
                             <input type="hidden" id="sub-edit-id" value="">
-                            <div style="width:100px; position: relative;"><label class="no-select">Sequence</label><input type="text" id="sub-seq-input" inputmode="numeric" value="1"><small id="sub-seq-error" class="field-error"></small></div>
-                            <div style="flex:1; min-width:150px;"><label>Target Class</label><select id="sub-class-select"></select></div>
-                            <div style="flex:1; min-width:150px;"><label>Subject Name</label><select id="sub-name-select"></select></div>
-                            <div style="width:120px; position: relative;"><label>Monthly Total</label><input type="text" id="sub-monthly-input" placeholder="e.g. 25" inputmode="numeric"><small id="sub-monthly-error" class="field-error"></small></div>
-                            <div style="width:120px; position: relative;"><label>Yearly Total</label><input type="text" id="sub-yearly-input" placeholder="e.g. 100" inputmode="numeric"><small id="sub-yearly-error" class="field-error"></small></div>
-                            <button id="btn-add-subject" style="background-color:#10b981; width:auto; padding:10px 20px;">Save Subject</button>
-                            <button id="btn-cancel-subject" type="button" style="background-color:#64748b; width:auto; padding:10px 20px; display:none;">Cancel Edit</button>
+                            <div style="width:100px; position: relative;"><label
+                                    class="no-select">Sequence</label><input type="text" id="sub-seq-input"
+                                    inputmode="numeric" value="1"><small id="sub-seq-error" class="field-error"></small>
+                            </div>
+                            <div style="flex:1; min-width:150px;"><label>Target Class</label><select
+                                    id="sub-class-select"></select></div>
+                            <div style="flex:1; min-width:150px;"><label>Subject Name</label><select
+                                    id="sub-name-select"></select></div>
+                            <div id="sub-custom-name-wrap"
+                                style="display:none; flex:1; min-width:180px; position: relative;"><label>Subject
+                                    Name</label><input type="text" id="sub-custom-name-input"
+                                    placeholder="Enter subject name"><small id="sub-custom-error"
+                                    class="field-error"></small></div>
+                            <div style="width:120px; position: relative;"><label>Monthly Total</label><input type="text"
+                                    id="sub-monthly-input" placeholder="e.g. 25" inputmode="numeric"><small
+                                    id="sub-monthly-error" class="field-error"></small></div>
+                            <div style="width:120px; position: relative;"><label>Yearly Total</label><input type="text"
+                                    id="sub-yearly-input" placeholder="e.g. 100" inputmode="numeric"><small
+                                    id="sub-yearly-error" class="field-error"></small></div>
+                            <button id="btn-add-subject"
+                                style="background-color:#10b981; width:auto; padding:10px 20px;">Save Subject</button>
+                            <button id="btn-cancel-subject" type="button"
+                                style="background-color:#64748b; width:auto; padding:10px 20px; display:none;">Cancel
+                                Edit</button>
                         </div>
                     </details>
 
-                    <div id="subject-class-filters" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;"></div>
+                    <div id="subject-class-filters" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">
+                    </div>
 
-                    <table style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden;" border="1" cellpadding="10" bordercolor="#e2e8f0">
+                    <table
+                        style="width:100%; border-collapse:collapse; background:white; border-radius:8px; overflow:hidden;"
+                        border="1" cellpadding="10" bordercolor="#e2e8f0">
                         <thead class="no-select" style="background:#f1f5f9; text-align:left;">
-                            <tr><th>Sequence</th><th>Class Name</th><th>Subject Name</th><th>Monthly</th><th>Yearly</th><th>Actions</th></tr>
+                            <tr>
+                                <th>Sequence</th>
+                                <th>Class Name</th>
+                                <th>Subject Name</th>
+                                <th>Monthly</th>
+                                <th>Yearly</th>
+                                <th>Actions</th>
+                            </tr>
                         </thead>
                         <tbody id="subject-table-body">
                             <!-- Rows loaded live via database scripts -->
@@ -393,9 +495,12 @@
                     <table style="border-collapse:collapse; font-family:Arial, sans-serif; text-align:center;">
                         <thead>
                             <tr>
-                                <th style="border:1px solid black; padding:8px 12px; font-weight:bold;">Letter<br>Grade</th>
-                                <th style="border:1px solid black; padding:8px 12px; font-weight:bold;">Class<br>Interval (%)</th>
-                                <th style="border:1px solid black; padding:8px 12px; font-weight:bold;">Grade<br>Point</th>
+                                <th style="border:1px solid black; padding:8px 12px; font-weight:bold;">Letter<br>Grade
+                                </th>
+                                <th style="border:1px solid black; padding:8px 12px; font-weight:bold;">
+                                    Class<br>Interval (%)</th>
+                                <th style="border:1px solid black; padding:8px 12px; font-weight:bold;">Grade<br>Point
+                                </th>
                             </tr>
                         </thead>
                         <tbody id="grade-table-body"></tbody>
@@ -406,10 +511,14 @@
                 <div id="settings-school" class="tab-content">
                     <h2>School Information Profile</h2>
                     <div>
-                        <div class="input-group"><label>Institute Name</label><input type="text" value="The Cadet School & College (TCSAC)"></div>
-                        <div class="input-group"><label>Institute Address</label><input type="text" placeholder="Enter school physical address"></div>
-                        <div class="input-group"><label>Head Teacher Name</label><input type="text" placeholder="Enter Headmaster Name"></div>
-                        <div class="input-group"><label>Upload School Logo</label><input type="file" accept="image/*"></div>
+                        <div class="input-group"><label>Institute Name</label><input type="text"
+                                value="The Cadet School & College (TCSAC)"></div>
+                        <div class="input-group"><label>Institute Address</label><input type="text"
+                                placeholder="Enter school physical address"></div>
+                        <div class="input-group"><label>Head Teacher Name</label><input type="text"
+                                placeholder="Enter Headmaster Name"></div>
+                        <div class="input-group"><label>Upload School Logo</label><input type="file" accept="image/*">
+                        </div>
                         <button style="margin-top: 10px; background-color: #10b981;">Save Configuration</button>
                     </div>
                 </div>
@@ -418,12 +527,17 @@
                 <div id="settings-developer" class="tab-content">
                     <h2>Developer Profile</h2>
                     <div>
-                        
-                        <img id="dev-avatar" src="uploads/dev-image.jpeg" style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid #2563eb; background-color: #f1f5f9;" />
+
+                        <img id="dev-avatar" src="uploads/dev-image.jpeg"
+                            style="width: 120px; height: 120px; border-radius: 50%; border: 3px solid #2563eb; background-color: #f1f5f9;" />
                         <div>
                             <h3 style="margin: 0 0 5px 0; color: #1e293b; font-size: 22px;">Ikramul Alam Chowdhury</h3>
-                            <p style="margin: 0 0 15px 0; color: #2563eb; font-weight: bold; font-size: 14px;">Lead Software Architect & Designer</p>
-                            <p style="margin: 0; color: #475569; font-size: 14px; line-height: 1.5;">This management system is an internal custom digital asset. The profile photo and developer code assets are permanently embedded inside the structural architecture of the application core to prevent accidental file deletion or external asset corruption.</p>
+                            <p style="margin: 0 0 15px 0; color: #2563eb; font-weight: bold; font-size: 14px;">Lead
+                                Software Architect & Designer</p>
+                            <p style="margin: 0; color: #475569; font-size: 14px; line-height: 1.5;">This management
+                                system is an internal custom digital asset. The profile photo and developer code assets
+                                are permanently embedded inside the structural architecture of the application core to
+                                prevent accidental file deletion or external asset corruption.</p>
                         </div>
                     </div>
                 </div>
@@ -482,4 +596,5 @@
     <script src="renderer.js"></script>
 
 </body>
+
 </html>

@@ -196,59 +196,143 @@ function updateSubjectNameOptions() {
     const cls = allClassesCache.find(c => String(c.id) === String(classId));
     const nameSelect = document.getElementById('sub-name-select');
     const list = (cls && CLASS_TO_CATALOG[cls.class_name]) || [];
-    nameSelect.innerHTML = list.length
-        ? list.map(name => `<option value="${name}">${name}</option>`).join('')
-        : `<option value="">No catalog set for this class</option>`;
+    let optionsHtml = list.map(name => `<option value="${name}">${name}</option>`).join('');
+    optionsHtml += `<option value="__custom__">Custom Subject</option>`;
+    nameSelect.innerHTML = optionsHtml;
+    handleSubjectNameChange();
+}
+
+function handleSubjectNameChange() {
+    const nameSelect = document.getElementById('sub-name-select');
+    const customWrap = document.getElementById('sub-custom-name-wrap');
+    const customInput = document.getElementById('sub-custom-name-input');
+    const customErr = document.getElementById('sub-custom-error');
+    if (!nameSelect || !customWrap) return;
+
+    if (nameSelect.value === '__custom__') {
+        customWrap.style.display = 'block';
+        if (customInput) customInput.focus();
+    } else {
+        customWrap.style.display = 'none';
+        if (customInput) customInput.value = '';
+        if (customErr) customErr.textContent = '';
+    }
 }
 document.getElementById('sub-class-select').addEventListener('change', updateSubjectNameOptions);
+document.getElementById('sub-name-select').addEventListener('change', handleSubjectNameChange);
+
+const customSubjectInputEl = document.getElementById('sub-custom-name-input');
+if (customSubjectInputEl) {
+    customSubjectInputEl.addEventListener('input', () => {
+        const errEl = document.getElementById('sub-custom-error');
+        if (errEl && customSubjectInputEl.value.trim()) errEl.textContent = '';
+    });
+}
 
 window.filterSubjectsByClass = function (classId) {
     subjectClassFilter = classId;
     loadSubjectsPage();
 };
 
+let allLoadedSubjects = [];
+
 async function renderSubjectsTable() {
     const subjects = await ipcRenderer.invoke('get-subjects');
+    allLoadedSubjects = subjects;
     const filtered = subjectClassFilter === '' ? subjects : subjects.filter(s => String(s.class_id) === String(subjectClassFilter));
     const tbody = document.getElementById('subject-table-body');
-        tbody.innerHTML = filtered.map(s => `
-            <tr>
-                <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-size:12px;">${s.sequence_order}</span></td>
-                <td><b>${s.class_name || 'Unassigned'}</b></td>
-                <td>${s.subject_name}</td>
-                <td>${s.monthly_marks ?? '<i style="color:gray;">—</i>'}</td>
-                <td>${s.yearly_marks ?? '<i style="color:gray;">—</i>'}</td>
-                <td>
-                    <button onclick="editSubject(${s.id}, ${s.class_id}, '${s.subject_name.replace(/'/g, "\\'")}', ${s.sequence_order}, ${s.monthly_marks || 'null'}, ${s.yearly_marks || 'null'})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
-                    <button onclick="deleteSubject(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">🗑 Delete</button>
-                </td>
-            </tr>
-        `).join('');
+    tbody.innerHTML = filtered.map(s => `
+        <tr>
+            <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-size:12px;">${s.sequence_order}</span></td>
+            <td><b>${s.class_name || 'Unassigned'}</b></td>
+            <td>${escapeHtml(s.subject_name)}</td>
+            <td>${s.monthly_marks ?? '<i style="color:gray;">—</i>'}</td>
+            <td>${s.yearly_marks ?? '<i style="color:gray;">—</i>'}</td>
+            <td>
+                <button onclick="editSubject(${s.id})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
+                <button onclick="deleteSubject(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">🗑 Delete</button>
+            </td>
+        </tr>
+    `).join('');
 }
 
 window.editSubject = function (id, classId, subjectName, sequence, monthlyMarks, yearlyMarks) {
-    document.getElementById('sub-edit-id').value = id;
-    document.getElementById('sub-class-select').value = classId;
+    let s = allLoadedSubjects.find(item => item.id === id);
+    if (!s) {
+        s = { id, class_id: classId, subject_name: subjectName, sequence_order: sequence, monthly_marks: monthlyMarks, yearly_marks: yearlyMarks };
+    }
+
+    document.getElementById('sub-edit-id').value = s.id;
+    document.getElementById('sub-class-select').value = s.class_id;
     updateSubjectNameOptions();
-    document.getElementById('sub-name-select').value = subjectName;
-    document.getElementById('sub-seq-input').value = sequence;
-    document.getElementById('sub-monthly-input').value = monthlyMarks || '';
-    document.getElementById('sub-yearly-input').value = yearlyMarks || '';
+
+    const nameSelect = document.getElementById('sub-name-select');
+    const customWrap = document.getElementById('sub-custom-name-wrap');
+    const customInput = document.getElementById('sub-custom-name-input');
+    const customErr = document.getElementById('sub-custom-error');
+    if (customErr) customErr.textContent = '';
+
+    const matchingOption = Array.from(nameSelect.options).find(opt => opt.value === s.subject_name && opt.value !== '__custom__');
+    if (matchingOption) {
+        nameSelect.value = s.subject_name;
+        customWrap.style.display = 'none';
+        if (customInput) customInput.value = '';
+    } else {
+        nameSelect.value = '__custom__';
+        customWrap.style.display = 'block';
+        if (customInput) customInput.value = s.subject_name;
+    }
+
+    document.getElementById('sub-seq-input').value = s.sequence_order;
+    document.getElementById('sub-monthly-input').value = s.monthly_marks || '';
+    document.getElementById('sub-yearly-input').value = s.yearly_marks || '';
     document.getElementById('btn-add-subject').textContent = 'Update Subject';
     document.getElementById('btn-cancel-subject').style.display = 'inline-block';
     const details = document.getElementById('subject-details');
     if (details) details.open = true;
 };
 
+function resetSubjectForm() {
+    document.getElementById('sub-edit-id').value = '';
+    document.getElementById('sub-seq-input').value = '1';
+    document.getElementById('sub-monthly-input').value = '';
+    document.getElementById('sub-yearly-input').value = '';
+    const customInput = document.getElementById('sub-custom-name-input');
+    if (customInput) customInput.value = '';
+    const customWrap = document.getElementById('sub-custom-name-wrap');
+    if (customWrap) customWrap.style.display = 'none';
+    const customErr = document.getElementById('sub-custom-error');
+    if (customErr) customErr.textContent = '';
+    updateSubjectNameOptions();
+    document.getElementById('btn-add-subject').textContent = 'Save Subject';
+    document.getElementById('btn-cancel-subject').style.display = 'none';
+}
+
 document.getElementById('btn-add-subject').addEventListener('click', async () => {
     const editId = document.getElementById('sub-edit-id').value;
     const class_id = document.getElementById('sub-class-select').value;
-    const subject_name = document.getElementById('sub-name-select').value;
-    const sequence_order = document.getElementById('sub-seq-input').value;
+    const nameSelectValue = document.getElementById('sub-name-select').value;
+    let subject_name = '';
+
+    if (nameSelectValue === '__custom__') {
+        const customInput = document.getElementById('sub-custom-name-input');
+        subject_name = (customInput ? customInput.value : '').trim();
+        if (!subject_name) {
+            const errEl = document.getElementById('sub-custom-error');
+            if (errEl) errEl.textContent = 'Please enter custom subject name';
+            if (customInput) customInput.focus();
+            return alert("Please enter the custom subject name!");
+        }
+    } else {
+        subject_name = nameSelectValue.trim();
+        if (!subject_name) {
+            return alert("Pick a subject from the list first!");
+        }
+    }
+
+    const sequence_order = document.getElementById('sub-seq-input').value || 1;
     const monthly_marks = document.getElementById('sub-monthly-input').value || null;
     const yearly_marks = document.getElementById('sub-yearly-input').value || null;
-
-    if (!subject_name) return alert("Pick a subject from the list first!");
 
     const payload = { class_id, subject_name, sequence_order, monthly_marks, yearly_marks };
     const res = editId
@@ -256,12 +340,7 @@ document.getElementById('btn-add-subject').addEventListener('click', async () =>
         : await ipcRenderer.invoke('add-subject', payload);
 
     if (res.success) {
-        document.getElementById('sub-edit-id').value = '';
-        document.getElementById('sub-seq-input').value = '1';
-        document.getElementById('sub-monthly-input').value = '';
-        document.getElementById('sub-yearly-input').value = '';
-        document.getElementById('btn-add-subject').textContent = 'Save Subject';
-        document.getElementById('btn-cancel-subject').style.display = 'none';
+        resetSubjectForm();
         renderSubjectsTable();
     } else {
         alert('Could not save subject: ' + res.error);
@@ -2079,4 +2158,7 @@ function setupCancelEdit(editIdField, formFields, saveBtnId, saveLabel, cancelBt
 
 setupCancelEdit('st-edit-id', ['st-class', 'st-roll', 'st-name', 'st-blood', 'st-phone', 'st-address', 'st-dob', 'st-father', 'st-mother', 'st-birth-reg'], 'btn-save-student', 'Register Student', 'btn-cancel-student');
 setupCancelEdit('tc-edit-id', ['tc-name', 'tc-title', 'tc-contact', 'tc-blood', 'tc-father', 'tc-mother', 'tc-nid'], 'btn-save-teacher', 'Save Teacher', 'btn-cancel-teacher');
-setupCancelEdit('sub-edit-id', ['sub-class-select', 'sub-teacher-select', 'sub-name-select', 'sub-seq-input', 'sub-monthly-input', 'sub-yearly-input'], 'btn-add-subject', 'Save Subject', 'btn-cancel-subject');
+const btnCancelSubject = document.getElementById('btn-cancel-subject');
+if (btnCancelSubject) {
+    btnCancelSubject.addEventListener('click', resetSubjectForm);
+}

@@ -97,9 +97,12 @@ ipcMain.handle('get-subjects', async () => {
 
 ipcMain.handle('delete-subject', async (event, id) => {
     return new Promise((resolve) => {
-        db.run(`DELETE FROM subjects WHERE id = ?`, [id], (err) => {
-            if (err) resolve({ success: false, error: err.message });
-            else resolve({ success: true });
+        db.run(`DELETE FROM marks WHERE subject_id = ?`, [id], (err) => {
+            if (err) return resolve({ success: false, error: err.message });
+            db.run(`DELETE FROM subjects WHERE id = ?`, [id], (err2) => {
+                if (err2) resolve({ success: false, error: err2.message });
+                else resolve({ success: true });
+            });
         });
     });
 });
@@ -580,21 +583,43 @@ ipcMain.handle('update-teacher', async (event, t) => {
 });
 
 ipcMain.handle('add-subject', async (event, data) => {
+    const subjectName = String(data.subject_name || '').trim();
+    if (!subjectName) return { success: false, error: 'Subject name is required.' };
+    const classId = parseInt(data.class_id, 10);
+    if (!classId) return { success: false, error: 'Target class is required.' };
+
     return new Promise((resolve) => {
-        db.run(`INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (?, ?, ?, ?, ?)`,
-            [data.class_id, data.subject_name, data.sequence_order, data.monthly_marks || null, data.yearly_marks || null], (err) => {
-            if (err) resolve({ success: false, error: err.message });
-            else resolve({ success: true });
+        db.get(`SELECT id FROM subjects WHERE class_id = ? AND LOWER(subject_name) = LOWER(?)`, [classId, subjectName], (err, existing) => {
+            if (err) return resolve({ success: false, error: err.message });
+            if (existing) return resolve({ success: false, error: `Subject "${subjectName}" already exists for this class.` });
+
+            db.run(`INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (?, ?, ?, ?, ?)`,
+                [classId, subjectName, data.sequence_order || 1, data.monthly_marks || null, data.yearly_marks || null], function(err2) {
+                if (err2) resolve({ success: false, error: err2.message });
+                else resolve({ success: true, id: this.lastID });
+            });
         });
     });
 });
 
 ipcMain.handle('update-subject', async (event, data) => {
+    const subjectName = String(data.subject_name || '').trim();
+    if (!subjectName) return { success: false, error: 'Subject name is required.' };
+    const classId = parseInt(data.class_id, 10);
+    if (!classId) return { success: false, error: 'Target class is required.' };
+    const subjectId = parseInt(data.id, 10);
+    if (!subjectId) return { success: false, error: 'Subject ID is required.' };
+
     return new Promise((resolve) => {
-        db.run(`UPDATE subjects SET class_id = ?, subject_name = ?, sequence_order = ?, monthly_marks = ?, yearly_marks = ? WHERE id = ?`,
-            [data.class_id, data.subject_name, data.sequence_order, data.monthly_marks || null, data.yearly_marks || null, data.id], (err) => {
-            if (err) resolve({ success: false, error: err.message });
-            else resolve({ success: true });
+        db.get(`SELECT id FROM subjects WHERE class_id = ? AND LOWER(subject_name) = LOWER(?) AND id != ?`, [classId, subjectName, subjectId], (err, existing) => {
+            if (err) return resolve({ success: false, error: err.message });
+            if (existing) return resolve({ success: false, error: `Subject "${subjectName}" already exists for this class.` });
+
+            db.run(`UPDATE subjects SET class_id = ?, subject_name = ?, sequence_order = ?, monthly_marks = ?, yearly_marks = ? WHERE id = ?`,
+                [classId, subjectName, data.sequence_order || 1, data.monthly_marks || null, data.yearly_marks || null, subjectId], (err2) => {
+                if (err2) resolve({ success: false, error: err2.message });
+                else resolve({ success: true });
+            });
         });
     });
 });
