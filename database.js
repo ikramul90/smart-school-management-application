@@ -171,16 +171,31 @@ db.serialize(() => {
     )`);
 
     // 12. School Information Table (Stores school profile name and address)
-    db.run(`CREATE TABLE IF NOT EXISTS school_info (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT DEFAULT 'The Cadet School & College (TCSAC)',
-        address TEXT DEFAULT ''
-    )`);
+    // Self-repairing: if an old/incorrect school_info table exists, rebuild it.
+    db.all("PRAGMA table_info(school_info)", [], (err, columns) => {
+        const names = (columns || []).map(c => c.name);
+        const isValid = names.includes('id') && names.includes('name') && names.includes('address');
 
-    db.get("SELECT COUNT(*) as count FROM school_info", [], (err, row) => {
-        if (row && row.count === 0) {
-            db.run(`INSERT INTO school_info (name, address) VALUES (?, ?)`,
-                ['The Cadet School & College (TCSAC)', '']);
+        const createAndSeed = () => {
+            db.run(`CREATE TABLE IF NOT EXISTS school_info (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT DEFAULT 'The Cadet School & College (TCSAC)',
+                address TEXT DEFAULT ''
+            )`, () => {
+                db.get("SELECT COUNT(*) as count FROM school_info", [], (err2, row) => {
+                    if (row && row.count === 0) {
+                        db.run(`INSERT INTO school_info (name, address) VALUES (?, ?)`,
+                            ['The Cadet School & College (TCSAC)', '']);
+                    }
+                });
+            });
+        };
+
+        if (names.length > 0 && !isValid) {
+            console.log("⚠️ school_info table had the wrong structure. Rebuilding it...");
+            db.run("DROP TABLE school_info", createAndSeed);
+        } else {
+            createAndSeed();
         }
     });
 

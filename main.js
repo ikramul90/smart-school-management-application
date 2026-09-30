@@ -73,11 +73,11 @@ ipcMain.handle('attempt-login', async (event, data) => {
 ipcMain.handle('get-school-info', async () => {
     return new Promise((resolve) => {
         db.get("SELECT * FROM school_info ORDER BY id ASC LIMIT 1", [], (err, row) => {
-            if (err || !row) {
-                resolve({
-                    name: 'The Cadet School & College (TCSAC)',
-                    address: ''
-                });
+            if (err) {
+                console.error('get-school-info failed:', err.message);
+                resolve({ name: 'The Cadet School & College (TCSAC)', address: '' });
+            } else if (!row) {
+                resolve({ name: 'The Cadet School & College (TCSAC)', address: '' });
             } else {
                 resolve(row);
             }
@@ -89,17 +89,25 @@ ipcMain.handle('get-school-info', async () => {
 ipcMain.handle('save-school-info', async (event, data) => {
     return new Promise((resolve) => {
         db.get("SELECT id FROM school_info ORDER BY id ASC LIMIT 1", [], (err, row) => {
+            if (err) {
+                console.error('save-school-info (lookup) failed:', err.message);
+                return resolve({ success: false, message: err.message });
+            }
             if (row) {
                 const query = `UPDATE school_info SET name = ?, address = ? WHERE id = ?`;
                 db.run(query, [data.name, data.address, row.id], function (e) {
-                    if (e) resolve({ success: false, message: e.message });
-                    else resolve({ success: true });
+                    if (e) {
+                        console.error('save-school-info (update) failed:', e.message);
+                        resolve({ success: false, message: e.message });
+                    } else resolve({ success: true });
                 });
             } else {
                 const query = `INSERT INTO school_info (name, address) VALUES (?, ?)`;
                 db.run(query, [data.name, data.address], function (e) {
-                    if (e) resolve({ success: false, message: e.message });
-                    else resolve({ success: true });
+                    if (e) {
+                        console.error('save-school-info (insert) failed:', e.message);
+                        resolve({ success: false, message: e.message });
+                    } else resolve({ success: true });
                 });
             }
         });
