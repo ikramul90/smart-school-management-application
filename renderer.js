@@ -229,6 +229,36 @@ if (customSubjectInputEl) {
     });
 }
 
+function updateExamCheckboxesState() {
+    const monthlyCheck = document.getElementById('sub-monthly-check');
+    const yearlyCheck = document.getElementById('sub-yearly-check');
+    const monthlyInput = document.getElementById('sub-monthly-input');
+    const yearlyInput = document.getElementById('sub-yearly-input');
+    const monthlyErr = document.getElementById('sub-monthly-error');
+    const yearlyErr = document.getElementById('sub-yearly-error');
+
+    if (monthlyCheck && monthlyInput) {
+        monthlyInput.disabled = !monthlyCheck.checked;
+        if (!monthlyCheck.checked) {
+            monthlyInput.value = '';
+            if (monthlyErr) monthlyErr.textContent = '';
+        }
+    }
+    if (yearlyCheck && yearlyInput) {
+        yearlyInput.disabled = !yearlyCheck.checked;
+        if (!yearlyCheck.checked) {
+            yearlyInput.value = '';
+            if (yearlyErr) yearlyErr.textContent = '';
+        }
+    }
+}
+
+const subMonthlyCheckEl = document.getElementById('sub-monthly-check');
+if (subMonthlyCheckEl) subMonthlyCheckEl.addEventListener('change', updateExamCheckboxesState);
+
+const subYearlyCheckEl = document.getElementById('sub-yearly-check');
+if (subYearlyCheckEl) subYearlyCheckEl.addEventListener('change', updateExamCheckboxesState);
+
 window.filterSubjectsByClass = function (classId) {
     subjectClassFilter = classId;
     loadSubjectsPage();
@@ -284,8 +314,25 @@ window.editSubject = function (id, classId, subjectName, sequence, monthlyMarks,
     }
 
     document.getElementById('sub-seq-input').value = s.sequence_order;
-    document.getElementById('sub-monthly-input').value = s.monthly_marks || '';
-    document.getElementById('sub-yearly-input').value = s.yearly_marks || '';
+
+    const hasMonthly = s.monthly_marks !== null && s.monthly_marks !== undefined && s.monthly_marks !== '' && Number(s.monthly_marks) > 0;
+    const monthlyCheck = document.getElementById('sub-monthly-check');
+    const monthlyInput = document.getElementById('sub-monthly-input');
+    if (monthlyCheck) monthlyCheck.checked = hasMonthly;
+    if (monthlyInput) {
+        monthlyInput.disabled = !hasMonthly;
+        monthlyInput.value = hasMonthly ? s.monthly_marks : '';
+    }
+
+    const hasYearly = s.yearly_marks !== null && s.yearly_marks !== undefined && s.yearly_marks !== '' && Number(s.yearly_marks) > 0;
+    const yearlyCheck = document.getElementById('sub-yearly-check');
+    const yearlyInput = document.getElementById('sub-yearly-input');
+    if (yearlyCheck) yearlyCheck.checked = hasYearly;
+    if (yearlyInput) {
+        yearlyInput.disabled = !hasYearly;
+        yearlyInput.value = hasYearly ? s.yearly_marks : '';
+    }
+
     document.getElementById('btn-add-subject').textContent = 'Update Subject';
     document.getElementById('btn-cancel-subject').style.display = 'inline-block';
     const details = document.getElementById('subject-details');
@@ -295,14 +342,34 @@ window.editSubject = function (id, classId, subjectName, sequence, monthlyMarks,
 function resetSubjectForm() {
     document.getElementById('sub-edit-id').value = '';
     document.getElementById('sub-seq-input').value = '1';
-    document.getElementById('sub-monthly-input').value = '';
-    document.getElementById('sub-yearly-input').value = '';
+
+    const monthlyCheck = document.getElementById('sub-monthly-check');
+    const monthlyInput = document.getElementById('sub-monthly-input');
+    if (monthlyCheck) monthlyCheck.checked = true;
+    if (monthlyInput) {
+        monthlyInput.disabled = false;
+        monthlyInput.value = '';
+    }
+
+    const yearlyCheck = document.getElementById('sub-yearly-check');
+    const yearlyInput = document.getElementById('sub-yearly-input');
+    if (yearlyCheck) yearlyCheck.checked = true;
+    if (yearlyInput) {
+        yearlyInput.disabled = false;
+        yearlyInput.value = '';
+    }
+
     const customInput = document.getElementById('sub-custom-name-input');
     if (customInput) customInput.value = '';
     const customWrap = document.getElementById('sub-custom-name-wrap');
     if (customWrap) customWrap.style.display = 'none';
     const customErr = document.getElementById('sub-custom-error');
     if (customErr) customErr.textContent = '';
+    const monthlyErr = document.getElementById('sub-monthly-error');
+    if (monthlyErr) monthlyErr.textContent = '';
+    const yearlyErr = document.getElementById('sub-yearly-error');
+    if (yearlyErr) yearlyErr.textContent = '';
+
     updateSubjectNameOptions();
     document.getElementById('btn-add-subject').textContent = 'Save Subject';
     document.getElementById('btn-cancel-subject').style.display = 'none';
@@ -330,9 +397,33 @@ document.getElementById('btn-add-subject').addEventListener('click', async () =>
         }
     }
 
+    const isMonthly = document.getElementById('sub-monthly-check') ? document.getElementById('sub-monthly-check').checked : true;
+    const isYearly = document.getElementById('sub-yearly-check') ? document.getElementById('sub-yearly-check').checked : true;
+
+    if (!isMonthly && !isYearly) {
+        return alert("Please select at least one exam type (Monthly or Yearly) for this subject.");
+    }
+
+    const monthlyInputVal = document.getElementById('sub-monthly-input').value.trim();
+    const yearlyInputVal = document.getElementById('sub-yearly-input').value.trim();
+
+    if (isMonthly && !monthlyInputVal) {
+        const err = document.getElementById('sub-monthly-error');
+        if (err) err.textContent = 'Enter monthly total';
+        document.getElementById('sub-monthly-input').focus();
+        return alert("Please enter Monthly Total marks, or uncheck the Monthly exam checkbox.");
+    }
+
+    if (isYearly && !yearlyInputVal) {
+        const err = document.getElementById('sub-yearly-error');
+        if (err) err.textContent = 'Enter yearly total';
+        document.getElementById('sub-yearly-input').focus();
+        return alert("Please enter Yearly Total marks, or uncheck the Yearly exam checkbox.");
+    }
+
     const sequence_order = document.getElementById('sub-seq-input').value || 1;
-    const monthly_marks = document.getElementById('sub-monthly-input').value || null;
-    const yearly_marks = document.getElementById('sub-yearly-input').value || null;
+    const monthly_marks = isMonthly && monthlyInputVal ? parseInt(monthlyInputVal, 10) : null;
+    const yearly_marks = isYearly && yearlyInputVal ? parseInt(yearlyInputVal, 10) : null;
 
     const payload = { class_id, subject_name, sequence_order, monthly_marks, yearly_marks };
     const res = editId
