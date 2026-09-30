@@ -170,6 +170,19 @@ db.serialize(() => {
         is_dismissed INTEGER DEFAULT 0
     )`);
 
+    // 12. School Information Table (Stores school profile name and address)
+    db.run(`CREATE TABLE IF NOT EXISTS school_info (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT DEFAULT 'The Cadet School & College (TCSAC)',
+        address TEXT DEFAULT ''
+    )`);
+
+    db.get("SELECT COUNT(*) as count FROM school_info", [], (err, row) => {
+        if (row && row.count === 0) {
+            db.run(`INSERT INTO school_info (name, address) VALUES (?, ?)`,
+                ['The Cadet School & College (TCSAC)', '']);
+        }
+    });
 
     console.log("🎉 Database tables successfully initialized!");
 });

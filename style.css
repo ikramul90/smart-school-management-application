@@ -709,12 +709,37 @@ button:hover {
 .transcript-preview-head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:10px; }
 .transcript-preview-head .marks-view-status { margin-bottom:0; }
 
-.transcript-preview { display:flex; flex-direction:column; gap:20px; }
-.transcript-page { background:white; border:1px solid #cbd5e1; border-radius:4px; box-shadow:0 2px 8px rgba(0,0,0,0.08); padding:28px; width:100%; max-width:1000px; box-sizing:border-box; margin:0 auto; }
-.transcript-student-name { font-size:18px; font-weight:bold; color:#0f172a; margin-bottom:14px; }
-.transcript-table-wrap { width:100%; overflow-x:auto; }
-.transcript-table { width:100%; border-collapse:collapse; text-align:center; font-size:13px; }
-.transcript-table th, .transcript-table td { border:1px solid #000; padding:6px 8px; }
-.transcript-table th { background:#f1f5f9; }
-.transcript-table td.transcript-subject { text-align:left; }
-.transcript-total-row td { font-weight:bold; }
+.transcript-preview { display:flex; flex-direction:column; gap:24px; }
+.transcript-page { background:white; border:1px solid #cbd5e1; border-radius:4px; box-shadow:0 2px 8px rgba(0,0,0,0.08); padding:20px 24px 24px; width:100%; max-width:880px; box-sizing:border-box; margin:0 auto; font-family:"Fira Sans", Arial, sans-serif; color:#111; }
+
+.transcript-header-top { display:flex; justify-content:space-between; align-items:flex-end; min-height:85px; margin-bottom:6px; gap:16px; }
+.transcript-inst-header { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding-left:140px; }
+.transcript-inst-name { font-size:16px; font-weight:700; color:#0f172a; line-height:1.25; margin-bottom:2px; }
+.transcript-inst-address { font-size:11.5px; font-weight:500; color:#334155; line-height:1.2; margin-bottom:4px; }
+.transcript-logo-wrap { margin-top:2px; margin-bottom:2px; display:flex; justify-content:center; align-items:center; }
+.transcript-inst-logo { width:44px; height:44px; object-fit:contain; }
+.transcript-grade-scale-box { width:auto; flex-shrink:0; margin-top:10px; }
+.transcript-grade-scale-table { border-collapse:collapse; font-size:9.5px; border:1px solid #000; text-align:center; }
+.transcript-grade-scale-table th, .transcript-grade-scale-table td { border:1px solid #000; padding:1.5px 4px; line-height:1.2; font-weight:600; }
+.transcript-grade-scale-table thead th { background:#f1f5fa; font-weight:700; }
+
+.transcript-title-wrap { text-align:center; margin:4px 0 12px; }
+.transcript-main-title { font-size:13px; font-weight:700; letter-spacing:0.8px; text-transform:uppercase; border:1px solid #000; display:inline-block; padding:3px 18px; background:#f8fafc; }
+
+.transcript-info-section { display:grid; grid-template-columns:1fr 1fr; column-gap:24px; margin-bottom:12px; font-size:12px; }
+.transcript-info-col { min-width:0; }
+.transcript-info-col-right { display:flex; flex-direction:column; justify-content:flex-end; }
+.transcript-info-row { display:grid; grid-template-columns:110px 14px 1fr; padding:1.5px 0; line-height:1.35; }
+.transcript-info-row .info-label { font-weight:400; color:#111; }
+.transcript-info-row .info-colon { font-weight:700; color:#111; text-align:center; }
+.transcript-info-row .info-value { font-weight:700; color:#111; word-break:break-word; }
+
+.transcript-table-wrap { width:100%; overflow:hidden; }
+.transcript-table { width:100%; border-collapse:collapse; text-align:center; font-size:12px; border:1px solid #000; }
+.transcript-table th, .transcript-table td { border:1px solid #000; padding:4px 5px; font-weight:600; text-align:center; font-size:12px; }
+.transcript-table thead th { background:#f1f5fa; line-height:1.2; font-size:11.5px; }
+.transcript-table td.subject, .transcript-table td.transcript-subject { text-align:left; padding-left:8px; }
+.transcript-table td.sn { width:36px; }
+.transcript-table td.total { background:#f7f9fc; }
+.transcript-table tfoot td, .transcript-total-row td { font-weight:700; padding:4px 5px; font-size:12px; }
+.transcript-obtained-label { font-weight:700; font-size:11px; text-align:center; }

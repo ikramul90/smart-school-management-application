@@ -69,14 +69,39 @@ ipcMain.handle('attempt-login', async (event, data) => {
 
 // --- SETTINGS SCREEN REGISTRATION ---
 
-// Save or Update School Information
-ipcMain.handle('save-school-info', async (event, info) => {
+// Get School Information
+ipcMain.handle('get-school-info', async () => {
     return new Promise((resolve) => {
-        // Check if data already exists
-        db.get("SELECT COUNT(*) as count FROM classes", [], (err, row) => {
-            // We'll simulate keeping school data in a key-value setup or direct tables later.
-            // For now, let's acknowledge the channel works perfectly!
-            resolve({ success: true });
+        db.get("SELECT * FROM school_info ORDER BY id ASC LIMIT 1", [], (err, row) => {
+            if (err || !row) {
+                resolve({
+                    name: 'The Cadet School & College (TCSAC)',
+                    address: ''
+                });
+            } else {
+                resolve(row);
+            }
+        });
+    });
+});
+
+// Save or Update School Information
+ipcMain.handle('save-school-info', async (event, data) => {
+    return new Promise((resolve) => {
+        db.get("SELECT id FROM school_info ORDER BY id ASC LIMIT 1", [], (err, row) => {
+            if (row) {
+                const query = `UPDATE school_info SET name = ?, address = ? WHERE id = ?`;
+                db.run(query, [data.name, data.address, row.id], function (e) {
+                    if (e) resolve({ success: false, message: e.message });
+                    else resolve({ success: true });
+                });
+            } else {
+                const query = `INSERT INTO school_info (name, address) VALUES (?, ?)`;
+                db.run(query, [data.name, data.address], function (e) {
+                    if (e) resolve({ success: false, message: e.message });
+                    else resolve({ success: true });
+                });
+            }
         });
     });
 });

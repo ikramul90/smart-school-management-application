@@ -18,7 +18,7 @@ const dashboardScreen = document.getElementById('dashboard-screen');
 // normal Login screen accordingly.
 window.addEventListener('DOMContentLoaded', async () => {
     const adminExists = await ipcRenderer.invoke('check-admin-exists');
-    
+
     if (adminExists) {
         loginScreen.style.display = 'block';
     } else {
@@ -100,7 +100,7 @@ if (btnToggleLoginPassword) {
 // Login form: sends the entered username/password to main.js for
 // verification, then swaps the login screen out for the dashboard
 // if correct.
-window.switchTab = function(tabId) {
+window.switchTab = function (tabId) {
     // Hide all tab contents
     const tabs = document.querySelectorAll('.tab-content');
     tabs.forEach(tab => {
@@ -123,7 +123,7 @@ window.switchTab = function(tabId) {
 
 // Load data automatically when entering a database tab
 const originalSwitchTab = window.switchTab;
-window.switchTab = function(tabId) {
+window.switchTab = function (tabId) {
     originalSwitchTab(tabId);
     if (tabId === 'db-subjects') loadSubjectsPage();
     if (tabId === 'db-students') loadStudentsPage();
@@ -229,36 +229,6 @@ if (customSubjectInputEl) {
     });
 }
 
-function updateExamCheckboxesState() {
-    const monthlyCheck = document.getElementById('sub-monthly-check');
-    const yearlyCheck = document.getElementById('sub-yearly-check');
-    const monthlyInput = document.getElementById('sub-monthly-input');
-    const yearlyInput = document.getElementById('sub-yearly-input');
-    const monthlyErr = document.getElementById('sub-monthly-error');
-    const yearlyErr = document.getElementById('sub-yearly-error');
-
-    if (monthlyCheck && monthlyInput) {
-        monthlyInput.disabled = !monthlyCheck.checked;
-        if (!monthlyCheck.checked) {
-            monthlyInput.value = '';
-            if (monthlyErr) monthlyErr.textContent = '';
-        }
-    }
-    if (yearlyCheck && yearlyInput) {
-        yearlyInput.disabled = !yearlyCheck.checked;
-        if (!yearlyCheck.checked) {
-            yearlyInput.value = '';
-            if (yearlyErr) yearlyErr.textContent = '';
-        }
-    }
-}
-
-const subMonthlyCheckEl = document.getElementById('sub-monthly-check');
-if (subMonthlyCheckEl) subMonthlyCheckEl.addEventListener('change', updateExamCheckboxesState);
-
-const subYearlyCheckEl = document.getElementById('sub-yearly-check');
-if (subYearlyCheckEl) subYearlyCheckEl.addEventListener('change', updateExamCheckboxesState);
-
 window.filterSubjectsByClass = function (classId) {
     subjectClassFilter = classId;
     loadSubjectsPage();
@@ -314,25 +284,8 @@ window.editSubject = function (id, classId, subjectName, sequence, monthlyMarks,
     }
 
     document.getElementById('sub-seq-input').value = s.sequence_order;
-
-    const hasMonthly = s.monthly_marks !== null && s.monthly_marks !== undefined && s.monthly_marks !== '' && Number(s.monthly_marks) > 0;
-    const monthlyCheck = document.getElementById('sub-monthly-check');
-    const monthlyInput = document.getElementById('sub-monthly-input');
-    if (monthlyCheck) monthlyCheck.checked = hasMonthly;
-    if (monthlyInput) {
-        monthlyInput.disabled = !hasMonthly;
-        monthlyInput.value = hasMonthly ? s.monthly_marks : '';
-    }
-
-    const hasYearly = s.yearly_marks !== null && s.yearly_marks !== undefined && s.yearly_marks !== '' && Number(s.yearly_marks) > 0;
-    const yearlyCheck = document.getElementById('sub-yearly-check');
-    const yearlyInput = document.getElementById('sub-yearly-input');
-    if (yearlyCheck) yearlyCheck.checked = hasYearly;
-    if (yearlyInput) {
-        yearlyInput.disabled = !hasYearly;
-        yearlyInput.value = hasYearly ? s.yearly_marks : '';
-    }
-
+    document.getElementById('sub-monthly-input').value = s.monthly_marks || '';
+    document.getElementById('sub-yearly-input').value = s.yearly_marks || '';
     document.getElementById('btn-add-subject').textContent = 'Update Subject';
     document.getElementById('btn-cancel-subject').style.display = 'inline-block';
     const details = document.getElementById('subject-details');
@@ -342,34 +295,14 @@ window.editSubject = function (id, classId, subjectName, sequence, monthlyMarks,
 function resetSubjectForm() {
     document.getElementById('sub-edit-id').value = '';
     document.getElementById('sub-seq-input').value = '1';
-
-    const monthlyCheck = document.getElementById('sub-monthly-check');
-    const monthlyInput = document.getElementById('sub-monthly-input');
-    if (monthlyCheck) monthlyCheck.checked = true;
-    if (monthlyInput) {
-        monthlyInput.disabled = false;
-        monthlyInput.value = '';
-    }
-
-    const yearlyCheck = document.getElementById('sub-yearly-check');
-    const yearlyInput = document.getElementById('sub-yearly-input');
-    if (yearlyCheck) yearlyCheck.checked = true;
-    if (yearlyInput) {
-        yearlyInput.disabled = false;
-        yearlyInput.value = '';
-    }
-
+    document.getElementById('sub-monthly-input').value = '';
+    document.getElementById('sub-yearly-input').value = '';
     const customInput = document.getElementById('sub-custom-name-input');
     if (customInput) customInput.value = '';
     const customWrap = document.getElementById('sub-custom-name-wrap');
     if (customWrap) customWrap.style.display = 'none';
     const customErr = document.getElementById('sub-custom-error');
     if (customErr) customErr.textContent = '';
-    const monthlyErr = document.getElementById('sub-monthly-error');
-    if (monthlyErr) monthlyErr.textContent = '';
-    const yearlyErr = document.getElementById('sub-yearly-error');
-    if (yearlyErr) yearlyErr.textContent = '';
-
     updateSubjectNameOptions();
     document.getElementById('btn-add-subject').textContent = 'Save Subject';
     document.getElementById('btn-cancel-subject').style.display = 'none';
@@ -397,33 +330,9 @@ document.getElementById('btn-add-subject').addEventListener('click', async () =>
         }
     }
 
-    const isMonthly = document.getElementById('sub-monthly-check') ? document.getElementById('sub-monthly-check').checked : true;
-    const isYearly = document.getElementById('sub-yearly-check') ? document.getElementById('sub-yearly-check').checked : true;
-
-    if (!isMonthly && !isYearly) {
-        return alert("Please select at least one exam type (Monthly or Yearly) for this subject.");
-    }
-
-    const monthlyInputVal = document.getElementById('sub-monthly-input').value.trim();
-    const yearlyInputVal = document.getElementById('sub-yearly-input').value.trim();
-
-    if (isMonthly && !monthlyInputVal) {
-        const err = document.getElementById('sub-monthly-error');
-        if (err) err.textContent = 'Enter monthly total';
-        document.getElementById('sub-monthly-input').focus();
-        return alert("Please enter Monthly Total marks, or uncheck the Monthly exam checkbox.");
-    }
-
-    if (isYearly && !yearlyInputVal) {
-        const err = document.getElementById('sub-yearly-error');
-        if (err) err.textContent = 'Enter yearly total';
-        document.getElementById('sub-yearly-input').focus();
-        return alert("Please enter Yearly Total marks, or uncheck the Yearly exam checkbox.");
-    }
-
     const sequence_order = document.getElementById('sub-seq-input').value || 1;
-    const monthly_marks = isMonthly && monthlyInputVal ? parseInt(monthlyInputVal, 10) : null;
-    const yearly_marks = isYearly && yearlyInputVal ? parseInt(yearlyInputVal, 10) : null;
+    const monthly_marks = document.getElementById('sub-monthly-input').value || null;
+    const yearly_marks = document.getElementById('sub-yearly-input').value || null;
 
     const payload = { class_id, subject_name, sequence_order, monthly_marks, yearly_marks };
     const res = editId
@@ -613,9 +522,9 @@ let currentStudentView = 'Active';   // 'Active' | 'Graduated' | 'Removed'
 let studentListCache = [];           // the rows currently on screen (used by the row buttons)
 
 const STUDENT_VIEW_HEADERS = {
-    Active:    ['Roll', 'Name', 'Class', 'Guardian Contact', 'Management Actions'],
+    Active: ['Roll', 'Name', 'Class', 'Guardian Contact', 'Management Actions'],
     Graduated: ['Roll', 'Name', 'Last Class', 'Guardian Contact', 'Graduated On', 'Actions'],
-    Removed:   ['Roll', 'Name', 'Last Class', 'Guardian Contact', 'Dropped Out On', 'Reason', 'Actions']
+    Removed: ['Roll', 'Name', 'Last Class', 'Guardian Contact', 'Dropped Out On', 'Reason', 'Actions']
 };
 
 const STUDENT_BTN_STYLE = 'padding:4px 8px; font-size:11px; width:auto; display:inline-block; margin-right:4px; ';
@@ -653,7 +562,7 @@ function studentRowHtml(s, view) {
 
 // Re-fetches students from the database using the selected view (tab)
 // and class filter, then redraws the table header and rows.
-window.loadStudents = async function() {
+window.loadStudents = async function () {
     const filterSelect = document.getElementById('filter-student-class');
     const class_id = filterSelect ? filterSelect.value : selectedStudentClassFilter;
     const view = currentStudentView;
@@ -709,7 +618,7 @@ document.getElementById('btn-cancel-student').addEventListener('click', hideArch
 
 // Fills the enrollment form with a student's data so it can be edited.
 // Graduated / Dropped Out students also get their date (and reason) fields.
-window.editStudentFromRow = function(s) {
+window.editStudentFromRow = function (s) {
     editStudent(s.id, s.class_id, s.roll, s.name || '', s.blood_group || '', s.guardian_contact || '',
         s.address || '', s.dob || '', s.fathers_name || '', s.mothers_name || '', s.birth_reg_number || '');
     if (s.status === 'Graduated' || s.status === 'Removed') showArchiveFields(s);
@@ -717,7 +626,7 @@ window.editStudentFromRow = function(s) {
 };
 
 // Edit button on a table row.
-window.editStudentById = function(id) {
+window.editStudentById = function (id) {
     const s = studentListCache.find(x => x.id === id);
     if (s) editStudentFromRow(s);
 };
@@ -725,7 +634,7 @@ window.editStudentById = function(id) {
 // "Register Student" button: gathers the enrollment form fields
 // into one object and sends it to main.js to insert. Shows an
 // alert with the exact database error if the save fails.
-window.editStudent = async function(id, classId, roll, name, bloodGroup, guardianContact, address, dob, fathersName, mothersName, birthRegNumber) {
+window.editStudent = async function (id, classId, roll, name, bloodGroup, guardianContact, address, dob, fathersName, mothersName, birthRegNumber) {
     document.getElementById('st-edit-id').value = id;
     document.getElementById('st-class').value = classId || '';
     document.getElementById('st-roll').value = formatRoll(roll);
@@ -769,7 +678,7 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
         birth_reg_number: document.getElementById('st-birth-reg').value.trim()
     };
 
-    if(!s.roll || !s.name) return alert("Roll and Name are required!");
+    if (!s.roll || !s.name) return alert("Roll and Name are required!");
 
     // Nine/Ten Main + Optional subject validation
     const cls = allClassesForStudents.find(c => String(c.id) === String(s.class_id));
@@ -785,7 +694,7 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
             .concat([{ subject_name: optional, role: 'optional' }]);
     }
 
-        const updateData = { ...s, id: editId };
+    const updateData = { ...s, id: editId };
     if (editId && editingArchiveStatus) {
         updateData.archive = {
             date: document.getElementById('st-status-date').value || '',
@@ -800,7 +709,7 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
         ? await ipcRenderer.invoke('update-student', updateData)
         : await ipcRenderer.invoke('add-student', s);
 
-    if(res.success) {
+    if (res.success) {
         const studentId = editId || res.id;
         if (subjectSelections) {
             await ipcRenderer.invoke('save-student-subjects', { student_id: studentId, subjects: subjectSelections });
@@ -954,7 +863,7 @@ function studentOnScreen(id) {
 }
 
 // "Promote" button (Play to Class Nine).
-window.promoteStudent = async function(id) {
+window.promoteStudent = async function (id) {
     const info = await ipcRenderer.invoke('get-promotion-targets', id);
     if (!info || !info.success) return alert((info && info.error) || 'Could not promote this student.');
     const st = info.student;
@@ -986,7 +895,7 @@ window.promoteStudent = async function(id) {
 };
 
 // "Graduate" button (Class Ten only).
-window.graduateStudent = function(id) {
+window.graduateStudent = function (id) {
     const s = studentOnScreen(id);
     if (!s) return;
     showStudentDialog({
@@ -1000,7 +909,7 @@ window.graduateStudent = function(id) {
 };
 
 // "Drop Out" button (any class). A reason is required.
-window.dropOutStudent = function(id) {
+window.dropOutStudent = function (id) {
     const s = studentOnScreen(id);
     if (!s) return;
     showStudentDialog({
@@ -1015,7 +924,7 @@ window.dropOutStudent = function(id) {
 };
 
 // "Reinstate" button (Graduated and Dropped Out tabs).
-window.reinstateStudent = function(id) {
+window.reinstateStudent = function (id) {
     const s = studentOnScreen(id);
     if (!s) return;
     showStudentDialog({
@@ -1054,7 +963,7 @@ async function renderTeachersTable() {
             <td><span style="color:red; font-weight:bold;">${t.blood_group || 'N/A'}</span></td>
             <td>${t.nid_number || ''}</td>
             <td>
-                <button onclick="editTeacher(${t.id}, '${(t.name||'').replace(/'/g, "\\'")}', '${(t.title||'').replace(/'/g, "\\'")}', '${(t.contact_number||'').replace(/'/g, "\\'")}', '${(t.blood_group||'').replace(/'/g, "\\'")}', '${(t.fathers_name||'').replace(/'/g, "\\'")}', '${(t.mothers_name||'').replace(/'/g, "\\'")}', '${(t.nid_number||'').replace(/'/g, "\\'")}')" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
+                <button onclick="editTeacher(${t.id}, '${(t.name || '').replace(/'/g, "\\'")}', '${(t.title || '').replace(/'/g, "\\'")}', '${(t.contact_number || '').replace(/'/g, "\\'")}', '${(t.blood_group || '').replace(/'/g, "\\'")}', '${(t.fathers_name || '').replace(/'/g, "\\'")}', '${(t.mothers_name || '').replace(/'/g, "\\'")}', '${(t.nid_number || '').replace(/'/g, "\\'")}')" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
                 <button onclick="deleteTeacher(${t.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">🗑 Delete</button>
             </td>
         </tr>
@@ -1062,7 +971,7 @@ async function renderTeachersTable() {
     }).join('');
 }
 
-window.editTeacher = function(id, name, title, contact, bloodGroup, fathersName, mothersName, nid) {
+window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName, mothersName, nid) {
     document.getElementById('tc-edit-id').value = id;
     document.getElementById('tc-name').value = name;
     document.getElementById('tc-title').value = title;
@@ -1269,6 +1178,8 @@ window.switchTab = function (tabId) {
     if (tabId === 'exams-tab') {
         showExamsHomeView();
         loadExamClassButtons();
+    } else if (tabId === 'settings-school') {
+        loadSchoolInfo();
     }
 };
 
@@ -1432,7 +1343,7 @@ document.getElementById('marks-view-year').addEventListener('change', renderAllM
 // ============================================================
 const TRANSCRIPT_TESTS = {
     'Half Yearly': ['1st Monthly', '2nd Monthly', 'Half Yearly'],
-    'Yearly':      ['3rd Monthly', '4th Monthly', 'Yearly']
+    'Yearly': ['3rd Monthly', '4th Monthly', 'Yearly']
 };
 const TRANSCRIPT_V100_CLASSES = ['Class Six', 'Class Seven', 'Class Eight'];
 
@@ -1440,19 +1351,20 @@ let transcriptClasses = [];
 let transcriptSelectedClassId = null;
 let transcriptStudents = [];
 let transcriptSubjects = [];
-let transcriptHiddenColumns = new Set();   // keys of unchecked columns
+let transcriptHiddenColumns = new Set(['pct']);   // keys of unchecked columns (pct hidden by default)
 let transcriptLoadToken = 0;               // ignores stale async loads
 let transcriptMarksData = {};              // studentId -> subjectId -> { m1, m2, m3, total }
 let transcriptHighestBySubject = {};       // subjectId -> max total marks across class
+let cachedSchoolInfo = { name: 'The Cadet School & College (TCSAC)', address: '' };
 
 const TRANSCRIPT_GRADING_SCALE = [
     { min: 79.5, letter: 'A+', point: '5.0' },
-    { min: 69.5, letter: 'A',  point: '4.0' },
+    { min: 69.5, letter: 'A', point: '4.0' },
     { min: 59.5, letter: 'A-', point: '3.5' },
-    { min: 49.5, letter: 'B',  point: '3.0' },
-    { min: 39.5, letter: 'C',  point: '2.0' },
-    { min: 32.5, letter: 'D',  point: '1.0' },
-    { min: 0,    letter: 'F',  point: '0.0' }
+    { min: 49.5, letter: 'B', point: '3.0' },
+    { min: 39.5, letter: 'C', point: '2.0' },
+    { min: 32.5, letter: 'D', point: '1.0' },
+    { min: 0, letter: 'F', point: '0.0' }
 ];
 
 function getGradeFromPercentage(pct) {
@@ -1462,20 +1374,39 @@ function getGradeFromPercentage(pct) {
     }
     return { letter: 'F', point: '0.0' };
 }
+
+function getGradeFromPoint(gp) {
+    if (typeof gp !== 'number' || Number.isNaN(gp)) return { letter: '-', point: '-' };
+    if (gp >= 5.0) return { letter: 'A+', point: '5.0' };
+    if (gp >= 4.0) return { letter: 'A', point: '4.0' };
+    if (gp >= 3.5) return { letter: 'A-', point: '3.5' };
+    if (gp >= 3.0) return { letter: 'B', point: '3.0' };
+    if (gp >= 2.0) return { letter: 'C', point: '2.0' };
+    if (gp >= 1.0) return { letter: 'D', point: '1.0' };
+    return { letter: 'F', point: '0.0' };
+}
+
 function getTranscriptColumns(test) {
-    const [t1, t2, t3] = TRANSCRIPT_TESTS[test] || TRANSCRIPT_TESTS['Half Yearly'];
+    const isYearly = test === 'Yearly';
+    const t1 = isYearly ? '3rd Monthly' : '1st Monthly';
+    const t2 = isYearly ? '4th Monthly' : '2nd Monthly';
+    const t3 = isYearly ? 'Yearly' : 'Half Yearly';
+    const t1Html = isYearly ? '3rd<br>Monthly' : '1st<br>Monthly';
+    const t2Html = isYearly ? '4th<br>Monthly' : '2nd<br>Monthly';
+    const t3Html = isYearly ? 'Yearly' : 'Half<br>Yearly';
+
     return [
-        { key: 'sn',      label: 'S/N' },
-        { key: 'subject', label: 'Subject Name' },
-        { key: 'm1',      label: t1, marks: true },
-        { key: 'm2',      label: t2, marks: true },
-        { key: 'm3',      label: t3, marks: true },
-        { key: 'total',   label: 'Total', marks: true },
-        { key: 'pct',     label: 'Percentage' },
-        { key: 'st',      label: 'Subject Total' },
-        { key: 'high',    label: 'Highest Marks' },
-        { key: 'grade',   label: 'Letter Grade' },
-        { key: 'gp',      label: 'Grade Points' }
+        { key: 'sn', label: 'S/N', headerHtml: 'S/N' },
+        { key: 'subject', label: 'Subject', headerHtml: 'Subject' },
+        { key: 'st', label: 'Full Marks', headerHtml: 'Full<br>Marks' },
+        { key: 'high', label: 'Highest Marks', headerHtml: 'Highest<br>Marks' },
+        { key: 'm1', label: t1, headerHtml: t1Html, marks: true },
+        { key: 'm2', label: t2, headerHtml: t2Html, marks: true },
+        { key: 'm3', label: t3, headerHtml: t3Html, marks: true },
+        { key: 'total', label: 'Total', headerHtml: 'Total', marks: true },
+        { key: 'grade', label: 'Letter Grade', headerHtml: 'Letter<br>Grade' },
+        { key: 'gp', label: 'Grade Points', headerHtml: 'Grade<br>Points' },
+        { key: 'pct', label: 'Percentage', headerHtml: 'Percentage' }
     ];
 }
 
@@ -1489,6 +1420,10 @@ function openTranscriptPage() {
     transcriptSubjects = [];
     transcriptHighestBySubject = {};
     document.getElementById('transcript-columns-section').style.display = 'none';
+    const optionsSection = document.getElementById('transcript-options-section');
+    if (optionsSection) optionsSection.style.display = 'none';
+    const showAllTotalsCb = document.getElementById('transcript-show-all-exam-totals');
+    if (showAllTotalsCb) showAllTotalsCb.checked = false;
     document.getElementById('btn-generate-transcript').style.display = 'none';
     document.getElementById('transcript-preview').innerHTML = '';
     document.getElementById('transcript-status').textContent = 'Select a class to preview transcripts.';
@@ -1540,19 +1475,25 @@ function renderTranscriptToggles() {
 function buildTranscriptTable(studentId) {
     const test = document.getElementById('transcript-test').value;
     const visible = getTranscriptColumns(test).filter(c => !transcriptHiddenColumns.has(c.key));
-    const marksCount = visible.filter(c => c.marks).length;
+    const marksCols = visible.filter(c => c.marks);
+    const marksCount = marksCols.length;
+    const examCols = marksCols.filter(c => c.key !== 'total');
+    const hasTotal = visible.some(c => c.key === 'total');
+    const showAllExamTotals = document.getElementById('transcript-show-all-exam-totals')?.checked ?? false;
 
     let head1 = '', head2 = '', groupDone = false;
     visible.forEach(c => {
         if (c.marks) {
             if (!groupDone) { head1 += `<th colspan="${marksCount}">Marks Obtained</th>`; groupDone = true; }
-            head2 += `<th>${escapeHtml(c.label)}</th>`;
+            head2 += `<th>${c.headerHtml || escapeHtml(c.label)}</th>`;
         } else {
-            head1 += `<th${marksCount ? ' rowspan="2"' : ''}>${escapeHtml(c.label)}</th>`;
+            head1 += `<th${marksCount ? ' rowspan="2"' : ''}>${c.headerHtml || escapeHtml(c.label)}</th>`;
         }
     });
 
     let totalMarksAgg = { m1: 0, m2: 0, m3: 0, total: 0, stotal: 0, pctSum: 0, pctCount: 0 };
+    let totalGP = 0;
+    let gpCount = 0;
 
     const body = transcriptSubjects.map((sub, i) => {
         const subMarks = transcriptMarksData[studentId]?.[sub.id] || { m1: '', m2: '', m3: '', total: null };
@@ -1573,68 +1514,156 @@ function buildTranscriptTable(studentId) {
             totalMarksAgg.pctSum += rawPct;
             totalMarksAgg.pctCount += 1;
             rowGrade = getGradeFromPercentage(rawPct);
+            if (rowGrade.point !== '-') {
+                totalGP += parseFloat(rowGrade.point);
+                gpCount += 1;
+            }
         }
 
         const highVal = transcriptHighestBySubject[sub.id];
 
         const cells = visible.map(c => {
-            if (c.key === 'sn') return `<td>${String(i + 1).padStart(2, '0')}</td>`;
-            if (c.key === 'subject') return `<td class="transcript-subject">${escapeHtml(sub.subject_name)}</td>`;
+            if (c.key === 'sn') return `<td class="sn">${String(i + 1).padStart(2, '0')}</td>`;
+            if (c.key === 'subject') return `<td class="subject transcript-subject">${escapeHtml(sub.subject_name)}</td>`;
+            if (c.key === 'st') return `<td>${stotal > 0 ? stotal : '-'}</td>`;
+            if (c.key === 'high') return `<td>${highVal !== null && highVal !== undefined ? highVal : '-'}</td>`;
             if (c.key === 'm1') return `<td>${subMarks.m1 !== '' ? subMarks.m1 : '-'}</td>`;
             if (c.key === 'm2') return `<td>${subMarks.m2 !== '' ? subMarks.m2 : '-'}</td>`;
             if (c.key === 'm3') return `<td>${subMarks.m3 !== '' ? subMarks.m3 : '-'}</td>`;
-            if (c.key === 'total') return `<td>${subMarks.total !== null ? subMarks.total : '-'}</td>`;
-            if (c.key === 'pct') return `<td>${pct !== '-' ? pct + '%' : '-'}</td>`;
-            if (c.key === 'st') return `<td>${stotal > 0 ? stotal : '-'}</td>`;
-            if (c.key === 'high') return `<td>${highVal !== null && highVal !== undefined ? highVal : '-'}</td>`;
+            if (c.key === 'total') return `<td class="total">${subMarks.total !== null ? subMarks.total : '-'}</td>`;
             if (c.key === 'grade') return `<td>${rowGrade.letter}</td>`;
             if (c.key === 'gp') return `<td>${rowGrade.point}</td>`;
+            if (c.key === 'pct') return `<td>${pct !== '-' ? pct + '%' : '-'}</td>`;
             return '<td></td>';
         }).join('');
         return `<tr>${cells}</tr>`;
     }).join('');
 
     const leadCount = visible.filter(c => c.key === 'sn' || c.key === 'subject').length;
-    const totalCells = visible
-        .filter(c => c.key !== 'sn' && c.key !== 'subject')
-        .map((c) => {
-            if (c.key === 'm1') return `<td>${totalMarksAgg.m1}</td>`;
-            if (c.key === 'm2') return `<td>${totalMarksAgg.m2}</td>`;
-            if (c.key === 'm3') return `<td>${totalMarksAgg.m3}</td>`;
-            if (c.key === 'total') return `<td>${totalMarksAgg.total}</td>`;
-            if (c.key === 'st') return `<td>${totalMarksAgg.stotal > 0 ? totalMarksAgg.stotal : '-'}</td>`;
-            if (c.key === 'pct') {
-                const avgPct = totalMarksAgg.pctCount > 0 ? Math.round(totalMarksAgg.pctSum / totalMarksAgg.pctCount) : '-';
-                return `<td>${avgPct !== '-' ? avgPct + '%' : '-'}</td>`;
-            }
-            if (c.key === 'high') return `<td>-</td>`;
-            if (c.key === 'grade') {
-                const avgPct = totalMarksAgg.pctCount > 0 ? (totalMarksAgg.pctSum / totalMarksAgg.pctCount) : null;
-                const overallGrade = getGradeFromPercentage(avgPct);
-                return `<td>${overallGrade.letter}</td>`;
-            }
-            if (c.key === 'gp') {
-                const avgPct = totalMarksAgg.pctCount > 0 ? (totalMarksAgg.pctSum / totalMarksAgg.pctCount) : null;
-                const overallGrade = getGradeFromPercentage(avgPct);
-                return `<td>${overallGrade.point}</td>`;
-            }
-            return '<td></td>';
-        }).join('');
-    const totalRow = `<tr class="transcript-total-row">${leadCount ? `<td colspan="${leadCount}">Total</td>` : ''}${totalCells}</tr>`;
+    let tfootCells = leadCount ? `<td colspan="${leadCount}">Total</td>` : '';
 
-    return `<table class="transcript-table">
+    if (visible.some(c => c.key === 'st')) {
+        tfootCells += `<td>${totalMarksAgg.stotal > 0 ? totalMarksAgg.stotal : '-'}</td>`;
+    }
+    if (visible.some(c => c.key === 'high')) {
+        tfootCells += `<td>-</td>`;
+    }
+
+    if (showAllExamTotals) {
+        marksCols.forEach(c => {
+            if (c.key === 'm1') tfootCells += `<td>${totalMarksAgg.m1}</td>`;
+            else if (c.key === 'm2') tfootCells += `<td>${totalMarksAgg.m2}</td>`;
+            else if (c.key === 'm3') tfootCells += `<td>${totalMarksAgg.m3}</td>`;
+            else if (c.key === 'total') tfootCells += `<td class="total">${totalMarksAgg.total}</td>`;
+        });
+    } else {
+        if (examCols.length > 0) {
+            tfootCells += `<td colspan="${examCols.length}" class="transcript-obtained-label">Obtained Marks &amp; GPA</td>`;
+        }
+        if (hasTotal) {
+            tfootCells += `<td class="total">${totalMarksAgg.total}</td>`;
+        }
+    }
+
+    const gpa = gpCount > 0 ? (totalGP / gpCount) : null;
+    const overallGrade = gpa !== null ? getGradeFromPoint(gpa) : { letter: '-', point: '-' };
+
+    if (visible.some(c => c.key === 'grade')) {
+        tfootCells += `<td>${overallGrade.letter}</td>`;
+    }
+    if (visible.some(c => c.key === 'gp')) {
+        tfootCells += `<td>${gpa !== null ? gpa.toFixed(2) : '-'}</td>`;
+    }
+    if (visible.some(c => c.key === 'pct')) {
+        const avgPct = totalMarksAgg.pctCount > 0 ? Math.round(totalMarksAgg.pctSum / totalMarksAgg.pctCount) : '-';
+        tfootCells += `<td>${avgPct !== '-' ? avgPct + '%' : '-'}</td>`;
+    }
+
+    return `<table class="marks transcript-table">
         <thead><tr>${head1}</tr>${marksCount ? `<tr>${head2}</tr>` : ''}</thead>
-        <tbody>${body}${totalRow}</tbody>
+        <tbody>${body}</tbody>
+        <tfoot><tr>${tfootCells}</tr></tfoot>
     </table>`;
+}
+
+function getStudentGroup(cls) {
+    if (!cls || !cls.class_name) return 'N/A';
+    const name = cls.class_name.toLowerCase();
+    if (name.includes('nine') || name.includes('ten') || name.includes('9') || name.includes('10')) {
+        if (name.includes('science')) return 'Science';
+        if (name.includes('humanities')) return 'Humanities';
+        if (name.includes('commerce') || name.includes('business')) return 'Business Studies';
+        if (cls.department) return cls.department;
+    }
+    return 'N/A';
+}
+
+function formatTranscriptClassName(cls) {
+    if (!cls || !cls.class_name) return '';
+    let name = cls.class_name.replace(/\s*\([^)]*\)/g, '').trim();
+    return name.replace(/^Class\s+/i, '').toUpperCase();
 }
 
 function paintTranscriptPreview() {
     const preview = document.getElementById('transcript-preview');
     if (!transcriptStudents.length) { preview.innerHTML = ''; return; }
+    const year = document.getElementById('transcript-year').value;
+    const test = document.getElementById('transcript-test').value;
+    const cls = transcriptClasses.find(c => String(c.id) === String(transcriptSelectedClassId));
+    const groupName = getStudentGroup(cls);
+    const classNameFormatted = formatTranscriptClassName(cls);
+
+    const schoolName = cachedSchoolInfo?.name || '';
+    const schoolAddress = cachedSchoolInfo?.address || '';
+
     preview.innerHTML = transcriptStudents.map(st => `
         <div class="transcript-page">
-            <div class="transcript-student-name">${escapeHtml(st.name)}</div>
-            <div class="transcript-table-wrap">${buildTranscriptTable(st.id)}</div>
+            <div class="transcript-header-top">
+                <div class="transcript-inst-header">
+                    ${schoolName ? `<div class="transcript-inst-name">${escapeHtml(schoolName)}</div>` : ''}
+                    ${schoolAddress ? `<div class="transcript-inst-address">${escapeHtml(schoolAddress)}</div>` : ''}
+                    <div class="transcript-logo-wrap"><img src="sample data/TCSAC_logo.png" class="transcript-inst-logo" alt="School Logo" onerror="this.style.display='none'"></div>
+                </div>
+                <div class="transcript-grade-scale-box">
+                    <table class="transcript-grade-scale-table">
+                        <thead>
+                            <tr><th>Range of Marks</th><th>Letter Grade</th><th>Grade Point</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>80 - 100%</td><td>A+</td><td>5.0</td></tr>
+                            <tr><td>70 - 79%</td><td>A</td><td>4.0</td></tr>
+                            <tr><td>60 - 69%</td><td>A-</td><td>3.5</td></tr>
+                            <tr><td>50 - 59%</td><td>B</td><td>3.0</td></tr>
+                            <tr><td>40 - 49%</td><td>C</td><td>2.0</td></tr>
+                            <tr><td>33 - 39%</td><td>D</td><td>1.0</td></tr>
+                            <tr><td>00 - 32%</td><td>F</td><td>0.0</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="transcript-title-wrap">
+                <span class="transcript-main-title">ACADEMIC TRANSCRIPT</span>
+            </div>
+
+            <div class="transcript-info-section">
+                <div class="transcript-info-col transcript-info-col-left">
+                    <div class="transcript-info-row"><span class="info-label">Student's Name</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(st.name || '-').toUpperCase()}</span></div>
+                    <div class="transcript-info-row"><span class="info-label">Father's Name</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(st.fathers_name || st.father_name || '-').toUpperCase()}</span></div>
+                    <div class="transcript-info-row"><span class="info-label">Mother's Name</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(st.mothers_name || st.mother_name || '-').toUpperCase()}</span></div>
+                    <div class="transcript-info-row"><span class="info-label">Class</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(classNameFormatted)}</span></div>
+                    <div class="transcript-info-row"><span class="info-label">Roll No</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(String(st.roll))}</span></div>
+                </div>
+                <div class="transcript-info-col transcript-info-col-right">
+                    <div class="transcript-info-row"><span class="info-label">Exam</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(test).toUpperCase()}</span></div>
+                    <div class="transcript-info-row"><span class="info-label">Year/Session</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(String(year))}</span></div>
+                    <div class="transcript-info-row"><span class="info-label">Group</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(groupName).toUpperCase()}</span></div>
+                </div>
+            </div>
+
+            <div class="transcript-table-wrap">
+                ${buildTranscriptTable(st.id)}
+            </div>
         </div>`).join('');
 }
 
@@ -1642,6 +1671,7 @@ async function loadTranscriptPreview() {
     const status = document.getElementById('transcript-status');
     const generateBtn = document.getElementById('btn-generate-transcript');
     const columnsSection = document.getElementById('transcript-columns-section');
+    const optionsSection = document.getElementById('transcript-options-section');
     const preview = document.getElementById('transcript-preview');
 
     const year = parseInt(document.getElementById('transcript-year').value, 10);
@@ -1650,6 +1680,7 @@ async function loadTranscriptPreview() {
 
     generateBtn.style.display = 'none';
     columnsSection.style.display = 'none';
+    if (optionsSection) optionsSection.style.display = 'none';
     preview.innerHTML = '';
     transcriptStudents = [];
     transcriptSubjects = [];
@@ -1667,84 +1698,107 @@ async function loadTranscriptPreview() {
     const token = ++transcriptLoadToken;
     status.textContent = 'Loading students...';
 
-    const [students, allSubjects] = await Promise.all([
-        ipcRenderer.invoke('get-students', { class_id: cls.id, status: 'Active' }),
-        ipcRenderer.invoke('get-subjects')
-    ]);
-    if (token !== transcriptLoadToken) return;   // a newer click replaced this one
+    try {
+        const [students, allSubjects, schoolInfo] = await Promise.all([
+            ipcRenderer.invoke('get-students', { class_id: cls.id, status: 'Active' }).catch(err => {
+                console.error('Failed to get students:', err);
+                return [];
+            }),
+            ipcRenderer.invoke('get-subjects').catch(err => {
+                console.error('Failed to get subjects:', err);
+                return [];
+            }),
+            ipcRenderer.invoke('get-school-info').catch(err => {
+                console.warn('Failed to get school info:', err);
+                return cachedSchoolInfo;
+            })
+        ]);
+        if (schoolInfo) cachedSchoolInfo = schoolInfo;
+        if (token !== transcriptLoadToken) return;
 
-    transcriptStudents = students.slice().sort((a, b) => a.roll - b.roll);
-    transcriptSubjects = allSubjects
-        .filter(s => String(s.class_id) === String(cls.id))
-        .sort((a, b) => (Number(a.sequence_order) || 0) - (Number(b.sequence_order) || 0) || a.id - b.id);
+        transcriptStudents = (students || []).slice().sort((a, b) => a.roll - b.roll);
+        transcriptSubjects = (allSubjects || [])
+            .filter(s => String(s.class_id) === String(cls.id))
+            .sort((a, b) => (Number(a.sequence_order) || 0) - (Number(b.sequence_order) || 0) || a.id - b.id);
 
-    if (!transcriptStudents.length) { status.textContent = `No active students in ${cls.class_name}.`; return; }
-    if (!transcriptSubjects.length) { status.textContent = `No subjects are configured for ${cls.class_name}.`; return; }
+        if (!transcriptStudents.length) { status.textContent = `No active students in ${cls.class_name}.`; return; }
+        if (!transcriptSubjects.length) { status.textContent = `No subjects are configured for ${cls.class_name}.`; return; }
 
-    status.textContent = 'Loading marks...';
+        status.textContent = 'Loading marks...';
 
-    const [t1, t2, t3] = TRANSCRIPT_TESTS[test] || TRANSCRIPT_TESTS['Half Yearly'];
-    const transcriptExamTypes = [t1 + ' Exam', t2 + ' Exam', t3 + ' Exam'];
+        const [t1, t2, t3] = TRANSCRIPT_TESTS[test] || TRANSCRIPT_TESTS['Half Yearly'];
+        const transcriptExamTypes = [t1 + ' Exam', t2 + ' Exam', t3 + ' Exam'];
 
-    const exams = await Promise.all(
-        transcriptExamTypes.map(type => ipcRenderer.invoke('get-or-create-exam', { year, exam_type: type }))
-    );
+        const exams = await Promise.all(
+            transcriptExamTypes.map(type => ipcRenderer.invoke('get-or-create-exam', { year, exam_type: type }))
+        );
 
-    const marksSheets = await Promise.all(
-        exams.map(exam => ipcRenderer.invoke('get-marks-sheet', { class_id: cls.id, exam_id: exam.id }))
-    );
+        const marksSheets = await Promise.all(
+            exams.map(exam => ipcRenderer.invoke('get-marks-sheet', { class_id: cls.id, exam_id: exam.id }))
+        );
 
-    if (token !== transcriptLoadToken) return;
+        if (token !== transcriptLoadToken) return;
 
-    transcriptMarksData = {};
-    transcriptStudents.forEach(st => transcriptMarksData[st.id] = {});
+        transcriptMarksData = {};
+        transcriptStudents.forEach(st => transcriptMarksData[st.id] = {});
 
-    marksSheets.forEach((sheet, idx) => {
-        const mKey = 'm' + (idx + 1);
-        if (sheet.marks) {
-            sheet.marks.forEach(m => {
-                if (!transcriptMarksData[m.student_id]) return;
-                if (!transcriptMarksData[m.student_id][m.subject_id]) {
-                    transcriptMarksData[m.student_id][m.subject_id] = { m1: '', m2: '', m3: '', total: null };
-                }
-                const record = transcriptMarksData[m.student_id][m.subject_id];
-                if (m.is_present === 0) {
-                    record[mKey] = 'A';
-                } else if (typeof m.marks_obtained === 'number') {
-                    record[mKey] = m.marks_obtained;
-                    record.total = (record.total === null ? 0 : record.total) + m.marks_obtained;
-                } else {
-                    record[mKey] = '';
-                }
-            });
-        }
-    });
-
-    transcriptHighestBySubject = {};
-    transcriptSubjects.forEach(sub => {
-        let maxSubTotal = null;
-        transcriptStudents.forEach(st => {
-            const m = transcriptMarksData[st.id]?.[sub.id];
-            if (m && typeof m.total === 'number') {
-                if (maxSubTotal === null || m.total > maxSubTotal) {
-                    maxSubTotal = m.total;
-                }
+        marksSheets.forEach((sheet, idx) => {
+            const mKey = 'm' + (idx + 1);
+            if (sheet && sheet.marks) {
+                sheet.marks.forEach(m => {
+                    if (!transcriptMarksData[m.student_id]) return;
+                    if (!transcriptMarksData[m.student_id][m.subject_id]) {
+                        transcriptMarksData[m.student_id][m.subject_id] = { m1: '', m2: '', m3: '', total: null };
+                    }
+                    const record = transcriptMarksData[m.student_id][m.subject_id];
+                    if (m.is_present === 0) {
+                        record[mKey] = 'A';
+                    } else if (typeof m.marks_obtained === 'number') {
+                        record[mKey] = m.marks_obtained;
+                        record.total = (record.total === null ? 0 : record.total) + m.marks_obtained;
+                    } else {
+                        record[mKey] = '';
+                    }
+                });
             }
         });
-        transcriptHighestBySubject[sub.id] = maxSubTotal;
-    });
 
-    status.textContent = `${cls.class_name} — ${test} Transcript — ${year} (${transcriptStudents.length} student${transcriptStudents.length === 1 ? '' : 's'}, one page each)`;
-    columnsSection.style.display = 'block';
-    generateBtn.style.display = 'inline-block';
-    renderTranscriptToggles();
-    paintTranscriptPreview();
+        transcriptHighestBySubject = {};
+        transcriptSubjects.forEach(sub => {
+            let maxSubTotal = null;
+            transcriptStudents.forEach(st => {
+                const m = transcriptMarksData[st.id]?.[sub.id];
+                if (m && typeof m.total === 'number') {
+                    if (maxSubTotal === null || m.total > maxSubTotal) {
+                        maxSubTotal = m.total;
+                    }
+                }
+            });
+            transcriptHighestBySubject[sub.id] = maxSubTotal;
+        });
+
+        status.textContent = `${cls.class_name} — ${test} Transcript — ${year} (${transcriptStudents.length} student${transcriptStudents.length === 1 ? '' : 's'}, one page each)`;
+        columnsSection.style.display = 'block';
+        if (optionsSection) optionsSection.style.display = 'block';
+        generateBtn.style.display = 'inline-block';
+        renderTranscriptToggles();
+        paintTranscriptPreview();
+    } catch (err) {
+        console.error('Error in loadTranscriptPreview:', err);
+        status.textContent = 'Error loading transcript preview: ' + err.message;
+    }
 }
 
 document.getElementById('btn-open-transcript').addEventListener('click', openTranscriptPage);
 document.getElementById('btn-back-transcript').addEventListener('click', showExamsHomeView);
 document.getElementById('transcript-year').addEventListener('change', loadTranscriptPreview);
 document.getElementById('transcript-test').addEventListener('change', loadTranscriptPreview);
+const showAllExamTotalsEl = document.getElementById('transcript-show-all-exam-totals');
+if (showAllExamTotalsEl) {
+    showAllExamTotalsEl.addEventListener('change', () => {
+        paintTranscriptPreview();
+    });
+}
 document.getElementById('btn-generate-transcript').addEventListener('click', () => {
     document.getElementById('transcript-status').textContent = 'PDF generation will be added in the next step.';
 });
@@ -2253,3 +2307,58 @@ const btnCancelSubject = document.getElementById('btn-cancel-subject');
 if (btnCancelSubject) {
     btnCancelSubject.addEventListener('click', resetSubjectForm);
 }
+
+// ============================================================
+// SCHOOL INFORMATION PROFILE (Settings -> School Info)
+// ============================================================
+async function loadSchoolInfo() {
+    try {
+        const info = await ipcRenderer.invoke('get-school-info');
+        if (info) {
+            cachedSchoolInfo = info;
+            const nameEl = document.getElementById('school-name-input');
+            const addrEl = document.getElementById('school-address-input');
+
+            if (nameEl) nameEl.value = info.name || '';
+            if (addrEl) addrEl.value = info.address || '';
+        }
+    } catch (err) {
+        console.error('Error loading school info:', err);
+    }
+}
+
+function setupSchoolInfoHandlers() {
+    const btnSaveSchoolInfo = document.getElementById('btn-save-school-info');
+    if (btnSaveSchoolInfo) {
+        btnSaveSchoolInfo.addEventListener('click', async () => {
+            const name = document.getElementById('school-name-input')?.value.trim() || '';
+            const address = document.getElementById('school-address-input')?.value.trim() || '';
+            const feedback = document.getElementById('school-info-feedback');
+
+            const result = await ipcRenderer.invoke('save-school-info', {
+                name, address
+            });
+
+            if (result && result.success) {
+                cachedSchoolInfo = { name, address };
+                if (feedback) {
+                    feedback.style.color = '#10b981';
+                    feedback.textContent = 'Configuration saved successfully!';
+                    setTimeout(() => { if (feedback) feedback.textContent = ''; }, 3000);
+                }
+                // If transcript is open, re-paint preview
+                if (document.getElementById('transcript-page')?.style.display === 'block') {
+                    paintTranscriptPreview();
+                }
+            } else {
+                if (feedback) {
+                    feedback.style.color = '#ef4444';
+                    feedback.textContent = 'Error: ' + ((result && result.message) || 'Could not save.');
+                }
+            }
+        });
+    }
+}
+
+setupSchoolInfoHandlers();
+loadSchoolInfo();

@@ -258,6 +258,16 @@
                             <div id="transcript-column-toggles" class="transcript-toggles"></div>
                         </div>
 
+                        <div id="transcript-options-section" style="display:none;">
+                            <div style="padding: 0px 0px 10px 5px;">Tools</div>
+                            <div class="transcript-toggles">
+                                <label class="transcript-toggle">
+                                    <input type="checkbox" id="transcript-show-all-exam-totals">
+                                    Show total for all exams
+                                </label>
+                            </div>
+                        </div>
+
                         <div class="transcript-preview-head">
                             <div id="transcript-status" class="marks-view-status">Select a class to preview transcripts.
                             </div>
@@ -354,9 +364,9 @@
                     <table>
                         <thead>
                             <tr>
-                                <th>Letter<br>Grade</th>
-                                <th>Class<br>Interval (%)</th>
-                                <th>Grade<br>Point</th>
+                                <th>Letter Grade</th>
+                                <th>Class Interval</th>
+                                <th>Grade Point</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -397,6 +407,7 @@
                             </tr>
                         </tbody>
                     </table>
+
                 </div>
 
                 <!-- TAB CONTENT: TEACHERS DATABASE -->
@@ -522,15 +533,20 @@
                 <div id="settings-school" class="tab-content">
                     <h2>School Information Profile</h2>
                     <div>
-                        <div class="input-group"><label>Institute Name</label><input type="text"
-                                value="The Cadet School & College (TCSAC)"></div>
-                        <div class="input-group"><label>Institute Address</label><input type="text"
-                                placeholder="Enter school physical address"></div>
-                        <div class="input-group"><label>Head Teacher Name</label><input type="text"
-                                placeholder="Enter Headmaster Name"></div>
-                        <div class="input-group"><label>Upload School Logo</label><input type="file" accept="image/*">
+                        <div class="input-group">
+                            <label>Institute Name</label>
+                            <input type="text" id="school-name-input" placeholder="Enter school institute name"
+                                value="The Cadet School & College (TCSAC)">
                         </div>
-                        <button style="margin-top: 10px; background-color: #10b981;">Save Configuration</button>
+                        <div class="input-group">
+                            <label>Institute Address</label>
+                            <input type="text" id="school-address-input"
+                                placeholder="Enter school physical address">
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px; margin-top: 14px;">
+                            <button type="button" id="btn-save-school-info" style="background-color: #10b981;">Save Configuration</button>
+                            <span id="school-info-feedback" style="font-size: 13px; font-weight: 600;"></span>
+                        </div>
                     </div>
                 </div>
 
