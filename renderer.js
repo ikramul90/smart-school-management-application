@@ -297,6 +297,10 @@ function resetSubjectForm() {
     document.getElementById('sub-seq-input').value = '1';
     document.getElementById('sub-monthly-input').value = '';
     document.getElementById('sub-yearly-input').value = '';
+    document.getElementById('sub-monthly-check').checked = true;
+    document.getElementById('sub-yearly-check').checked = true;
+    syncSubjectMarksInput('sub-monthly-check', 'sub-monthly-input', 'sub-monthly-error');
+    syncSubjectMarksInput('sub-yearly-check', 'sub-yearly-input', 'sub-yearly-error');
     const customInput = document.getElementById('sub-custom-name-input');
     if (customInput) customInput.value = '';
     const customWrap = document.getElementById('sub-custom-name-wrap');
@@ -331,8 +335,10 @@ document.getElementById('btn-add-subject').addEventListener('click', async () =>
     }
 
     const sequence_order = document.getElementById('sub-seq-input').value || 1;
-    const monthly_marks = document.getElementById('sub-monthly-input').value || null;
-    const yearly_marks = document.getElementById('sub-yearly-input').value || null;
+        const monthly_marks = document.getElementById('sub-monthly-check').checked
+        ? (document.getElementById('sub-monthly-input').value || null) : null;
+    const yearly_marks = document.getElementById('sub-yearly-check').checked
+        ? (document.getElementById('sub-yearly-input').value || null) : null;
 
     const payload = { class_id, subject_name, sequence_order, monthly_marks, yearly_marks };
     const res = editId
@@ -2081,6 +2087,26 @@ async function commitMark(input, sub, total, statusEl) {
 
 
 // Changing the Year or Test while a class is open reloads that class for
+
+// --- "APPEARS IN EXAMS" CHECKBOXES: block the marks field while its checkbox is unchecked ---
+function syncSubjectMarksInput(checkId, inputId, errorId) {
+    const check = document.getElementById(checkId);
+    const input = document.getElementById(inputId);
+    if (!check || !input) return;
+    input.disabled = !check.checked;
+    input.style.cursor = check.checked ? '' : 'not-allowed';
+    input.style.background = check.checked ? '' : '#f1f5f9';
+    if (!check.checked) {
+        input.value = '';
+        const errorEl = errorId && document.getElementById(errorId);
+        if (errorEl) errorEl.textContent = '';
+    }
+}
+
+document.getElementById('sub-monthly-check').addEventListener('change', () =>
+    syncSubjectMarksInput('sub-monthly-check', 'sub-monthly-input', 'sub-monthly-error'));
+document.getElementById('sub-yearly-check').addEventListener('change', () =>
+    syncSubjectMarksInput('sub-yearly-check', 'sub-yearly-input', 'sub-yearly-error'));
 // the newly chosen exam, so the screen never disagrees with the dropdowns.
 ['exam-year', 'exam-type-select'].forEach(id => {
     document.getElementById(id).addEventListener('change', () => {
