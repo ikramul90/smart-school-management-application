@@ -1345,7 +1345,7 @@ const TRANSCRIPT_TESTS = {
     'Half Yearly': ['1st Monthly', '2nd Monthly', 'Half Yearly'],
     'Yearly': ['3rd Monthly', '4th Monthly', 'Yearly']
 };
-const TRANSCRIPT_V100_CLASSES = ['Class Six', 'Class Seven', 'Class Eight'];
+const TRANSCRIPT_V100_CLASSES = ['Play', 'Nursery', 'Class One', 'Class Two', 'Class Three', 'Class Four', 'Class Five', 'Class Six', 'Class Seven', 'Class Eight'];
 
 let transcriptClasses = [];
 let transcriptSelectedClassId = null;
@@ -1691,7 +1691,7 @@ async function loadTranscriptPreview() {
         return;
     }
     if (!TRANSCRIPT_V100_CLASSES.includes(cls.class_name)) {
-        status.textContent = `The transcript template for ${cls.class_name} is not available yet (V1.0.0 covers Classes 6–8).`;
+        status.textContent = `The transcript template for ${cls.class_name} is not available yet (it currently covers Play to Class Eight).`;
         return;
     }
 
