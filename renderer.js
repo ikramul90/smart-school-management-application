@@ -1404,9 +1404,9 @@ function getTranscriptColumns(test) {
         { key: 'm2', label: t2, headerHtml: t2Html, marks: true },
         { key: 'm3', label: t3, headerHtml: t3Html, marks: true },
         { key: 'total', label: 'Total', headerHtml: 'Total', marks: true },
+        { key: 'pct', label: 'Percentage', headerHtml: 'Percentage' },
         { key: 'grade', label: 'Letter Grade', headerHtml: 'Letter<br>Grade' },
-        { key: 'gp', label: 'Grade Points', headerHtml: 'Grade<br>Points' },
-        { key: 'pct', label: 'Percentage', headerHtml: 'Percentage' }
+        { key: 'gp', label: 'Grade Points', headerHtml: 'Grade<br>Points' }
     ];
 }
 
@@ -1568,15 +1568,15 @@ function buildTranscriptTable(studentId) {
     const gpa = gpCount > 0 ? (totalGP / gpCount) : null;
     const overallGrade = gpa !== null ? getGradeFromPoint(gpa) : { letter: '-', point: '-' };
 
+    if (visible.some(c => c.key === 'pct')) {
+    const avgPct = totalMarksAgg.pctCount > 0 ? Math.round(totalMarksAgg.pctSum / totalMarksAgg.pctCount) : '-';
+    tfootCells += `<td>${avgPct !== '-' ? avgPct + '%' : '-'}</td>`;
+    }
     if (visible.some(c => c.key === 'grade')) {
         tfootCells += `<td>${overallGrade.letter}</td>`;
     }
     if (visible.some(c => c.key === 'gp')) {
         tfootCells += `<td>${gpa !== null ? gpa.toFixed(2) : '-'}</td>`;
-    }
-    if (visible.some(c => c.key === 'pct')) {
-        const avgPct = totalMarksAgg.pctCount > 0 ? Math.round(totalMarksAgg.pctSum / totalMarksAgg.pctCount) : '-';
-        tfootCells += `<td>${avgPct !== '-' ? avgPct + '%' : '-'}</td>`;
     }
 
     return `<table class="marks transcript-table">
