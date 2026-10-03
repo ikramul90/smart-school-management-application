@@ -710,15 +710,15 @@ button:hover {
 .transcript-preview-head .marks-view-status { margin-bottom:0; }
 
 .transcript-preview { display:flex; flex-direction:column; gap:24px; }
-.transcript-page { background:white; border:1px solid #cbd5e1; border-radius:4px; box-shadow:0 2px 8px rgba(0,0,0,0.08); padding:20px 24px 24px; width:100%; max-width:880px; box-sizing:border-box; margin:0 auto; font-family:"Fira Sans", Arial, sans-serif; color:#111; }
+.transcript-page { background:white; border:1px solid #cbd5e1; border-radius:4px; box-shadow:0 2px 8px rgba(0,0,0,0.08); padding:26px 25px 55px; width:100%; max-width:880px; box-sizing:border-box; margin:0 auto; font-family:"Fira Sans", Arial, sans-serif; color:#111; }
 
 .transcript-header-top { position:relative; display:flex; justify-content:center; align-items:center; min-height:120px; margin-bottom:6px; }
 .transcript-inst-header { width:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 230px; box-sizing:border-box; }
 .transcript-inst-name { font-size:23px; font-weight:700; color:#0f172a; line-height:1.25; margin-bottom:2px; }
 .transcript-inst-address { font-size:16px; font-weight:500; color:#334155; line-height:1.2; margin-bottom:4px; }
 .transcript-logo-wrap { margin-top:2px; margin-bottom:2px; display:flex; justify-content:center; align-items:center; }
-.transcript-inst-logo { width:54px; height:54px; object-fit:contain; }
-.transcript-grade-scale-box { position:absolute; top:40px; right:0; width:auto; }
+.transcript-inst-logo { width:100px; height:100px; object-fit:contain; }
+.transcript-grade-scale-box { position:absolute; top:80px; right:0; width:auto; }
 .transcript-grade-scale-table { border-collapse:collapse; font-size:8.5px; border:1px solid #000; text-align:center; }
 .transcript-grade-scale-table th, .transcript-grade-scale-table td { border:1px solid #000; padding:1.5px 2px; line-height:1.2; font-weight:600; }
 .transcript-grade-scale-table thead th { background:#f1f5fa; font-weight:700; }
@@ -758,7 +758,7 @@ button:hover {
 .transcript-remarks-table td { height:34px; text-align:left; padding-left:10px; }
 
 .transcript-signature-row { margin-top:auto; padding-top:40px; display:grid; grid-template-columns:1fr 1fr; column-gap:70px; }
-.transcript-signature-box { text-align:center; padding-top:6px; border-top:1px solid #000; font-size:12px; font-weight:700; }
+.transcript-signature-box { width: 190px; justify-self:center; text-align:center; padding-top:6px; border-top:1px solid #000; font-size:12px; font-weight:700; }
 
 /* Remarks setup (Tools area) */
 .transcript-remarks-box { display:flex; flex-direction:column; gap:10px; background:white; border:1px solid #e2e8f0; border-radius:8px; padding:12px 16px; margin-bottom:16px; }
