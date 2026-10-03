@@ -1211,6 +1211,7 @@ function showExamsHomeView() {
     document.getElementById('exams-home-view').style.display = 'block';
     document.getElementById('marks-view-page').style.display = 'none';
     document.getElementById('transcript-page').style.display = 'none';
+    document.getElementById('attendance-page').style.display = 'none';
 }
 
 function clearAllMarksResults(message = 'Select a class and subject to view marks.') {
@@ -2549,3 +2550,273 @@ function setupSchoolInfoHandlers() {
 
 setupSchoolInfoHandlers();
 loadSchoolInfo();
+
+
+
+// ============================================================
+// ATTENDANCE PAGE: working days per class + days present per student.
+// Saved per class/student + year + term ('Half Yearly' or 'Yearly').
+// ============================================================
+let attendanceClasses = [];
+let attendanceSelectedClassId = null;
+let attendanceSheet = null;     // { classId, className, year, term, students, present: {studentId: 'text'}, workingDays }
+let attendanceLoadToken = 0;    // ignores stale async loads
+
+function openAttendancePage() {
+    document.getElementById('exams-home-view').style.display = 'none';
+    document.getElementById('attendance-page').style.display = 'block';
+    attendanceSelectedClassId = null;
+    resetAttendanceView('Select a class to enter attendance.');
+    ipcRenderer.invoke('get-classes-list').then(classes => {
+        attendanceClasses = classes;
+        renderAttendanceClassButtons();
+    });
+}
+
+function resetAttendanceView(message) {
+    attendanceSheet = null;
+    const wd = document.getElementById('attendance-working-days');
+    wd.value = '';
+    wd.disabled = true;
+    document.getElementById('attendance-entry-container').innerHTML = '';
+    document.getElementById('attendance-status').textContent = message;
+}
+
+function renderAttendanceClassButtons() {
+    const container = document.getElementById('attendance-class-buttons');
+    container.innerHTML = '';
+    attendanceClasses.forEach(c => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'chip-btn' + (String(c.id) === String(attendanceSelectedClassId) ? ' active' : '');
+        btn.textContent = c.class_name;
+        btn.addEventListener('click', () => {
+            attendanceSelectedClassId = c.id;
+            renderAttendanceClassButtons();
+            loadAttendanceSheet();
+        });
+        container.appendChild(btn);
+    });
+}
+
+async function loadAttendanceSheet() {
+    const cls = attendanceClasses.find(c => String(c.id) === String(attendanceSelectedClassId));
+    if (!cls) { resetAttendanceView('Select a class to enter attendance.'); return; }
+
+    const year = parseInt(document.getElementById('attendance-year').value, 10);
+    const term = document.getElementById('attendance-term').value;
+    if (!Number.isInteger(year) || year < 2000 || year > 2100) {
+        resetAttendanceView('Enter a valid year between 2000 and 2100.');
+        return;
+    }
+
+    const token = ++attendanceLoadToken;
+    resetAttendanceView('Loading…');
+    const res = await ipcRenderer.invoke('get-attendance-sheet', { class_id: cls.id, year, term });
+    if (token !== attendanceLoadToken) return;
+    if (!res || !res.success) {
+        document.getElementById('attendance-status').textContent = (res && res.error) || 'Could not load attendance.';
+        return;
+    }
+
+    const present = {};
+    res.records.forEach(r => { present[r.student_id] = String(r.days_present); });
+    attendanceSheet = {
+        classId: cls.id, className: cls.class_name, year, term,
+        students: res.students, present, workingDays: res.working_days
+    };
+
+    const wd = document.getElementById('attendance-working-days');
+    wd.disabled = false;
+    wd.value = res.working_days === null ? '' : String(res.working_days);
+    renderAttendanceRows();
+}
+
+function setAttendanceSaveStatus(text, isError) {
+    const el = document.getElementById('attendance-save-status');
+    if (!el) return;
+    el.textContent = text;
+    el.style.color = isError ? '#dc2626' : '#16a34a';
+}
+
+function paintAttendanceStatus(statusEl, text) {
+    const wd = attendanceSheet ? attendanceSheet.workingDays : null;
+    let label = 'Empty';
+    let cls = 'st-empty';
+    if (text !== '') {
+        if (wd !== null && parseInt(text, 10) > wd) { label = `Max ${wd}`; cls = 'st-error'; }
+        else { label = 'Entered'; cls = 'st-ok'; }
+    }
+    statusEl.textContent = label;
+    statusEl.className = 'marks-status ' + cls;
+}
+
+function updateAttendanceProgress() {
+    const el = document.getElementById('attendance-progress');
+    if (!el || !attendanceSheet) return;
+    const total = attendanceSheet.students.length;
+    const done = attendanceSheet.students.filter(st => (attendanceSheet.present[st.id] ?? '') !== '').length;
+    el.textContent = `${done} of ${total} entered`;
+}
+
+function updateAttendanceWorkingDaysNote() {
+    const note = document.getElementById('attendance-wd-note');
+    if (note && attendanceSheet) note.style.display = attendanceSheet.workingDays === null ? 'block' : 'none';
+}
+
+function renderAttendanceRows() {
+    const s = attendanceSheet;
+    const container = document.getElementById('attendance-entry-container');
+    document.getElementById('attendance-status').textContent = `${s.className} — ${s.term} — ${s.year}`;
+
+    if (!s.students.length) {
+        container.innerHTML = `<p class="marks-msg-error">This class has no active students. Add students in the Students tab first.</p>`;
+        return;
+    }
+
+    container.innerHTML = `
+        <div id="attendance-wd-note" class="marks-warn" style="display:none;">Enter the total working days above first, so the days present can be checked against it.</div>
+        <div class="marks-head"><div></div><div id="attendance-progress" class="marks-progress"></div></div>
+        <div class="marks-card">
+            <div class="marks-row marks-row-head"><span>Roll</span><span>Name</span><span>Days Present</span><span>Status</span></div>
+            <div id="attendance-rows"></div>
+        </div>
+        <div class="marks-foot">
+            <span>Enter moves down. Leave blank if not entered yet.</span>
+            <span id="attendance-save-status"></span>
+        </div>`;
+
+    const rowsEl = document.getElementById('attendance-rows');
+    s.students.forEach(st => {
+        const row = document.createElement('div');
+        row.className = 'marks-row';
+        row.innerHTML = `
+            <span class="marks-roll">${formatRoll(st.roll)}</span>
+            <span>${escapeHtml(st.name)}</span>
+            <span><input type="text" class="mark-cell attendance-cell" inputmode="numeric" autocomplete="off"></span>
+            <span class="marks-status"></span>`;
+        const input = row.querySelector('.attendance-cell');
+        const statusEl = row.querySelector('.marks-status');
+        input.dataset.student = st.id;
+        input.value = s.present[st.id] ?? '';
+        paintAttendanceStatus(statusEl, input.value);
+
+        input.addEventListener('focus', () => input.select());
+        input.addEventListener('input', () => {
+            input.value = input.value.replace(/[^0-9]/g, '').slice(0, 3);
+            paintAttendanceStatus(statusEl, input.value);
+        });
+        input.addEventListener('change', () => commitAttendance(input, statusEl));
+        input.addEventListener('keydown', async (e) => {
+            const inputs = Array.from(document.querySelectorAll('#attendance-rows .attendance-cell'));
+            const idx = inputs.indexOf(input);
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (inputs[idx - 1]) inputs[idx - 1].focus();
+                return;
+            }
+            if (e.key !== 'Enter' && e.key !== 'ArrowDown') return;
+            e.preventDefault();
+            if (inputs[idx + 1]) { inputs[idx + 1].focus(); return; }
+            if (e.key === 'Enter') await commitAttendance(input, statusEl);
+        });
+
+        rowsEl.appendChild(row);
+    });
+
+    updateAttendanceWorkingDaysNote();
+    updateAttendanceProgress();
+
+    if (s.workingDays === null) {
+        document.getElementById('attendance-working-days').focus();
+    } else {
+        const inputs = Array.from(document.querySelectorAll('#attendance-rows .attendance-cell'));
+        const target = inputs.find(i => i.value === '') || inputs[0];
+        if (target) target.focus();
+    }
+}
+
+// Saves one student's days present. Returns true if fine (saved or unchanged).
+async function commitAttendance(input, statusEl) {
+    const sheet = attendanceSheet;
+    if (!sheet) return false;
+    const studentId = Number(input.dataset.student);
+    let text = input.value.trim();
+    if (text !== '') text = String(parseInt(text, 10));
+    input.value = text;
+
+    if (text === (sheet.present[studentId] ?? '')) {
+        paintAttendanceStatus(statusEl, text);
+        return true;
+    }
+
+    if (text !== '' && sheet.workingDays !== null && parseInt(text, 10) > sheet.workingDays) {
+        paintAttendanceStatus(statusEl, text);
+        setAttendanceSaveStatus(`Not saved: cannot be more than ${sheet.workingDays} working days.`, true);
+        return false;
+    }
+
+    setAttendanceSaveStatus('Saving…', false);
+    const res = await ipcRenderer.invoke('save-attendance', {
+        student_id: studentId, year: sheet.year, term: sheet.term, days_present: text
+    });
+    if (!res || !res.success) {
+        setAttendanceSaveStatus('Not saved: ' + ((res && res.error) || 'unknown error'), true);
+        return false;
+    }
+
+    if (text === '') delete sheet.present[studentId];
+    else sheet.present[studentId] = text;
+    if (attendanceSheet !== sheet) return true;
+    paintAttendanceStatus(statusEl, text);
+    setAttendanceSaveStatus('Saved', false);
+    updateAttendanceProgress();
+    return true;
+}
+
+// Saves the class's total working days, then re-checks every student's box against it.
+async function commitAttendanceWorkingDays() {
+    const sheet = attendanceSheet;
+    if (!sheet) return;
+    const wdInput = document.getElementById('attendance-working-days');
+    let text = wdInput.value.trim();
+    if (text !== '') text = String(parseInt(text, 10));
+    wdInput.value = text;
+    const value = text === '' ? null : parseInt(text, 10);
+    if (value === sheet.workingDays) return;
+
+    const res = await ipcRenderer.invoke('save-working-days', {
+        class_id: sheet.classId, year: sheet.year, term: sheet.term, working_days: text
+    });
+    if (!res || !res.success) {
+        wdInput.value = sheet.workingDays === null ? '' : String(sheet.workingDays);
+        setAttendanceSaveStatus('Not saved: ' + ((res && res.error) || 'unknown error'), true);
+        return;
+    }
+
+    sheet.workingDays = value;
+    if (attendanceSheet !== sheet) return;
+    document.querySelectorAll('#attendance-rows .marks-row').forEach(row => {
+        paintAttendanceStatus(row.querySelector('.marks-status'), row.querySelector('.attendance-cell').value.trim());
+    });
+    updateAttendanceWorkingDaysNote();
+    setAttendanceSaveStatus('Working days saved', false);
+}
+
+document.getElementById('btn-open-attendance').addEventListener('click', openAttendancePage);
+document.getElementById('btn-back-attendance').addEventListener('click', showExamsHomeView);
+['attendance-year', 'attendance-term'].forEach(id => {
+    document.getElementById(id).addEventListener('change', loadAttendanceSheet);
+});
+
+const attendanceWorkingDaysInput = document.getElementById('attendance-working-days');
+attendanceWorkingDaysInput.addEventListener('input', () => {
+    attendanceWorkingDaysInput.value = attendanceWorkingDaysInput.value.replace(/[^0-9]/g, '').slice(0, 3);
+});
+attendanceWorkingDaysInput.addEventListener('change', commitAttendanceWorkingDays);
+attendanceWorkingDaysInput.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== 'ArrowDown') return;
+    e.preventDefault();
+    const first = document.querySelector('#attendance-rows .attendance-cell');
+    if (first) first.focus();
+});

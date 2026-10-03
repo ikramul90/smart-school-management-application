@@ -150,6 +150,7 @@
                         <div class="exams-title-row">
                             <h2>Exams Module</h2>
                             <div class="exams-title-actions">
+                                <button id="btn-open-attendance" type="button" class="marks-view-btn">Attendance</button>
                                 <button id="btn-open-transcript" type="button" class="marks-view-btn">Generate
                                     Transcript</button>
                                 <button id="btn-open-marks-view" type="button" class="marks-view-btn">View All
@@ -219,6 +220,48 @@
                         <div id="marks-view-status" class="marks-view-status">Select a class and subject to view marks.
                         </div>
                         <div id="marks-view-table-wrap" class="marks-view-table-wrap"></div>
+                    </div>
+                    <!-- ATTENDANCE PAGE -->
+                    <div id="attendance-page" style="display:none;">
+                        <div class="marks-view-title-row">
+                            <button id="btn-back-attendance" type="button" class="marks-back-btn">
+                                <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M14 7L9 12" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                    <path d="M9 12L14 17" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                </svg>
+                                <span>Back</span>
+                            </button>
+                            <h2>Attendance</h2>
+                        </div>
+
+                        <div class="marks-view-year-filter">
+                            <div>
+                                <label for="attendance-year">Year</label>
+                                <input type="number" id="attendance-year" value="2026" min="2000" max="2100">
+                            </div>
+                            <div>
+                                <label for="attendance-term">Test</label>
+                                <select id="attendance-term">
+                                    <option value="Half Yearly">Half Yearly</option>
+                                    <option value="Yearly">Yearly</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="attendance-class-row">
+                            <div id="attendance-class-buttons" class="attendance-class-buttons"></div>
+                            <div class="attendance-working-days">
+                                <label for="attendance-working-days">Total working days</label>
+                                <input type="text" id="attendance-working-days" inputmode="numeric" autocomplete="off"
+                                    placeholder="e.g. 120" disabled>
+                            </div>
+                        </div>
+
+                        <div id="attendance-status" class="marks-view-status">Select a class to enter attendance.</div>
+                        <div id="attendance-entry-container"></div>
                     </div>
                     <!-- GENERATE TRANSCRIPT PAGE -->
                     <div id="transcript-page" style="display:none;">

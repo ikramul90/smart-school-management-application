@@ -770,3 +770,11 @@ button:hover {
 .transcript-remark-rule .remark-min, .transcript-remark-rule .remark-max { width:80px; }
 .transcript-remark-rule .remark-remove { width:auto; padding:6px 10px; font-size:12px; background:#ef4444; }
 .transcript-remark-rule .remark-remove:hover { background:#dc2626; }
+
+
+
+/* ---------- Exams: Attendance page ---------- */
+.attendance-class-row { display:flex; gap:20px; align-items:flex-start; justify-content:space-between; margin-bottom:20px; }
+.attendance-class-buttons { display:flex; flex-wrap:wrap; gap:8px; flex:1; }
+.attendance-working-days { width:170px; flex-shrink:0; }
+.attendance-working-days label { display:block; margin-bottom:4px; font-size:13px; color:#334155; }

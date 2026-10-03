@@ -802,3 +802,85 @@ ipcMain.handle('save-mark', async (event, { exam_id, student_id, subject_id, val
         });
     });
 });
+
+
+
+
+// ============================================================
+// ATTENDANCE (working days per class + days present per student)
+// term is 'Half Yearly' or 'Yearly'
+// ============================================================
+const ATTENDANCE_TERMS = ['Half Yearly', 'Yearly'];
+
+function checkAttendanceKey(year, term) {
+    const y = parseInt(year, 10);
+    if (!Number.isInteger(y) || y < 2000 || y > 2100) return 'Enter a valid year between 2000 and 2100.';
+    if (!ATTENDANCE_TERMS.includes(term)) return 'Term must be Half Yearly or Yearly.';
+    return null;
+}
+
+// Everything the Attendance page needs for one class + year + term
+ipcMain.handle('get-attendance-sheet', async (event, { class_id, year, term }) => {
+    const problem = checkAttendanceKey(year, term);
+    if (problem) return { success: false, error: problem };
+    if (!class_id) return { success: false, error: 'Class is required.' };
+    try {
+        const y = parseInt(year, 10);
+        const students = await dbAll(
+            `SELECT id, roll, name FROM students WHERE class_id = ? AND status = 'Active' ORDER BY roll`, [class_id]);
+        const records = await dbAll(
+            `SELECT a.student_id, a.days_present
+             FROM attendance a JOIN students s ON s.id = a.student_id
+             WHERE a.year = ? AND a.term = ? AND s.class_id = ?`, [y, term, class_id]);
+        const wd = await dbGet(
+            `SELECT working_days FROM attendance_working_days WHERE class_id = ? AND year = ? AND term = ?`,
+            [class_id, y, term]);
+        return { success: true, students, records, working_days: wd ? wd.working_days : null };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+// Save the class's total working days. '' clears it.
+ipcMain.handle('save-working-days', async (event, { class_id, year, term, working_days }) => {
+    const problem = checkAttendanceKey(year, term);
+    if (problem) return { success: false, error: problem };
+    try {
+        const y = parseInt(year, 10);
+        const v = String(working_days ?? '').trim();
+        if (v === '') {
+            await dbRun(`DELETE FROM attendance_working_days WHERE class_id = ? AND year = ? AND term = ?`, [class_id, y, term]);
+            return { success: true };
+        }
+        const n = parseInt(v, 10);
+        if (!/^\d+$/.test(v) || n < 0 || n > 366) return { success: false, error: 'Enter a whole number of days (0 to 366).' };
+        await dbRun(`INSERT INTO attendance_working_days (class_id, year, term, working_days) VALUES (?, ?, ?, ?)
+                     ON CONFLICT(class_id, year, term) DO UPDATE SET working_days = excluded.working_days`,
+            [class_id, y, term, n]);
+        return { success: true };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+// Save ONE student's days present. '' clears it.
+ipcMain.handle('save-attendance', async (event, { student_id, year, term, days_present }) => {
+    const problem = checkAttendanceKey(year, term);
+    if (problem) return { success: false, error: problem };
+    try {
+        const y = parseInt(year, 10);
+        const v = String(days_present ?? '').trim();
+        if (v === '') {
+            await dbRun(`DELETE FROM attendance WHERE student_id = ? AND year = ? AND term = ?`, [student_id, y, term]);
+            return { success: true };
+        }
+        const n = parseInt(v, 10);
+        if (!/^\d+$/.test(v) || n < 0 || n > 366) return { success: false, error: 'Enter a whole number of days (0 to 366).' };
+        await dbRun(`INSERT INTO attendance (student_id, year, term, days_present) VALUES (?, ?, ?, ?)
+                     ON CONFLICT(student_id, year, term) DO UPDATE SET days_present = excluded.days_present`,
+            [student_id, y, term, n]);
+        return { success: true };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});

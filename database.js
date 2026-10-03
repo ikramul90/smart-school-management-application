@@ -199,6 +199,29 @@ db.serialize(() => {
         }
     });
 
+        // 13. Attendance tables
+    // Working days are set once per class + year + term; days present is per student.
+    // term is 'Half Yearly' or 'Yearly' (same names as the transcript's Test dropdown).
+    db.run(`CREATE TABLE IF NOT EXISTS attendance_working_days (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        class_id INTEGER NOT NULL,
+        year INTEGER NOT NULL,
+        term TEXT NOT NULL,
+        working_days INTEGER NOT NULL,
+        UNIQUE(class_id, year, term),
+        FOREIGN KEY(class_id) REFERENCES classes(id)
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS attendance (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        student_id INTEGER NOT NULL,
+        year INTEGER NOT NULL,
+        term TEXT NOT NULL,
+        days_present INTEGER NOT NULL,
+        UNIQUE(student_id, year, term),
+        FOREIGN KEY(student_id) REFERENCES students(id)
+    )`);
+
     console.log("🎉 Database tables successfully initialized!");
 });
 
