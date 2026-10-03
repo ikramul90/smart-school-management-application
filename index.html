@@ -257,14 +257,37 @@
                             <div style="padding: 0px 0px 10px 5px;">Columns to show</div>
                             <div id="transcript-column-toggles" class="transcript-toggles"></div>
                         </div>
-
-                        <div id="transcript-options-section" style="display:none;">
+                            <div id="transcript-options-section" style="display:none;">
                             <div style="padding: 0px 0px 10px 5px;">Tools</div>
                             <div class="transcript-toggles">
                                 <label class="transcript-toggle">
                                     <input type="checkbox" id="transcript-show-all-exam-totals">
                                     Show total for all exams
                                 </label>
+                                <div style="flex-basis:100%; height:0;"></div>
+                                <label class="transcript-toggle">
+                                    <input type="checkbox" id="transcript-show-section-position" checked>
+                                    Section position
+                                </label>
+                                <label class="transcript-toggle">
+                                    <input type="checkbox" id="transcript-show-class-position" checked>
+                                    Class position
+                                </label>
+                                <label class="transcript-toggle">
+                                    <input type="checkbox" id="transcript-show-working-days" checked>
+                                    Working days
+                                </label>
+                                <label class="transcript-toggle">
+                                    <input type="checkbox" id="transcript-show-total-present" checked>
+                                    Total present
+                                </label>
+                            </div>
+
+                            <div style="padding: 0px 0px 10px 5px;">Remarks</div>
+                            <div class="transcript-remarks-box">
+                                <div class="transcript-remarks-hint">A student gets the remark whose Min–Max range (overall percentage, inclusive) contains their result. If ranges overlap, the first match from the top is used.</div>
+                                <div id="transcript-remark-rules"></div>
+                                <button id="btn-add-remark-rule" type="button" class="chip-btn" style="align-self:flex-start;">+ Add remark</button>
                             </div>
                         </div>
 

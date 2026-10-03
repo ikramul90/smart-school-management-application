@@ -1592,6 +1592,165 @@ function buildTranscriptTable(studentId) {
     </table>`;
 }
 
+// ============================================================
+// TRANSCRIPT: result summary (positions / GPA / result), remarks, signatures
+// ============================================================
+let transcriptRemarkRules = [];   // [{ text, min, max }] min/max = overall percentage limits (inclusive)
+const REMARK_RULES_STORAGE_KEY = 'transcriptRemarkRules';
+
+function loadTranscriptRemarkRules() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(REMARK_RULES_STORAGE_KEY));
+        if (Array.isArray(saved) && saved.length) { transcriptRemarkRules = saved; return; }
+    } catch (e) { /* storage unavailable or corrupt: start fresh */ }
+    transcriptRemarkRules = [{ text: '', min: '', max: '' }];
+}
+
+function saveTranscriptRemarkRules() {
+    try { localStorage.setItem(REMARK_RULES_STORAGE_KEY, JSON.stringify(transcriptRemarkRules)); } catch (e) { }
+}
+
+function renderTranscriptRemarkRules() {
+    const box = document.getElementById('transcript-remark-rules');
+    if (!box) return;
+    box.innerHTML = '';
+
+    transcriptRemarkRules.forEach((rule) => {
+        const row = document.createElement('div');
+        row.className = 'transcript-remark-rule';
+        row.innerHTML = `
+            <input type="text" class="remark-text" placeholder="Remark (e.g. Excellent)">
+            <input type="text" class="remark-min" placeholder="Min %" inputmode="numeric">
+            <input type="text" class="remark-max" placeholder="Max %" inputmode="numeric">
+            <button type="button" class="remark-remove" title="Remove this remark">✕</button>`;
+
+        const textInput = row.querySelector('.remark-text');
+        const minInput = row.querySelector('.remark-min');
+        const maxInput = row.querySelector('.remark-max');
+        textInput.value = rule.text || '';
+        minInput.value = rule.min ?? '';
+        maxInput.value = rule.max ?? '';
+
+        const update = () => {
+            rule.text = textInput.value;
+            rule.min = minInput.value;
+            rule.max = maxInput.value;
+            saveTranscriptRemarkRules();
+            paintTranscriptPreview();
+        };
+        textInput.addEventListener('input', update);
+        [minInput, maxInput].forEach(inp => inp.addEventListener('input', () => {
+            inp.value = inp.value.replace(/[^0-9]/g, '');
+            update();
+        }));
+
+        row.querySelector('.remark-remove').addEventListener('click', () => {
+            transcriptRemarkRules = transcriptRemarkRules.filter(r => r !== rule);
+            if (!transcriptRemarkRules.length) transcriptRemarkRules.push({ text: '', min: '', max: '' });
+            saveTranscriptRemarkRules();
+            renderTranscriptRemarkRules();
+            paintTranscriptPreview();
+        });
+
+        box.appendChild(row);
+    });
+}
+
+function getTranscriptRemark(avgPct) {
+    if (avgPct === null || avgPct === undefined) return '';
+    for (const r of transcriptRemarkRules) {
+        const text = (r.text || '').trim();
+        const a = parseInt(r.min, 10), b = parseInt(r.max, 10);
+        if (!text || Number.isNaN(a) || Number.isNaN(b)) continue;
+        if (avgPct >= Math.min(a, b) && avgPct <= Math.max(a, b)) return text;
+    }
+    return '';
+}
+
+// Same maths as the table: per-subject percentage -> grade -> average GPA.
+function getTranscriptStudentSummary(studentId) {
+    let total = 0, hasMarks = false, pctSum = 0, pctCount = 0, gpSum = 0, gpCount = 0, hasFail = false;
+    transcriptSubjects.forEach(sub => {
+        const m = transcriptMarksData[studentId]?.[sub.id];
+        const full = (Number(sub.monthly_marks) || 0) * 2 + (Number(sub.yearly_marks) || 0);
+        if (m && typeof m.total === 'number') {
+            total += m.total;
+            hasMarks = true;
+            if (full > 0) {
+                const rawPct = (m.total / full) * 100;
+                pctSum += rawPct; pctCount += 1;
+                const g = getGradeFromPercentage(rawPct);
+                gpSum += parseFloat(g.point); gpCount += 1;
+                if (g.letter === 'F') hasFail = true;
+            }
+        }
+    });
+    return {
+        total, hasMarks, hasFail,
+        avgPct: pctCount > 0 ? Math.round(pctSum / pctCount) : null,
+        gpa: gpCount > 0 ? gpSum / gpCount : null
+    };
+}
+
+// Class position = rank by total marks (highest first). Equal totals share a position.
+function computeTranscriptClassPositions() {
+    const ranked = transcriptStudents
+        .map(st => ({ id: st.id, total: getTranscriptStudentSummary(st.id) }))
+        .filter(e => e.total.hasMarks)
+        .sort((x, y) => y.total.total - x.total.total);
+    const positions = {};
+    let rank = 0;
+    ranked.forEach((e, i) => {
+        if (i === 0 || e.total.total !== ranked[i - 1].total.total) rank = i + 1;
+        positions[e.id] = rank;
+    });
+    return positions;
+}
+
+function buildTranscriptResultSection(studentId, positions) {
+    const show = (id) => document.getElementById(id)?.checked ?? true;
+    const s = getTranscriptStudentSummary(studentId);
+
+    const cols = [];
+    if (show('transcript-show-section-position')) cols.push(['Section Position', 'N/A']);
+    if (show('transcript-show-class-position')) cols.push(['Class Position', positions[studentId] ?? '-']);
+    cols.push(['Result', s.hasMarks ? (s.hasFail ? 'FAIL' : 'PASS') : '-']);
+    cols.push(['GPA', s.gpa !== null ? s.gpa.toFixed(2) : '-']);
+    if (show('transcript-show-working-days')) cols.push(['Working Days', 'N/A']);
+    if (show('transcript-show-total-present')) cols.push(['Total Present', 'N/A']);
+
+    const remark = getTranscriptRemark(s.avgPct);
+
+    return `
+            <div class="transcript-result-summary">
+                <table class="transcript-result-table">
+                    <thead><tr>${cols.map(c => `<th>${c[0]}</th>`).join('')}</tr></thead>
+                    <tbody><tr>${cols.map(c => `<td>${escapeHtml(String(c[1]))}</td>`).join('')}</tr></tbody>
+                </table>
+                <table class="transcript-remarks-table">
+                    <tr><th>Remarks</th><td>${escapeHtml(remark)}</td></tr>
+                </table>
+            </div>
+            <div class="transcript-signature-row">
+                <div class="transcript-signature-box">Class Teacher</div>
+                <div class="transcript-signature-box">Principal</div>
+            </div>`;
+}
+
+['transcript-show-section-position', 'transcript-show-class-position',
+ 'transcript-show-working-days', 'transcript-show-total-present'].forEach(id => {
+    document.getElementById(id)?.addEventListener('change', () => paintTranscriptPreview());
+});
+
+document.getElementById('btn-add-remark-rule')?.addEventListener('click', () => {
+    transcriptRemarkRules.push({ text: '', min: '', max: '' });
+    saveTranscriptRemarkRules();
+    renderTranscriptRemarkRules();
+});
+
+loadTranscriptRemarkRules();
+renderTranscriptRemarkRules();
+
 function getStudentGroup(cls) {
     if (!cls || !cls.class_name) return 'N/A';
     const name = cls.class_name.toLowerCase();
@@ -1621,6 +1780,7 @@ function paintTranscriptPreview() {
 
     const schoolName = cachedSchoolInfo?.name || '';
     const schoolAddress = cachedSchoolInfo?.address || '';
+    const positions = computeTranscriptClassPositions();
 
     preview.innerHTML = transcriptStudents.map(st => `
         <div class="transcript-page">
@@ -1670,6 +1830,7 @@ function paintTranscriptPreview() {
             <div class="transcript-table-wrap">
                 ${buildTranscriptTable(st.id)}
             </div>
+            ${buildTranscriptResultSection(st.id, positions)}
         </div>`).join('');
 }
 

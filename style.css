@@ -743,3 +743,30 @@ button:hover {
 .transcript-table td.total { background:#f7f9fc; }
 .transcript-table tfoot td, .transcript-total-row td { font-weight:700; padding:4px 5px; font-size:12px; }
 .transcript-obtained-label { font-weight:700; font-size:11px; text-align:center; }
+
+
+/* ---------- Transcript: fixed page, result summary, remarks, signatures ---------- */
+.transcript-page { display:flex; flex-direction:column; flex-shrink:0; aspect-ratio:210 / 297; }
+.transcript-page > * { flex-shrink:0; }
+
+.transcript-result-summary { margin-top:12px; display:flex; flex-direction:column; gap:10px; }
+.transcript-result-table, .transcript-remarks-table { width:100%; border-collapse:collapse; border:1px solid #000; font-size:12px; }
+.transcript-result-table th, .transcript-result-table td,
+.transcript-remarks-table th, .transcript-remarks-table td { border:1px solid #000; padding:4px 6px; text-align:center; font-weight:600; }
+.transcript-result-table th, .transcript-remarks-table th { background:#f1f5fa; }
+.transcript-remarks-table th { width:23%; }
+.transcript-remarks-table td { height:34px; text-align:left; padding-left:10px; }
+
+.transcript-signature-row { margin-top:auto; padding-top:40px; display:grid; grid-template-columns:1fr 1fr; column-gap:70px; }
+.transcript-signature-box { text-align:center; padding-top:6px; border-top:1px solid #000; font-size:12px; font-weight:700; }
+
+/* Remarks setup (Tools area) */
+.transcript-remarks-box { display:flex; flex-direction:column; gap:10px; background:white; border:1px solid #e2e8f0; border-radius:8px; padding:12px 16px; margin-bottom:16px; }
+.transcript-remarks-hint { font-size:12px; color:#64748b; }
+#transcript-remark-rules { display:flex; flex-direction:column; gap:8px; }
+.transcript-remark-rule { display:flex; gap:8px; align-items:center; }
+.transcript-remark-rule input { width:auto; margin:0; padding:8px 10px; font-size:13px; }
+.transcript-remark-rule .remark-text { flex:1; min-width:180px; }
+.transcript-remark-rule .remark-min, .transcript-remark-rule .remark-max { width:80px; }
+.transcript-remark-rule .remark-remove { width:auto; padding:6px 10px; font-size:12px; background:#ef4444; }
+.transcript-remark-rule .remark-remove:hover { background:#dc2626; }
