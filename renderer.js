@@ -1362,6 +1362,7 @@ let transcriptHiddenColumns = new Set(['pct']);   // keys of unchecked columns (
 let transcriptLoadToken = 0;               // ignores stale async loads
 let transcriptMarksData = {};              // studentId -> subjectId -> { m1, m2, m3, total }
 let transcriptHighestBySubject = {};       // subjectId -> max total marks across class
+let transcriptAttendance = { workingDays: null, present: {} };   // class working days + studentId -> days present
 let cachedSchoolInfo = { name: 'The Cadet School & College (TCSAC)', address: '' };
 
 const TRANSCRIPT_GRADING_SCALE = [
@@ -1717,9 +1718,8 @@ function buildTranscriptResultSection(studentId, positions) {
     if (show('transcript-show-class-position')) cols.push(['Class Position', positions[studentId] ?? '-']);
     cols.push(['Result', s.hasMarks ? (s.hasFail ? 'FAIL' : 'PASS') : '-']);
     cols.push(['GPA', s.gpa !== null ? s.gpa.toFixed(2) : '-']);
-    if (show('transcript-show-working-days')) cols.push(['Working Days', 'N/A']);
-    if (show('transcript-show-total-present')) cols.push(['Total Present', 'N/A']);
-
+    if (show('transcript-show-working-days')) cols.push(['Working Days', transcriptAttendance.workingDays ?? 'N/A']);
+    if (show('transcript-show-total-present')) cols.push(['Total Present', transcriptAttendance.present[studentId] ?? 'N/A']);
     const remark = getTranscriptRemark(s.avgPct);
 
     return `
@@ -1906,6 +1906,21 @@ async function loadTranscriptPreview() {
         );
 
         if (token !== transcriptLoadToken) return;
+
+        
+        // Attendance for this class + year + test (Half Yearly / Yearly), read from the database
+        const attendanceRes = await ipcRenderer.invoke('get-attendance-sheet', {
+            class_id: cls.id, year, term: test
+        }).catch(() => null);
+        if (token !== transcriptLoadToken) return;
+
+        transcriptAttendance = { workingDays: null, present: {} };
+        if (attendanceRes && attendanceRes.success) {
+            transcriptAttendance.workingDays = attendanceRes.working_days;
+            attendanceRes.records.forEach(r => {
+                transcriptAttendance.present[r.student_id] = r.days_present;
+            });
+        }
 
         transcriptMarksData = {};
         transcriptStudents.forEach(st => transcriptMarksData[st.id] = {});
