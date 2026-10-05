@@ -784,5 +784,8 @@ button:hover {
 
 /* ---------- Transcript: Class Nine / Ten table ---------- */
 .transcript-optional-label td { background:#f1f5fa; font-weight:700; text-align:left; padding-left:10px; }
-.transcript-gpa-cell { font-size:16px; font-weight:700; background:#f7f9fc; }
-.transcript-gp-above { font-size:10px; }
+.transcript-gpwo-cell, .transcript-gpa-cell { font-weight:700; }
+.transcript-gpa-cell { font-size:16px; background:#f7f9fc; }
+.transcript-table td.transcript-gp-above-cell { padding:0; }
+.transcript-gp-above-cell .gp-above-label { border-bottom:1.5px solid #000; padding:3px 4px; font-size:10px; font-weight:700; }
+.transcript-gp-above-cell .gp-above-value { padding:3px 4px; font-weight:700; }
