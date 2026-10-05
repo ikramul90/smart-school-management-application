@@ -1352,17 +1352,21 @@ const TRANSCRIPT_TESTS = {
     'Half Yearly': ['1st Monthly', '2nd Monthly', 'Half Yearly'],
     'Yearly': ['3rd Monthly', '4th Monthly', 'Yearly']
 };
-const TRANSCRIPT_V100_CLASSES = ['Play', 'Nursery', 'Class One', 'Class Two', 'Class Three', 'Class Four', 'Class Five', 'Class Six', 'Class Seven', 'Class Eight'];
+const TRANSCRIPT_V100_CLASSES = ['Play', 'Nursery', 'Class One', 'Class Two', 'Class Three', 'Class Four', 'Class Five', 'Class Six', 'Class Seven', 'Class Eight', 'Class Nine (Science)', 'Class Nine (Humanities)', 'Class Ten (Science)', 'Class Ten (Humanities)'];
 
 let transcriptClasses = [];
 let transcriptSelectedClassId = null;
 let transcriptStudents = [];
 let transcriptSubjects = [];
-let transcriptHiddenColumns = new Set(['pct']);   // keys of unchecked columns (pct hidden by default)
+let transcriptHiddenColumns = new Set(['pct', 'gpa']);   // keys of unchecked columns (pct and gpa hidden by default)
 let transcriptLoadToken = 0;               // ignores stale async loads
 let transcriptMarksData = {};              // studentId -> subjectId -> { m1, m2, m3, total }
 let transcriptHighestBySubject = {};       // subjectId -> max total marks across class
 let transcriptAttendance = { workingDays: null, present: {} };   // class working days + studentId -> days present
+let transcriptIsNineTen = false;           // true when the open class is Nine/Ten (own table layout + GPA rules)
+let transcriptClassName = '';              // class_name of the open class
+let transcriptStudentSubjects = {};        // studentId -> { mains: [names], optional: name | null }
+let transcriptSiblingEntries = [];         // other department's totals, for the combined class position
 let cachedSchoolInfo = { name: 'The Cadet School & College (TCSAC)', address: '' };
 
 const TRANSCRIPT_GRADING_SCALE = [
@@ -1402,6 +1406,22 @@ function getTranscriptColumns(test) {
     const t1Html = isYearly ? '3rd<br>Monthly' : '1st<br>Monthly';
     const t2Html = isYearly ? '4th<br>Monthly' : '2nd<br>Monthly';
     const t3Html = isYearly ? 'Yearly' : 'Half<br>Yearly';
+    if (transcriptIsNineTen) {
+        return [
+            { key: 'sn', label: 'S/N', headerHtml: 'S/N' },
+            { key: 'subject', label: 'Subject Name', headerHtml: 'Subject Name' },
+            { key: 'st', label: 'Full Marks', headerHtml: 'Full<br>Marks' },
+            { key: 'high', label: 'Highest Marks', headerHtml: 'Highest<br>Marks' },
+            { key: 'm1', label: t1, headerHtml: t1Html, marks: true },
+            { key: 'm2', label: t2, headerHtml: t2Html, marks: true },
+            { key: 'm3', label: t3, headerHtml: t3Html, marks: true },
+            { key: 'total', label: 'Total Marks', headerHtml: 'Total<br>Marks', marks: true },
+            { key: 'pct', label: 'Percentage', headerHtml: 'Percentage' },
+            { key: 'grade', label: 'Letter Grade', headerHtml: 'Letter<br>Grade' },
+            { key: 'gp', label: 'Grade Points without optional subject', headerHtml: 'Grade Points<br>without optional<br>subject' },
+            { key: 'gpa', label: 'GPA', headerHtml: 'GPA' }
+        ];
+    }
 
     return [
         { key: 'sn', label: 'S/N', headerHtml: 'S/N' },
@@ -1432,6 +1452,10 @@ function openTranscriptPage() {
     if (optionsSection) optionsSection.style.display = 'none';
     const showAllTotalsCb = document.getElementById('transcript-show-all-exam-totals');
     if (showAllTotalsCb) showAllTotalsCb.checked = false;
+    const combineCb = document.getElementById('transcript-combine-departments');
+    if (combineCb) combineCb.checked = true;
+    const combineRowEl = document.getElementById('transcript-combine-row');
+    if (combineRowEl) combineRowEl.style.display = 'none';
     document.getElementById('btn-generate-transcript').style.display = 'none';
     document.getElementById('transcript-preview').innerHTML = '';
     document.getElementById('transcript-status').textContent = 'Select a class to preview transcripts.';
@@ -1481,6 +1505,7 @@ function renderTranscriptToggles() {
 }
 
 function buildTranscriptTable(studentId) {
+    if (transcriptIsNineTen) return buildNineTenTranscriptTable(studentId);
     const test = document.getElementById('transcript-test').value;
     const visible = getTranscriptColumns(test).filter(c => !transcriptHiddenColumns.has(c.key));
     const marksCols = visible.filter(c => c.marks);
@@ -1673,6 +1698,10 @@ function getTranscriptRemark(avgPct) {
 
 // Same maths as the table: per-subject percentage -> grade -> average GPA.
 function getTranscriptStudentSummary(studentId) {
+    if (transcriptIsNineTen) {
+    const r = computeNineTenResult(studentId);
+    return { total: r.total, hasMarks: r.hasMarks, hasFail: r.hasFail, avgPct: r.avgPct, gpa: r.gpa };
+    }
     let total = 0, hasMarks = false, pctSum = 0, pctCount = 0, gpSum = 0, gpCount = 0, hasFail = false;
     transcriptSubjects.forEach(sub => {
         const m = transcriptMarksData[studentId]?.[sub.id];
@@ -1697,11 +1726,16 @@ function getTranscriptStudentSummary(studentId) {
 }
 
 // Class position = rank by total marks (highest first). Equal totals share a position.
+// Class Nine/Ten can rank Science + Humanities together (the "Combine" tool).
 function computeTranscriptClassPositions() {
-    const ranked = transcriptStudents
+    let pool = transcriptStudents
         .map(st => ({ id: st.id, total: getTranscriptStudentSummary(st.id) }))
-        .filter(e => e.total.hasMarks)
-        .sort((x, y) => y.total.total - x.total.total);
+        .filter(e => e.total.hasMarks);
+
+    const combine = document.getElementById('transcript-combine-departments')?.checked ?? true;
+    if (transcriptIsNineTen && combine) pool = pool.concat(transcriptSiblingEntries);
+
+    const ranked = pool.sort((x, y) => y.total.total - x.total.total);
     const positions = {};
     let rank = 0;
     ranked.forEach((e, i) => {
@@ -1861,7 +1895,7 @@ async function loadTranscriptPreview() {
         return;
     }
     if (!TRANSCRIPT_V100_CLASSES.includes(cls.class_name)) {
-        status.textContent = `The transcript template for ${cls.class_name} is not available yet (it currently covers Play to Class Eight).`;
+        status.textContent = `The transcript template for ${cls.class_name} is not available yet (it currently covers Play to Class Ten).`;
         return;
     }
 
@@ -1962,7 +1996,31 @@ async function loadTranscriptPreview() {
             transcriptHighestBySubject[sub.id] = maxSubTotal;
         });
 
-        status.textContent = `${cls.class_name} — ${test} Transcript — ${year} (${transcriptStudents.length} student${transcriptStudents.length === 1 ? '' : 's'}, one page each)`;
+        // ---- Class Nine / Ten extras: each student's Main/Optional subjects + the other department's totals ----
+        transcriptIsNineTen = !!MAIN_SUBJECT_POOLS[cls.class_name];
+        transcriptClassName = cls.class_name;
+        transcriptStudentSubjects = {};
+        transcriptSiblingEntries = [];
+        let missingSelectionNote = '';
+
+        if (transcriptIsNineTen) {
+            transcriptStudents.forEach(st => { transcriptStudentSubjects[st.id] = { mains: [], optional: null }; });
+            ((marksSheets[0] && marksSheets[0].studentSubjects) || []).forEach(r => {
+                const entry = transcriptStudentSubjects[r.student_id];
+                if (!entry) return;
+                if (r.role === 'optional') entry.optional = r.subject_name;
+                else entry.mains.push(r.subject_name);
+            });
+            const missing = transcriptStudents.filter(st => transcriptStudentSubjects[st.id].mains.length === 0).length;
+            if (missing > 0) missingSelectionNote = ` — ${missing} student(s) have no Main/Optional subjects saved`;
+
+            transcriptSiblingEntries = await loadNineTenSiblingTotals(cls, allSubjects, exams);
+            if (token !== transcriptLoadToken) return;
+        }
+        const combineRow = document.getElementById('transcript-combine-row');
+        if (combineRow) combineRow.style.display = transcriptIsNineTen ? 'block' : 'none';
+
+        status.textContent = `${cls.class_name} — ${test} Transcript — ${year} (${transcriptStudents.length} student${transcriptStudents.length === 1 ? '' : 's'}, one page each)${missingSelectionNote}`;
         columnsSection.style.display = 'block';
         if (optionsSection) optionsSection.style.display = 'block';
         generateBtn.style.display = 'inline-block';
@@ -2837,3 +2895,276 @@ attendanceWorkingDaysInput.addEventListener('keydown', (e) => {
     const first = document.querySelector('#attendance-rows .attendance-cell');
     if (first) first.focus();
 });
+
+
+
+
+// ============================================================
+// CLASS NINE / TEN TRANSCRIPT
+// Counted subjects (9) = Bangla (1st+2nd), English (1st+2nd), General Math, Religious Education,
+// ICT, BGS/General Science, + the student's 3 Main subjects.
+// Clothes/Manner/Presence and the Optional (4th) subject are never counted in totals or the average.
+// ============================================================
+const NINE_TEN_CMP_SUBJECT = 'Clothes/Manner/Presence';
+const NINE_TEN_PAPER_PAIRS = [['Bangla 1st', 'Bangla 2nd'], ['English 1st', 'English 2nd']];
+
+function isNineTenChoosable(className, subjectName) {
+    const pool = MAIN_SUBJECT_POOLS[className] || [];
+    return pool.includes(subjectName) || subjectName === OPTIONAL_FALLBACK_SUBJECT;
+}
+
+// Totals of the OTHER department's students (used when "Combine departments" is ticked).
+async function loadNineTenSiblingTotals(cls, allSubjects, exams) {
+    const siblingName = cls.class_name.includes('(Science)')
+        ? cls.class_name.replace('(Science)', '(Humanities)')
+        : cls.class_name.replace('(Humanities)', '(Science)');
+    const sibling = transcriptClasses.find(c => c.class_name === siblingName);
+    if (!sibling) return [];
+
+    const subjects = (allSubjects || []).filter(s => String(s.class_id) === String(sibling.id));
+    const sheets = await Promise.all(
+        exams.map(exam => ipcRenderer.invoke('get-marks-sheet', { class_id: sibling.id, exam_id: exam.id }))
+    );
+
+    const mainsByStudent = {};
+    ((sheets[0] && sheets[0].studentSubjects) || []).forEach(r => {
+        if (r.role === 'optional') return;
+        if (!mainsByStudent[r.student_id]) mainsByStudent[r.student_id] = [];
+        mainsByStudent[r.student_id].push(r.subject_name);
+    });
+
+    const totals = {};   // studentId -> subjectId -> total across the three exams
+    sheets.forEach(sheet => {
+        ((sheet && sheet.marks) || []).forEach(m => {
+            if (m.is_present === 0 || typeof m.marks_obtained !== 'number') return;
+            if (!totals[m.student_id]) totals[m.student_id] = {};
+            totals[m.student_id][m.subject_id] = (totals[m.student_id][m.subject_id] || 0) + m.marks_obtained;
+        });
+    });
+
+    return ((sheets[0] && sheets[0].students) || []).map(st => {
+        const mains = mainsByStudent[st.id] || [];
+        let sum = 0, has = false;
+        subjects.forEach(sub => {
+            const name = sub.subject_name;
+            if (name === NINE_TEN_CMP_SUBJECT) return;
+            if (isNineTenChoosable(sibling.class_name, name) && !mains.includes(name)) return;
+            const t = totals[st.id] && totals[st.id][sub.id];
+            if (typeof t === 'number') { sum += t; has = true; }
+        });
+        return { id: st.id, total: { total: sum, hasMarks: has } };
+    }).filter(e => e.total.hasMarks);
+}
+
+// One table entry = one subject, or Bangla / English as a 2-paper pair.
+function nineTenMetrics(studentId, subs) {
+    const records = subs.map(sub => (transcriptMarksData[studentId] && transcriptMarksData[studentId][sub.id]) || { m1: '', m2: '', m3: '', total: null });
+    const full = subs.reduce((acc, sub) => acc + (Number(sub.monthly_marks) || 0) * 2 + (Number(sub.yearly_marks) || 0), 0);
+    const complete = records.every(r => typeof r.total === 'number');
+    const total = complete ? records.reduce((acc, r) => acc + r.total, 0) : null;
+    let rawPct = null;
+    let grade = { letter: '-', point: '-' };
+    if (total !== null && full > 0) {
+        rawPct = (total / full) * 100;
+        grade = getGradeFromPercentage(rawPct);
+    }
+    return { subs, records, full, total, rawPct, grade };
+}
+
+function getNineTenLayout(studentId) {
+    const sel = transcriptStudentSubjects[studentId] || { mains: [], optional: null };
+    const counted = [];
+    let cmpSub = null, optionalSub = null;
+
+    transcriptSubjects.forEach(sub => {
+        const name = sub.subject_name;
+        if (name === NINE_TEN_CMP_SUBJECT) { cmpSub = sub; return; }
+        if (isNineTenChoosable(transcriptClassName, name)) {
+            if (sel.mains.includes(name)) counted.push(sub);
+            else if (sel.optional === name) optionalSub = sub;
+            return;
+        }
+        counted.push(sub);
+    });
+
+    const used = new Set();
+    const entries = [];
+    counted.forEach(sub => {
+        if (used.has(sub.id)) return;
+        const pair = NINE_TEN_PAPER_PAIRS.find(p => p[0] === sub.subject_name);
+        const second = pair ? counted.find(s => s.subject_name === pair[1]) : null;
+        used.add(sub.id);
+        if (second) {
+            used.add(second.id);
+            entries.push(nineTenMetrics(studentId, [sub, second]));
+        } else {
+            entries.push(nineTenMetrics(studentId, [sub]));
+        }
+    });
+
+    return {
+        entries,
+        cmp: cmpSub ? nineTenMetrics(studentId, [cmpSub]) : null,
+        optional: optionalSub ? nineTenMetrics(studentId, [optionalSub]) : null
+    };
+}
+
+function computeNineTenResult(studentId) {
+    const layout = getNineTenLayout(studentId);
+    let sumGP = 0, gpCount = 0, hasFail = false, hasMarks = false;
+    let total = 0, stotal = 0, pctSum = 0, pctCount = 0;
+    const examSums = { m1: 0, m2: 0, m3: 0 };
+
+    layout.entries.forEach(e => {
+        stotal += e.full;
+        e.records.forEach(r => {
+            ['m1', 'm2', 'm3'].forEach(k => { if (typeof r[k] === 'number') examSums[k] += r[k]; });
+        });
+        if (e.total !== null) {
+            total += e.total;
+            hasMarks = true;
+            if (e.rawPct !== null) {
+                pctSum += e.rawPct; pctCount += 1;
+                sumGP += parseFloat(e.grade.point); gpCount += 1;
+                if (e.grade.letter === 'F') hasFail = true;     // F in any counted subject = FAIL
+            }
+        }
+    });
+
+    // Optional subject: only the grade point ABOVE 2 is added to the top of the average.
+    const opt = layout.optional;
+    const optPoint = opt && opt.grade.point !== '-' ? parseFloat(opt.grade.point) : null;
+    const bonus = optPoint !== null && optPoint > 2 ? optPoint - 2 : 0;
+
+    return {
+        layout, total, stotal, hasMarks, hasFail, examSums, bonus,
+        avgPct: pctCount > 0 ? Math.round(pctSum / pctCount) : null,
+        gpaWithout: gpCount > 0 ? (hasFail ? 0 : sumGP / gpCount) : null,
+        gpa: gpCount > 0 ? (hasFail ? 0 : Math.min(5, (sumGP + bonus) / gpCount)) : null
+    };
+}
+
+function buildNineTenTranscriptTable(studentId) {
+    const test = document.getElementById('transcript-test').value;
+    const visible = getTranscriptColumns(test).filter(c => !transcriptHiddenColumns.has(c.key));
+    const marksCols = visible.filter(c => c.marks);
+    const marksCount = marksCols.length;
+    const examCols = marksCols.filter(c => c.key !== 'total');
+    const hasTotal = visible.some(c => c.key === 'total');
+    const showAllExamTotals = document.getElementById('transcript-show-all-exam-totals')?.checked ?? false;
+    const has = (key) => visible.some(c => c.key === key);
+    const cellCols = visible.filter(c => c.key !== 'gpa');   // the GPA column is one tall cell
+
+    // ---- header ----
+    let head1 = '', head2 = '', groupDone = false;
+    visible.forEach(c => {
+        if (c.marks) {
+            if (!groupDone) { head1 += `<th colspan="${marksCount}">Marks Obtained</th>`; groupDone = true; }
+            head2 += `<th>${c.headerHtml || escapeHtml(c.label)}</th>`;
+        } else {
+            head1 += `<th${marksCount ? ' rowspan="2"' : ''}>${c.headerHtml || escapeHtml(c.label)}</th>`;
+        }
+    });
+
+    const r = computeNineTenResult(studentId);
+    const { entries, cmp, optional } = r.layout;
+
+    const highestOf = (subs) => {
+        if (subs.length === 1) {
+            const v = transcriptHighestBySubject[subs[0].id];
+            return v === null || v === undefined ? '-' : v;
+        }
+        let best = null;
+        transcriptStudents.forEach(st => {
+            const totals = subs.map(s => transcriptMarksData[st.id] && transcriptMarksData[st.id][s.id] ? transcriptMarksData[st.id][s.id].total : null);
+            if (totals.every(t => typeof t === 'number')) {
+                const sum = totals.reduce((a, b) => a + b, 0);
+                if (best === null || sum > best) best = sum;
+            }
+        });
+        return best === null ? '-' : best;
+    };
+
+    let sn = 0;
+    const cellFor = (key, e, i, numbered, rowspan) => {
+        const sub = e.subs[i];
+        const rec = e.records[i];
+        const span = rowspan || e.subs.length;
+        const mergedRs = span > 1 ? ` rowspan="${span}"` : '';
+        const ownRs = rowspan > 1 ? ` rowspan="${rowspan}"` : '';
+        const lead = i === 0;
+        switch (key) {
+            case 'sn': return `<td class="sn"${ownRs}>${numbered ? String(sn).padStart(2, '0') : ''}</td>`;
+            case 'subject': return `<td class="subject transcript-subject"${ownRs}>${escapeHtml(sub.subject_name)}</td>`;
+            case 'st': return lead ? `<td${mergedRs}>${e.full > 0 ? e.full : '-'}</td>` : '';
+            case 'high': return lead ? `<td${mergedRs}>${highestOf(e.subs)}</td>` : '';
+            case 'm1': case 'm2': case 'm3': return `<td${ownRs}>${rec[key] !== '' ? rec[key] : '-'}</td>`;
+            case 'total': return lead ? `<td class="total"${mergedRs}>${e.total !== null ? e.total : '-'}</td>` : '';
+            case 'pct': return lead ? `<td${mergedRs}>${e.rawPct !== null ? Math.round(e.rawPct) + '%' : '-'}</td>` : '';
+            case 'grade': return lead ? `<td${mergedRs}>${e.grade.letter}</td>` : '';
+            case 'gp': return lead ? `<td${mergedRs}>${e.grade.point}</td>` : '';
+            default: return '';
+        }
+    };
+
+    // ---- body: counted subjects, then Clothes/Manner/Presence ----
+    const rowCells = [];
+    const pushEntry = (e) => {
+        e.subs.forEach((sub, i) => {
+            sn += 1;
+            rowCells.push(visible.map(c => cellFor(c.key, e, i, true)).join(''));
+        });
+    };
+    entries.forEach(pushEntry);
+    if (cmp) pushEntry(cmp);
+
+    // ---- optional subject block ----
+    const optionalTrs = [];
+    if (optional) {
+        const two = has('gp');
+        optionalTrs.push(`<tr class="transcript-optional-label"><td colspan="${cellCols.length}">Optional Subject</td></tr>`);
+        let rowA = '';
+        cellCols.forEach(c => {
+            if (c.key === 'gp') rowA += `<td class="transcript-gp-above">GP above 2</td>`;
+            else rowA += cellFor(c.key, optional, 0, false, two ? 2 : 1);
+        });
+        optionalTrs.push(`<tr>${rowA}</tr>`);
+        if (two) optionalTrs.push(`<tr><td>${r.bonus.toFixed(2)}</td></tr>`);
+    }
+
+    // ---- the tall GPA cell: first row, runs down through the footer ----
+    const gpaCell = has('gpa') && rowCells.length
+        ? `<td class="transcript-gpa-cell" rowspan="${rowCells.length + optionalTrs.length + 1}">${r.gpa !== null ? r.gpa.toFixed(2) : '-'}</td>`
+        : '';
+    const bodyTrs = rowCells.map((cells, i) => `<tr>${cells}${i === 0 ? gpaCell : ''}</tr>`).join('') + optionalTrs.join('');
+
+    // ---- footer ----
+    const leadCount = visible.filter(c => c.key === 'sn' || c.key === 'subject').length;
+    let tfootCells = leadCount ? `<td colspan="${leadCount}">Total</td>` : '';
+    if (has('st')) tfootCells += `<td>${r.stotal > 0 ? r.stotal : '-'}</td>`;
+    if (has('high')) tfootCells += `<td>-</td>`;
+
+    if (showAllExamTotals) {
+        marksCols.forEach(c => {
+            if (c.key === 'm1') tfootCells += `<td>${r.examSums.m1}</td>`;
+            else if (c.key === 'm2') tfootCells += `<td>${r.examSums.m2}</td>`;
+            else if (c.key === 'm3') tfootCells += `<td>${r.examSums.m3}</td>`;
+            else if (c.key === 'total') tfootCells += `<td class="total">${r.total}</td>`;
+        });
+    } else {
+        if (examCols.length > 0) tfootCells += `<td colspan="${examCols.length}" class="transcript-obtained-label">Obtained Marks &amp; GPA</td>`;
+        if (hasTotal) tfootCells += `<td class="total">${r.total}</td>`;
+    }
+
+    if (has('pct')) tfootCells += `<td>${r.avgPct !== null ? r.avgPct + '%' : '-'}</td>`;
+    if (has('grade')) tfootCells += `<td>${r.gpa !== null ? getGradeFromPoint(r.gpa).letter : '-'}</td>`;
+    if (has('gp')) tfootCells += `<td>${r.gpaWithout !== null ? r.gpaWithout.toFixed(2) : '-'}</td>`;
+
+    return `<table class="marks transcript-table">
+        <thead><tr>${head1}</tr>${marksCount ? `<tr>${head2}</tr>` : ''}</thead>
+        <tbody>${bodyTrs}</tbody>
+        <tfoot><tr>${tfootCells}</tr></tfoot>
+    </table>`;
+}
+
+document.getElementById('transcript-combine-departments')?.addEventListener('change', () => paintTranscriptPreview());

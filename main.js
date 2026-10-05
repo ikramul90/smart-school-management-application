@@ -705,7 +705,7 @@ ipcMain.handle('get-marks-sheet', async (event, { class_id, exam_id }) => {
                 db.all(`SELECT m.student_id, m.subject_id, m.marks_obtained, m.is_present
                         FROM marks m JOIN students s ON s.id = m.student_id
                         WHERE m.exam_id = ? AND s.class_id = ?`, [exam_id, class_id], (err3, marks) => {
-                    db.all(`SELECT ss.student_id, ss.subject_name
+                            db.all(`SELECT ss.student_id, ss.subject_name, ss.role  
                             FROM student_subjects ss JOIN students s ON s.id = ss.student_id
                             WHERE s.class_id = ? AND s.status = 'Active'`, [class_id], (err4, studentSubjects) => {
                         resolve({

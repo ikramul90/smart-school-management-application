@@ -778,3 +778,11 @@ button:hover {
 .attendance-class-buttons { display:flex; flex-wrap:wrap; gap:8px; flex:1; }
 .attendance-working-days { width:170px; flex-shrink:0; }
 .attendance-working-days label { display:block; margin-bottom:4px; font-size:13px; color:#334155; }
+
+
+
+
+/* ---------- Transcript: Class Nine / Ten table ---------- */
+.transcript-optional-label td { background:#f1f5fa; font-weight:700; text-align:left; padding-left:10px; }
+.transcript-gpa-cell { font-size:16px; font-weight:700; background:#f7f9fc; }
+.transcript-gp-above { font-size:10px; }
