@@ -1502,6 +1502,7 @@ function buildTranscriptTable(studentId) {
     let totalMarksAgg = { m1: 0, m2: 0, m3: 0, total: 0, stotal: 0, pctSum: 0, pctCount: 0 };
     let totalGP = 0;
     let gpCount = 0;
+    let hasFailedSubject = false;   
 
     const body = transcriptSubjects.map((sub, i) => {
         const subMarks = transcriptMarksData[studentId]?.[sub.id] || { m1: '', m2: '', m3: '', total: null };
@@ -1525,6 +1526,7 @@ function buildTranscriptTable(studentId) {
             if (rowGrade.point !== '-') {
                 totalGP += parseFloat(rowGrade.point);
                 gpCount += 1;
+                if (rowGrade.letter === 'F') hasFailedSubject = true;   
             }
         }
 
@@ -1573,7 +1575,7 @@ function buildTranscriptTable(studentId) {
         }
     }
 
-    const gpa = gpCount > 0 ? (totalGP / gpCount) : null;
+    const gpa = gpCount > 0 ? (hasFailedSubject ? 0 : (totalGP / gpCount)) : null;
     const overallGrade = gpa !== null ? getGradeFromPoint(gpa) : { letter: '-', point: '-' };
 
     if (visible.some(c => c.key === 'pct')) {
@@ -1690,7 +1692,7 @@ function getTranscriptStudentSummary(studentId) {
     return {
         total, hasMarks, hasFail,
         avgPct: pctCount > 0 ? Math.round(pctSum / pctCount) : null,
-        gpa: gpCount > 0 ? gpSum / gpCount : null
+        gpa: gpCount > 0 ? (hasFail ? 0 : gpSum / gpCount) : null
     };
 }
 
