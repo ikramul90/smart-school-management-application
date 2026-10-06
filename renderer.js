@@ -1418,9 +1418,9 @@ function getTranscriptColumns(test) {
             { key: 'total', label: 'Total Marks', headerHtml: 'Total<br>Marks', marks: true },
             { key: 'pct', label: 'Percentage', headerHtml: 'Percentage' },
             { key: 'grade', label: 'Letter Grade', headerHtml: 'Letter<br>Grade' },
-            { key: 'gp', label: 'GPA', headerHtml: 'GPA' },
+            { key: 'gp', label: 'Grade Points', headerHtml: 'Grade<br>Points' },
             { key: 'gpwo', label: 'Grade Points without optional subject', headerHtml: 'Grade Points<br>without optional<br>subject' },
-            { key: 'gpa', label: 'GPA (side column)', headerHtml: 'GPA' }
+            { key: 'gpa', label: 'GPA', headerHtml: 'GPA' }
         ];
     }
 
