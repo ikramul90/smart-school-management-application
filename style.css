@@ -415,6 +415,10 @@ button:hover {
     transform: translateY(0);
 }
 
+#student-details {
+    scroll-margin-top: 18px;
+}
+
 #student-details summary {
     display: inline-block;
 }
