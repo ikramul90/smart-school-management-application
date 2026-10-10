@@ -415,6 +415,21 @@ button:hover {
     transform: translateX(-50%) translateY(0);
 }
 
+#student-details summary {
+    display: inline-block;
+}
+
+#student-details.disabled {
+    cursor: not-allowed;
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+
+#student-details.disabled summary {
+    cursor: not-allowed !important;
+    color: #94a3b8 !important;
+}
+
 
 
 .marks-head {

@@ -632,7 +632,31 @@ function syncPromoteTabsState() {
             b.removeAttribute('data-tooltip');
         }
     });
+
+    const studentDetails = document.getElementById('student-details');
+    const studentSummary = document.getElementById('student-details-summary');
+    if (studentDetails) {
+        if (promoteModeActive) {
+            studentDetails.open = false;
+            studentDetails.classList.add('disabled');
+            if (studentSummary) {
+                studentSummary.setAttribute('data-tooltip', 'The promotion page is running. Cancel this first.');
+            }
+        } else {
+            studentDetails.classList.remove('disabled');
+            if (studentSummary) {
+                studentSummary.removeAttribute('data-tooltip');
+            }
+        }
+    }
 }
+
+// Prevent opening "Enroll New Student" while promotion mode is running
+document.getElementById('student-details-summary')?.addEventListener('click', (e) => {
+    if (promoteModeActive) {
+        e.preventDefault();
+    }
+});
 
 // Switching the Current / Graduated / Dropped Out tabs
 document.querySelectorAll('#student-view-tabs .chip-btn').forEach(btn => {
