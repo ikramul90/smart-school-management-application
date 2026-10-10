@@ -618,20 +618,18 @@ window.loadStudents = async function () {
 
 function syncPromoteTabsState() {
     document.querySelectorAll('#student-view-tabs .chip-btn').forEach(b => {
+        b.removeAttribute('title');
         if (b.dataset.view !== 'Active') {
             if (promoteModeActive) {
                 b.classList.add('disabled');
-                b.setAttribute('data-tooltip', 'the promotion page is running. cancel this first.');
-                b.title = 'the promotion page is running. cancel this first.';
+                b.setAttribute('data-tooltip', 'The promotion page is running. Cancel this first.');
             } else {
                 b.classList.remove('disabled');
                 b.removeAttribute('data-tooltip');
-                b.title = '';
             }
         } else {
             b.classList.remove('disabled');
             b.removeAttribute('data-tooltip');
-            b.title = '';
         }
     });
 }
