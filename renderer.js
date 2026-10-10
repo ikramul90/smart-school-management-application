@@ -736,7 +736,13 @@ window.editStudent = async function (id, classId, roll, name, bloodGroup, guardi
     document.getElementById('btn-save-student').textContent = 'Update Student';
     document.getElementById('btn-cancel-student').style.display = 'inline-block';
     const details = document.getElementById('student-details');
-    if (details) details.open = true;
+    if (details) {
+        details.open = true;
+        details.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        details.classList.remove('details-highlight');
+        void details.offsetWidth; // trigger reflow for restartable CSS animation
+        details.classList.add('details-highlight');
+    }
 
     updateStudentSubjectSelection();
     const existing = await ipcRenderer.invoke('get-student-subjects', id);
