@@ -67,6 +67,55 @@
             </div>
         </div>
         <button id="btn-login">Login</button>
+        <div style="display: flex; justify-content: flex-end; margin-top: 15px;">
+            <a href="#" id="link-forgot-password" class="no-select"
+                style="font-size: 13px; color: #2563eb; text-decoration: none; font-weight: 500; cursor: pointer;">
+                Reset Password?
+            </a>
+        </div>
+    </div>
+
+    <!-- 2b. RESET PASSWORD RECOVERY SCREEN -->
+    <div id="reset-password-screen" class="card" style="display:none; width: 440px;">
+        <h2 class="no-select">Reset Password</h2>
+        <p style="font-size: 13px; color: #64748b; text-align: center; margin-top: -5px; margin-bottom: 15px;">
+            Answer all security questions correctly to set a new password.
+        </p>
+        <div class="error" id="reset-error" style="margin-bottom: 10px;"></div>
+        <div id="reset-success" style="color: #10b981; font-size: 13px; font-weight: bold; margin-bottom: 10px; display:none;"></div>
+
+        <div id="reset-questions-container">
+            <!-- Dynamically populated questions and answers -->
+        </div>
+
+        <div class="input-group" style="margin-top: 15px;">
+            <label class="no-select">New Password</label>
+            <div class="password-input-wrapper">
+                <input type="password" id="reset-new-password" placeholder="Enter new password">
+                <button type="button" class="password-toggle-btn toggle-pw-btn" data-target="reset-new-password"
+                    aria-label="Toggle password" tabindex="-1">
+                    <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label class="no-select">Confirm New Password</label>
+            <div class="password-input-wrapper">
+                <input type="password" id="reset-confirm-password" placeholder="Confirm new password">
+                <button type="button" class="password-toggle-btn toggle-pw-btn" data-target="reset-confirm-password"
+                    aria-label="Toggle password" tabindex="-1">
+                    <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                </button>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button id="btn-submit-reset-password" type="button" style="flex: 1;">Save New Password</button>
+            <button id="btn-cancel-reset-password" type="button" style="flex: 1; background: #64748b;">Back to Login</button>
+        </div>
     </div>
 
     <!-- 3. REAL DASHBOARD & PORTAL MAIN LAYOUT -->
@@ -670,8 +719,121 @@
 
                 <!-- TAB CONTENT: ADMIN INFO -->
                 <div id="settings-admin" class="tab-content">
-                    <h2>Admin Info & Controls</h2>
-                    <p>Password changes and security overrides block coming in step 4...</p>
+                    <h2 class="no-select" style="text-align:left; margin-bottom: 20px;">Admin Account & Security Settings</h2>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; align-items: start;">
+                        
+                        <!-- SECTION 1: CHANGE PASSWORD -->
+                        <div style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                            <h3 style="margin-top: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                                🔑 Change Password
+                            </h3>
+                            <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">
+                                Update the password used to log in to the application.
+                            </p>
+
+                            <div id="admin-pw-error" style="color: #ef4444; font-size: 13px; margin-bottom: 10px; font-weight: 500;"></div>
+                            <div id="admin-pw-success" style="color: #10b981; font-size: 13px; font-weight: bold; margin-bottom: 10px;"></div>
+
+                            <div class="input-group">
+                                <label class="no-select">Current Password</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="admin-current-password" placeholder="Enter current password">
+                                    <button type="button" class="password-toggle-btn toggle-pw-btn" data-target="admin-current-password"
+                                        aria-label="Toggle password" tabindex="-1">
+                                        <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="no-select">New Password</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="admin-new-password" placeholder="Enter new password">
+                                    <button type="button" class="password-toggle-btn toggle-pw-btn" data-target="admin-new-password"
+                                        aria-label="Toggle password" tabindex="-1">
+                                        <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label class="no-select">Confirm New Password</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="admin-confirm-password" placeholder="Confirm new password">
+                                    <button type="button" class="password-toggle-btn toggle-pw-btn" data-target="admin-confirm-password"
+                                        aria-label="Toggle password" tabindex="-1">
+                                        <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                        <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <button id="btn-update-admin-password" type="button" style="margin-top: 15px; background-color: #2563eb; width: 100%;">
+                                Update Password
+                            </button>
+                        </div>
+
+                        <!-- SECTION 2: SECURITY QUESTIONS -->
+                        <div style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <h3 style="margin: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                                    🛡️ Security Questions
+                                </h3>
+                                <button type="button" id="btn-toggle-security-questions"
+                                    style="width: auto; padding: 6px 14px; font-size: 12px; background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                                    👁️ Show
+                                </button>
+                            </div>
+                            <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">
+                                Used to recover your account and reset your password if forgotten.
+                            </p>
+
+                            <div id="admin-sec-error" style="color: #ef4444; font-size: 13px; margin-bottom: 10px; font-weight: 500;"></div>
+                            <div id="admin-sec-success" style="color: #10b981; font-size: 13px; font-weight: bold; margin-bottom: 10px;"></div>
+
+                            <!-- LOCKED PLACEHOLDER MESSAGE -->
+                            <div id="sec-questions-locked" style="padding: 30px 20px; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; color: #64748b; font-size: 13px;">
+                                🔒 Security questions and answers are hidden to protect privacy. Click <b>"Show"</b> above to view or edit them.
+                            </div>
+
+                            <!-- EDITABLE QUESTIONS CONTAINER -->
+                            <div id="sec-questions-content" style="display: none;">
+                                <div class="input-group">
+                                    <label class="no-select">Question 1</label>
+                                    <input type="text" id="admin-q1" placeholder="Enter Question 1">
+                                    <input type="text" id="admin-a1" placeholder="Enter Answer 1" style="margin-top: 5px;">
+                                </div>
+                                <div class="input-group">
+                                    <label class="no-select">Question 2</label>
+                                    <input type="text" id="admin-q2" placeholder="Enter Question 2">
+                                    <input type="text" id="admin-a2" placeholder="Enter Answer 2" style="margin-top: 5px;">
+                                </div>
+                                <div class="input-group">
+                                    <label class="no-select">Question 3 (Optional)</label>
+                                    <input type="text" id="admin-q3" placeholder="Enter Question 3 (optional)">
+                                    <input type="text" id="admin-a3" placeholder="Enter Answer 3 (optional)" style="margin-top: 5px;">
+                                </div>
+                                <div class="input-group">
+                                    <label class="no-select">Question 4 (Optional)</label>
+                                    <input type="text" id="admin-q4" placeholder="Enter Question 4 (optional)">
+                                    <input type="text" id="admin-a4" placeholder="Enter Answer 4 (optional)" style="margin-top: 5px;">
+                                </div>
+                                <div class="input-group">
+                                    <label class="no-select">Question 5 (Optional)</label>
+                                    <input type="text" id="admin-q5" placeholder="Enter Question 5 (optional)">
+                                    <input type="text" id="admin-a5" placeholder="Enter Answer 5 (optional)" style="margin-top: 5px;">
+                                </div>
+
+                                <button id="btn-save-security-questions" type="button" style="margin-top: 15px; background-color: #10b981; width: 100%;">
+                                    Save Security Questions
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
 

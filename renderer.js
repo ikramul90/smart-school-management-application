@@ -79,6 +79,25 @@ document.getElementById('btn-login').addEventListener('click', async () => {
     }
 });
 
+// Universal password visibility toggle helper
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.toggle-pw-btn');
+    if (!btn) return;
+    const targetId = btn.dataset.target;
+    if (!targetId) return;
+    const input = document.getElementById(targetId);
+    if (!input) return;
+    const eyeIcon = btn.querySelector('.eye-icon');
+    const eyeOffIcon = btn.querySelector('.eye-off-icon');
+    const isPassword = input.type === 'password';
+
+    input.type = isPassword ? 'text' : 'password';
+    btn.setAttribute('aria-label', isPassword ? 'Hide password' : 'Show password');
+    btn.setAttribute('title', isPassword ? 'Hide password' : 'Show password');
+    if (eyeIcon) eyeIcon.style.display = isPassword ? 'none' : 'block';
+    if (eyeOffIcon) eyeOffIcon.style.display = isPassword ? 'block' : 'none';
+});
+
 // Toggle password visibility on admin login screen
 const btnToggleLoginPassword = document.getElementById('btn-toggle-login-password');
 if (btnToggleLoginPassword) {
@@ -94,6 +113,105 @@ if (btnToggleLoginPassword) {
         btnToggleLoginPassword.setAttribute('title', isPassword ? 'Hide password' : 'Show password');
         if (eyeIcon) eyeIcon.style.display = isPassword ? 'none' : 'block';
         if (eyeOffIcon) eyeOffIcon.style.display = isPassword ? 'block' : 'none';
+    });
+}
+
+// --- FORGOT / RESET PASSWORD ON LOGIN SCREEN ---
+const linkForgotPassword = document.getElementById('link-forgot-password');
+const resetPasswordScreen = document.getElementById('reset-password-screen');
+const btnCancelResetPassword = document.getElementById('btn-cancel-reset-password');
+const btnSubmitResetPassword = document.getElementById('btn-submit-reset-password');
+
+if (linkForgotPassword) {
+    linkForgotPassword.addEventListener('click', async (e) => {
+        e.preventDefault();
+        loginScreen.style.display = 'none';
+        resetPasswordScreen.style.display = 'block';
+        document.getElementById('reset-error').innerText = '';
+        document.getElementById('reset-success').style.display = 'none';
+        document.getElementById('reset-new-password').value = '';
+        document.getElementById('reset-confirm-password').value = '';
+
+        const container = document.getElementById('reset-questions-container');
+        container.innerHTML = '<div style="color:#64748b; font-size:13px; text-align:center; padding:10px 0;">Loading security questions...</div>';
+
+        const res = await ipcRenderer.invoke('get-recovery-questions');
+        if (res && res.success && res.questions && res.questions.length > 0) {
+            container.innerHTML = res.questions.map(q => `
+                <div class="input-group" style="margin-bottom: 12px;">
+                    <label class="no-select" style="color:#334155; font-size:13px; font-weight:600;">${escapeHtml(q.question)}</label>
+                    <input type="text" class="reset-answer-input" data-key="${q.key}" placeholder="Your Answer" autocomplete="off" style="margin-top:4px;">
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = `<div style="color:#ef4444; font-size:13px; padding:10px 0;">${(res && res.message) || 'No recovery security questions found. Please contact an administrator.'}</div>`;
+        }
+    });
+}
+
+if (btnCancelResetPassword) {
+    btnCancelResetPassword.addEventListener('click', () => {
+        resetPasswordScreen.style.display = 'none';
+        loginScreen.style.display = 'block';
+    });
+}
+
+if (btnSubmitResetPassword) {
+    btnSubmitResetPassword.addEventListener('click', async () => {
+        const errorEl = document.getElementById('reset-error');
+        const successEl = document.getElementById('reset-success');
+        errorEl.innerText = '';
+        successEl.style.display = 'none';
+
+        const answers = {};
+        const answerInputs = document.querySelectorAll('.reset-answer-input');
+        let allFilled = true;
+        answerInputs.forEach(input => {
+            const val = input.value.trim();
+            if (!val) allFilled = false;
+            answers[input.dataset.key] = val;
+        });
+
+        if (!allFilled || answerInputs.length === 0) {
+            errorEl.innerText = 'Please answer all security questions!';
+            return;
+        }
+
+        const newPw = document.getElementById('reset-new-password').value.trim();
+        const confirmPw = document.getElementById('reset-confirm-password').value.trim();
+
+        if (!newPw) {
+            errorEl.innerText = 'Please enter a new password.';
+            return;
+        }
+        if (newPw !== confirmPw) {
+            errorEl.innerText = 'New password and confirm password do not match!';
+            return;
+        }
+
+        btnSubmitResetPassword.disabled = true;
+        btnSubmitResetPassword.textContent = 'Verifying...';
+
+        const res = await ipcRenderer.invoke('reset-admin-password-via-questions', {
+            answers,
+            newPassword: newPw
+        });
+
+        btnSubmitResetPassword.disabled = false;
+        btnSubmitResetPassword.textContent = 'Save New Password';
+
+        if (res && res.success) {
+            successEl.innerText = res.message || 'Password reset successfully! Returning to login...';
+            successEl.style.display = 'block';
+            setTimeout(() => {
+                resetPasswordScreen.style.display = 'none';
+                loginScreen.style.display = 'block';
+                document.getElementById('login-password').value = '';
+                document.getElementById('login-error').innerText = 'Password reset successful! Please log in.';
+            }, 1800);
+        } else {
+            errorEl.innerText = (res && res.message) || 'Verification failed. Please check your answers.';
+        }
     });
 }
 
@@ -128,6 +246,8 @@ window.switchTab = function (tabId) {
     if (tabId === 'db-subjects') loadSubjectsPage();
     if (tabId === 'db-students') loadStudentsPage();
     if (tabId === 'db-teachers') loadTeachersPage();
+    if (tabId === 'settings-admin') loadAdminSettingsPage();
+    if (tabId === 'settings-school') loadSchoolInfo();
 };
 
 
@@ -3626,3 +3746,152 @@ document.getElementById('transcript-combine-departments')?.addEventListener('cha
 
 // Wire up the Promote Students chip button
 document.getElementById('btn-promote-mode')?.addEventListener('click', () => togglePromoteMode());
+
+// ============================================================
+// ADMIN SETTINGS & SECURITY (Settings -> Admin Info)
+// ============================================================
+let securityQuestionsVisible = false;
+
+async function loadAdminSettingsPage() {
+    // Clear password inputs and status messages
+    const curPw = document.getElementById('admin-current-password');
+    const newPw = document.getElementById('admin-new-password');
+    const confPw = document.getElementById('admin-confirm-password');
+    if (curPw) curPw.value = '';
+    if (newPw) newPw.value = '';
+    if (confPw) confPw.value = '';
+
+    const pwErr = document.getElementById('admin-pw-error');
+    const pwSucc = document.getElementById('admin-pw-success');
+    const secErr = document.getElementById('admin-sec-error');
+    const secSucc = document.getElementById('admin-sec-success');
+    if (pwErr) pwErr.innerText = '';
+    if (pwSucc) pwSucc.innerText = '';
+    if (secErr) secErr.innerText = '';
+    if (secSucc) secSucc.innerText = '';
+
+    // Fetch security questions and answers
+    try {
+        const res = await ipcRenderer.invoke('get-admin-profile');
+        if (res && res.success && res.profile) {
+            const p = res.profile;
+            for (let i = 1; i <= 5; i++) {
+                const qEl = document.getElementById('admin-q' + i);
+                const aEl = document.getElementById('admin-a' + i);
+                if (qEl) qEl.value = p['q' + i] || '';
+                if (aEl) aEl.value = p['a' + i] || '';
+            }
+        }
+    } catch (e) {
+        console.error('Failed to load admin profile:', e);
+    }
+}
+
+// Toggle Security Questions Show/Hide
+const btnToggleSecurityQuestions = document.getElementById('btn-toggle-security-questions');
+if (btnToggleSecurityQuestions) {
+    btnToggleSecurityQuestions.addEventListener('click', () => {
+        securityQuestionsVisible = !securityQuestionsVisible;
+        const content = document.getElementById('sec-questions-content');
+        const locked = document.getElementById('sec-questions-locked');
+        if (securityQuestionsVisible) {
+            if (content) content.style.display = 'block';
+            if (locked) locked.style.display = 'none';
+            btnToggleSecurityQuestions.textContent = '🙈 Hide';
+        } else {
+            if (content) content.style.display = 'none';
+            if (locked) locked.style.display = 'block';
+            btnToggleSecurityQuestions.textContent = '👁️ Show';
+        }
+    });
+}
+
+// Update Admin Password Button
+const btnUpdateAdminPassword = document.getElementById('btn-update-admin-password');
+if (btnUpdateAdminPassword) {
+    btnUpdateAdminPassword.addEventListener('click', async () => {
+        const errEl = document.getElementById('admin-pw-error');
+        const successEl = document.getElementById('admin-pw-success');
+        if (errEl) errEl.innerText = '';
+        if (successEl) successEl.innerText = '';
+
+        const currentPw = document.getElementById('admin-current-password')?.value.trim() || '';
+        const newPw = document.getElementById('admin-new-password')?.value.trim() || '';
+        const confirmPw = document.getElementById('admin-confirm-password')?.value.trim() || '';
+
+        if (!currentPw || !newPw || !confirmPw) {
+            if (errEl) errEl.innerText = 'Please complete all password fields!';
+            return;
+        }
+
+        if (newPw !== confirmPw) {
+            if (errEl) errEl.innerText = 'New password and confirmation do not match!';
+            return;
+        }
+
+        btnUpdateAdminPassword.disabled = true;
+        btnUpdateAdminPassword.textContent = 'Updating...';
+
+        const res = await ipcRenderer.invoke('change-admin-password', {
+            currentPassword: currentPw,
+            newPassword: newPw
+        });
+
+        btnUpdateAdminPassword.disabled = false;
+        btnUpdateAdminPassword.textContent = 'Update Password';
+
+        if (res && res.success) {
+            if (successEl) successEl.innerText = '✅ Password updated successfully!';
+            const cur = document.getElementById('admin-current-password');
+            const nw = document.getElementById('admin-new-password');
+            const cnf = document.getElementById('admin-confirm-password');
+            if (cur) cur.value = '';
+            if (nw) nw.value = '';
+            if (cnf) cnf.value = '';
+        } else {
+            if (errEl) errEl.innerText = (res && res.message) || 'Failed to update password.';
+        }
+    });
+}
+
+// Save Security Questions Button
+const btnSaveSecurityQuestions = document.getElementById('btn-save-security-questions');
+if (btnSaveSecurityQuestions) {
+    btnSaveSecurityQuestions.addEventListener('click', async () => {
+        const errEl = document.getElementById('admin-sec-error');
+        const successEl = document.getElementById('admin-sec-success');
+        if (errEl) errEl.innerText = '';
+        if (successEl) successEl.innerText = '';
+
+        const data = {};
+        for (let i = 1; i <= 5; i++) {
+            const q = document.getElementById('admin-q' + i)?.value.trim() || '';
+            const a = document.getElementById('admin-a' + i)?.value.trim() || '';
+            if ((q && !a) || (!q && a)) {
+                if (errEl) errEl.innerText = `Please provide both question and answer for Question ${i}.`;
+                return;
+            }
+            data['q' + i] = q;
+            data['a' + i] = a;
+        }
+
+        if (!data.q1 || !data.a1) {
+            if (errEl) errEl.innerText = 'At least Security Question 1 and its answer are required!';
+            return;
+        }
+
+        btnSaveSecurityQuestions.disabled = true;
+        btnSaveSecurityQuestions.textContent = 'Saving...';
+
+        const res = await ipcRenderer.invoke('update-admin-security-questions', data);
+
+        btnSaveSecurityQuestions.disabled = false;
+        btnSaveSecurityQuestions.textContent = 'Save Security Questions';
+
+        if (res && res.success) {
+            if (successEl) successEl.innerText = '✅ Security questions saved successfully!';
+        } else {
+            if (errEl) errEl.innerText = (res && res.message) || 'Failed to save security questions.';
+        }
+    });
+}

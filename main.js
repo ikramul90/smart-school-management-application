@@ -68,6 +68,109 @@ ipcMain.handle('attempt-login', async (event, data) => {
     });
 });
 
+// Get admin profile and security questions
+ipcMain.handle('get-admin-profile', async () => {
+    return new Promise((resolve) => {
+        db.get("SELECT id, username, q1, a1, q2, a2, q3, a3, q4, a4, q5, a5 FROM admin_profile ORDER BY id ASC LIMIT 1", [], (err, row) => {
+            if (err || !row) resolve({ success: false, error: err ? err.message : 'Admin profile not found' });
+            else resolve({ success: true, profile: row });
+        });
+    });
+});
+
+// Change admin password with current password verification
+ipcMain.handle('change-admin-password', async (event, { currentPassword, newPassword }) => {
+    return new Promise((resolve) => {
+        if (!currentPassword || !newPassword) {
+            return resolve({ success: false, message: 'Please provide both current and new password.' });
+        }
+        db.get("SELECT id, password_hash FROM admin_profile ORDER BY id ASC LIMIT 1", [], (err, row) => {
+            if (err || !row) return resolve({ success: false, message: 'Admin profile not found.' });
+            if (row.password_hash !== currentPassword) {
+                return resolve({ success: false, message: 'Current password is incorrect.' });
+            }
+            db.run("UPDATE admin_profile SET password_hash = ? WHERE id = ?", [newPassword, row.id], (err2) => {
+                if (err2) return resolve({ success: false, message: err2.message });
+                resolve({ success: true, message: 'Password updated successfully!' });
+            });
+        });
+    });
+});
+
+// Update security questions and answers
+ipcMain.handle('update-admin-security-questions', async (event, data) => {
+    return new Promise((resolve) => {
+        db.get("SELECT id FROM admin_profile ORDER BY id ASC LIMIT 1", [], (err, row) => {
+            if (err || !row) return resolve({ success: false, message: 'Admin profile not found.' });
+            const query = `UPDATE admin_profile SET q1 = ?, a1 = ?, q2 = ?, a2 = ?, q3 = ?, a3 = ?, q4 = ?, a4 = ?, q5 = ?, a5 = ? WHERE id = ?`;
+            db.run(query, [
+                data.q1 || '', data.a1 || '',
+                data.q2 || '', data.a2 || '',
+                data.q3 || '', data.a3 || '',
+                data.q4 || '', data.a4 || '',
+                data.q5 || '', data.a5 || '',
+                row.id
+            ], (err2) => {
+                if (err2) return resolve({ success: false, message: err2.message });
+                resolve({ success: true, message: 'Security questions saved successfully!' });
+            });
+        });
+    });
+});
+
+// Get active recovery questions (without revealing answers) for password reset
+ipcMain.handle('get-recovery-questions', async () => {
+    return new Promise((resolve) => {
+        db.get("SELECT q1, a1, q2, a2, q3, a3, q4, a4, q5, a5 FROM admin_profile ORDER BY id ASC LIMIT 1", [], (err, row) => {
+            if (err || !row) return resolve({ success: false, message: 'Admin profile not configured.' });
+            const questions = [];
+            for (let i = 1; i <= 5; i++) {
+                const q = (row['q' + i] || '').trim();
+                const a = (row['a' + i] || '').trim();
+                if (q && a) {
+                    questions.push({ key: 'a' + i, question: q, index: i });
+                }
+            }
+            resolve({ success: true, questions });
+        });
+    });
+});
+
+// Reset admin password by verifying all security question answers
+ipcMain.handle('reset-admin-password-via-questions', async (event, { answers, newPassword }) => {
+    return new Promise((resolve) => {
+        db.get("SELECT id, q1, a1, q2, a2, q3, a3, q4, a4, q5, a5 FROM admin_profile ORDER BY id ASC LIMIT 1", [], (err, row) => {
+            if (err || !row) return resolve({ success: false, message: 'Admin profile not found.' });
+
+            let activeQuestions = 0;
+            for (let i = 1; i <= 5; i++) {
+                const q = (row['q' + i] || '').trim();
+                const expectedAns = (row['a' + i] || '').trim().toLowerCase();
+                if (q && expectedAns) {
+                    activeQuestions++;
+                    const userAns = (answers && answers['a' + i] ? String(answers['a' + i]) : '').trim().toLowerCase();
+                    if (!userAns || userAns !== expectedAns) {
+                        return resolve({ success: false, message: `Answer to Security Question ${i} is incorrect.` });
+                    }
+                }
+            }
+
+            if (activeQuestions === 0) {
+                return resolve({ success: false, message: 'No security questions were configured for recovery. Please contact support.' });
+            }
+
+            if (!newPassword || newPassword.trim().length === 0) {
+                return resolve({ success: false, message: 'Please enter a valid new password.' });
+            }
+
+            db.run("UPDATE admin_profile SET password_hash = ? WHERE id = ?", [newPassword, row.id], (err2) => {
+                if (err2) return resolve({ success: false, message: err2.message });
+                resolve({ success: true, message: 'Password has been reset successfully! You can now log in.' });
+            });
+        });
+    });
+});
+
 // --- SETTINGS SCREEN REGISTRATION ---
 
 // Get School Information
