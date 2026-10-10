@@ -1451,8 +1451,6 @@ async function renderTeachersTable() {
             <td>${escapeHtml(t.title || '')}</td>
             <td>${assignedClasses.length ? assignedClasses.map(escapeHtml).join(', ') : '<i style="color:gray;">None</i>'}</td>
             <td>${escapeHtml(t.contact_number || '')}</td>
-            <td><span style="color:red; font-weight:bold;">${escapeHtml(t.blood_group || 'N/A')}</span></td>
-            <td>${escapeHtml(t.nid_number || '')}</td>
             <td>
                 <button onclick="editTeacherById(${t.id})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
                 <button onclick="deleteTeacher(${t.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">🗑 Delete</button>
