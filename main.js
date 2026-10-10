@@ -943,8 +943,32 @@ ipcMain.handle('save-attendance', async (event, { student_id, year, term, days_p
     }
 });
 
+// Inline local image files as base64 Data URIs
+function inlineImagesAsBase64(htmlContent) {
+    if (!htmlContent) return '';
+    return htmlContent.replace(/<img\s+([^>]*?)src=["']([^"']+)["']([^>]*?)>/gi, (imgTag, before, src, after) => {
+        if (src.startsWith('data:') || src.startsWith('http://') || src.startsWith('https://')) {
+            return imgTag;
+        }
+        try {
+            const resolvedPath = path.isAbsolute(src) ? src : path.join(__dirname, src);
+            if (fs.existsSync(resolvedPath)) {
+                const ext = path.extname(resolvedPath).slice(1).toLowerCase() || 'png';
+                const mimeType = ext === 'svg' ? 'image/svg+xml' : (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg' : `image/${ext}`;
+                const base64 = fs.readFileSync(resolvedPath).toString('base64');
+                return `<img ${before}src="data:${mimeType};base64,${base64}"${after}>`;
+            }
+        } catch (e) {
+            console.error('Failed to inline image:', src, e.message);
+        }
+        return imgTag;
+    });
+}
+
 // --- TRANSCRIPT PDF GENERATION ---
 ipcMain.handle('generate-transcripts-pdf', async (event, { html, defaultFileName }) => {
+    let tempFilePath = null;
+    let pdfWin = null;
     try {
         const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
             title: 'Save Transcripts PDF',
@@ -958,16 +982,6 @@ ipcMain.handle('generate-transcripts-pdf', async (event, { html, defaultFileName
             return { success: false, cancelled: true };
         }
 
-        const pdfWin = new BrowserWindow({
-            show: false,
-            width: 1240,
-            height: 1754,
-            webPreferences: {
-                nodeIntegration: false,
-                contextIsolation: true
-            }
-        });
-
         // Read CSS file to embed inline
         const styleCssPath = path.join(__dirname, 'style.css');
         let styleCss = '';
@@ -975,21 +989,31 @@ ipcMain.handle('generate-transcripts-pdf', async (event, { html, defaultFileName
             styleCss = fs.readFileSync(styleCssPath, 'utf8');
         }
 
+        const processedHtml = inlineImagesAsBase64(html);
+
         const fullHtml = `<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
-    <base href="${path.join(__dirname, '/').replace(/\\/g, '/')}">
     <style>
         ${styleCss}
         @page {
             size: A4 portrait;
             margin: 0;
         }
+        *, *:before, *:after {
+            box-sizing: border-box !important;
+        }
         html, body {
             margin: 0 !important;
             padding: 0 !important;
+            width: 100% !important;
+            height: auto !important;
+            min-height: 100% !important;
             background: #ffffff !important;
+            background-color: #ffffff !important;
+            color: #111111 !important;
+            display: block !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
@@ -998,6 +1022,7 @@ ipcMain.handle('generate-transcripts-pdf', async (event, { html, defaultFileName
             gap: 0 !important;
             margin: 0 !important;
             padding: 0 !important;
+            background: #ffffff !important;
         }
         .transcript-page {
             box-shadow: none !important;
@@ -1008,16 +1033,19 @@ ipcMain.handle('generate-transcripts-pdf', async (event, { html, defaultFileName
             height: 297mm !important;
             min-height: 297mm !important;
             max-height: 297mm !important;
-            padding: 16mm 15mm 16mm 15mm !important;
+            aspect-ratio: auto !important;
+            padding: 18mm 16mm 18mm 16mm !important;
             box-sizing: border-box !important;
             page-break-after: always !important;
             page-break-inside: avoid !important;
             break-after: page !important;
             break-inside: avoid !important;
-            margin: 0 !important;
+            margin: 0 auto !important;
             display: flex !important;
             flex-direction: column !important;
             justify-content: flex-start !important;
+            background: #ffffff !important;
+            background-color: #ffffff !important;
         }
         .transcript-page:last-child {
             page-break-after: auto !important;
@@ -1027,17 +1055,33 @@ ipcMain.handle('generate-transcripts-pdf', async (event, { html, defaultFileName
 </head>
 <body>
     <div class="transcript-preview">
-        ${html}
+        ${processedHtml}
     </div>
 </body>
 </html>`;
 
-        await pdfWin.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(fullHtml)}`);
+        // Write HTML to temporary file to load cleanly with zero security blocks
+        tempFilePath = path.join(app.getPath('temp'), `tcsac_transcripts_${Date.now()}.html`);
+        fs.writeFileSync(tempFilePath, fullHtml, 'utf8');
 
-        // Wait for fonts and images to be ready
+        pdfWin = new BrowserWindow({
+            show: false,
+            width: 1240,
+            height: 1754,
+            backgroundColor: '#ffffff',
+            webPreferences: {
+                nodeIntegration: false,
+                contextIsolation: true,
+                webSecurity: false
+            }
+        });
+
+        await pdfWin.loadFile(tempFilePath);
+
+        // Wait for fonts and images to be fully ready
         await pdfWin.webContents.executeJavaScript(`
             Promise.all([
-                document.fonts.ready,
+                document.fonts ? document.fonts.ready : Promise.resolve(),
                 ...Array.from(document.images).map(img => {
                     if (img.complete) return Promise.resolve();
                     return new Promise(resolve => {
@@ -1048,8 +1092,8 @@ ipcMain.handle('generate-transcripts-pdf', async (event, { html, defaultFileName
             ])
         `);
 
-        // Grace pause for layout rendering
-        await new Promise(r => setTimeout(r, 200));
+        // Small pause for rendering stability
+        await new Promise(r => setTimeout(r, 250));
 
         const pdfBuffer = await pdfWin.webContents.printToPDF({
             printBackground: true,
@@ -1066,10 +1110,23 @@ ipcMain.handle('generate-transcripts-pdf', async (event, { html, defaultFileName
         });
 
         await fs.promises.writeFile(filePath, pdfBuffer);
-        pdfWin.destroy();
+
+        if (pdfWin && !pdfWin.isDestroyed()) {
+            pdfWin.destroy();
+            pdfWin = null;
+        }
+        if (tempFilePath && fs.existsSync(tempFilePath)) {
+            try { fs.unlinkSync(tempFilePath); } catch (e) {}
+        }
 
         return { success: true, filePath };
     } catch (err) {
+        if (pdfWin && !pdfWin.isDestroyed()) {
+            pdfWin.destroy();
+        }
+        if (tempFilePath && fs.existsSync(tempFilePath)) {
+            try { fs.unlinkSync(tempFilePath); } catch (e) {}
+        }
         console.error('generate-transcripts-pdf error:', err);
         return { success: false, error: err.message };
     }
