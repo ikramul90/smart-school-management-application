@@ -1507,7 +1507,7 @@ async function renderTeachersTable() {
 function resetTeacherForm() {
     const editIdEl = document.getElementById('tc-edit-id');
     if (editIdEl) editIdEl.value = '';
-    ['tc-name', 'tc-title', 'tc-contact', 'tc-blood', 'tc-father', 'tc-mother', 'tc-nid'].forEach(id => {
+    ['tc-name', 'tc-title', 'tc-contact', 'tc-blood', 'tc-father', 'tc-mother', 'tc-nid', 'tc-address'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
@@ -1524,10 +1524,10 @@ function resetTeacherForm() {
 window.editTeacherById = function (id) {
     const t = cachedTeachers.find(item => item.id === id);
     if (!t) return;
-    window.editTeacher(t.id, t.name, t.title, t.contact_number, t.blood_group, t.fathers_name, t.mothers_name, t.nid_number);
+    window.editTeacher(t.id, t.name, t.title, t.contact_number, t.blood_group, t.fathers_name, t.mothers_name, t.nid_number, t.address);
 };
 
-window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName, mothersName, nid) {
+window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName, mothersName, nid, address) {
     document.getElementById('tc-edit-id').value = id || '';
     document.getElementById('tc-name').value = name || '';
     document.getElementById('tc-title').value = title || '';
@@ -1536,6 +1536,7 @@ window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName
     document.getElementById('tc-father').value = fathersName || '';
     document.getElementById('tc-mother').value = mothersName || '';
     document.getElementById('tc-nid').value = nid || '';
+    document.getElementById('tc-address').value = address || '';
 
     // Pre-select this teacher's currently assigned class
     const classSelect = document.getElementById('tc-classes');
@@ -1559,7 +1560,8 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
         blood_group: document.getElementById('tc-blood').value.trim(),
         fathers_name: document.getElementById('tc-father').value.trim(),
         mothers_name: document.getElementById('tc-mother').value.trim(),
-        nid_number: document.getElementById('tc-nid').value.trim()
+        nid_number: document.getElementById('tc-nid').value.trim(),
+        address: document.getElementById('tc-address')?.value.trim() || ''
     };
 
     if (!t.name) return alert("Teacher name is required!");
@@ -4042,7 +4044,7 @@ window.showStudentInfoModal = async function (id) {
         ['Birth Reg. No.', s.birth_reg_number ? escapeHtml(s.birth_reg_number) : ''],
         ["Father's Name", s.fathers_name ? escapeHtml(s.fathers_name) : ''],
         ["Mother's Name", s.mothers_name ? escapeHtml(s.mothers_name) : ''],
-        ['Residential Address', s.address ? escapeHtml(s.address) : '']
+        ['Address', s.address ? escapeHtml(s.address) : '']
     ];
 
     if (subjectsText) {
@@ -4073,7 +4075,8 @@ window.showTeacherInfoModal = function (id) {
         ['Blood Group', t.blood_group ? `<span style="color:#dc2626; font-weight:bold;">${escapeHtml(t.blood_group)}</span>` : ''],
         ['NID Number', t.nid_number ? escapeHtml(t.nid_number) : ''],
         ["Father's Name", t.fathers_name ? escapeHtml(t.fathers_name) : ''],
-        ["Mother's Name", t.mothers_name ? escapeHtml(t.mothers_name) : '']
+        ["Mother's Name", t.mothers_name ? escapeHtml(t.mothers_name) : ''],
+        ['Address', t.address ? escapeHtml(t.address) : '']
     ];
 
     openDetailsInfoModal(`Teacher Profile: ${t.name || 'Details'}`, renderInfoGrid(items));

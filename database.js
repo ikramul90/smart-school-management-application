@@ -60,8 +60,18 @@ db.serialize(() => {
         photo_path TEXT,
         contact_number TEXT,
         blood_group TEXT,
-        nid_number TEXT
+        nid_number TEXT,
+        address TEXT
     )`);
+
+    // Migration: add address column to teachers if it doesn't exist yet
+    db.all("PRAGMA table_info(teachers)", [], (err, columns) => {
+        if (err || !columns) return;
+        const columnNames = columns.map(c => c.name);
+        if (!columnNames.includes('address')) {
+            db.run(`ALTER TABLE teachers ADD COLUMN address TEXT`);
+        }
+    });
 
     // 4. Subjects Table (Maps classes to class teachers and tracks subjects)
     db.run(`CREATE TABLE IF NOT EXISTS subjects (
