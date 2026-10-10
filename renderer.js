@@ -1292,28 +1292,33 @@ window.bulkPromoteSelected = async function () {
 };
 
 // --- TEACHER REGISTRY CONTROLLERS ---
+let cachedTeachers = [];
+
 async function loadTeachersPage() {
-    allClassesForTeachers = await ipcRenderer.invoke('get-classes-list');
+    allClassesForTeachers = await ipcRenderer.invoke('get-classes-list') || [];
     const classSelect = document.getElementById('tc-classes');
-    classSelect.innerHTML = allClassesForTeachers.map(c => `<option value="${c.id}">${c.class_name}</option>`).join('');
-    renderTeachersTable();
+    if (classSelect) {
+        classSelect.innerHTML = allClassesForTeachers.map(c => `<option value="${c.id}">${escapeHtml(c.class_name)}</option>`).join('');
+    }
+    await renderTeachersTable();
 }
 
 async function renderTeachersTable() {
-    const teachers = await ipcRenderer.invoke('get-teachers');
+    cachedTeachers = await ipcRenderer.invoke('get-teachers') || [];
     const tbody = document.getElementById('teacher-table-body');
-    tbody.innerHTML = teachers.map(t => {
+    if (!tbody) return;
+    tbody.innerHTML = cachedTeachers.map(t => {
         const assignedClasses = allClassesForTeachers.filter(c => c.class_teacher_id === t.id).map(c => c.class_name);
         return `
         <tr>
-            <td><b>${t.name}</b></td>
-            <td>${t.title || ''}</td>
-            <td>${assignedClasses.length ? assignedClasses.join(', ') : '<i style="color:gray;">None</i>'}</td>
-            <td>${t.contact_number || ''}</td>
-            <td><span style="color:red; font-weight:bold;">${t.blood_group || 'N/A'}</span></td>
-            <td>${t.nid_number || ''}</td>
+            <td><b>${escapeHtml(t.name || '')}</b></td>
+            <td>${escapeHtml(t.title || '')}</td>
+            <td>${assignedClasses.length ? assignedClasses.map(escapeHtml).join(', ') : '<i style="color:gray;">None</i>'}</td>
+            <td>${escapeHtml(t.contact_number || '')}</td>
+            <td><span style="color:red; font-weight:bold;">${escapeHtml(t.blood_group || 'N/A')}</span></td>
+            <td>${escapeHtml(t.nid_number || '')}</td>
             <td>
-                <button onclick="editTeacher(${t.id}, '${(t.name || '').replace(/'/g, "\\'")}', '${(t.title || '').replace(/'/g, "\\'")}', '${(t.contact_number || '').replace(/'/g, "\\'")}', '${(t.blood_group || '').replace(/'/g, "\\'")}', '${(t.fathers_name || '').replace(/'/g, "\\'")}', '${(t.mothers_name || '').replace(/'/g, "\\'")}', '${(t.nid_number || '').replace(/'/g, "\\'")}')" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
+                <button onclick="editTeacherById(${t.id})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
                 <button onclick="deleteTeacher(${t.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">🗑 Delete</button>
             </td>
         </tr>
@@ -1321,28 +1326,53 @@ async function renderTeachersTable() {
     }).join('');
 }
 
+function resetTeacherForm() {
+    const editIdEl = document.getElementById('tc-edit-id');
+    if (editIdEl) editIdEl.value = '';
+    ['tc-name', 'tc-title', 'tc-contact', 'tc-blood', 'tc-father', 'tc-mother', 'tc-nid'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    const classSelect = document.getElementById('tc-classes');
+    if (classSelect) {
+        Array.from(classSelect.options).forEach(opt => { opt.selected = false; });
+        classSelect.selectedIndex = -1;
+    }
+    const saveBtn = document.getElementById('btn-save-teacher');
+    if (saveBtn) saveBtn.textContent = 'Save Teacher';
+    const cancelBtn = document.getElementById('btn-cancel-teacher');
+    if (cancelBtn) cancelBtn.style.display = 'none';
+}
+
+window.editTeacherById = function (id) {
+    const t = cachedTeachers.find(item => item.id === id);
+    if (!t) return;
+    window.editTeacher(t.id, t.name, t.title, t.contact_number, t.blood_group, t.fathers_name, t.mothers_name, t.nid_number);
+};
+
 window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName, mothersName, nid) {
-    document.getElementById('tc-edit-id').value = id;
-    document.getElementById('tc-name').value = name;
-    document.getElementById('tc-title').value = title;
-    document.getElementById('tc-contact').value = contact;
-    document.getElementById('tc-blood').value = bloodGroup;
-    document.getElementById('tc-father').value = fathersName;
-    document.getElementById('tc-mother').value = mothersName;
-    document.getElementById('tc-nid').value = nid;
+    document.getElementById('tc-edit-id').value = id || '';
+    document.getElementById('tc-name').value = name || '';
+    document.getElementById('tc-title').value = title || '';
+    document.getElementById('tc-contact').value = contact || '';
+    document.getElementById('tc-blood').value = bloodGroup || '';
+    document.getElementById('tc-father').value = fathersName || '';
+    document.getElementById('tc-mother').value = mothersName || '';
+    document.getElementById('tc-nid').value = nid || '';
 
     // Pre-select this teacher's currently assigned classes
     const classSelect = document.getElementById('tc-classes');
-    const assignedIds = allClassesForTeachers.filter(c => c.class_teacher_id === id).map(c => String(c.id));
-    Array.from(classSelect.options).forEach(opt => {
-        opt.selected = assignedIds.includes(opt.value);
-    });
+    if (classSelect) {
+        const assignedIds = allClassesForTeachers.filter(c => c.class_teacher_id === id).map(c => String(c.id));
+        Array.from(classSelect.options).forEach(opt => {
+            opt.selected = assignedIds.includes(opt.value);
+        });
+    }
 
     document.getElementById('btn-save-teacher').textContent = 'Update Teacher';
     document.getElementById('btn-cancel-teacher').style.display = 'inline-block';
     const details = document.getElementById('teacher-details');
     if (details) details.open = true;
-
 };
 
 document.getElementById('btn-save-teacher').addEventListener('click', async () => {
@@ -1379,18 +1409,8 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
         const teacherId = editId || res.id;
         await ipcRenderer.invoke('set-teacher-classes', { teacher_id: teacherId, class_ids: selectedClassIds });
 
-        document.getElementById('tc-edit-id').value = '';
-        document.getElementById('tc-name').value = "";
-        document.getElementById('tc-title').value = "";
-        document.getElementById('tc-contact').value = "";
-        document.getElementById('tc-blood').value = "";
-        document.getElementById('tc-father').value = "";
-        document.getElementById('tc-mother').value = "";
-        document.getElementById('tc-nid').value = "";
-        document.getElementById('tc-classes').selectedIndex = -1;
-        document.getElementById('btn-save-teacher').textContent = 'Save Teacher';
-        document.getElementById('btn-cancel-teacher').style.display = 'none';
-        loadTeachersPage();
+        resetTeacherForm();
+        await loadTeachersPage();
     } else {
         console.error('save-teacher failed:', res.error);
         alert('Could not save teacher: ' + res.error);
@@ -1399,8 +1419,16 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
 
 window.deleteTeacher = async function (id) {
     if (confirm("Delete this teacher? This can't be undone.")) {
-        await ipcRenderer.invoke('delete-teacher', id);
-        renderTeachersTable();
+        const res = await ipcRenderer.invoke('delete-teacher', id);
+        if (res && res.success === false) {
+            alert('Could not delete teacher: ' + (res.error || 'Unknown error'));
+            return;
+        }
+        const editIdEl = document.getElementById('tc-edit-id');
+        if (editIdEl && String(editIdEl.value) === String(id)) {
+            resetTeacherForm();
+        }
+        await loadTeachersPage();
     }
 };
 
@@ -2910,7 +2938,10 @@ function setupCancelEdit(editIdField, formFields, saveBtnId, saveLabel, cancelBt
 }
 
 setupCancelEdit('st-edit-id', ['st-class', 'st-roll', 'st-name', 'st-blood', 'st-phone', 'st-address', 'st-dob', 'st-father', 'st-mother', 'st-birth-reg'], 'btn-save-student', 'Register Student', 'btn-cancel-student');
-setupCancelEdit('tc-edit-id', ['tc-name', 'tc-title', 'tc-contact', 'tc-blood', 'tc-father', 'tc-mother', 'tc-nid'], 'btn-save-teacher', 'Save Teacher', 'btn-cancel-teacher');
+const btnCancelTeacher = document.getElementById('btn-cancel-teacher');
+if (btnCancelTeacher) {
+    btnCancelTeacher.addEventListener('click', resetTeacherForm);
+}
 const btnCancelSubject = document.getElementById('btn-cancel-subject');
 if (btnCancelSubject) {
     btnCancelSubject.addEventListener('click', resetSubjectForm);

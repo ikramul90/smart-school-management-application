@@ -716,15 +716,14 @@ ipcMain.handle('update-subject', async (event, data) => {
 });
 
 ipcMain.handle('delete-teacher', async (event, id) => {
-    return new Promise((resolve) => {
-        db.run(`UPDATE classes SET class_teacher_id = NULL WHERE class_teacher_id = ?`, [id], (err) => {
-            if (err) return resolve({ success: false, error: err.message });
-            db.run(`DELETE FROM teachers WHERE id = ?`, [id], (err2) => {
-                if (err2) resolve({ success: false, error: err2.message });
-                else resolve({ success: true });
-            });
-        });
-    });
+    try {
+        await dbRun(`UPDATE classes SET class_teacher_id = NULL WHERE class_teacher_id = ?`, [id]);
+        await dbRun(`DELETE FROM teachers WHERE id = ?`, [id]);
+        await runDataChecks();
+        return { success: true };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
 });
 
 
