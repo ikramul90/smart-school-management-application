@@ -459,11 +459,53 @@ ipcMain.handle('get-roll-holders', async (event, { class_id, roll, except_id }) 
 });
 
 
+function normalizeDateToDDMMYYYY(text) {
+    if (!text) return null;
+    const str = String(text).trim();
+    if (!str) return null;
+    if (str.includes('/')) {
+        const p = str.split('/');
+        if (p.length === 3) {
+            const d = p[0].padStart(2, '0');
+            const m = p[1].padStart(2, '0');
+            const y = p[2].length === 2 ? '20' + p[2] : p[2];
+            return `${d}/${m}/${y}`;
+        }
+        return str;
+    }
+    if (str.includes('-')) {
+        const p = str.slice(0, 10).split('-');
+        if (p.length === 3) {
+            if (p[0].length === 4) {
+                // YYYY-MM-DD -> DD/MM/YYYY
+                return `${p[2].padStart(2, '0')}/${p[1].padStart(2, '0')}/${p[0]}`;
+            } else {
+                // DD-MM-YYYY -> DD/MM/YYYY
+                return `${p[0].padStart(2, '0')}/${p[1].padStart(2, '0')}/${p[2]}`;
+            }
+        }
+    }
+    return str;
+}
+
+// Migrate any existing YYYY-MM-DD dob in SQLite to DD/MM/YYYY
+db.all("SELECT id, dob FROM students WHERE dob IS NOT NULL AND dob LIKE '%-%'", [], (err, rows) => {
+    if (!err && rows && rows.length) {
+        rows.forEach(r => {
+            const normalized = normalizeDateToDDMMYYYY(r.dob);
+            if (normalized && normalized !== r.dob) {
+                db.run("UPDATE students SET dob = ? WHERE id = ?", [normalized, r.id]);
+            }
+        });
+    }
+});
+
 // --- ADD / EDIT STUDENT ---
 ipcMain.handle('add-student', async (event, s) => {
     try {
+        const cleanDob = normalizeDateToDDMMYYYY(s.dob);
         const r = await dbRun(`INSERT INTO students (roll, name, blood_group, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')`,
-            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, s.dob || null, s.birth_reg_number || null, s.class_id]);
+            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id]);
         await runDataChecks();
         return { success: true, id: r.lastID };
     } catch (e) {
@@ -501,8 +543,9 @@ ipcMain.handle('update-student', async (event, s) => {
             return { success: false, error: 'Please enter the reason for dropping out.' };
         }
 
+        const cleanDob = normalizeDateToDDMMYYYY(s.dob);
         await dbRun(`UPDATE students SET roll = ?, name = ?, blood_group = ?, fathers_name = ?, mothers_name = ?, guardian_name = ?, guardian_contact = ?, address = ?, dob = ?, birth_reg_number = ?, class_id = ? WHERE id = ?`,
-            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, s.dob || null, s.birth_reg_number || null, s.class_id, s.id]);
+            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id, s.id]);
 
         if (s.archive && archived) await saveArchiveDetails(current, s.archive);
 

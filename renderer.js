@@ -664,11 +664,39 @@ const STUDENT_VIEW_HEADERS = {
 
 const STUDENT_BTN_STYLE = 'padding:4px 8px; font-size:11px; width:auto; display:inline-block; margin-right:4px; ';
 
-// "2026-03-05 14:20:11" -> "05-03-2026" (blank for old records with no date)
+// Formats YYYY-MM-DD or DD/MM/YYYY or DD-MM-YYYY to DD/MM/YYYY
+function formatDob(text) {
+    if (!text) return '—';
+    const str = String(text).trim();
+    if (str.includes('/')) {
+        const p = str.split('/');
+        if (p.length === 3) {
+            const d = p[0].padStart(2, '0');
+            const m = p[1].padStart(2, '0');
+            const y = p[2].length === 2 ? '20' + p[2] : p[2];
+            return `${d}/${m}/${y}`;
+        }
+        return str;
+    }
+    if (str.includes('-')) {
+        const p = str.slice(0, 10).split('-');
+        if (p.length === 3) {
+            if (p[0].length === 4) {
+                // YYYY-MM-DD
+                return `${p[2].padStart(2, '0')}/${p[1].padStart(2, '0')}/${p[0]}`;
+            } else {
+                // DD-MM-YYYY
+                return `${p[0].padStart(2, '0')}/${p[1].padStart(2, '0')}/${p[2]}`;
+            }
+        }
+    }
+    return str;
+}
+
+// "2026-03-05 14:20:11" -> "05/03/2026" (blank for old records with no date)
 function formatHistoryDate(text) {
     if (!text) return '—';
-    const parts = String(text).slice(0, 10).split('-');
-    return parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : '—';
+    return formatDob(text);
 }
 
 function studentRowHtml(s, view) {
@@ -859,7 +887,7 @@ window.editStudent = async function (id, classId, roll, name, bloodGroup, guardi
     document.getElementById('st-blood').value = bloodGroup;
     document.getElementById('st-phone').value = guardianContact;
     document.getElementById('st-address').value = address;
-    document.getElementById('st-dob').value = dob || '';
+    document.getElementById('st-dob').value = dob ? formatDob(dob) : '';
     document.getElementById('st-father').value = fathersName || '';
     document.getElementById('st-mother').value = mothersName || '';
     document.getElementById('st-birth-reg').value = birthRegNumber || '';
@@ -927,6 +955,20 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
     };
 
     if (!s.roll || !s.name) return alert("Roll and Name are required!");
+
+    if (s.dob) {
+        s.dob = formatDob(s.dob);
+        const parts = s.dob.split('/');
+        if (parts.length !== 3 || parts[0].length !== 2 || parts[1].length !== 2 || parts[2].length !== 4) {
+            return alert("Please enter Date of Birth in DD/MM/YYYY format (e.g. 15/08/2012)!");
+        }
+        const d = parseInt(parts[0], 10);
+        const m = parseInt(parts[1], 10);
+        const y = parseInt(parts[2], 10);
+        if (d < 1 || d > 31 || m < 1 || m > 12 || y < 1950 || y > 2100) {
+            return alert("Please enter a valid Date of Birth (DD/MM/YYYY)!");
+        }
+    }
 
     // Nine/Ten Main + Optional subject validation
     const cls = allClassesForStudents.find(c => String(c.id) === String(s.class_id));
@@ -3107,6 +3149,34 @@ function enforceNumericInput(inputId, errorId) {
 enforceNumericInput('sub-seq-input', 'sub-seq-error');
 enforceNumericInput('sub-monthly-input', 'sub-monthly-error');
 enforceNumericInput('sub-yearly-input', 'sub-yearly-error');
+
+// --- AUTO-FORMATTING FOR DD/MM/YYYY DATE INPUTS ---
+function setupDateInputFormatting(inputId) {
+    const el = document.getElementById(inputId);
+    if (!el) return;
+
+    el.addEventListener('input', (e) => {
+        let val = el.value.replace(/[^0-9]/g, '');
+        if (val.length > 8) val = val.slice(0, 8);
+        let formatted = '';
+        if (val.length > 4) {
+            formatted = `${val.slice(0, 2)}/${val.slice(2, 4)}/${val.slice(4)}`;
+        } else if (val.length > 2) {
+            formatted = `${val.slice(0, 2)}/${val.slice(2)}`;
+        } else {
+            formatted = val;
+        }
+        el.value = formatted;
+    });
+
+    el.addEventListener('blur', () => {
+        if (el.value.trim()) {
+            el.value = formatDob(el.value.trim());
+        }
+    });
+}
+
+setupDateInputFormatting('st-dob');
 
 
 
