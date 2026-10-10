@@ -415,7 +415,8 @@ button:hover {
     transform: translateY(0);
 }
 
-#student-details {
+#student-details,
+#subject-details {
     scroll-margin-top: 18px;
 }
 

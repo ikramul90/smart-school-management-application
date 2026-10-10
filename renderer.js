@@ -289,7 +289,13 @@ window.editSubject = function (id, classId, subjectName, sequence, monthlyMarks,
     document.getElementById('btn-add-subject').textContent = 'Update Subject';
     document.getElementById('btn-cancel-subject').style.display = 'inline-block';
     const details = document.getElementById('subject-details');
-    if (details) details.open = true;
+    if (details) {
+        details.open = true;
+        details.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        details.classList.remove('details-highlight');
+        void details.offsetWidth; // trigger reflow for restartable CSS animation
+        details.classList.add('details-highlight');
+    }
 };
 
 function resetSubjectForm() {
