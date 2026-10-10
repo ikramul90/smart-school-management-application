@@ -1433,7 +1433,8 @@ async function loadTeachersPage() {
     allClassesForTeachers = await ipcRenderer.invoke('get-classes-list') || [];
     const classSelect = document.getElementById('tc-classes');
     if (classSelect) {
-        classSelect.innerHTML = allClassesForTeachers.map(c => `<option value="${c.id}">${escapeHtml(c.class_name)}</option>`).join('');
+        classSelect.innerHTML = `<option value="">-- None --</option>` +
+            allClassesForTeachers.map(c => `<option value="${c.id}">${escapeHtml(c.class_name)}</option>`).join('');
     }
     await renderTeachersTable();
 }
@@ -1470,8 +1471,7 @@ function resetTeacherForm() {
     });
     const classSelect = document.getElementById('tc-classes');
     if (classSelect) {
-        Array.from(classSelect.options).forEach(opt => { opt.selected = false; });
-        classSelect.selectedIndex = -1;
+        classSelect.value = '';
     }
     const saveBtn = document.getElementById('btn-save-teacher');
     if (saveBtn) saveBtn.textContent = 'Save Teacher';
@@ -1495,13 +1495,11 @@ window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName
     document.getElementById('tc-mother').value = mothersName || '';
     document.getElementById('tc-nid').value = nid || '';
 
-    // Pre-select this teacher's currently assigned classes
+    // Pre-select this teacher's currently assigned class
     const classSelect = document.getElementById('tc-classes');
     if (classSelect) {
-        const assignedIds = allClassesForTeachers.filter(c => c.class_teacher_id === id).map(c => String(c.id));
-        Array.from(classSelect.options).forEach(opt => {
-            opt.selected = assignedIds.includes(opt.value);
-        });
+        const assignedClass = allClassesForTeachers.find(c => c.class_teacher_id === id);
+        classSelect.value = assignedClass ? String(assignedClass.id) : '';
     }
 
     document.getElementById('btn-save-teacher').textContent = 'Update Teacher';
@@ -1524,9 +1522,10 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
 
     if (!t.name) return alert("Teacher name is required!");
 
-    const selectedClassIds = Array.from(document.getElementById('tc-classes').selectedOptions).map(opt => parseInt(opt.value));
+    const selectedVal = document.getElementById('tc-classes')?.value;
+    const selectedClassIds = selectedVal ? [parseInt(selectedVal, 10)] : [];
 
-    // Warn if any selected class already belongs to a different teacher
+    // Warn if selected class already belongs to a different teacher
     const conflicts = allClassesForTeachers.filter(c =>
         selectedClassIds.includes(c.id) && c.class_teacher_id && String(c.class_teacher_id) !== String(editId)
     );
