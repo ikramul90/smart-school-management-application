@@ -1,5 +1,6 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const path = require('path');
+const fs = require('fs');
 const db = require('./database.js');
 
 
@@ -937,6 +938,150 @@ ipcMain.handle('save-attendance', async (event, { student_id, year, term, days_p
                      ON CONFLICT(student_id, year, term) DO UPDATE SET days_present = excluded.days_present`,
             [student_id, y, term, n]);
         return { success: true };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+// --- TRANSCRIPT PDF GENERATION ---
+ipcMain.handle('generate-transcripts-pdf', async (event, { html, defaultFileName }) => {
+    try {
+        const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
+            title: 'Save Transcripts PDF',
+            defaultPath: defaultFileName || 'Transcripts.pdf',
+            filters: [
+                { name: 'PDF Documents (*.pdf)', extensions: ['pdf'] }
+            ]
+        });
+
+        if (canceled || !filePath) {
+            return { success: false, cancelled: true };
+        }
+
+        const pdfWin = new BrowserWindow({
+            show: false,
+            width: 1240,
+            height: 1754,
+            webPreferences: {
+                nodeIntegration: false,
+                contextIsolation: true
+            }
+        });
+
+        // Read CSS file to embed inline
+        const styleCssPath = path.join(__dirname, 'style.css');
+        let styleCss = '';
+        if (fs.existsSync(styleCssPath)) {
+            styleCss = fs.readFileSync(styleCssPath, 'utf8');
+        }
+
+        const fullHtml = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <base href="${path.join(__dirname, '/').replace(/\\/g, '/')}">
+    <style>
+        ${styleCss}
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+        html, body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .transcript-preview {
+            display: block !important;
+            gap: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .transcript-page {
+            box-shadow: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            width: 210mm !important;
+            max-width: 210mm !important;
+            height: 297mm !important;
+            min-height: 297mm !important;
+            max-height: 297mm !important;
+            padding: 16mm 15mm 16mm 15mm !important;
+            box-sizing: border-box !important;
+            page-break-after: always !important;
+            page-break-inside: avoid !important;
+            break-after: page !important;
+            break-inside: avoid !important;
+            margin: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: flex-start !important;
+        }
+        .transcript-page:last-child {
+            page-break-after: auto !important;
+            break-after: auto !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="transcript-preview">
+        ${html}
+    </div>
+</body>
+</html>`;
+
+        await pdfWin.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(fullHtml)}`);
+
+        // Wait for fonts and images to be ready
+        await pdfWin.webContents.executeJavaScript(`
+            Promise.all([
+                document.fonts.ready,
+                ...Array.from(document.images).map(img => {
+                    if (img.complete) return Promise.resolve();
+                    return new Promise(resolve => {
+                        img.onload = resolve;
+                        img.onerror = resolve;
+                    });
+                })
+            ])
+        `);
+
+        // Grace pause for layout rendering
+        await new Promise(r => setTimeout(r, 200));
+
+        const pdfBuffer = await pdfWin.webContents.printToPDF({
+            printBackground: true,
+            preferCSSPageSize: true,
+            pageSize: 'A4',
+            landscape: false,
+            margins: {
+                marginType: 'none',
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0
+            }
+        });
+
+        await fs.promises.writeFile(filePath, pdfBuffer);
+        pdfWin.destroy();
+
+        return { success: true, filePath };
+    } catch (err) {
+        console.error('generate-transcripts-pdf error:', err);
+        return { success: false, error: err.message };
+    }
+});
+
+ipcMain.handle('show-item-in-folder', async (event, fullPath) => {
+    try {
+        if (fullPath && fs.existsSync(fullPath)) {
+            shell.showItemInFolder(fullPath);
+            return { success: true };
+        }
+        return { success: false, error: 'File not found' };
     } catch (err) {
         return { success: false, error: err.message };
     }

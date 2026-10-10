@@ -2427,8 +2427,61 @@ if (showAllExamTotalsEl) {
         paintTranscriptPreview();
     });
 }
-document.getElementById('btn-generate-transcript').addEventListener('click', () => {
-    document.getElementById('transcript-status').textContent = 'PDF generation will be added in the next step.';
+document.getElementById('btn-generate-transcript').addEventListener('click', async () => {
+    const preview = document.getElementById('transcript-preview');
+    const status = document.getElementById('transcript-status');
+    const generateBtn = document.getElementById('btn-generate-transcript');
+
+    if (!transcriptStudents || !transcriptStudents.length || !preview.innerHTML.trim()) {
+        alert('Please select a class and ensure transcripts are loaded before generating PDF.');
+        return;
+    }
+
+    const year = document.getElementById('transcript-year').value;
+    const test = document.getElementById('transcript-test').value;
+    const cls = transcriptClasses.find(c => String(c.id) === String(transcriptSelectedClassId));
+    const className = cls ? cls.class_name : 'Class';
+
+    const cleanClassName = className.replace(/[/\\?%*:|"<>]/g, '-');
+    const cleanTest = test.replace(/[/\\?%*:|"<>]/g, '-');
+    const defaultFileName = `Transcripts - ${cleanClassName} - ${cleanTest} (${year}).pdf`;
+
+    const originalBtnText = generateBtn.textContent;
+    generateBtn.disabled = true;
+    generateBtn.textContent = '⏳ Generating PDF...';
+    if (status) status.textContent = `Generating PDF for ${transcriptStudents.length} student(s)...`;
+
+    try {
+        const res = await ipcRenderer.invoke('generate-transcripts-pdf', {
+            html: preview.innerHTML,
+            defaultFileName
+        });
+
+        if (res && res.success) {
+            if (status) {
+                status.innerHTML = `✅ Saved ${transcriptStudents.length} transcript(s) to <b>${escapeHtml(res.filePath)}</b> (<a href="#" id="link-open-transcript-folder" style="color:#2563eb; text-decoration:underline;">Show in folder</a>)`;
+                const link = document.getElementById('link-open-transcript-folder');
+                if (link) {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        ipcRenderer.invoke('show-item-in-folder', res.filePath);
+                    });
+                }
+            }
+        } else if (res && res.cancelled) {
+            if (status) status.textContent = 'PDF export cancelled.';
+        } else {
+            alert('Could not generate PDF: ' + ((res && res.error) || 'Unknown error'));
+            if (status) status.textContent = 'Error generating PDF: ' + ((res && res.error) || 'Unknown error');
+        }
+    } catch (err) {
+        console.error('Failed to generate PDF:', err);
+        alert('Error generating PDF: ' + err.message);
+        if (status) status.textContent = 'Error: ' + err.message;
+    } finally {
+        generateBtn.disabled = false;
+        generateBtn.textContent = originalBtnText;
+    }
 });
 
 // ---------- opening a class ----------
