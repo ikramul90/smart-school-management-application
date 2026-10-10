@@ -761,6 +761,31 @@ window.editStudent = async function (id, classId, roll, name, bloodGroup, guardi
     if (optionalRow) document.getElementById('stu-optional-select').value = optionalRow.subject_name;
 };
 
+function resetStudentForm() {
+    const editIdEl = document.getElementById('st-edit-id');
+    if (editIdEl) editIdEl.value = '';
+    ['st-roll', 'st-name', 'st-blood', 'st-phone', 'st-address', 'st-dob', 'st-father', 'st-mother', 'st-birth-reg'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    const formClass = document.getElementById('st-class');
+    if (formClass && formClass.options.length > 0) {
+        formClass.selectedIndex = 0;
+    }
+    const mainList = document.getElementById('stu-main-subjects-list');
+    if (mainList) mainList.innerHTML = '';
+    const optSelect = document.getElementById('stu-optional-select');
+    if (optSelect) optSelect.innerHTML = '<option value="">-- pick 3 main subjects first --</option>';
+    const subjSection = document.getElementById('stu-subject-selection');
+    if (subjSection) subjSection.style.display = 'none';
+    const saveBtn = document.getElementById('btn-save-student');
+    if (saveBtn) saveBtn.textContent = 'Register Student';
+    const cancelBtn = document.getElementById('btn-cancel-student');
+    if (cancelBtn) cancelBtn.style.display = 'none';
+    hideArchiveFields();
+    updateStudentSubjectSelection();
+}
+
 document.getElementById('btn-save-student').addEventListener('click', async () => {
     const editId = document.getElementById('st-edit-id').value;
     const s = {
@@ -812,23 +837,10 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
         const studentId = editId || res.id;
         if (subjectSelections) {
             await ipcRenderer.invoke('save-student-subjects', { student_id: studentId, subjects: subjectSelections });
+        } else if (editId && !pool) {
+            await ipcRenderer.invoke('save-student-subjects', { student_id: studentId, subjects: [] });
         }
-        document.getElementById('st-edit-id').value = '';
-        document.getElementById('st-roll').value = "";
-        document.getElementById('st-name').value = "";
-        document.getElementById('st-blood').value = "";
-        document.getElementById('st-phone').value = "";
-        document.getElementById('st-address').value = "";
-        document.getElementById('st-dob').value = "";
-        document.getElementById('st-father').value = "";
-        document.getElementById('st-mother').value = "";
-        document.getElementById('st-birth-reg').value = "";
-        document.getElementById('stu-main-subjects-list').innerHTML = '';
-        document.getElementById('stu-optional-select').innerHTML = '<option value="">-- pick 3 main subjects first --</option>';
-        document.getElementById('stu-subject-selection').style.display = 'none';
-        document.getElementById('btn-save-student').textContent = 'Register Student';
-        document.getElementById('btn-cancel-student').style.display = 'none';
-        hideArchiveFields();
+        resetStudentForm();
         loadStudents();
     } else {
         console.error('save-student failed:', res.error);
@@ -2937,7 +2949,10 @@ function setupCancelEdit(editIdField, formFields, saveBtnId, saveLabel, cancelBt
     });
 }
 
-setupCancelEdit('st-edit-id', ['st-class', 'st-roll', 'st-name', 'st-blood', 'st-phone', 'st-address', 'st-dob', 'st-father', 'st-mother', 'st-birth-reg'], 'btn-save-student', 'Register Student', 'btn-cancel-student');
+const btnCancelStudent = document.getElementById('btn-cancel-student');
+if (btnCancelStudent) {
+    btnCancelStudent.addEventListener('click', resetStudentForm);
+}
 const btnCancelTeacher = document.getElementById('btn-cancel-teacher');
 if (btnCancelTeacher) {
     btnCancelTeacher.addEventListener('click', resetTeacherForm);
