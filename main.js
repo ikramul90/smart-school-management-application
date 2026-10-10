@@ -527,6 +527,64 @@ ipcMain.handle('reinstate-student', async (event, { id, new_roll }) => {
     }
 });
 
+// --- BULK PROMOTE ---
+// Promotes an array of students. Each entry: { id, to_class_id }.
+// Students keep their current roll. After all promotions a single
+// notification is fired reminding the admin to review and adjust rolls.
+ipcMain.handle('bulk-promote-students', async (event, { promotions }) => {
+    try {
+        if (!Array.isArray(promotions) || promotions.length === 0) {
+            return { success: false, error: 'No students selected.' };
+        }
+
+        const failed = [];
+        const promoted = [];
+
+        for (const { id, to_class_id } of promotions) {
+            try {
+                const st = await getStudentWithClass(id);
+                if (!st || st.status !== 'Active') {
+                    failed.push(`ID ${id}: not active`);
+                    continue;
+                }
+                const allowed = PROMOTION_PATH[st.class_name] || [];
+                const target = await dbGet(`SELECT id, class_name FROM classes WHERE id = ?`, [to_class_id]);
+                if (!target || !allowed.includes(target.class_name)) {
+                    failed.push(`${st.name}: invalid target class`);
+                    continue;
+                }
+                await dbRun(`UPDATE students SET class_id = ? WHERE id = ?`, [target.id, id]);
+                await logStudentHistory(id, 'Promoted', st.class_id, target.id, st.roll, null);
+                promoted.push({ name: st.name, from: st.class_name, to: target.class_name });
+            } catch (innerErr) {
+                failed.push(`ID ${id}: ${innerErr.message}`);
+            }
+        }
+
+        // One-time notification reminding the admin to check roll numbers
+        if (promoted.length > 0) {
+            const names = promoted.map(p => p.name).join(', ');
+            await dbRun(
+                `INSERT INTO notifications (key, severity, title, message) VALUES (NULL, 'info', ?, ?)`,
+                [
+                    `Bulk promotion complete (${promoted.length} student${promoted.length > 1 ? 's' : ''})`,
+                    `The following student${promoted.length > 1 ? 's were' : ' was'} promoted: ${names}. ` +
+                    `Their roll numbers were kept as-is — please review and update them if needed from the Students tab.`
+                ]
+            );
+        }
+
+        await runDataChecks();
+
+        if (failed.length > 0 && promoted.length === 0) {
+            return { success: false, error: 'All promotions failed: ' + failed.join('; ') };
+        }
+        return { success: true, promoted: promoted.length, failed };
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
+});
+
 ipcMain.handle('get-student-subjects', async (event, student_id) => {
     return new Promise((resolve) => {
         db.all(`SELECT subject_name, role FROM student_subjects WHERE student_id = ?`, [student_id], (err, rows) => {

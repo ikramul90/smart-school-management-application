@@ -528,7 +528,7 @@ let currentStudentView = 'Active';   // 'Active' | 'Graduated' | 'Removed'
 let studentListCache = [];           // the rows currently on screen (used by the row buttons)
 
 const STUDENT_VIEW_HEADERS = {
-    Active: ['Roll', 'Name', 'Class', 'Guardian Contact', 'Management Actions'],
+    Active: ['Roll', 'Name', 'Class', 'Guardian Contact', 'Actions'],
     Graduated: ['Roll', 'Name', 'Last Class', 'Guardian Contact', 'Graduated On', 'Actions'],
     Removed: ['Roll', 'Name', 'Last Class', 'Guardian Contact', 'Dropped Out On', 'Reason', 'Actions']
 };
@@ -544,19 +544,30 @@ function formatHistoryDate(text) {
 
 function studentRowHtml(s, view) {
     const editBtn = `<button onclick="editStudentById(${s.id})" style="${STUDENT_BTN_STYLE}background:#2563eb;">✏️ Edit</button>`;
-    let html = `
+
+    // Promote-mode checkbox column: shown only for Active view when promote mode is on.
+    // Hidden via inline style when mode is off so toggling is instant without re-rendering.
+    const isTen = (s.class_name || '').startsWith('Class Ten');
+    const checkboxCell = (view === 'Active' && !isTen)
+        ? `<td class="promote-checkbox-cell" style="display:${promoteModeActive ? 'table-cell' : 'none'}; text-align:center; width:36px;">
+               <input type="checkbox" class="promote-checkbox" data-id="${s.id}" data-class="${escapeHtml(s.class_name || '')}">
+           </td>`
+        : (view === 'Active'
+            ? `<td class="promote-checkbox-cell" style="display:${promoteModeActive ? 'table-cell' : 'none'}; width:36px;"></td>`
+            : '');
+
+    let html = checkboxCell + `
         <td>${formatRoll(s.roll)}</td>
         <td><b>${escapeHtml(s.name || '')}</b></td>
         <td>${escapeHtml(s.class_name || '')}</td>
         <td>${escapeHtml(s.guardian_contact || '')}</td>`;
 
     if (view === 'Active') {
-        const isTen = (s.class_name || '').startsWith('Class Ten');
-        const mainBtn = isTen
+        const graduateBtn = isTen
             ? `<button onclick="graduateStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#10b981;">🎓 Graduate</button>`
-            : `<button onclick="promoteStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#0ea5e9;">⬆️ Promote</button>`;
+            : '';
         const dropBtn = `<button onclick="dropOutStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#ef4444;">❌ Drop Out</button>`;
-        html += `<td>${editBtn}${mainBtn}${dropBtn}</td>`;
+        html += `<td>${editBtn}${graduateBtn}${dropBtn}</td>`;
     } else {
         const reinstateBtn = `<button onclick="reinstateStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#f59e0b;">↩️ Reinstate</button>`;
         html += `<td>${formatHistoryDate(s.status_date)}</td>`;
@@ -577,7 +588,10 @@ window.loadStudents = async function () {
     studentListCache = students;
 
     const headers = STUDENT_VIEW_HEADERS[view];
-    document.getElementById('student-table-head-row').innerHTML = headers.map(h => `<th>${h}</th>`).join('');
+    const checkboxTh = (view === 'Active' && promoteModeActive)
+        ? `<th style="width:36px;"></th>`
+        : '';
+    document.getElementById('student-table-head-row').innerHTML = checkboxTh + headers.map(h => `<th>${h}</th>`).join('');
 
     const tbody = document.getElementById('student-table-body');
     if (!students.length) {
@@ -946,6 +960,198 @@ window.reinstateStudent = function (id) {
     });
 };
 
+
+// --- BULK PROMOTE: state, mode toggle, and execution ---
+
+let promoteModeActive = false;
+
+// Toggles the promote mode on/off. When ON:
+//   - A checkbox column appears to the left of Roll.
+//   - The "Actions" button label changes to "Cancel".
+//   - A "Promote Selected" confirm button appears below the table.
+// When OFF: everything reverts and the table re-renders normally.
+window.togglePromoteMode = function () {
+    // Promote mode only makes sense in the Active view.
+    if (currentStudentView !== 'Active') return;
+
+    promoteModeActive = !promoteModeActive;
+
+    // Update the dropdown item label
+    const modeBtn = document.getElementById('btn-promote-mode');
+    if (modeBtn) modeBtn.textContent = promoteModeActive ? '✖ Cancel Promotion' : '⬆️ Promote Students';
+
+    // Show / hide the confirm bar at the bottom
+    let bar = document.getElementById('promote-confirm-bar');
+    if (promoteModeActive) {
+        if (!bar) {
+            bar = document.createElement('div');
+            bar.id = 'promote-confirm-bar';
+            bar.className = 'promote-confirm-bar';
+            bar.innerHTML = `
+                <span id="promote-selected-count">0 students selected</span>
+                <button type="button" id="btn-confirm-promote" class="marks-view-btn"
+                    style="background:#0ea5e9;" onclick="bulkPromoteSelected()">
+                    ⬆️ Promote Selected
+                </button>`;
+            const tab = document.getElementById('db-students');
+            if (tab) tab.appendChild(bar);
+        }
+        bar.style.display = 'flex';
+    } else {
+        if (bar) bar.style.display = 'none';
+    }
+
+    // Re-render headers and checkbox cells without a full DB round-trip
+    const headRow = document.getElementById('student-table-head-row');
+    if (headRow) {
+        const view = currentStudentView;
+        const headers = STUDENT_VIEW_HEADERS[view];
+        const checkboxTh = promoteModeActive ? `<th style="width:36px;"></th>` : '';
+        headRow.innerHTML = checkboxTh + headers.map(h => `<th>${h}</th>`).join('');
+    }
+    document.querySelectorAll('.promote-checkbox-cell').forEach(cell => {
+        cell.style.display = promoteModeActive ? 'table-cell' : 'none';
+    });
+
+    // Reset counter
+    updatePromoteCount();
+
+    // Close the dropdown
+    const menu = document.getElementById('student-actions-menu');
+    if (menu) menu.style.display = 'none';
+};
+
+// Updates the "N students selected" counter in the confirm bar.
+function updatePromoteCount() {
+    const count = document.querySelectorAll('.promote-checkbox:checked').length;
+    const el = document.getElementById('promote-selected-count');
+    if (el) el.textContent = `${count} student${count !== 1 ? 's' : ''} selected`;
+}
+
+// Delegate checkbox changes to the table body so dynamically rendered rows are covered.
+document.getElementById('student-table-body').addEventListener('change', (e) => {
+    if (e.target && e.target.classList.contains('promote-checkbox')) {
+        updatePromoteCount();
+    }
+});
+
+// Runs the bulk promotion. Handles three cases:
+//   Class Eight   → asks Science or Humanities first (reuses the existing modal)
+//   Class Nine    → auto-maps to corresponding Class Ten (same department)
+//   All others    → straight single-step promotion (next class in PROMOTION_PATH)
+window.bulkPromoteSelected = async function () {
+    const checked = Array.from(document.querySelectorAll('.promote-checkbox:checked'));
+    if (!checked.length) return alert('No students selected. Tick the checkboxes first.');
+
+    // Separate the checked students by class group
+    const classEight   = checked.filter(cb => cb.dataset.class === 'Class Eight');
+    const nineScience  = checked.filter(cb => cb.dataset.class === 'Class Nine (Science)');
+    const nineHum      = checked.filter(cb => cb.dataset.class === 'Class Nine (Humanities)');
+    const others       = checked.filter(cb =>
+        !['Class Eight', 'Class Nine (Science)', 'Class Nine (Humanities)'].includes(cb.dataset.class)
+    );
+
+    // Fetch the full classes list once so we can resolve names → IDs
+    const allClasses = await ipcRenderer.invoke('get-classes-list');
+    const classId = (name) => {
+        const c = allClasses.find(cl => cl.class_name === name);
+        return c ? c.id : null;
+    };
+
+    // Build promotions array, deferring Class Eight until we know their department
+    const buildPromotions = (cbList, toClassName) => {
+        const toId = classId(toClassName);
+        if (!toId) return [];
+        return cbList.map(cb => ({ id: Number(cb.dataset.id), to_class_id: toId }));
+    };
+
+    // Determine Class Eight destination first (if any are selected)
+    const runPromotion = async (promotions) => {
+        if (!promotions.length) return;
+        const res = await ipcRenderer.invoke('bulk-promote-students', { promotions });
+        if (res && !res.success && !res.promoted) {
+            alert('Promotion error: ' + res.error);
+        } else if (res && res.failed && res.failed.length) {
+            console.warn('Some promotions failed:', res.failed);
+        }
+    };
+
+    if (classEight.length > 0) {
+        // Ask once for the whole Class Eight group
+        showStudentDialog({
+            title: 'Promote Class Eight Students',
+            message: `${classEight.length} Class Eight student${classEight.length > 1 ? 's' : ''} selected. ` +
+                     `Which department are they moving into?`,
+            targets: [
+                { id: classId('Class Nine (Science)'),     label: 'Class Nine (Science)'     },
+                { id: classId('Class Nine (Humanities)'),  label: 'Class Nine (Humanities)'  }
+            ].filter(t => t.id !== null),
+            confirmText: 'Promote',
+            confirmColor: '#0ea5e9',
+            onConfirm: async (v) => {
+                const eightPromotions = classEight.map(cb => ({
+                    id: Number(cb.dataset.id),
+                    to_class_id: Number(v.target_id)
+                }));
+                // Combine with the rest and fire one single IPC call
+                const allPromotions = [
+                    ...eightPromotions,
+                    ...buildPromotions(nineScience, 'Class Ten (Science)'),
+                    ...buildPromotions(nineHum,     'Class Ten (Humanities)'),
+                    ...others.map(cb => {
+                        // Derive next class from the PROMOTION_PATH via the class name stored on the checkbox
+                        const next = ({
+                            'Play': 'Nursery', 'Nursery': 'Class One',
+                            'Class One': 'Class Two', 'Class Two': 'Class Three',
+                            'Class Three': 'Class Four', 'Class Four': 'Class Five',
+                            'Class Five': 'Class Six', 'Class Six': 'Class Seven',
+                            'Class Seven': 'Class Eight'
+                        })[cb.dataset.class];
+                        const toId = next ? classId(next) : null;
+                        return toId ? { id: Number(cb.dataset.id), to_class_id: toId } : null;
+                    }).filter(Boolean)
+                ];
+                return await ipcRenderer.invoke('bulk-promote-students', { promotions: allPromotions });
+            },
+            onDone: async (v, res) => {
+                if (res && res.failed && res.failed.length) {
+                    console.warn('Some promotions failed:', res.failed);
+                }
+                promoteModeActive = false;
+                const bar = document.getElementById('promote-confirm-bar');
+                if (bar) bar.style.display = 'none';
+                const modeBtn = document.getElementById('btn-promote-mode');
+                if (modeBtn) modeBtn.textContent = '⬆️ Promote Students';
+                await loadStudents();
+            }
+        });
+    } else {
+        // No Class Eight — fire directly without the dialog
+        const promotions = [
+            ...buildPromotions(nineScience, 'Class Ten (Science)'),
+            ...buildPromotions(nineHum,     'Class Ten (Humanities)'),
+            ...others.map(cb => {
+                const next = ({
+                    'Play': 'Nursery', 'Nursery': 'Class One',
+                    'Class One': 'Class Two', 'Class Two': 'Class Three',
+                    'Class Three': 'Class Four', 'Class Four': 'Class Five',
+                    'Class Five': 'Class Six', 'Class Six': 'Class Seven',
+                    'Class Seven': 'Class Eight'
+                })[cb.dataset.class];
+                const toId = next ? classId(next) : null;
+                return toId ? { id: Number(cb.dataset.id), to_class_id: toId } : null;
+            }).filter(Boolean)
+        ];
+
+        await runPromotion(promotions);
+        promoteModeActive = false;
+        const bar = document.getElementById('promote-confirm-bar');
+        if (bar) bar.style.display = 'none';
+        const modeBtn = document.getElementById('btn-promote-mode');
+        if (modeBtn) modeBtn.textContent = '⬆️ Promote Students';
+        await loadStudents();
+    }
+};
 
 // --- TEACHER REGISTRY CONTROLLERS ---
 async function loadTeachersPage() {
@@ -3180,3 +3386,30 @@ function buildNineTenTranscriptTable(studentId) {
 }
 
 document.getElementById('transcript-combine-departments')?.addEventListener('change', () => paintTranscriptPreview());
+
+// --- STUDENT ACTIONS DROPDOWN ---
+// Opens/closes the dropdown menu attached to the "Actions ▾" button.
+// Clicking outside the dropdown (anywhere else on the page) closes it.
+(function setupStudentActionsDropdown() {
+    const toggleBtn = document.getElementById('btn-student-actions');
+    const menu      = document.getElementById('student-actions-menu');
+    const modeBtn   = document.getElementById('btn-promote-mode');
+    if (!toggleBtn || !menu || !modeBtn) return;
+
+    toggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = menu.style.display !== 'none';
+        menu.style.display = isOpen ? 'none' : 'block';
+    });
+
+    modeBtn.addEventListener('click', () => {
+        togglePromoteMode();
+    });
+
+    // Close dropdown when clicking anywhere outside of it
+    document.addEventListener('click', (e) => {
+        if (!document.getElementById('student-actions-dropdown')?.contains(e.target)) {
+            menu.style.display = 'none';
+        }
+    });
+})();
