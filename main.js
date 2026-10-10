@@ -78,20 +78,24 @@ ipcMain.handle('get-admin-profile', async () => {
     });
 });
 
-// Change admin password with current password verification
-ipcMain.handle('change-admin-password', async (event, { currentPassword, newPassword }) => {
+// Change admin credentials (username and/or password) with current password verification
+ipcMain.handle('change-admin-password', async (event, { username, currentPassword, newPassword }) => {
     return new Promise((resolve) => {
-        if (!currentPassword || !newPassword) {
-            return resolve({ success: false, message: 'Please provide both current and new password.' });
+        if (!currentPassword) {
+            return resolve({ success: false, message: 'Please enter your current password to save changes.' });
         }
-        db.get("SELECT id, password_hash FROM admin_profile ORDER BY id ASC LIMIT 1", [], (err, row) => {
+        db.get("SELECT id, username, password_hash FROM admin_profile ORDER BY id ASC LIMIT 1", [], (err, row) => {
             if (err || !row) return resolve({ success: false, message: 'Admin profile not found.' });
             if (row.password_hash !== currentPassword) {
                 return resolve({ success: false, message: 'Current password is incorrect.' });
             }
-            db.run("UPDATE admin_profile SET password_hash = ? WHERE id = ?", [newPassword, row.id], (err2) => {
+
+            const updatedUsername = (username && username.trim()) ? username.trim() : row.username;
+            const updatedPassword = (newPassword && newPassword.trim()) ? newPassword.trim() : row.password_hash;
+
+            db.run("UPDATE admin_profile SET username = ?, password_hash = ? WHERE id = ?", [updatedUsername, updatedPassword, row.id], (err2) => {
                 if (err2) return resolve({ success: false, message: err2.message });
-                resolve({ success: true, message: 'Password updated successfully!' });
+                resolve({ success: true, message: 'Admin credentials updated successfully!' });
             });
         });
     });
@@ -136,7 +140,7 @@ ipcMain.handle('get-recovery-questions', async () => {
     });
 });
 
-// Reset admin password by verifying all security question answers
+// Reset admin password by verifying all security question answers (EXACT MATCH)
 ipcMain.handle('reset-admin-password-via-questions', async (event, { answers, newPassword }) => {
     return new Promise((resolve) => {
         db.get("SELECT id, q1, a1, q2, a2, q3, a3, q4, a4, q5, a5 FROM admin_profile ORDER BY id ASC LIMIT 1", [], (err, row) => {
@@ -145,10 +149,10 @@ ipcMain.handle('reset-admin-password-via-questions', async (event, { answers, ne
             let activeQuestions = 0;
             for (let i = 1; i <= 5; i++) {
                 const q = (row['q' + i] || '').trim();
-                const expectedAns = (row['a' + i] || '').trim().toLowerCase();
+                const expectedAns = (row['a' + i] || '').trim(); // Exact case-sensitive match
                 if (q && expectedAns) {
                     activeQuestions++;
-                    const userAns = (answers && answers['a' + i] ? String(answers['a' + i]) : '').trim().toLowerCase();
+                    const userAns = (answers && answers['a' + i] ? String(answers['a' + i]) : '').trim(); // Exact case-sensitive match
                     if (!userAns || userAns !== expectedAns) {
                         return resolve({ success: false, message: `Answer to Security Question ${i} is incorrect.` });
                     }
@@ -163,7 +167,7 @@ ipcMain.handle('reset-admin-password-via-questions', async (event, { answers, ne
                 return resolve({ success: false, message: 'Please enter a valid new password.' });
             }
 
-            db.run("UPDATE admin_profile SET password_hash = ? WHERE id = ?", [newPassword, row.id], (err2) => {
+            db.run("UPDATE admin_profile SET password_hash = ? WHERE id = ?", [newPassword.trim(), row.id], (err2) => {
                 if (err2) return resolve({ success: false, message: err2.message });
                 resolve({ success: true, message: 'Password has been reset successfully! You can now log in.' });
             });

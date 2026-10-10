@@ -143,6 +143,9 @@ if (linkForgotPassword) {
                     <input type="text" class="reset-answer-input" data-key="${q.key}" placeholder="Your Answer" autocomplete="off" style="margin-top:4px;">
                 </div>
             `).join('');
+            if (typeof enableEnterNavigation === 'function') {
+                enableEnterNavigation(resetPasswordScreen, btnSubmitResetPassword);
+            }
         } else {
             container.innerHTML = `<div style="color:#ef4444; font-size:13px; padding:10px 0;">${(res && res.message) || 'No recovery security questions found. Please contact an administrator.'}</div>`;
         }
@@ -3754,6 +3757,7 @@ let securityQuestionsVisible = false;
 
 async function loadAdminSettingsPage() {
     // Clear password inputs and status messages
+    const userEl = document.getElementById('admin-username');
     const curPw = document.getElementById('admin-current-password');
     const newPw = document.getElementById('admin-new-password');
     const confPw = document.getElementById('admin-confirm-password');
@@ -3770,11 +3774,12 @@ async function loadAdminSettingsPage() {
     if (secErr) secErr.innerText = '';
     if (secSucc) secSucc.innerText = '';
 
-    // Fetch security questions and answers
+    // Fetch security questions and profile data
     try {
         const res = await ipcRenderer.invoke('get-admin-profile');
         if (res && res.success && res.profile) {
             const p = res.profile;
+            if (userEl) userEl.value = p.username || 'admin';
             for (let i = 1; i <= 5; i++) {
                 const qEl = document.getElementById('admin-q' + i);
                 const aEl = document.getElementById('admin-a' + i);
@@ -3797,16 +3802,16 @@ if (btnToggleSecurityQuestions) {
         if (securityQuestionsVisible) {
             if (content) content.style.display = 'block';
             if (locked) locked.style.display = 'none';
-            btnToggleSecurityQuestions.textContent = '🙈 Hide';
+            btnToggleSecurityQuestions.textContent = 'Hide';
         } else {
             if (content) content.style.display = 'none';
             if (locked) locked.style.display = 'block';
-            btnToggleSecurityQuestions.textContent = '👁️ Show';
+            btnToggleSecurityQuestions.textContent = 'Show';
         }
     });
 }
 
-// Update Admin Password Button
+// Update Admin Credentials Button
 const btnUpdateAdminPassword = document.getElementById('btn-update-admin-password');
 if (btnUpdateAdminPassword) {
     btnUpdateAdminPassword.addEventListener('click', async () => {
@@ -3815,33 +3820,37 @@ if (btnUpdateAdminPassword) {
         if (errEl) errEl.innerText = '';
         if (successEl) successEl.innerText = '';
 
-        const currentPw = document.getElementById('admin-current-password')?.value.trim() || '';
-        const newPw = document.getElementById('admin-new-password')?.value.trim() || '';
-        const confirmPw = document.getElementById('admin-confirm-password')?.value.trim() || '';
+        const username = document.getElementById('admin-username')?.value.trim() || '';
+        const currentPw = document.getElementById('admin-current-password')?.value || '';
+        const newPw = document.getElementById('admin-new-password')?.value || '';
+        const confirmPw = document.getElementById('admin-confirm-password')?.value || '';
 
-        if (!currentPw || !newPw || !confirmPw) {
-            if (errEl) errEl.innerText = 'Please complete all password fields!';
+        if (!currentPw) {
+            if (errEl) errEl.innerText = 'Please enter your Current Password to save changes!';
             return;
         }
 
-        if (newPw !== confirmPw) {
-            if (errEl) errEl.innerText = 'New password and confirmation do not match!';
-            return;
+        if (newPw || confirmPw) {
+            if (newPw !== confirmPw) {
+                if (errEl) errEl.innerText = 'New password and confirmation do not match!';
+                return;
+            }
         }
 
         btnUpdateAdminPassword.disabled = true;
         btnUpdateAdminPassword.textContent = 'Updating...';
 
         const res = await ipcRenderer.invoke('change-admin-password', {
+            username: username,
             currentPassword: currentPw,
-            newPassword: newPw
+            newPassword: newPw || null
         });
 
         btnUpdateAdminPassword.disabled = false;
-        btnUpdateAdminPassword.textContent = 'Update Password';
+        btnUpdateAdminPassword.textContent = 'Update Credentials';
 
         if (res && res.success) {
-            if (successEl) successEl.innerText = '✅ Password updated successfully!';
+            if (successEl) successEl.innerText = '✅ ' + (res.message || 'Credentials updated successfully!');
             const cur = document.getElementById('admin-current-password');
             const nw = document.getElementById('admin-new-password');
             const cnf = document.getElementById('admin-confirm-password');
@@ -3849,7 +3858,7 @@ if (btnUpdateAdminPassword) {
             if (nw) nw.value = '';
             if (cnf) cnf.value = '';
         } else {
-            if (errEl) errEl.innerText = (res && res.message) || 'Failed to update password.';
+            if (errEl) errEl.innerText = (res && res.message) || 'Failed to update credentials.';
         }
     });
 }
@@ -3895,3 +3904,7 @@ if (btnSaveSecurityQuestions) {
         }
     });
 }
+
+// Enable Enter navigation on Admin Credentials & Security Questions
+enableEnterNavigation(document.getElementById('admin-password-form'), document.getElementById('btn-update-admin-password'));
+enableEnterNavigation(document.getElementById('sec-questions-content'), document.getElementById('btn-save-security-questions'));

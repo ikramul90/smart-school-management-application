@@ -721,22 +721,27 @@
                 <div id="settings-admin" class="tab-content">
                     <h2 class="no-select" style="text-align:left; margin-bottom: 20px;">Admin Account & Security Settings</h2>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; align-items: start;">
+                    <div style="display: flex; flex-direction: column; gap: 25px; max-width: 680px;">
                         
-                        <!-- SECTION 1: CHANGE PASSWORD -->
-                        <div style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                        <!-- SECTION 1: CHANGE CREDENTIALS (USERNAME & PASSWORD) -->
+                        <div id="admin-password-form" style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                             <h3 style="margin-top: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
-                                🔑 Change Password
+                                🔑 Account Credentials (Username &amp; Password)
                             </h3>
                             <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">
-                                Update the password used to log in to the application.
+                                Update the username and password used to log in to the application.
                             </p>
 
                             <div id="admin-pw-error" style="color: #ef4444; font-size: 13px; margin-bottom: 10px; font-weight: 500;"></div>
                             <div id="admin-pw-success" style="color: #10b981; font-size: 13px; font-weight: bold; margin-bottom: 10px;"></div>
 
                             <div class="input-group">
-                                <label class="no-select">Current Password</label>
+                                <label class="no-select">Admin Username</label>
+                                <input type="text" id="admin-username" placeholder="Enter username" autocomplete="off">
+                            </div>
+
+                            <div class="input-group">
+                                <label class="no-select">Current Password (Required to save changes)</label>
                                 <div class="password-input-wrapper">
                                     <input type="password" id="admin-current-password" placeholder="Enter current password">
                                     <button type="button" class="password-toggle-btn toggle-pw-btn" data-target="admin-current-password"
@@ -748,9 +753,9 @@
                             </div>
 
                             <div class="input-group">
-                                <label class="no-select">New Password</label>
+                                <label class="no-select">New Password <span style="font-weight:normal; color:#64748b;">(Leave blank to keep current password)</span></label>
                                 <div class="password-input-wrapper">
-                                    <input type="password" id="admin-new-password" placeholder="Enter new password">
+                                    <input type="password" id="admin-new-password" placeholder="Enter new password (optional)">
                                     <button type="button" class="password-toggle-btn toggle-pw-btn" data-target="admin-new-password"
                                         aria-label="Toggle password" tabindex="-1">
                                         <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
@@ -772,7 +777,7 @@
                             </div>
 
                             <button id="btn-update-admin-password" type="button" style="margin-top: 15px; background-color: #2563eb; width: 100%;">
-                                Update Password
+                                Update Credentials
                             </button>
                         </div>
 
@@ -780,11 +785,11 @@
                         <div style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                                 <h3 style="margin: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
-                                    🛡️ Security Questions
+                                    🛡️ Recovery Security Questions
                                 </h3>
                                 <button type="button" id="btn-toggle-security-questions"
                                     style="width: auto; padding: 6px 14px; font-size: 12px; background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; font-weight: 600;">
-                                    👁️ Show
+                                    Show
                                 </button>
                             </div>
                             <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">
@@ -796,7 +801,7 @@
 
                             <!-- LOCKED PLACEHOLDER MESSAGE -->
                             <div id="sec-questions-locked" style="padding: 30px 20px; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; color: #64748b; font-size: 13px;">
-                                🔒 Security questions and answers are hidden to protect privacy. Click <b>"Show"</b> above to view or edit them.
+                                Security questions and answers are hidden to protect privacy. Click <b>"Show"</b> above to view or edit them.
                             </div>
 
                             <!-- EDITABLE QUESTIONS CONTAINER -->
