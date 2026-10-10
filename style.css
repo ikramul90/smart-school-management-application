@@ -668,12 +668,14 @@ button:hover {
     margin-bottom: 16px;
 }
 
-.promote-checkbox-cell {
+.promote-checkbox-cell,
+.promote-checkbox-head {
     text-align: center;
     width: 36px;
 }
 
-.promote-checkbox-cell input[type="checkbox"] {
+.promote-checkbox-cell input[type="checkbox"],
+.promote-checkbox-head input[type="checkbox"] {
     width: auto;
     margin: 0;
     padding: 0;

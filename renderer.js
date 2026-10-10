@@ -598,7 +598,7 @@ window.loadStudents = async function () {
         ? STUDENT_VIEW_HEADERS[view].filter(h => h !== 'Actions')
         : STUDENT_VIEW_HEADERS[view];
     const checkboxTh = (view === 'Active' && promoteModeActive)
-        ? `<th style="width:36px;"></th>`
+        ? `<th class="promote-checkbox-head"><input type="checkbox" id="promote-select-all" title="Select All"></th>`
         : '';
     document.getElementById('student-table-head-row').innerHTML = checkboxTh + headers.map(h => `<th>${h}</th>`).join('');
 
@@ -607,9 +607,11 @@ window.loadStudents = async function () {
         const emptyText = { Active: 'No current students match this filter.', Graduated: 'No graduated students yet.', Removed: 'No dropped-out students.' }[view];
         const totalCols = headers.length + (checkboxTh ? 1 : 0);
         tbody.innerHTML = `<tr><td colspan="${totalCols}" style="text-align:center; color:#64748b; padding:20px;">${emptyText}</td></tr>`;
+        updatePromoteCount();
         return;
     }
     tbody.innerHTML = students.map(s => studentRowHtml(s, view)).join('');
+    updatePromoteCount();
 };
 
 // Switching the Current / Graduated / Dropped Out tabs
@@ -1049,7 +1051,7 @@ window.togglePromoteMode = function () {
         const headers = (view === 'Active' && promoteModeActive)
             ? STUDENT_VIEW_HEADERS[view].filter(h => h !== 'Actions')
             : STUDENT_VIEW_HEADERS[view];
-        const checkboxTh = promoteModeActive ? `<th style="width:36px;"></th>` : '';
+        const checkboxTh = promoteModeActive ? `<th class="promote-checkbox-head"><input type="checkbox" id="promote-select-all" title="Select All"></th>` : '';
         headRow.innerHTML = checkboxTh + headers.map(h => `<th>${h}</th>`).join('');
     }
     document.querySelectorAll('.promote-checkbox-cell').forEach(cell => {
@@ -1063,15 +1065,44 @@ window.togglePromoteMode = function () {
     updatePromoteCount();
 };
 
-// Updates the "N students selected" counter in the confirm bar.
+// Updates the "N students selected" counter in the confirm bar & synchronizes select-all.
 function updatePromoteCount() {
-    const count = document.querySelectorAll('.promote-checkbox:checked').length;
+    const allCheckboxes = document.querySelectorAll('.promote-checkbox');
+    const checked = document.querySelectorAll('.promote-checkbox:checked');
     const el = document.getElementById('promote-selected-count');
-    if (el) el.textContent = `${count} student${count !== 1 ? 's' : ''} selected`;
+    if (el) el.textContent = `${checked.length} student${checked.length !== 1 ? 's' : ''} selected`;
+
+    const selectAll = document.getElementById('promote-select-all');
+    if (selectAll) {
+        if (allCheckboxes.length === 0) {
+            selectAll.checked = false;
+            selectAll.indeterminate = false;
+        } else if (checked.length === allCheckboxes.length) {
+            selectAll.checked = true;
+            selectAll.indeterminate = false;
+        } else if (checked.length > 0) {
+            selectAll.checked = false;
+            selectAll.indeterminate = true;
+        } else {
+            selectAll.checked = false;
+            selectAll.indeterminate = false;
+        }
+    }
 }
 
+// Delegate select-all checkbox change on the table header
+document.getElementById('student-table-head-row')?.addEventListener('change', (e) => {
+    if (e.target && e.target.id === 'promote-select-all') {
+        const checkedState = e.target.checked;
+        document.querySelectorAll('.promote-checkbox').forEach(cb => {
+            cb.checked = checkedState;
+        });
+        updatePromoteCount();
+    }
+});
+
 // Delegate checkbox changes to the table body so dynamically rendered rows are covered.
-document.getElementById('student-table-body').addEventListener('change', (e) => {
+document.getElementById('student-table-body')?.addEventListener('change', (e) => {
     if (e.target && e.target.classList.contains('promote-checkbox')) {
         updatePromoteCount();
     }
