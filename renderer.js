@@ -1433,7 +1433,7 @@ async function loadTeachersPage() {
     allClassesForTeachers = await ipcRenderer.invoke('get-classes-list') || [];
     const classSelect = document.getElementById('tc-classes');
     if (classSelect) {
-        classSelect.innerHTML = `<option value="">-- None --</option>` +
+        classSelect.innerHTML = `<option value="">-- Select Class --</option>` +
             allClassesForTeachers.map(c => `<option value="${c.id}">${escapeHtml(c.class_name)}</option>`).join('');
     }
     await renderTeachersTable();
@@ -1521,7 +1521,10 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
     if (!t.name) return alert("Teacher name is required!");
 
     const selectedVal = document.getElementById('tc-classes')?.value;
-    const selectedClassIds = selectedVal ? [parseInt(selectedVal, 10)] : [];
+    if (!selectedVal) {
+        return alert("Please select a class for 'Class Teacher Of'!");
+    }
+    const selectedClassIds = [parseInt(selectedVal, 10)];
 
     // Warn if selected class already belongs to a different teacher
     const conflicts = allClassesForTeachers.filter(c =>
