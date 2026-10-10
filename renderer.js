@@ -589,6 +589,11 @@ window.loadStudents = async function () {
     const students = await ipcRenderer.invoke('get-students', { class_id, status: view });
     studentListCache = students;
 
+    const actionsSection = document.getElementById('student-actions-section');
+    if (actionsSection) {
+        actionsSection.style.display = (view === 'Active') ? '' : 'none';
+    }
+
     const headers = (view === 'Active' && promoteModeActive)
         ? STUDENT_VIEW_HEADERS[view].filter(h => h !== 'Actions')
         : STUDENT_VIEW_HEADERS[view];
@@ -616,7 +621,10 @@ document.querySelectorAll('#student-view-tabs .chip-btn').forEach(btn => {
             const bar = document.getElementById('promote-confirm-bar');
             if (bar) bar.style.display = 'none';
             const modeBtn = document.getElementById('btn-promote-mode');
-            if (modeBtn) modeBtn.textContent = 'Promote';
+            if (modeBtn) {
+                modeBtn.textContent = 'Promote';
+                modeBtn.classList.remove('active');
+            }
         }
         document.querySelectorAll('#student-view-tabs .chip-btn').forEach(b => {
             b.classList.toggle('active', b === btn);
@@ -995,9 +1003,12 @@ window.togglePromoteMode = function () {
 
     promoteModeActive = !promoteModeActive;
 
-    // Update the chip button label
+    // Update the chip button label & active style (remains 'Promote', gets active blue)
     const modeBtn = document.getElementById('btn-promote-mode');
-    if (modeBtn) modeBtn.textContent = promoteModeActive ? '✖ Cancel' : 'Promote';
+    if (modeBtn) {
+        modeBtn.textContent = 'Promote';
+        modeBtn.classList.toggle('active', promoteModeActive);
+    }
 
     // Show / hide the confirm bar at the bottom
     let bar = document.getElementById('promote-confirm-bar');
@@ -1014,7 +1025,7 @@ window.togglePromoteMode = function () {
                         ⬆️ Promote Selected
                     </button>
                     <button type="button" class="marks-view-btn"
-                        style="background:#64748b;" onclick="togglePromoteMode()">
+                        style="background:#ef4444;" onclick="togglePromoteMode()">
                         Cancel
                     </button>
                 </div>`;
@@ -1152,7 +1163,10 @@ window.bulkPromoteSelected = async function () {
                 const bar = document.getElementById('promote-confirm-bar');
                 if (bar) bar.style.display = 'none';
                 const modeBtn = document.getElementById('btn-promote-mode');
-                if (modeBtn) modeBtn.textContent = 'Promote';
+                if (modeBtn) {
+                    modeBtn.textContent = 'Promote';
+                    modeBtn.classList.remove('active');
+                }
                 await loadStudents();
             }
         });
@@ -1179,7 +1193,10 @@ window.bulkPromoteSelected = async function () {
         const bar = document.getElementById('promote-confirm-bar');
         if (bar) bar.style.display = 'none';
         const modeBtn = document.getElementById('btn-promote-mode');
-        if (modeBtn) modeBtn.textContent = 'Promote';
+        if (modeBtn) {
+            modeBtn.textContent = 'Promote';
+            modeBtn.classList.remove('active');
+        }
         await loadStudents();
     }
 };
