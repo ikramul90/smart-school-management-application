@@ -608,15 +608,30 @@ window.loadStudents = async function () {
         const totalCols = headers.length + (checkboxTh ? 1 : 0);
         tbody.innerHTML = `<tr><td colspan="${totalCols}" style="text-align:center; color:#64748b; padding:20px;">${emptyText}</td></tr>`;
         updatePromoteCount();
+        syncPromoteTabsState();
         return;
     }
     tbody.innerHTML = students.map(s => studentRowHtml(s, view)).join('');
     updatePromoteCount();
+    syncPromoteTabsState();
 };
+
+function syncPromoteTabsState() {
+    document.querySelectorAll('#student-view-tabs .chip-btn').forEach(b => {
+        if (b.dataset.view !== 'Active') {
+            b.disabled = promoteModeActive;
+            b.title = promoteModeActive ? 'Exit promotion mode first to view this tab' : '';
+        } else {
+            b.disabled = false;
+            b.title = '';
+        }
+    });
+}
 
 // Switching the Current / Graduated / Dropped Out tabs
 document.querySelectorAll('#student-view-tabs .chip-btn').forEach(btn => {
     btn.addEventListener('click', () => {
+        if (btn.disabled || (promoteModeActive && btn.dataset.view !== 'Active')) return;
         currentStudentView = btn.dataset.view;
         if (promoteModeActive && currentStudentView !== 'Active') {
             promoteModeActive = false;
@@ -1060,6 +1075,8 @@ window.togglePromoteMode = function () {
     document.querySelectorAll('.student-action-cell').forEach(cell => {
         cell.style.display = (promoteModeActive && currentStudentView === 'Active') ? 'none' : 'table-cell';
     });
+
+    syncPromoteTabsState();
 
     // Reset counter
     updatePromoteCount();

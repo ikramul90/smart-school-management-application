@@ -341,6 +341,17 @@ button:hover {
     color: white;
 }
 
+.chip-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+
+.chip-btn:disabled:hover {
+    background-color: #e2e8f0;
+    color: #1e293b;
+}
+
 .marks-head {
     display: flex;
     justify-content: space-between;
