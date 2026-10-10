@@ -562,17 +562,19 @@ function studentRowHtml(s, view) {
         <td>${escapeHtml(s.class_name || '')}</td>
         <td>${escapeHtml(s.guardian_contact || '')}</td>`;
 
+    const actionCellDisplay = (view === 'Active' && promoteModeActive) ? 'display:none;' : '';
+
     if (view === 'Active') {
         const graduateBtn = isTen
             ? `<button onclick="graduateStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#10b981;">🎓 Graduate</button>`
             : '';
         const dropBtn = `<button onclick="dropOutStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#ef4444;">❌ Drop Out</button>`;
-        html += `<td>${editBtn}${graduateBtn}${dropBtn}</td>`;
+        html += `<td class="student-action-cell" style="${actionCellDisplay}">${editBtn}${graduateBtn}${dropBtn}</td>`;
     } else {
         const reinstateBtn = `<button onclick="reinstateStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#f59e0b;">↩️ Reinstate</button>`;
         html += `<td>${formatHistoryDate(s.status_date)}</td>`;
         if (view === 'Removed') html += `<td>${escapeHtml(s.removal_cause || '')}</td>`;
-        html += `<td>${editBtn}${reinstateBtn}</td>`;
+        html += `<td class="student-action-cell" style="${actionCellDisplay}">${editBtn}${reinstateBtn}</td>`;
     }
     return `<tr>${html}</tr>`;
 }
@@ -587,7 +589,9 @@ window.loadStudents = async function () {
     const students = await ipcRenderer.invoke('get-students', { class_id, status: view });
     studentListCache = students;
 
-    const headers = STUDENT_VIEW_HEADERS[view];
+    const headers = (view === 'Active' && promoteModeActive)
+        ? STUDENT_VIEW_HEADERS[view].filter(h => h !== 'Actions')
+        : STUDENT_VIEW_HEADERS[view];
     const checkboxTh = (view === 'Active' && promoteModeActive)
         ? `<th style="width:36px;"></th>`
         : '';
@@ -596,7 +600,8 @@ window.loadStudents = async function () {
     const tbody = document.getElementById('student-table-body');
     if (!students.length) {
         const emptyText = { Active: 'No current students match this filter.', Graduated: 'No graduated students yet.', Removed: 'No dropped-out students.' }[view];
-        tbody.innerHTML = `<tr><td colspan="${headers.length}" style="text-align:center; color:#64748b; padding:20px;">${emptyText}</td></tr>`;
+        const totalCols = headers.length + (checkboxTh ? 1 : 0);
+        tbody.innerHTML = `<tr><td colspan="${totalCols}" style="text-align:center; color:#64748b; padding:20px;">${emptyText}</td></tr>`;
         return;
     }
     tbody.innerHTML = students.map(s => studentRowHtml(s, view)).join('');
@@ -606,6 +611,13 @@ window.loadStudents = async function () {
 document.querySelectorAll('#student-view-tabs .chip-btn').forEach(btn => {
     btn.addEventListener('click', () => {
         currentStudentView = btn.dataset.view;
+        if (promoteModeActive && currentStudentView !== 'Active') {
+            promoteModeActive = false;
+            const bar = document.getElementById('promote-confirm-bar');
+            if (bar) bar.style.display = 'none';
+            const modeBtn = document.getElementById('btn-promote-mode');
+            if (modeBtn) modeBtn.textContent = 'Promote';
+        }
         document.querySelectorAll('#student-view-tabs .chip-btn').forEach(b => {
             b.classList.toggle('active', b === btn);
         });
@@ -971,14 +983,21 @@ let promoteModeActive = false;
 //   - A "Promote Selected" confirm button appears below the table.
 // When OFF: everything reverts and the table re-renders normally.
 window.togglePromoteMode = function () {
-    // Promote mode only makes sense in the Active view.
-    if (currentStudentView !== 'Active') return;
+    let switchedView = false;
+    if (currentStudentView !== 'Active') {
+        currentStudentView = 'Active';
+        document.querySelectorAll('#student-view-tabs .chip-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.view === 'Active');
+        });
+        promoteModeActive = false;
+        switchedView = true;
+    }
 
     promoteModeActive = !promoteModeActive;
 
     // Update the chip button label
     const modeBtn = document.getElementById('btn-promote-mode');
-    if (modeBtn) modeBtn.textContent = promoteModeActive ? '✖ Cancel' : 'Promote Students';
+    if (modeBtn) modeBtn.textContent = promoteModeActive ? '✖ Cancel' : 'Promote';
 
     // Show / hide the confirm bar at the bottom
     let bar = document.getElementById('promote-confirm-bar');
@@ -1007,16 +1026,26 @@ window.togglePromoteMode = function () {
         if (bar) bar.style.display = 'none';
     }
 
+    if (switchedView) {
+        loadStudents();
+        return;
+    }
+
     // Re-render headers and checkbox cells without a full DB round-trip
     const headRow = document.getElementById('student-table-head-row');
     if (headRow) {
         const view = currentStudentView;
-        const headers = STUDENT_VIEW_HEADERS[view];
+        const headers = (view === 'Active' && promoteModeActive)
+            ? STUDENT_VIEW_HEADERS[view].filter(h => h !== 'Actions')
+            : STUDENT_VIEW_HEADERS[view];
         const checkboxTh = promoteModeActive ? `<th style="width:36px;"></th>` : '';
         headRow.innerHTML = checkboxTh + headers.map(h => `<th>${h}</th>`).join('');
     }
     document.querySelectorAll('.promote-checkbox-cell').forEach(cell => {
         cell.style.display = promoteModeActive ? 'table-cell' : 'none';
+    });
+    document.querySelectorAll('.student-action-cell').forEach(cell => {
+        cell.style.display = (promoteModeActive && currentStudentView === 'Active') ? 'none' : 'table-cell';
     });
 
     // Reset counter
@@ -1123,7 +1152,7 @@ window.bulkPromoteSelected = async function () {
                 const bar = document.getElementById('promote-confirm-bar');
                 if (bar) bar.style.display = 'none';
                 const modeBtn = document.getElementById('btn-promote-mode');
-                if (modeBtn) modeBtn.textContent = 'Promote Students';
+                if (modeBtn) modeBtn.textContent = 'Promote';
                 await loadStudents();
             }
         });
@@ -1150,7 +1179,7 @@ window.bulkPromoteSelected = async function () {
         const bar = document.getElementById('promote-confirm-bar');
         if (bar) bar.style.display = 'none';
         const modeBtn = document.getElementById('btn-promote-mode');
-        if (modeBtn) modeBtn.textContent = 'Promote Students';
+        if (modeBtn) modeBtn.textContent = 'Promote';
         await loadStudents();
     }
 };
