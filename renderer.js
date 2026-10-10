@@ -639,20 +639,18 @@ function syncPromoteTabsState() {
         if (promoteModeActive) {
             studentDetails.open = false;
             studentDetails.classList.add('disabled');
-            if (studentSummary) {
-                studentSummary.setAttribute('data-tooltip', 'The promotion page is running. Cancel this first.');
-            }
+            studentDetails.setAttribute('data-tooltip', 'The promotion page is running. Cancel this first.');
+            if (studentSummary) studentSummary.removeAttribute('data-tooltip');
         } else {
             studentDetails.classList.remove('disabled');
-            if (studentSummary) {
-                studentSummary.removeAttribute('data-tooltip');
-            }
+            studentDetails.removeAttribute('data-tooltip');
+            if (studentSummary) studentSummary.removeAttribute('data-tooltip');
         }
     }
 }
 
 // Prevent opening "Enroll New Student" while promotion mode is running
-document.getElementById('student-details-summary')?.addEventListener('click', (e) => {
+document.getElementById('student-details')?.addEventListener('click', (e) => {
     if (promoteModeActive) {
         e.preventDefault();
     }
