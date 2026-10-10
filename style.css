@@ -660,52 +660,12 @@ button:hover {
 }
 
 /* ---------- STUDENTS: title row + Actions dropdown + promote mode ---------- */
-.students-title-row {
+.students-filter-row {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
+    gap: 24px;
     margin-bottom: 16px;
-}
-
-.students-title-row h2 {
-    text-align: left;
-}
-
-.student-actions-dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.student-actions-menu {
-    position: absolute;
-    top: calc(100% + 4px);
-    right: 0;
-    background: white;
-    border: 1px solid #e2e8f0;
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.10);
-    min-width: 180px;
-    z-index: 200;
-    padding: 4px 0;
-}
-
-.student-action-item {
-    display: block;
-    width: 100%;
-    text-align: left;
-    background: transparent;
-    color: #1e293b;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 8px 14px;
-    border: none;
-    border-radius: 0;
-    cursor: pointer;
-}
-
-.student-action-item:hover {
-    background: #f1f5f9;
-    color: #2563eb;
 }
 
 .promote-checkbox-cell {

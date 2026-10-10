@@ -352,25 +352,23 @@
 
                 <!-- TAB CONTENT: STUDENTS DATABASE (WITH REMOVAL CONFIGURATOR) -->
                 <div id="db-students" class="tab-content">
-                    <div class="students-title-row">
-                        <h2 class="no-select" style="margin:0;">Student Registry</h2>
-                        <div class="student-actions-dropdown" id="student-actions-dropdown">
-                            <button type="button" id="btn-student-actions" class="marks-view-btn">
-                                Actions ▾
-                            </button>
-                            <div class="student-actions-menu" id="student-actions-menu" style="display:none;">
-                                <button type="button" id="btn-promote-mode" class="student-action-item">
-                                    ⬆️ Promote Students
-                                </button>
+                    <h2 class="no-select">Student Registry</h2>
+
+                    <div class="students-filter-row">
+                        <div>
+                            <div style="padding: 0px 0px 10px 5px;" class="no-select">Status</div>
+                            <div id="student-view-tabs" class="chip-row no-select">
+                                <button class="chip-btn active" data-view="Active">Current</button>
+                                <button class="chip-btn" data-view="Graduated">Graduated</button>
+                                <button class="chip-btn" data-view="Removed">Dropped Out</button>
                             </div>
                         </div>
-                    </div>
-
-                    <div style="padding: 0px 0px 10px 5px;" class="no-select">Status</div>
-                    <div id="student-view-tabs" class="chip-row no-select">
-                        <button class="chip-btn active" data-view="Active">Current</button>
-                        <button class="chip-btn" data-view="Graduated">Graduated</button>
-                        <button class="chip-btn" data-view="Removed">Dropped Out</button>
+                        <div>
+                            <div style="padding: 0px 0px 10px 5px;" class="no-select">Actions</div>
+                            <div class="chip-row no-select">
+                                <button type="button" id="btn-promote-mode" class="chip-btn">Promote Students</button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- ADVANCED CLASSIFICATION FILTERS -->

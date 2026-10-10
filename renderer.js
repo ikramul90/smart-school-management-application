@@ -976,9 +976,9 @@ window.togglePromoteMode = function () {
 
     promoteModeActive = !promoteModeActive;
 
-    // Update the dropdown item label
+    // Update the chip button label
     const modeBtn = document.getElementById('btn-promote-mode');
-    if (modeBtn) modeBtn.textContent = promoteModeActive ? '✖ Cancel Promotion' : '⬆️ Promote Students';
+    if (modeBtn) modeBtn.textContent = promoteModeActive ? '✖ Cancel' : 'Promote Students';
 
     // Show / hide the confirm bar at the bottom
     let bar = document.getElementById('promote-confirm-bar');
@@ -989,10 +989,16 @@ window.togglePromoteMode = function () {
             bar.className = 'promote-confirm-bar';
             bar.innerHTML = `
                 <span id="promote-selected-count">0 students selected</span>
-                <button type="button" id="btn-confirm-promote" class="marks-view-btn"
-                    style="background:#0ea5e9;" onclick="bulkPromoteSelected()">
-                    ⬆️ Promote Selected
-                </button>`;
+                <div style="display:flex; gap:8px;">
+                    <button type="button" id="btn-confirm-promote" class="marks-view-btn"
+                        style="background:#0ea5e9;" onclick="bulkPromoteSelected()">
+                        ⬆️ Promote Selected
+                    </button>
+                    <button type="button" class="marks-view-btn"
+                        style="background:#64748b;" onclick="togglePromoteMode()">
+                        Cancel
+                    </button>
+                </div>`;
             const tab = document.getElementById('db-students');
             if (tab) tab.appendChild(bar);
         }
@@ -1015,10 +1021,6 @@ window.togglePromoteMode = function () {
 
     // Reset counter
     updatePromoteCount();
-
-    // Close the dropdown
-    const menu = document.getElementById('student-actions-menu');
-    if (menu) menu.style.display = 'none';
 };
 
 // Updates the "N students selected" counter in the confirm bar.
@@ -1121,7 +1123,7 @@ window.bulkPromoteSelected = async function () {
                 const bar = document.getElementById('promote-confirm-bar');
                 if (bar) bar.style.display = 'none';
                 const modeBtn = document.getElementById('btn-promote-mode');
-                if (modeBtn) modeBtn.textContent = '⬆️ Promote Students';
+                if (modeBtn) modeBtn.textContent = 'Promote Students';
                 await loadStudents();
             }
         });
@@ -1148,7 +1150,7 @@ window.bulkPromoteSelected = async function () {
         const bar = document.getElementById('promote-confirm-bar');
         if (bar) bar.style.display = 'none';
         const modeBtn = document.getElementById('btn-promote-mode');
-        if (modeBtn) modeBtn.textContent = '⬆️ Promote Students';
+        if (modeBtn) modeBtn.textContent = 'Promote Students';
         await loadStudents();
     }
 };
@@ -3387,29 +3389,5 @@ function buildNineTenTranscriptTable(studentId) {
 
 document.getElementById('transcript-combine-departments')?.addEventListener('change', () => paintTranscriptPreview());
 
-// --- STUDENT ACTIONS DROPDOWN ---
-// Opens/closes the dropdown menu attached to the "Actions ▾" button.
-// Clicking outside the dropdown (anywhere else on the page) closes it.
-(function setupStudentActionsDropdown() {
-    const toggleBtn = document.getElementById('btn-student-actions');
-    const menu      = document.getElementById('student-actions-menu');
-    const modeBtn   = document.getElementById('btn-promote-mode');
-    if (!toggleBtn || !menu || !modeBtn) return;
-
-    toggleBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const isOpen = menu.style.display !== 'none';
-        menu.style.display = isOpen ? 'none' : 'block';
-    });
-
-    modeBtn.addEventListener('click', () => {
-        togglePromoteMode();
-    });
-
-    // Close dropdown when clicking anywhere outside of it
-    document.addEventListener('click', (e) => {
-        if (!document.getElementById('student-actions-dropdown')?.contains(e.target)) {
-            menu.style.display = 'none';
-        }
-    });
-})();
+// Wire up the Promote Students chip button
+document.getElementById('btn-promote-mode')?.addEventListener('click', () => togglePromoteMode());
