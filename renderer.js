@@ -619,10 +619,18 @@ window.loadStudents = async function () {
 function syncPromoteTabsState() {
     document.querySelectorAll('#student-view-tabs .chip-btn').forEach(b => {
         if (b.dataset.view !== 'Active') {
-            b.disabled = promoteModeActive;
-            b.title = promoteModeActive ? 'Exit promotion mode first to view this tab' : '';
+            if (promoteModeActive) {
+                b.classList.add('disabled');
+                b.setAttribute('data-tooltip', 'the promotion page is running. cancel this first.');
+                b.title = 'the promotion page is running. cancel this first.';
+            } else {
+                b.classList.remove('disabled');
+                b.removeAttribute('data-tooltip');
+                b.title = '';
+            }
         } else {
-            b.disabled = false;
+            b.classList.remove('disabled');
+            b.removeAttribute('data-tooltip');
             b.title = '';
         }
     });
@@ -631,7 +639,9 @@ function syncPromoteTabsState() {
 // Switching the Current / Graduated / Dropped Out tabs
 document.querySelectorAll('#student-view-tabs .chip-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-        if (btn.disabled || (promoteModeActive && btn.dataset.view !== 'Active')) return;
+        if (btn.classList.contains('disabled') || btn.disabled || (promoteModeActive && btn.dataset.view !== 'Active')) {
+            return;
+        }
         currentStudentView = btn.dataset.view;
         if (promoteModeActive && currentStudentView !== 'Active') {
             promoteModeActive = false;
