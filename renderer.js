@@ -672,6 +672,7 @@ function formatHistoryDate(text) {
 }
 
 function studentRowHtml(s, view) {
+    const infoBtn = `<button onclick="showStudentInfoModal(${s.id})" style="${STUDENT_BTN_STYLE}background:#0284c7;">ℹ️ More Info</button>`;
     const editBtn = `<button onclick="editStudentById(${s.id})" style="${STUDENT_BTN_STYLE}background:#2563eb;">✏️ Edit</button>`;
 
     // Promote-mode checkbox column: shown only for Active view when promote mode is on.
@@ -698,12 +699,12 @@ function studentRowHtml(s, view) {
             ? `<button onclick="graduateStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#10b981;">🎓 Graduate</button>`
             : '';
         const dropBtn = `<button onclick="dropOutStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#ef4444;">❌ Drop Out</button>`;
-        html += `<td class="student-action-cell" style="${actionCellDisplay}">${editBtn}${graduateBtn}${dropBtn}</td>`;
+        html += `<td class="student-action-cell" style="${actionCellDisplay}">${infoBtn}${editBtn}${graduateBtn}${dropBtn}</td>`;
     } else {
         const reinstateBtn = `<button onclick="reinstateStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#f59e0b;">↩️ Reinstate</button>`;
         html += `<td>${formatHistoryDate(s.status_date)}</td>`;
         if (view === 'Removed') html += `<td>${escapeHtml(s.removal_cause || '')}</td>`;
-        html += `<td class="student-action-cell" style="${actionCellDisplay}">${editBtn}${reinstateBtn}</td>`;
+        html += `<td class="student-action-cell" style="${actionCellDisplay}">${infoBtn}${editBtn}${reinstateBtn}</td>`;
     }
     return `<tr>${html}</tr>`;
 }
@@ -1452,6 +1453,7 @@ async function renderTeachersTable() {
             <td>${assignedClasses.length ? assignedClasses.map(escapeHtml).join(', ') : '<i style="color:gray;">None</i>'}</td>
             <td>${escapeHtml(t.contact_number || '')}</td>
             <td>
+                <button onclick="showTeacherInfoModal(${t.id})" style="padding:4px 8px; background:#0284c7; font-size:11px; width:auto; display:inline-block; margin-right:4px;">ℹ️ More Info</button>
                 <button onclick="editTeacherById(${t.id})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
                 <button onclick="deleteTeacher(${t.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">🗑 Delete</button>
             </td>
@@ -3908,3 +3910,101 @@ if (btnSaveSecurityQuestions) {
 // Enable Enter navigation on Admin Credentials & Security Questions
 enableEnterNavigation(document.getElementById('admin-password-form'), document.getElementById('btn-update-admin-password'));
 enableEnterNavigation(document.getElementById('sec-questions-content'), document.getElementById('btn-save-security-questions'));
+
+// ============================================================
+// MORE INFO POP-UP MODAL (Students & Teachers)
+// ============================================================
+function openDetailsInfoModal(title, rowsHtml) {
+    const modal = document.getElementById('details-info-modal');
+    const titleEl = document.getElementById('info-modal-title');
+    const bodyEl = document.getElementById('info-modal-body');
+    if (!modal || !titleEl || !bodyEl) return;
+
+    titleEl.textContent = title;
+    bodyEl.innerHTML = rowsHtml;
+    modal.style.display = 'flex';
+}
+
+function closeDetailsInfoModal() {
+    const modal = document.getElementById('details-info-modal');
+    if (modal) modal.style.display = 'none';
+}
+
+document.getElementById('btn-close-info-modal')?.addEventListener('click', closeDetailsInfoModal);
+document.getElementById('btn-close-info-modal-x')?.addEventListener('click', closeDetailsInfoModal);
+document.getElementById('details-info-modal')?.addEventListener('click', (e) => {
+    if (e.target.id === 'details-info-modal') closeDetailsInfoModal();
+});
+
+function renderInfoGrid(items) {
+    return `<div style="display:grid; grid-template-columns: 140px 1fr; row-gap:10px; column-gap:12px; font-size:13.5px; line-height:1.5;">` +
+        items.map(([label, val]) => `
+            <div style="color:#64748b; font-weight:600;">${escapeHtml(label)}:</div>
+            <div style="color:#0f172a; font-weight:500; word-break:break-word;">${val || '<i style="color:#94a3b8;">Not provided</i>'}</div>
+        `).join('') + `</div>`;
+}
+
+window.showStudentInfoModal = async function (id) {
+    const s = studentListCache.find(x => x.id === id);
+    if (!s) return;
+
+    // Fetch subjects if available
+    let subjectsText = '';
+    try {
+        const subs = await ipcRenderer.invoke('get-student-subjects', id);
+        if (subs && subs.length) {
+            const mains = subs.filter(r => r.role === 'main').map(r => r.subject_name).join(', ');
+            const opt = subs.find(r => r.role === 'optional')?.subject_name;
+            subjectsText = `Main: ${mains || 'None'} | Optional: ${opt || 'None'}`;
+        }
+    } catch (err) {
+        console.error('Failed to load student subjects for modal:', err);
+    }
+
+    const items = [
+        ['Full Name', s.name ? `<b>${escapeHtml(s.name)}</b>` : ''],
+        ['Class', s.class_name ? escapeHtml(s.class_name) : ''],
+        ['Class Roll', s.roll !== undefined && s.roll !== null ? formatRoll(s.roll) : ''],
+        ['Status', s.status ? `<span style="display:inline-block; padding:2px 8px; border-radius:4px; font-size:12px; font-weight:bold; ${s.status === 'Active' ? 'background:#dcfce7; color:#15803d;' : (s.status === 'Graduated' ? 'background:#dbeafe; color:#1d4ed8;' : 'background:#fee2e2; color:#b91c1c;')}">${escapeHtml(s.status)}</span>` : ''],
+        ['Guardian Contact', s.guardian_contact ? escapeHtml(s.guardian_contact) : ''],
+        ['Blood Group', s.blood_group ? `<span style="color:#dc2626; font-weight:bold;">${escapeHtml(s.blood_group)}</span>` : ''],
+        ['Date of Birth', s.dob ? formatHistoryDate(s.dob) : ''],
+        ['Birth Reg. No.', s.birth_reg_number ? escapeHtml(s.birth_reg_number) : ''],
+        ["Father's Name", s.fathers_name ? escapeHtml(s.fathers_name) : ''],
+        ["Mother's Name", s.mothers_name ? escapeHtml(s.mothers_name) : ''],
+        ['Residential Address', s.address ? escapeHtml(s.address) : '']
+    ];
+
+    if (subjectsText) {
+        items.push(['Subjects Selection', escapeHtml(subjectsText)]);
+    }
+
+    if (s.status === 'Graduated') {
+        items.push(['Graduation Date', s.status_date ? formatHistoryDate(s.status_date) : '']);
+    } else if (s.status === 'Removed') {
+        items.push(['Drop Out Date', s.status_date ? formatHistoryDate(s.status_date) : '']);
+        items.push(['Drop Out Reason', s.removal_cause ? escapeHtml(s.removal_cause) : '']);
+    }
+
+    openDetailsInfoModal(`Student Profile: ${s.name || 'Details'}`, renderInfoGrid(items));
+};
+
+window.showTeacherInfoModal = function (id) {
+    const t = cachedTeachers.find(x => x.id === id);
+    if (!t) return;
+
+    const assignedClasses = allClassesForTeachers.filter(c => c.class_teacher_id === t.id).map(c => c.class_name);
+
+    const items = [
+        ['Full Name', t.name ? `<b>${escapeHtml(t.name)}</b>` : ''],
+        ['Title / Designation', t.title ? escapeHtml(t.title) : ''],
+        ['Class Teacher Of', assignedClasses.length ? assignedClasses.map(escapeHtml).join(', ') : '<i style="color:#94a3b8;">None</i>'],
+        ['Contact Number', t.contact_number ? escapeHtml(t.contact_number) : ''],
+        ['Blood Group', t.blood_group ? `<span style="color:#dc2626; font-weight:bold;">${escapeHtml(t.blood_group)}</span>` : ''],
+        ['NID Number', t.nid_number ? escapeHtml(t.nid_number) : ''],
+        ["Father's Name", t.fathers_name ? escapeHtml(t.fathers_name) : ''],
+        ["Mother's Name", t.mothers_name ? escapeHtml(t.mothers_name) : '']
+    ];
+
+    openDetailsInfoModal(`Teacher Profile: ${t.name || 'Details'}`, renderInfoGrid(items));
+};

@@ -868,6 +868,20 @@
         </div>
     </div>
 
+    <!-- POP-UP for More Info (Student & Teacher Details) -->
+    <div id="details-info-modal" class="modal-overlay" style="display:none;">
+        <div class="modal-box" style="width: 520px; max-width: 95vw; max-height: 85vh; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+                <h3 id="info-modal-title" style="margin: 0; color: #1e293b; font-size: 17px;">Details</h3>
+                <button id="btn-close-info-modal-x" type="button" style="background: transparent; border: none; font-size: 20px; color: #64748b; cursor: pointer; width: auto; padding: 0 4px; line-height: 1;">&times;</button>
+            </div>
+            <div id="info-modal-body" style="overflow-y: auto; flex: 1; padding-right: 4px; margin-bottom: 16px;"></div>
+            <div style="display: flex; justify-content: flex-end; border-top: 1px solid #e2e8f0; padding-top: 12px;">
+                <button id="btn-close-info-modal" type="button" style="width: auto; padding: 8px 20px; background: #64748b;">Close</button>
+            </div>
+        </div>
+    </div>
+
     <!-- NOTIFICATION CENTER: panel (opened by the bell) and pop-up area -->
     <div id="notif-panel">
         <div id="notif-head">
