@@ -125,15 +125,20 @@
             <!-- LEFT SIDEBAR -->
             <div class="dashboard-sidebar">
                 <div class="dashboard-sidebar-nav">
-                    <h3 class="no-select">NAVIGATION</h3>
-                    <button id="notif-bell" type="button" aria-label="Notifications" title="Notifications">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                        </svg>
-                        <span id="notif-badge" style="display:none;">0</span>
-                    </button>
+                    <div class="sidebar-header">
+                        <button id="sidebar-toggle" type="button" aria-label="Collapse sidebar">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 -960 960 960" fill="currentColor"><path d="M440-240 200-480l240-240 56 56-183 184 183 184-56 56Zm264 0L464-480l240-240 56 56-183 184 183 184-56 56Z"/></svg>
+                        </button>
+                        <h3 class="no-select">NAVIGATION</h3>
+                        <button id="notif-bell" type="button" aria-label="Notifications" title="Notifications">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                            </svg>
+                            <span id="notif-badge" style="display:none;">0</span>
+                        </button>
+                    </div>
                     <hr>
 
                     <button class="nav-btn active" data-tab="home-tab" onclick="switchTab('home-tab')">

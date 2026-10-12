@@ -240,6 +240,27 @@ window.switchTab = function (tabId) {
     if (activeBtn) activeBtn.classList.add('active');
 };
 
+
+// ---------- SIDEBAR: collapse / expand ----------
+const dashboardSidebar = document.querySelector('.dashboard-sidebar');
+
+// When collapsed only icons show, so give each button a hover tooltip with its label.
+function syncSidebarTitles() {
+    const collapsed = dashboardSidebar.classList.contains('collapsed');
+    document.querySelectorAll('.dashboard-sidebar .nav-btn').forEach(btn => {
+        const label = btn.querySelector('span');
+        if (!label) return;
+        if (collapsed) btn.title = label.textContent.trim();
+        else btn.removeAttribute('title');
+    });
+}
+
+document.getElementById('sidebar-toggle').addEventListener('click', () => {
+    dashboardSidebar.classList.toggle('collapsed');
+    syncSidebarTitles();
+    closeNotificationPanel();   // the panel is anchored to the bell, which fades out
+});
+
 //  CRUD MANAGEMENT OPERATORS 
 
 // Load data automatically when entering a database tab
