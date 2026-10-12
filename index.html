@@ -230,7 +230,11 @@
                     <div class="home-cards">
 
                         <div class="home-card">
-                            <span class="home-card-icon"><!-- ICON: school building or classroom, for Total Classes --></span>
+                            <span class="home-card-icon">
+                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 6V2h4v2.5h-4M6 22V10l6-4 6 4v12M6 13H2v9M18 13h4v9M2 22h20M10 22v-4h4v4M12 11h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
                             <div class="home-card-body">
                                 <div class="home-card-value" id="stat-classes">0</div>
                                 <div class="home-card-label">Total Classes</div>
@@ -239,7 +243,11 @@
 
                         <div class="home-card clickable" role="button" tabindex="0" onclick="switchTab('db-students')"
                             onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchTab('db-students'); }">
-                            <span class="home-card-icon"><!-- ICON: graduation cap or group of students, for Total Students --></span>
+                            <span class="home-card-icon">
+                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M17 14.5001V11.4945C17 11.315 17 11.2253 16.9727 11.146C16.9485 11.076 16.9091 11.0122 16.8572 10.9592C16.7986 10.8993 16.7183 10.8592 16.5578 10.779L12 8.50006M4 9.50006V16.3067C4 16.6786 4 16.8645 4.05802 17.0274C4.10931 17.1713 4.1929 17.3016 4.30238 17.4082C4.42622 17.5287 4.59527 17.6062 4.93335 17.7612L11.3334 20.6945C11.5786 20.8069 11.7012 20.8631 11.8289 20.8853C11.9421 20.9049 12.0579 20.9049 12.1711 20.8853C12.2988 20.8631 12.4214 20.8069 12.6666 20.6945L19.0666 17.7612C19.4047 17.6062 19.5738 17.5287 19.6976 17.4082C19.8071 17.3016 19.8907 17.1713 19.942 17.0274C20 16.8645 20 16.6786 20 16.3067V9.50006M2 8.50006L11.6422 3.67895C11.7734 3.61336 11.839 3.58056 11.9078 3.56766C11.9687 3.55622 12.0313 3.55622 12.0922 3.56766C12.161 3.58056 12.2266 3.61336 12.3578 3.67895L22 8.50006L12.3578 13.3212C12.2266 13.3868 12.161 13.4196 12.0922 13.4325C12.0313 13.4439 11.9687 13.4439 11.9078 13.4325C11.839 13.4196 11.7734 13.3868 11.6422 13.3212L2 8.50006Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
                             <div class="home-card-body">
                                 <div class="home-card-value" id="stat-students">0</div>
                                 <div class="home-card-label">Total Students</div>
@@ -248,7 +256,11 @@
 
                         <div class="home-card clickable" role="button" tabindex="0" onclick="switchTab('db-teachers')"
                             onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchTab('db-teachers'); }">
-                            <span class="home-card-icon"><!-- ICON: teacher at a board or single person with a book, for Total Teachers --></span>
+                            <span class="home-card-icon">
+                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M22 21V19C22 17.1362 20.7252 15.5701 19 15.126M15.5 3.29076C16.9659 3.88415 18 5.32131 18 7C18 8.67869 16.9659 10.1159 15.5 10.7092M17 21C17 19.1362 17 18.2044 16.6955 17.4693C16.2895 16.4892 15.5108 15.7105 14.5307 15.3045C13.7956 15 12.8638 15 11 15H8C6.13623 15 5.20435 15 4.46927 15.3045C3.48915 15.7105 2.71046 16.4892 2.30448 17.4693C2 18.2044 2 19.1362 2 21M13.5 7C13.5 9.20914 11.7091 11 9.5 11C7.29086 11 5.5 9.20914 5.5 7C5.5 4.79086 7.29086 3 9.5 3C11.7091 3 13.5 4.79086 13.5 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
                             <div class="home-card-body">
                                 <div class="home-card-value" id="stat-teachers">0</div>
                                 <div class="home-card-label">Total Teachers</div>
@@ -256,7 +268,21 @@
                         </div>
 
                         <div class="home-card">
-                            <span class="home-card-icon"><!-- ICON: two people (male and female symbols), for Students by Gender --></span>
+                            <span class="home-card-icon">
+                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <!-- man (left) -->
+                                    <circle cx="7" cy="4.5" r="2"/>
+                                    <path d="M4 14V9.5A1.5 1.5 0 0 1 5.5 8h3A1.5 1.5 0 0 1 10 9.5V14H4Z"/>
+                                    <path d="M5.5 14v7.5M8.5 14v7.5"/>
+
+                                    <!-- woman (right) -->
+                                    <circle cx="17" cy="4.5" r="2"/>
+                                    <path d="M15.5 8h3L21 15H13l2.5-7Z"/>
+                                    <path d="M15.5 15v6.5M18.5 15v6.5"/>
+                                </g>
+                                </svg>
+                            </span>
                             <div class="home-card-body">
                                 <div class="home-card-label" style="margin: 0 0 4px 0;">Students by Gender</div>
                                 <div class="home-gender-row">
