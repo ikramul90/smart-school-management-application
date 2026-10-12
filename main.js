@@ -504,8 +504,8 @@ db.all("SELECT id, dob FROM students WHERE dob IS NOT NULL AND dob LIKE '%-%'", 
 ipcMain.handle('add-student', async (event, s) => {
     try {
         const cleanDob = normalizeDateToDDMMYYYY(s.dob);
-        const r = await dbRun(`INSERT INTO students (roll, name, blood_group, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')`,
-            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id]);
+            const r = await dbRun(`INSERT INTO students (roll, name, blood_group, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, gender, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')`,
+            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id, s.gender || null]);
         await runDataChecks();
         return { success: true, id: r.lastID };
     } catch (e) {
@@ -544,8 +544,8 @@ ipcMain.handle('update-student', async (event, s) => {
         }
 
         const cleanDob = normalizeDateToDDMMYYYY(s.dob);
-        await dbRun(`UPDATE students SET roll = ?, name = ?, blood_group = ?, fathers_name = ?, mothers_name = ?, guardian_name = ?, guardian_contact = ?, address = ?, dob = ?, birth_reg_number = ?, class_id = ? WHERE id = ?`,
-            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id, s.id]);
+            await dbRun(`UPDATE students SET roll = ?, name = ?, blood_group = ?, fathers_name = ?, mothers_name = ?, guardian_name = ?, guardian_contact = ?, address = ?, dob = ?, birth_reg_number = ?, class_id = ?, gender = ? WHERE id = ?`,
+            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id, s.gender || null, s.id]);
 
         if (s.archive && archived) await saveArchiveDetails(current, s.archive);
 
@@ -771,6 +771,40 @@ ipcMain.handle('get-teachers-list', async () => {
     return new Promise((resolve) => {
         db.all("SELECT id, name FROM teachers", [], (err, rows) => resolve(rows || []));
     });
+});
+
+
+// Numbers and chart data for the Home tab (Active students only)
+ipcMain.handle('get-dashboard-stats', async () => {
+    try {
+        const classesRow = await dbGet(`SELECT COUNT(*) AS n FROM classes`);
+        const studentsRow = await dbGet(`SELECT COUNT(*) AS n FROM students WHERE status = 'Active'`);
+        const teachersRow = await dbGet(`SELECT COUNT(*) AS n FROM teachers`);
+        const genderRows = await dbAll(`SELECT gender, COUNT(*) AS n FROM students WHERE status = 'Active' GROUP BY gender`);
+        const studentsPerClass = await dbAll(`SELECT classes.id, classes.class_name, COUNT(students.id) AS total
+            FROM classes LEFT JOIN students ON students.class_id = classes.id AND students.status = 'Active'
+            GROUP BY classes.id ORDER BY classes.id`);
+        const subjectsPerClass = await dbAll(`SELECT classes.id, classes.class_name, COUNT(subjects.id) AS total
+            FROM classes LEFT JOIN subjects ON subjects.class_id = classes.id
+            GROUP BY classes.id ORDER BY classes.id`);
+
+        const countOf = (g) => (genderRows.find(r => r.gender === g) || { n: 0 }).n;
+        const boys = countOf('Male');
+        const girls = countOf('Female');
+
+        return {
+            totalClasses: classesRow.n,
+            totalStudents: studentsRow.n,
+            totalTeachers: teachersRow.n,
+            boys,
+            girls,
+            genderUnset: studentsRow.n - boys - girls,
+            studentsPerClass,
+            subjectsPerClass
+        };
+    } catch (e) {
+        return null;
+    }
 });
 
 // 3. TEACHERS DATABASE WORKERS

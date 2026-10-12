@@ -74,6 +74,7 @@ document.getElementById('btn-login').addEventListener('click', async () => {
         loginScreen.style.display = 'none';
         dashboardScreen.style.display = 'block';
         startNotificationCenter();
+        loadDashboardStats();
     } else {
         document.getElementById('login-error').innerText = response.message;
     }
@@ -272,7 +273,89 @@ window.switchTab = function (tabId) {
     if (tabId === 'db-teachers') loadTeachersPage();
     if (tabId === 'settings-admin') loadAdminSettingsPage();
     if (tabId === 'settings-school') loadSchoolInfo();
+    if (tabId === 'home-tab') loadDashboardStats();
 };
+
+
+// ============================================================
+// HOME DASHBOARD — summary cards and charts
+// ============================================================
+
+// "Class Nine (Science)" -> "Nine (Sci)" so the chart labels stay short.
+function shortClassName(name) {
+    return String(name || '')
+        .replace(/^Class\s+/i, '')
+        .replace('(Science)', '(Sci)')
+        .replace('(Humanities)', '(Hum)');
+}
+
+// Bars start empty and grow on the next frame so the CSS transition plays.
+function animateBars(box) {
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+        box.querySelectorAll('[data-width]').forEach(el => { el.style.width = el.dataset.width + '%'; });
+        box.querySelectorAll('[data-height]').forEach(el => { el.style.height = el.dataset.height + '%'; });
+    }));
+}
+
+// Small horizontal bars: one row per class.
+function renderStudentsPerClassChart(rows) {
+    const box = document.getElementById('chart-students-per-class');
+    if (!rows || !rows.length) {
+        box.innerHTML = '<div class="home-empty">No classes found.</div>';
+        return;
+    }
+    const max = Math.max(...rows.map(r => r.total), 1);
+    box.innerHTML = rows.map(r => `
+        <div class="hbar-row">
+            <div class="hbar-label" title="${escapeHtml(r.class_name)}">${escapeHtml(shortClassName(r.class_name))}</div>
+            <div class="hbar-track"><div class="hbar-fill" data-width="${(r.total / max) * 100}"></div></div>
+            <div class="hbar-value">${r.total}</div>
+        </div>`).join('');
+    animateBars(box);
+}
+
+// Vertical bar chart: one column per class.
+function renderSubjectsPerClassChart(rows) {
+    const box = document.getElementById('chart-subjects-per-class');
+    if (!rows || !rows.length) {
+        box.innerHTML = '<div class="home-empty">No classes found.</div>';
+        return;
+    }
+    const max = Math.max(...rows.map(r => r.total), 1);
+    box.innerHTML = '<div class="vbar-chart">' + rows.map(r => `
+        <div class="vbar-col" title="${escapeHtml(r.class_name)}: ${r.total}">
+            <div class="vbar-plot">
+                <span class="vbar-value">${r.total}</span>
+                <div class="vbar-fill" data-height="${(r.total / max) * 85}"></div>
+            </div>
+            <div class="vbar-label">${escapeHtml(shortClassName(r.class_name))}</div>
+        </div>`).join('') + '</div>';
+    animateBars(box);
+}
+
+async function loadDashboardStats() {
+    try {
+        const stats = await ipcRenderer.invoke('get-dashboard-stats');
+        if (!stats) return;
+
+        document.getElementById('stat-classes').textContent = stats.totalClasses;
+        document.getElementById('stat-students').textContent = stats.totalStudents;
+        document.getElementById('stat-teachers').textContent = stats.totalTeachers;
+
+        const known = stats.boys + stats.girls;
+        document.getElementById('stat-boys').textContent = stats.boys;
+        document.getElementById('stat-girls').textContent = stats.girls;
+        document.getElementById('gender-bar-boys').style.width = known ? (stats.boys / known * 100) + '%' : '0%';
+        document.getElementById('gender-bar-girls').style.width = known ? (stats.girls / known * 100) + '%' : '0%';
+        document.getElementById('stat-gender-unset').textContent =
+            stats.genderUnset > 0 ? `${stats.genderUnset} not set yet` : '';
+
+        renderStudentsPerClassChart(stats.studentsPerClass);
+        renderSubjectsPerClassChart(stats.subjectsPerClass);
+    } catch (e) {
+        console.error('Could not load dashboard stats:', e);
+    }
+}
 
 
 // --- SUBJECT CATALOG LOOKUP (per class subject list) ---
@@ -887,6 +970,7 @@ document.getElementById('btn-cancel-student').addEventListener('click', hideArch
 window.editStudentFromRow = function (s) {
     editStudent(s.id, s.class_id, s.roll, s.name || '', s.blood_group || '', s.guardian_contact || '',
         s.address || '', s.dob || '', s.fathers_name || '', s.mothers_name || '', s.birth_reg_number || '');
+        document.getElementById('st-gender').value = s.gender || '';
     if (s.status === 'Graduated' || s.status === 'Removed') showArchiveFields(s);
     else hideArchiveFields();
 };
@@ -937,7 +1021,7 @@ window.editStudent = async function (id, classId, roll, name, bloodGroup, guardi
 function resetStudentForm() {
     const editIdEl = document.getElementById('st-edit-id');
     if (editIdEl) editIdEl.value = '';
-    ['st-roll', 'st-name', 'st-blood', 'st-phone', 'st-address', 'st-dob', 'st-father', 'st-mother', 'st-birth-reg'].forEach(id => {
+        ['st-roll', 'st-name', 'st-blood', 'st-gender', 'st-phone', 'st-address', 'st-dob', 'st-father', 'st-mother', 'st-birth-reg'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
@@ -966,6 +1050,7 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
         roll: parseInt(document.getElementById('st-roll').value, 10),
         name: document.getElementById('st-name').value.trim(),
         blood_group: document.getElementById('st-blood').value.trim(),
+        gender: document.getElementById('st-gender').value,
         fathers_name: document.getElementById('st-father').value.trim(),
         mothers_name: document.getElementById('st-mother').value.trim(),
         guardian_name: '',

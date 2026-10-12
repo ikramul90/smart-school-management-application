@@ -1565,3 +1565,231 @@ button:hover {
 .dashboard-sidebar.collapsed .dashboard-sidebar-watermark {
     opacity: 0;
 }
+
+
+
+/* ---------- HOME DASHBOARD ---------- */
+.home-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.home-card {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.home-card.clickable {
+    cursor: pointer;
+}
+
+.home-card.clickable:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 6px 16px rgba(15, 23, 42, 0.08);
+    transform: translateY(-2px);
+}
+
+.home-card.clickable:focus-visible {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+}
+
+.home-card-icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+    border-radius: 10px;
+    background: #eff6ff;
+    color: #3b82f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.home-card-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.home-card-body {
+    min-width: 0;
+    flex: 1;
+}
+
+.home-card-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.1;
+}
+
+.home-card-label {
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.home-card-note {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+.home-gender-row {
+    display: flex;
+    gap: 14px;
+    font-size: 13px;
+    color: #475569;
+}
+
+.home-gender-row b {
+    font-size: 20px;
+    color: #0f172a;
+}
+
+.home-gender-bar {
+    display: flex;
+    height: 6px;
+    margin-top: 8px;
+    border-radius: 3px;
+    background: #e2e8f0;
+    overflow: hidden;
+}
+
+.home-gender-bar span {
+    display: block;
+    height: 100%;
+    width: 0;
+    transition: width 0.6s ease;
+}
+
+#gender-bar-boys {
+    background: #3b82f6;
+}
+
+#gender-bar-girls {
+    background: #ec4899;
+}
+
+.home-charts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.home-panel {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 18px 20px;
+}
+
+.home-panel-title {
+    margin: 0 0 14px 0;
+    font-size: 15px;
+    color: #0f172a;
+}
+
+.home-empty {
+    color: #94a3b8;
+    font-size: 13px;
+    padding: 12px 0;
+}
+
+/* horizontal bars (students per class) */
+.hbar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 7px;
+    font-size: 12px;
+}
+
+.hbar-label {
+    width: 78px;
+    flex-shrink: 0;
+    text-align: right;
+    color: #475569;
+    white-space: nowrap;
+}
+
+.hbar-track {
+    flex: 1;
+    height: 12px;
+    background: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.hbar-fill {
+    width: 0;
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 4px;
+    transition: width 0.6s ease;
+}
+
+.hbar-value {
+    width: 30px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+/* vertical bars (subjects per class) */
+.vbar-chart {
+    display: flex;
+    gap: 6px;
+}
+
+.vbar-col {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.vbar-plot {
+    width: 100%;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.vbar-value {
+    font-size: 11px;
+    font-weight: 600;
+    color: #0f172a;
+    margin-bottom: 3px;
+}
+
+.vbar-fill {
+    width: 100%;
+    max-width: 26px;
+    height: 0;
+    min-height: 2px;
+    background: #6366f1;
+    border-radius: 4px 4px 0 0;
+    transition: height 0.6s ease;
+}
+
+.vbar-label {
+    margin-top: 6px;
+    height: 72px;
+    font-size: 11px;
+    color: #475569;
+    white-space: nowrap;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+}

@@ -225,6 +225,64 @@
                     <h1 class="no-select"
                         style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
                         Welcome to, TCSAC Management Portal</h1>
+                        
+                    <!-- SUMMARY CARDS -->
+                    <div class="home-cards">
+
+                        <div class="home-card">
+                            <span class="home-card-icon"><!-- ICON: school building or classroom, for Total Classes --></span>
+                            <div class="home-card-body">
+                                <div class="home-card-value" id="stat-classes">0</div>
+                                <div class="home-card-label">Total Classes</div>
+                            </div>
+                        </div>
+
+                        <div class="home-card clickable" role="button" tabindex="0" onclick="switchTab('db-students')"
+                            onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchTab('db-students'); }">
+                            <span class="home-card-icon"><!-- ICON: graduation cap or group of students, for Total Students --></span>
+                            <div class="home-card-body">
+                                <div class="home-card-value" id="stat-students">0</div>
+                                <div class="home-card-label">Total Students</div>
+                            </div>
+                        </div>
+
+                        <div class="home-card clickable" role="button" tabindex="0" onclick="switchTab('db-teachers')"
+                            onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchTab('db-teachers'); }">
+                            <span class="home-card-icon"><!-- ICON: teacher at a board or single person with a book, for Total Teachers --></span>
+                            <div class="home-card-body">
+                                <div class="home-card-value" id="stat-teachers">0</div>
+                                <div class="home-card-label">Total Teachers</div>
+                            </div>
+                        </div>
+
+                        <div class="home-card">
+                            <span class="home-card-icon"><!-- ICON: two people (male and female symbols), for Students by Gender --></span>
+                            <div class="home-card-body">
+                                <div class="home-card-label" style="margin: 0 0 4px 0;">Students by Gender</div>
+                                <div class="home-gender-row">
+                                    <span><b id="stat-boys">0</b> Boys</span>
+                                    <span><b id="stat-girls">0</b> Girls</span>
+                                </div>
+                                <div class="home-gender-bar">
+                                    <span id="gender-bar-boys"></span><span id="gender-bar-girls"></span>
+                                </div>
+                                <div class="home-card-note" id="stat-gender-unset"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- CHARTS -->
+                    <div class="home-charts">
+                        <div class="home-panel">
+                            <h3 class="home-panel-title no-select">Students in Each Class</h3>
+                            <div id="chart-students-per-class"></div>
+                        </div>
+                        <div class="home-panel">
+                            <h3 class="home-panel-title no-select">Subjects in Each Class</h3>
+                            <div id="chart-subjects-per-class"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- TAB CONTENT: EXAMS SKELETON HOLDER -->
@@ -497,6 +555,13 @@
                                     <option value="O-">O-</option>
                                     <option value="AB+">AB+</option>
                                     <option value="AB-">AB-</option>
+                                </select>
+                            </div>
+                            <div><label>Gender</label>
+                                <select id="st-gender">
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
                                 </select>
                             </div>
                             <div><label>Guardian Contact</label><input type="text" id="st-phone"></div>

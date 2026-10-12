@@ -105,6 +105,16 @@ db.serialize(() => {
             }
         });
 
+        
+        // Migration: add gender column to students if it doesn't exist yet
+        db.all("PRAGMA table_info(students)", [], (err, columns) => {
+            if (err || !columns) return;
+            const columnNames = columns.map(c => c.name);
+            if (!columnNames.includes('gender')) {
+                db.run(`ALTER TABLE students ADD COLUMN gender TEXT`);
+            }
+        });
+
     // 5. Exams Table (Tracks individual assessment sessions)
     db.run(`CREATE TABLE IF NOT EXISTS exams (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
