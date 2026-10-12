@@ -197,6 +197,12 @@ button:hover {
     margin-bottom: 20px;
 }
 
+.dashboard-sidebar-nav>hr.sidebar-divider {
+    border: 0;
+    border-top: 1px solid #334155;
+    margin: 6px 0 16px 0;
+}
+
 .dashboard-sidebar-nav>button {
     text-align: left;
     margin-bottom: 10px;
