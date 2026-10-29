@@ -494,20 +494,49 @@ button:hover {
 #student-details summary,
 #teacher-details summary,
 #subject-details summary {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     cursor: pointer;
-    margin: -15px -15px 0 -15px;
+    margin: -15px;
     padding: 15px;
     border-radius: 7px;
-    list-style-position: inside;
+    list-style: none;
+}
+
+#student-details summary::-webkit-details-marker,
+#teacher-details summary::-webkit-details-marker,
+#subject-details summary::-webkit-details-marker {
+    display: none;
+}
+
+#student-details summary::after,
+#teacher-details summary::after,
+#subject-details summary::after {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    background-color: currentColor;
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z'/%3E%3C/svg%3E") no-repeat center / contain;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z'/%3E%3C/svg%3E") no-repeat center / contain;
+    transform: rotate(-90deg);
+    transition: transform 0.2s ease;
 }
 
 #student-details[open] summary,
 #teacher-details[open] summary,
 #subject-details[open] summary {
-    margin-bottom: 0;
+    margin: -15px -15px 0 -15px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+}
+
+#student-details[open] summary::after,
+#teacher-details[open] summary::after,
+#subject-details[open] summary::after {
+    transform: rotate(0deg);
 }
 
 #student-details.disabled {
