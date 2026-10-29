@@ -496,7 +496,8 @@ button:hover {
 #subject-details summary {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;
+    gap: 8px;
     cursor: pointer;
     margin: -15px;
     padding: 15px;
@@ -510,18 +511,18 @@ button:hover {
     display: none;
 }
 
-#student-details summary::after,
-#teacher-details summary::after,
-#subject-details summary::after {
+#student-details summary::before,
+#teacher-details summary::before,
+#subject-details summary::before {
     content: '';
     display: inline-block;
     width: 18px;
     height: 18px;
     flex-shrink: 0;
     background-color: currentColor;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z'/%3E%3C/svg%3E") no-repeat center / contain;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960'%3E%3Cpath d='M480-345 240-585l56-56 184 184 184-184 56 56-240 240Z'/%3E%3C/svg%3E") no-repeat center / contain;
-    transform: rotate(-90deg);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E") no-repeat center / contain;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E") no-repeat center / contain;
+    transform: rotate(0deg);
     transition: transform 0.2s ease;
 }
 
@@ -533,10 +534,10 @@ button:hover {
     border-bottom-right-radius: 0;
 }
 
-#student-details[open] summary::after,
-#teacher-details[open] summary::after,
-#subject-details[open] summary::after {
-    transform: rotate(0deg);
+#student-details[open] summary::before,
+#teacher-details[open] summary::before,
+#subject-details[open] summary::before {
+    transform: rotate(90deg);
 }
 
 #student-details.disabled {
