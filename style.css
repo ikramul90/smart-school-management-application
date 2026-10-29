@@ -491,8 +491,23 @@ button:hover {
     scroll-margin-top: 18px;
 }
 
-#student-details summary {
-    display: inline-block;
+#student-details summary,
+#teacher-details summary,
+#subject-details summary {
+    display: block;
+    cursor: pointer;
+    margin: -15px -15px 0 -15px;
+    padding: 15px;
+    border-radius: 7px;
+    list-style-position: inside;
+}
+
+#student-details[open] summary,
+#teacher-details[open] summary,
+#subject-details[open] summary {
+    margin-bottom: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
 }
 
 #student-details.disabled {
@@ -504,6 +519,7 @@ button:hover {
 #student-details.disabled summary {
     cursor: not-allowed !important;
     color: #94a3b8 !important;
+    pointer-events: none;
 }
 
 @keyframes formHighlightPulse {
