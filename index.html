@@ -187,13 +187,6 @@
                     </button>
 
                     <hr class="sidebar-divider">
-                    <button class="nav-btn no-select" data-tab="settings-school"
-                        onclick="switchTab('settings-school')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M3 21H21M6 18V9.99998M10 18V9.99998M14 18V9.99998M18 18V9.99998M20 6.99998L12.424 2.26498C12.2702 2.16884 12.1933 2.12077 12.1108 2.10203C12.0379 2.08546 11.9621 2.08546 11.8892 2.10203C11.8067 2.12077 11.7298 2.16884 11.576 2.26498L4 6.99998H20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        <span>School Info</span>
-                    </button>
                     <button class="nav-btn no-select" data-tab="settings-admin"
                         onclick="switchTab('settings-admin')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -796,32 +789,35 @@
 
                 </div>
 
-                <!-- TAB CONTENT: SCHOOL INFO -->
-                <div id="settings-school" class="tab-content">
-                    <h2>School Information Profile</h2>
-                    <div>
-                        <div class="input-group">
-                            <label>Institute Name</label>
-                            <input type="text" id="school-name-input" placeholder="Enter school institute name"
-                                value="The Cadet School & College (TCSAC)">
-                        </div>
-                        <div class="input-group">
-                            <label>Institute Address</label>
-                            <input type="text" id="school-address-input"
-                                placeholder="Enter school physical address">
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 12px; margin-top: 14px;">
-                            <button type="button" id="btn-save-school-info" style="background-color: #10b981;">Save Configuration</button>
-                            <span id="school-info-feedback" style="font-size: 13px; font-weight: 600;"></span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB CONTENT: ADMIN INFO -->
+                <!-- TAB CONTENT: SETTINGS (ADMIN & SCHOOL CONFIG) -->
                 <div id="settings-admin" class="tab-content">
                     <h2 class="no-select" style="text-align:left; margin-bottom: 20px;">Settings</h2>
 
                     <div style="display: flex; flex-direction: column; gap: 25px; max-width: 680px;">
+                        
+                        <!-- SECTION: SCHOOL INFORMATION PROFILE -->
+                        <div id="school-info-form" style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                            <h3 style="margin-top: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                                🏫 School Information Profile
+                            </h3>
+                            <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">
+                                Configure your institute name and address used across reports, transcripts, and certificates.
+                            </p>
+                            <div class="input-group">
+                                <label class="no-select">Institute Name</label>
+                                <input type="text" id="school-name-input" placeholder="Enter school institute name"
+                                    value="The Cadet School & College (TCSAC)">
+                            </div>
+                            <div class="input-group">
+                                <label class="no-select">Institute Address</label>
+                                <input type="text" id="school-address-input"
+                                    placeholder="Enter school physical address">
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 12px; margin-top: 14px;">
+                                <button type="button" id="btn-save-school-info" style="background-color: #10b981;">Save Configuration</button>
+                                <span id="school-info-feedback" style="font-size: 13px; font-weight: 600;"></span>
+                            </div>
+                        </div>
                         
                         <!-- SECTION 1: CHANGE CREDENTIALS (USERNAME & PASSWORD) -->
                         <div id="admin-password-form" style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">

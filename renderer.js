@@ -271,8 +271,10 @@ window.switchTab = function (tabId) {
     if (tabId === 'db-subjects') loadSubjectsPage();
     if (tabId === 'db-students') loadStudentsPage();
     if (tabId === 'db-teachers') loadTeachersPage();
-    if (tabId === 'settings-admin') loadAdminSettingsPage();
-    if (tabId === 'settings-school') loadSchoolInfo();
+    if (tabId === 'settings-admin') {
+        loadAdminSettingsPage();
+        loadSchoolInfo();
+    }
     if (tabId === 'home-tab') loadDashboardStats();
 };
 
@@ -1843,8 +1845,6 @@ window.switchTab = function (tabId) {
     if (tabId === 'exams-tab') {
         showExamsHomeView();
         loadExamClassButtons();
-    } else if (tabId === 'settings-school') {
-        loadSchoolInfo();
     }
 };
 

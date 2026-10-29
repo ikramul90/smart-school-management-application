@@ -238,7 +238,6 @@ button:hover {
     overflow-y: auto;
 }
 
-#settings-school,
 #settings-admin,
 #db-students,
 #db-teachers,
@@ -250,14 +249,6 @@ button:hover {
 
 #home-tab {
     display: block;
-}
-
-#settings-school>div {
-    background: white;
-    padding: 25px;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-    max-width: 600px;
 }
 
 .nav-btn {
