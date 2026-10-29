@@ -619,67 +619,12 @@
                     </table>
                 </div>
 
-                <!-- TAB CONTENT: GRADES -->
-                <div id="db-grades" class="tab-content">
-                    <h2 class="no-select">Grading System</h2>
-
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Letter Grade</th>
-                                <th>Class Interval</th>
-                                <th>Grade Point</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr id="grade-row-Aplus">
-                                <td id="grade-letter-Aplus">A+</td>
-                                <td id="grade-interval-Aplus">80 - 100</td>
-                                <td id="grade-point-Aplus">5.0</td>
-                            </tr>
-                            <tr id="grade-row-A">
-                                <td id="grade-letter-A">A</td>
-                                <td id="grade-interval-A">70 - 79</td>
-                                <td id="grade-point-A">4.0</td>
-                            </tr>
-                            <tr id="grade-row-Aminus">
-                                <td id="grade-letter-Aminus">A-</td>
-                                <td id="grade-interval-Aminus">60 - 69</td>
-                                <td id="grade-point-Aminus">3.5</td>
-                            </tr>
-                            <tr id="grade-row-B">
-                                <td id="grade-letter-B">B</td>
-                                <td id="grade-interval-B">50 - 59</td>
-                                <td id="grade-point-B">3.0</td>
-                            </tr>
-                            <tr id="grade-row-C">
-                                <td id="grade-letter-C">C</td>
-                                <td id="grade-interval-C">40 - 49</td>
-                                <td id="grade-point-C">2.0</td>
-                            </tr>
-                            <tr id="grade-row-D">
-                                <td id="grade-letter-D">D</td>
-                                <td id="grade-interval-D">33 - 39</td>
-                                <td id="grade-point-D">1.0</td>
-                            </tr>
-                            <tr id="grade-row-F">
-                                <td id="grade-letter-F">F</td>
-                                <td id="grade-interval-F">00 - 32</td>
-                                <td id="grade-point-F">0.0</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                </div>
-
                 <!-- TAB CONTENT: TEACHERS DATABASE -->
                 <div id="db-teachers" class="tab-content">
                     <h2 class="no-select">Teacher Registry</h2>
 
-                    <details id="teacher-details" class="no-select"
-                        style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
-                        <summary class="no-select" style="font-weight:bold; cursor:pointer; color:#2563eb;">Add New
-                            Teacher</summary>
+                    <details id="teacher-details" class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                        <summary class="no-select" style="font-weight:bold; cursor:pointer; color:#2563eb;">Add New Teacher</summary>
                         <div id="teacher-form"
                             style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
                             <input type="hidden" id="tc-edit-id" value="">
@@ -709,8 +654,7 @@
                         <button id="btn-save-teacher"
                             style="margin-top:15px; background-color:#2563eb; width:200px;">Save Teacher</button>
                         <button id="btn-cancel-teacher" type="button"
-                            style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel
-                            Edit</button>
+                            style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
                     </details>
 
                     <table
@@ -799,6 +743,58 @@
                     </table>
                 </div>
 
+                <!-- TAB CONTENT: GRADES -->
+                <div id="db-grades" class="tab-content">
+                    <h2 class="no-select">Grading System</h2>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Letter Grade</th>
+                                <th>Class Interval</th>
+                                <th>Grade Point</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="grade-row-Aplus">
+                                <td id="grade-letter-Aplus">A+</td>
+                                <td id="grade-interval-Aplus">80 - 100</td>
+                                <td id="grade-point-Aplus">5.0</td>
+                            </tr>
+                            <tr id="grade-row-A">
+                                <td id="grade-letter-A">A</td>
+                                <td id="grade-interval-A">70 - 79</td>
+                                <td id="grade-point-A">4.0</td>
+                            </tr>
+                            <tr id="grade-row-Aminus">
+                                <td id="grade-letter-Aminus">A-</td>
+                                <td id="grade-interval-Aminus">60 - 69</td>
+                                <td id="grade-point-Aminus">3.5</td>
+                            </tr>
+                            <tr id="grade-row-B">
+                                <td id="grade-letter-B">B</td>
+                                <td id="grade-interval-B">50 - 59</td>
+                                <td id="grade-point-B">3.0</td>
+                            </tr>
+                            <tr id="grade-row-C">
+                                <td id="grade-letter-C">C</td>
+                                <td id="grade-interval-C">40 - 49</td>
+                                <td id="grade-point-C">2.0</td>
+                            </tr>
+                            <tr id="grade-row-D">
+                                <td id="grade-letter-D">D</td>
+                                <td id="grade-interval-D">33 - 39</td>
+                                <td id="grade-point-D">1.0</td>
+                            </tr>
+                            <tr id="grade-row-F">
+                                <td id="grade-letter-F">F</td>
+                                <td id="grade-interval-F">00 - 32</td>
+                                <td id="grade-point-F">0.0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
 
                 <!-- TAB CONTENT: SCHOOL INFO -->
                 <div id="settings-school" class="tab-content">
