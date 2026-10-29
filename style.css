@@ -239,7 +239,6 @@ button:hover {
 }
 
 #settings-school,
-#settings-developer,
 #settings-admin,
 #db-students,
 #db-teachers,
@@ -259,17 +258,6 @@ button:hover {
     border-radius: 8px;
     border: 1px solid #e2e8f0;
     max-width: 600px;
-}
-
-#settings-developer>div {
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
-    border: 1px solid #e2e8f0;
-    display: flex;
-    gap: 30px;
-    align-items: center;
-    max-width: 650px;
 }
 
 .nav-btn {
