@@ -827,7 +827,7 @@ function formatHistoryDate(text) {
 }
 
 function studentRowHtml(s, view) {
-    const infoBtn = `<button onclick="showStudentInfoModal(${s.id})" style="${STUDENT_BTN_STYLE}background:#0284c7;">${renderActionIcon(ACTION_ICONS.info)}More Info</button>`;
+    const infoBtn = `<button onclick="showStudentInfoModal(${s.id})" style="${STUDENT_BTN_STYLE}background:#0284c7;">${renderActionIcon(ACTION_ICONS.info)}Info</button>`;
     const editBtn = `<button onclick="editStudentById(${s.id})" style="${STUDENT_BTN_STYLE}background:#2563eb;">${renderActionIcon(ACTION_ICONS.edit)}Edit</button>`;
 
     // Promote-mode checkbox column: shown only for Active view when promote mode is on.
@@ -1629,7 +1629,7 @@ async function renderTeachersTable() {
             <td>${assignedClasses.length ? assignedClasses.map(escapeHtml).join(', ') : '<i style="color:gray;">None</i>'}</td>
             <td>${escapeHtml(t.contact_number || '')}</td>
             <td>
-                <button onclick="showTeacherInfoModal(${t.id})" style="padding:4px 8px; background:#0284c7; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin-right:4px; line-height:1; vertical-align:middle;">${renderActionIcon(ACTION_ICONS.info)}More Info</button>
+                <button onclick="showTeacherInfoModal(${t.id})" style="padding:4px 8px; background:#0284c7; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin-right:4px; line-height:1; vertical-align:middle;">${renderActionIcon(ACTION_ICONS.info)}Info</button>
                 <button onclick="editTeacherById(${t.id})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin-right:4px; line-height:1; vertical-align:middle;">${renderActionIcon(ACTION_ICONS.edit)}Edit</button>
                 <button onclick="deleteTeacher(${t.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; line-height:1; vertical-align:middle;">${renderActionIcon(ACTION_ICONS.delete)}Delete</button>
             </td>
