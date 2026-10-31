@@ -82,7 +82,8 @@
             Answer all security questions correctly to set a new password.
         </p>
         <div class="error" id="reset-error" style="margin-bottom: 10px;"></div>
-        <div id="reset-success" style="color: #10b981; font-size: 13px; font-weight: bold; margin-bottom: 10px; display:none;"></div>
+        <div id="reset-success"
+            style="color: #10b981; font-size: 13px; font-weight: bold; margin-bottom: 10px; display:none;"></div>
 
         <div id="reset-questions-container">
             <!-- Dynamically populated questions and answers -->
@@ -94,8 +95,19 @@
                 <input type="password" id="reset-new-password" placeholder="Enter new password">
                 <button type="button" class="password-toggle-btn toggle-pw-btn" data-target="reset-new-password"
                     aria-label="Toggle password" tabindex="-1">
-                    <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                    <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                        </path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
                 </button>
             </div>
         </div>
@@ -106,15 +118,27 @@
                 <input type="password" id="reset-confirm-password" placeholder="Confirm new password">
                 <button type="button" class="password-toggle-btn toggle-pw-btn" data-target="reset-confirm-password"
                     aria-label="Toggle password" tabindex="-1">
-                    <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                    <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                    <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20"
+                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path
+                            d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                        </path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
                 </button>
             </div>
         </div>
 
         <div style="display: flex; gap: 10px; margin-top: 15px;">
             <button id="btn-submit-reset-password" type="button" style="flex: 1;">Save New Password</button>
-            <button id="btn-cancel-reset-password" type="button" style="flex: 1; background: #64748b;">Back to Login</button>
+            <button id="btn-cancel-reset-password" type="button" style="flex: 1; background: #64748b;">Back to
+                Login</button>
         </div>
     </div>
 
@@ -127,7 +151,11 @@
                 <div class="dashboard-sidebar-nav">
                     <div class="sidebar-header">
                         <button id="sidebar-toggle" type="button" aria-label="Collapse sidebar">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 -960 960 960" fill="currentColor"><path d="M440-240 200-480l240-240 56 56-183 184 183 184-56 56Zm264 0L464-480l240-240 56 56-183 184 183 184-56 56Z"/></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 -960 960 960"
+                                fill="currentColor">
+                                <path
+                                    d="M440-240 200-480l240-240 56 56-183 184 183 184-56 56Zm264 0L464-480l240-240 56 56-183 184 183 184-56 56Z" />
+                            </svg>
                         </button>
                         <h3 class="no-select">NAVIGATION</h3>
                         <button id="notif-bell" type="button" aria-label="Notifications" title="Notifications">
@@ -143,55 +171,65 @@
 
                     <button class="nav-btn active" data-tab="home-tab" onclick="switchTab('home-tab')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12.9823 2.764C12.631 2.49075 12.4553 2.35412 12.2613 2.3016C12.0902 2.25526 11.9098 2.25526 11.7387 2.3016C11.5447 2.35412 11.369 2.49075 11.0177 2.764L4.23539 8.03912C3.78202 8.39175 3.55534 8.56806 3.39203 8.78886C3.24737 8.98444 3.1396 9.20478 3.07403 9.43905C3 9.70352 3 9.9907 3 10.5651V17.8C3 18.9201 3 19.4801 3.21799 19.908C3.40973 20.2843 3.71569 20.5903 4.09202 20.782C4.51984 21 5.0799 21 6.2 21H8.2C8.48003 21 8.62004 21 8.727 20.9455C8.82108 20.8976 8.89757 20.8211 8.9455 20.727C9 20.62 9 20.48 9 20.2V13.6C9 13.0399 9 12.7599 9.10899 12.546C9.20487 12.3578 9.35785 12.2049 9.54601 12.109C9.75992 12 10.0399 12 10.6 12H13.4C13.9601 12 14.2401 12 14.454 12.109C14.6422 12.2049 14.7951 12.3578 14.891 12.546C15 12.7599 15 13.0399 15 13.6V20.2C15 20.48 15 20.62 15.0545 20.727C15.1024 20.8211 15.1789 20.8976 15.273 20.9455C15.38 21 15.52 21 15.8 21H17.8C18.9201 21 19.4802 21 19.908 20.782C20.2843 20.5903 20.5903 20.2843 20.782 19.908C21 19.4801 21 18.9201 21 17.8V10.5651C21 9.9907 21 9.70352 20.926 9.43905C20.8604 9.20478 20.7526 8.98444 20.608 8.78886C20.4447 8.56806 20.218 8.39175 19.7646 8.03913L12.9823 2.764Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path
+                                d="M12.9823 2.764C12.631 2.49075 12.4553 2.35412 12.2613 2.3016C12.0902 2.25526 11.9098 2.25526 11.7387 2.3016C11.5447 2.35412 11.369 2.49075 11.0177 2.764L4.23539 8.03912C3.78202 8.39175 3.55534 8.56806 3.39203 8.78886C3.24737 8.98444 3.1396 9.20478 3.07403 9.43905C3 9.70352 3 9.9907 3 10.5651V17.8C3 18.9201 3 19.4801 3.21799 19.908C3.40973 20.2843 3.71569 20.5903 4.09202 20.782C4.51984 21 5.0799 21 6.2 21H8.2C8.48003 21 8.62004 21 8.727 20.9455C8.82108 20.8976 8.89757 20.8211 8.9455 20.727C9 20.62 9 20.48 9 20.2V13.6C9 13.0399 9 12.7599 9.10899 12.546C9.20487 12.3578 9.35785 12.2049 9.54601 12.109C9.75992 12 10.0399 12 10.6 12H13.4C13.9601 12 14.2401 12 14.454 12.109C14.6422 12.2049 14.7951 12.3578 14.891 12.546C15 12.7599 15 13.0399 15 13.6V20.2C15 20.48 15 20.62 15.0545 20.727C15.1024 20.8211 15.1789 20.8976 15.273 20.9455C15.38 21 15.52 21 15.8 21H17.8C18.9201 21 19.4802 21 19.908 20.782C20.2843 20.5903 20.5903 20.2843 20.782 19.908C21 19.4801 21 18.9201 21 17.8V10.5651C21 9.9907 21 9.70352 20.926 9.43905C20.8604 9.20478 20.7526 8.98444 20.608 8.78886C20.4447 8.56806 20.218 8.39175 19.7646 8.03913L12.9823 2.764Z"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                         <span>Home</span>
                     </button>
 
                     <button class="nav-btn no-select" data-tab="exams-tab" onclick="switchTab('exams-tab')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M13.75,2 C14.940864,2 15.9156449,2.92516159 15.9948092,4.09595119 L16,4.25 L16,4.25 C16,4.16530567 15.9953205,4.0817043 15.9862059,3.99944035 L17.75,4 C18.9926407,4 20,5.00735931 20,6.25 L20,19.75 C20,20.9926407 18.9926407,22 17.75,22 L6.25,22 C5.00735931,22 4,20.9926407 4,19.75 L4,6.25 C4,5.00735931 5.00735931,4 6.25,4 L8.01379413,3.99944035 C8.00733496,4.05773764 8.00310309,4.11670658 8.00118552,4.17626017 L8,4.25 C8,3.00735931 9.00735931,2 10.25,2 L13.75,2 Z M13.75,6.5 L10.25,6.5 C9.45594921,6.5 8.75796956,6.08867052 8.357512,5.4674625 L8.37902077,5.50019943 L8.37902077,5.50019943 L6.25,5.5 C5.83578644,5.5 5.5,5.83578644 5.5,6.25 L5.5,19.75 C5.5,20.1642136 5.83578644,20.5 6.25,20.5 L17.75,20.5 C18.1642136,20.5 18.5,20.1642136 18.5,19.75 L18.5,6.25 C18.5,5.83578644 18.1642136,5.5 17.75,5.5 L15.6209792,5.50019943 L15.642488,5.4674625 C15.2420304,6.08867052 14.5440508,6.5 13.75,6.5 Z M13.75,3.5 L10.25,3.5 C9.83578644,3.5 9.5,3.83578644 9.5,4.25 C9.5,4.66421356 9.83578644,5 10.25,5 L13.75,5 C14.1642136,5 14.5,4.66421356 14.5,4.25 C14.5,3.83578644 14.1642136,3.5 13.75,3.5 Z M8,14.5 L12,14.5 C12.4142136,14.5 12.75,14.1642136 12.75,13.75 C12.75,13.3357864 12.4142136,13 12,13 L8,13 C7.58578644,13 7.25,13.3357864 7.25,13.75 C7.25,14.1642136 7.58578644,14.5 8,14.5 Z M8,10.5 L16,10.5 C16.4142136,10.5 16.75,10.1642136 16.75,9.75 C16.75,9.33578644 16.4142136,9 16,9 L8,9 C7.58578644,9 7.25,9.33578644 7.25,9.75 C7.25,10.1642136 7.58578644,10.5 8,10.5 Z M8,18.5 L14,18.5 C14.4142136,18.5 14.75,18.1642136 14.75,17.75 C14.75,17.3357864 14.4142136,17 14,17 L8,17 C7.58578644,17 7.25,17.3357864 7.25,17.75 C7.25,18.1642136 7.58578644,18.5 8,18.5 Z"/>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M13.75,2 C14.940864,2 15.9156449,2.92516159 15.9948092,4.09595119 L16,4.25 L16,4.25 C16,4.16530567 15.9953205,4.0817043 15.9862059,3.99944035 L17.75,4 C18.9926407,4 20,5.00735931 20,6.25 L20,19.75 C20,20.9926407 18.9926407,22 17.75,22 L6.25,22 C5.00735931,22 4,20.9926407 4,19.75 L4,6.25 C4,5.00735931 5.00735931,4 6.25,4 L8.01379413,3.99944035 C8.00733496,4.05773764 8.00310309,4.11670658 8.00118552,4.17626017 L8,4.25 C8,3.00735931 9.00735931,2 10.25,2 L13.75,2 Z M13.75,6.5 L10.25,6.5 C9.45594921,6.5 8.75796956,6.08867052 8.357512,5.4674625 L8.37902077,5.50019943 L8.37902077,5.50019943 L6.25,5.5 C5.83578644,5.5 5.5,5.83578644 5.5,6.25 L5.5,19.75 C5.5,20.1642136 5.83578644,20.5 6.25,20.5 L17.75,20.5 C18.1642136,20.5 18.5,20.1642136 18.5,19.75 L18.5,6.25 C18.5,5.83578644 18.1642136,5.5 17.75,5.5 L15.6209792,5.50019943 L15.642488,5.4674625 C15.2420304,6.08867052 14.5440508,6.5 13.75,6.5 Z M13.75,3.5 L10.25,3.5 C9.83578644,3.5 9.5,3.83578644 9.5,4.25 C9.5,4.66421356 9.83578644,5 10.25,5 L13.75,5 C14.1642136,5 14.5,4.66421356 14.5,4.25 C14.5,3.83578644 14.1642136,3.5 13.75,3.5 Z M8,14.5 L12,14.5 C12.4142136,14.5 12.75,14.1642136 12.75,13.75 C12.75,13.3357864 12.4142136,13 12,13 L8,13 C7.58578644,13 7.25,13.3357864 7.25,13.75 C7.25,14.1642136 7.58578644,14.5 8,14.5 Z M8,10.5 L16,10.5 C16.4142136,10.5 16.75,10.1642136 16.75,9.75 C16.75,9.33578644 16.4142136,9 16,9 L8,9 C7.58578644,9 7.25,9.33578644 7.25,9.75 C7.25,10.1642136 7.58578644,10.5 8,10.5 Z M8,18.5 L14,18.5 C14.4142136,18.5 14.75,18.1642136 14.75,17.75 C14.75,17.3357864 14.4142136,17 14,17 L8,17 C7.58578644,17 7.25,17.3357864 7.25,17.75 C7.25,18.1642136 7.58578644,18.5 8,18.5 Z" />
                         </svg>
                         <span>Exams Module</span>
                     </button>
 
                     <hr class="sidebar-divider">
-                    <button class="nav-btn no-select" data-tab="db-students"
-                        onclick="switchTab('db-students')">
-                        <svg width="20" height="20" viewBox="-100 -110 1224 1224" fill="currentColor" stroke="currentColor" stroke-width="40" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M990.848 696.304V438.16l16.096-8.496c10.464-5.44 17.055-16.225 17.183-28.032.128-11.777-6.256-22.689-16.592-28.368l-481.44-257.6c-9.631-5.28-21.28-5.249-30.976.095l-478.8 257.92C6.126 379.36-.177 390.143-.113 401.84s6.496 22.4 16.817 27.97l210.384 111.983c-2.64 4.656-4.272 9.968-4.272 15.696v270.784c0 9.12 3.905 17.84 10.72 23.904 6.945 6.16 73.441 60.096 276.753 60.096 202.592 0 270.88-50.976 278-56.784 7.44-6.064 11.744-15.152 11.744-24.784V552.976c0-4.496-.944-8.768-2.608-12.64l129.424-68.369V696.48c-18.976 11.104-31.84 31.472-31.84 55.024 0 35.344 28.656 64 64 64s64-28.656 64-64c0-23.697-13.04-44.145-32.16-55.2zM736.031 812.368c-25.152 12.096-91.712 35.904-225.744 35.904-134.88 0-199.936-25.344-223.472-37.536V573.6l207.808 110.624a31.896 31.896 0 0 0 15.184 3.84 31.675 31.675 0 0 0 14.816-3.664l211.408-111.664v239.632zM510.063 619.81l-411.6-218.561 412.32-220.976 413.6 220.336z"/>
+                    <button class="nav-btn no-select" data-tab="db-students" onclick="switchTab('db-students')">
+                        <svg width="20" height="20" viewBox="-100 -110 1224 1224" fill="currentColor"
+                            stroke="currentColor" stroke-width="40" stroke-linejoin="round"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M990.848 696.304V438.16l16.096-8.496c10.464-5.44 17.055-16.225 17.183-28.032.128-11.777-6.256-22.689-16.592-28.368l-481.44-257.6c-9.631-5.28-21.28-5.249-30.976.095l-478.8 257.92C6.126 379.36-.177 390.143-.113 401.84s6.496 22.4 16.817 27.97l210.384 111.983c-2.64 4.656-4.272 9.968-4.272 15.696v270.784c0 9.12 3.905 17.84 10.72 23.904 6.945 6.16 73.441 60.096 276.753 60.096 202.592 0 270.88-50.976 278-56.784 7.44-6.064 11.744-15.152 11.744-24.784V552.976c0-4.496-.944-8.768-2.608-12.64l129.424-68.369V696.48c-18.976 11.104-31.84 31.472-31.84 55.024 0 35.344 28.656 64 64 64s64-28.656 64-64c0-23.697-13.04-44.145-32.16-55.2zM736.031 812.368c-25.152 12.096-91.712 35.904-225.744 35.904-134.88 0-199.936-25.344-223.472-37.536V573.6l207.808 110.624a31.896 31.896 0 0 0 15.184 3.84 31.675 31.675 0 0 0 14.816-3.664l211.408-111.664v239.632zM510.063 619.81l-411.6-218.561 412.32-220.976 413.6 220.336z" />
                         </svg>
                         <span>Students</span>
                     </button>
-                    <button class="nav-btn no-select" data-tab="db-teachers"
-                        onclick="switchTab('db-teachers')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <button class="nav-btn no-select" data-tab="db-teachers" onclick="switchTab('db-teachers')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                             <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                         <span>Teachers</span>
                     </button>
-                    <button class="nav-btn no-select" data-tab="db-subjects"
-                        onclick="switchTab('db-subjects')">
+                    <button class="nav-btn no-select" data-tab="db-subjects" onclick="switchTab('db-subjects')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M20 19V16H7C5.34315 16 4 17.3431 4 19M8.8 22H16.8C17.9201 22 18.4802 22 18.908 21.782C19.2843 21.5903 19.5903 21.2843 19.782 20.908C20 20.4802 20 19.9201 20 18.8V5.2C20 4.07989 20 3.51984 19.782 3.09202C19.5903 2.71569 19.2843 2.40973 18.908 2.21799C18.4802 2 17.9201 2 16.8 2H8.8C7.11984 2 6.27976 2 5.63803 2.32698C5.07354 2.6146 4.6146 3.07354 4.32698 3.63803C4 4.27976 4 5.11984 4 6.8V17.2C4 18.8802 4 19.7202 4.32698 20.362C4.6146 20.9265 5.07354 21.3854 5.63803 21.673C6.27976 22 7.11984 22 8.8 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path
+                                d="M20 19V16H7C5.34315 16 4 17.3431 4 19M8.8 22H16.8C17.9201 22 18.4802 22 18.908 21.782C19.2843 21.5903 19.5903 21.2843 19.782 20.908C20 20.4802 20 19.9201 20 18.8V5.2C20 4.07989 20 3.51984 19.782 3.09202C19.5903 2.71569 19.2843 2.40973 18.908 2.21799C18.4802 2 17.9201 2 16.8 2H8.8C7.11984 2 6.27976 2 5.63803 2.32698C5.07354 2.6146 4.6146 3.07354 4.32698 3.63803C4 4.27976 4 5.11984 4 6.8V17.2C4 18.8802 4 19.7202 4.32698 20.362C4.6146 20.9265 5.07354 21.3854 5.63803 21.673C6.27976 22 7.11984 22 8.8 22Z"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                         <span>Subject</span>
                     </button>
-                    <button class="nav-btn no-select" data-tab="db-grades"
-                        onclick="switchTab('db-grades')">
+                    <button class="nav-btn no-select" data-tab="db-grades" onclick="switchTab('db-grades')">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9 7H4.6C4.03995 7 3.75992 7 3.54601 7.10899C3.35785 7.20487 3.20487 7.35785 3.10899 7.54601C3 7.75992 3 8.03995 3 8.6V19.4C3 19.9601 3 20.2401 3.10899 20.454C3.20487 20.6422 3.35785 20.7951 3.54601 20.891C3.75992 21 4.03995 21 4.6 21H9M9 21H15M9 21L9 4.6C9 4.03995 9 3.75992 9.10899 3.54601C9.20487 3.35785 9.35785 3.20487 9.54601 3.10899C9.75992 3 10.0399 3 10.6 3L13.4 3C13.9601 3 14.2401 3 14.454 3.10899C14.6422 3.20487 14.7951 3.35785 14.891 3.54601C15 3.75992 15 4.03995 15 4.6V21M15 11H19.4C19.9601 11 20.2401 11 20.454 11.109C20.6422 11.2049 20.7951 11.3578 20.891 11.546C21 11.7599 21 12.0399 21 12.6V19.4C21 19.9601 21 20.2401 20.891 20.454C20.7951 20.6422 20.6422 20.7951 20.454 20.891C20.2401 21 19.9601 21 19.4 21H15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path
+                                d="M9 7H4.6C4.03995 7 3.75992 7 3.54601 7.10899C3.35785 7.20487 3.20487 7.35785 3.10899 7.54601C3 7.75992 3 8.03995 3 8.6V19.4C3 19.9601 3 20.2401 3.10899 20.454C3.20487 20.6422 3.35785 20.7951 3.54601 20.891C3.75992 21 4.03995 21 4.6 21H9M9 21H15M9 21L9 4.6C9 4.03995 9 3.75992 9.10899 3.54601C9.20487 3.35785 9.35785 3.20487 9.54601 3.10899C9.75992 3 10.0399 3 10.6 3L13.4 3C13.9601 3 14.2401 3 14.454 3.10899C14.6422 3.20487 14.7951 3.35785 14.891 3.54601C15 3.75992 15 4.03995 15 4.6V21M15 11H19.4C19.9601 11 20.2401 11 20.454 11.109C20.6422 11.2049 20.7951 11.3578 20.891 11.546C21 11.7599 21 12.0399 21 12.6V19.4C21 19.9601 21 20.2401 20.891 20.454C20.7951 20.6422 20.6422 20.7951 20.454 20.891C20.2401 21 19.9601 21 19.4 21H15"
+                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
                         <span>Grade</span>
                     </button>
 
                     <hr class="sidebar-divider">
-                    <button class="nav-btn no-select" data-tab="settings-admin"
-                        onclick="switchTab('settings-admin')">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <button class="nav-btn no-select" data-tab="settings-admin" onclick="switchTab('settings-admin')">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="3"></circle>
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                            <path
+                                d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                            </path>
                         </svg>
                         <span>Settings</span>
                     </button>
@@ -212,14 +250,18 @@
                     <h1 class="no-select"
                         style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
                         Welcome to, TCSAC Management Portal</h1>
-                        
+
                     <!-- SUMMARY CARDS -->
                     <div class="home-cards">
 
                         <div class="home-card">
                             <span class="home-card-icon">
-                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 6V2h4v2.5h-4M6 22V10l6-4 6 4v12M6 13H2v9M18 13h4v9M2 22h20M10 22v-4h4v4M12 11h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M12 6V2h4v2.5h-4M6 22V10l6-4 6 4v12M6 13H2v9M18 13h4v9M2 22h20M10 22v-4h4v4M12 11h.01"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
                                 </svg>
                             </span>
                             <div class="home-card-body">
@@ -231,8 +273,12 @@
                         <div class="home-card clickable" role="button" tabindex="0" onclick="switchTab('db-students')"
                             onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchTab('db-students'); }">
                             <span class="home-card-icon">
-                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M17 14.5001V11.4945C17 11.315 17 11.2253 16.9727 11.146C16.9485 11.076 16.9091 11.0122 16.8572 10.9592C16.7986 10.8993 16.7183 10.8592 16.5578 10.779L12 8.50006M4 9.50006V16.3067C4 16.6786 4 16.8645 4.05802 17.0274C4.10931 17.1713 4.1929 17.3016 4.30238 17.4082C4.42622 17.5287 4.59527 17.6062 4.93335 17.7612L11.3334 20.6945C11.5786 20.8069 11.7012 20.8631 11.8289 20.8853C11.9421 20.9049 12.0579 20.9049 12.1711 20.8853C12.2988 20.8631 12.4214 20.8069 12.6666 20.6945L19.0666 17.7612C19.4047 17.6062 19.5738 17.5287 19.6976 17.4082C19.8071 17.3016 19.8907 17.1713 19.942 17.0274C20 16.8645 20 16.6786 20 16.3067V9.50006M2 8.50006L11.6422 3.67895C11.7734 3.61336 11.839 3.58056 11.9078 3.56766C11.9687 3.55622 12.0313 3.55622 12.0922 3.56766C12.161 3.58056 12.2266 3.61336 12.3578 3.67895L22 8.50006L12.3578 13.3212C12.2266 13.3868 12.161 13.4196 12.0922 13.4325C12.0313 13.4439 11.9687 13.4439 11.9078 13.4325C11.839 13.4196 11.7734 13.3868 11.6422 13.3212L2 8.50006Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M17 14.5001V11.4945C17 11.315 17 11.2253 16.9727 11.146C16.9485 11.076 16.9091 11.0122 16.8572 10.9592C16.7986 10.8993 16.7183 10.8592 16.5578 10.779L12 8.50006M4 9.50006V16.3067C4 16.6786 4 16.8645 4.05802 17.0274C4.10931 17.1713 4.1929 17.3016 4.30238 17.4082C4.42622 17.5287 4.59527 17.6062 4.93335 17.7612L11.3334 20.6945C11.5786 20.8069 11.7012 20.8631 11.8289 20.8853C11.9421 20.9049 12.0579 20.9049 12.1711 20.8853C12.2988 20.8631 12.4214 20.8069 12.6666 20.6945L19.0666 17.7612C19.4047 17.6062 19.5738 17.5287 19.6976 17.4082C19.8071 17.3016 19.8907 17.1713 19.942 17.0274C20 16.8645 20 16.6786 20 16.3067V9.50006M2 8.50006L11.6422 3.67895C11.7734 3.61336 11.839 3.58056 11.9078 3.56766C11.9687 3.55622 12.0313 3.55622 12.0922 3.56766C12.161 3.58056 12.2266 3.61336 12.3578 3.67895L22 8.50006L12.3578 13.3212C12.2266 13.3868 12.161 13.4196 12.0922 13.4325C12.0313 13.4439 11.9687 13.4439 11.9078 13.4325C11.839 13.4196 11.7734 13.3868 11.6422 13.3212L2 8.50006Z"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
                                 </svg>
                             </span>
                             <div class="home-card-body">
@@ -244,8 +290,12 @@
                         <div class="home-card clickable" role="button" tabindex="0" onclick="switchTab('db-teachers')"
                             onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchTab('db-teachers'); }">
                             <span class="home-card-icon">
-                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M22 21V19C22 17.1362 20.7252 15.5701 19 15.126M15.5 3.29076C16.9659 3.88415 18 5.32131 18 7C18 8.67869 16.9659 10.1159 15.5 10.7092M17 21C17 19.1362 17 18.2044 16.6955 17.4693C16.2895 16.4892 15.5108 15.7105 14.5307 15.3045C13.7956 15 12.8638 15 11 15H8C6.13623 15 5.20435 15 4.46927 15.3045C3.48915 15.7105 2.71046 16.4892 2.30448 17.4693C2 18.2044 2 19.1362 2 21M13.5 7C13.5 9.20914 11.7091 11 9.5 11C7.29086 11 5.5 9.20914 5.5 7C5.5 4.79086 7.29086 3 9.5 3C11.7091 3 13.5 4.79086 13.5 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        d="M22 21V19C22 17.1362 20.7252 15.5701 19 15.126M15.5 3.29076C16.9659 3.88415 18 5.32131 18 7C18 8.67869 16.9659 10.1159 15.5 10.7092M17 21C17 19.1362 17 18.2044 16.6955 17.4693C16.2895 16.4892 15.5108 15.7105 14.5307 15.3045C13.7956 15 12.8638 15 11 15H8C6.13623 15 5.20435 15 4.46927 15.3045C3.48915 15.7105 2.71046 16.4892 2.30448 17.4693C2 18.2044 2 19.1362 2 21M13.5 7C13.5 9.20914 11.7091 11 9.5 11C7.29086 11 5.5 9.20914 5.5 7C5.5 4.79086 7.29086 3 9.5 3C11.7091 3 13.5 4.79086 13.5 7Z"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" />
                                 </svg>
                             </span>
                             <div class="home-card-body">
@@ -256,18 +306,20 @@
 
                         <div class="home-card">
                             <span class="home-card-icon">
-                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                                    <!-- man (left) -->
-                                    <circle cx="7" cy="4.5" r="2"/>
-                                    <path d="M4 14V9.5A1.5 1.5 0 0 1 5.5 8h3A1.5 1.5 0 0 1 10 9.5V14H4Z"/>
-                                    <path d="M5.5 14v7.5M8.5 14v7.5"/>
+                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
+                                    xmlns="http://www.w3.org/2000/svg">
+                                    <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <!-- man (left) -->
+                                        <circle cx="7" cy="4.5" r="2" />
+                                        <path d="M4 14V9.5A1.5 1.5 0 0 1 5.5 8h3A1.5 1.5 0 0 1 10 9.5V14H4Z" />
+                                        <path d="M5.5 14v7.5M8.5 14v7.5" />
 
-                                    <!-- woman (right) -->
-                                    <circle cx="17" cy="4.5" r="2"/>
-                                    <path d="M15.5 8h3L21 15H13l2.5-7Z"/>
-                                    <path d="M15.5 15v6.5M18.5 15v6.5"/>
-                                </g>
+                                        <!-- woman (right) -->
+                                        <circle cx="17" cy="4.5" r="2" />
+                                        <path d="M15.5 8h3L21 15H13l2.5-7Z" />
+                                        <path d="M15.5 15v6.5M18.5 15v6.5" />
+                                    </g>
                                 </svg>
                             </span>
                             <div class="home-card-body">
@@ -304,7 +356,8 @@
                         <div class="exams-title-row">
                             <h2>Exams Module</h2>
                             <div class="exams-title-actions">
-                                <button id="btn-open-attendance" type="button" class="marks-view-btn">Attendance</button>
+                                <button id="btn-open-attendance" type="button"
+                                    class="marks-view-btn">Attendance</button>
                                 <button id="btn-open-transcript" type="button" class="marks-view-btn">Generate
                                     Transcript</button>
                                 <button id="btn-open-marks-view" type="button" class="marks-view-btn">View All
@@ -454,7 +507,7 @@
                             <div style="padding: 0px 0px 10px 5px;">Columns to show</div>
                             <div id="transcript-column-toggles" class="transcript-toggles"></div>
                         </div>
-                            <div id="transcript-options-section" style="display:none;">
+                        <div id="transcript-options-section" style="display:none;">
                             <div style="padding: 0px 0px 10px 5px;">Tools</div>
                             <div class="transcript-toggles">
                                 <label class="transcript-toggle">
@@ -488,9 +541,12 @@
 
                             <div style="padding: 0px 0px 10px 5px;">Remarks</div>
                             <div class="transcript-remarks-box">
-                                <div class="transcript-remarks-hint">A student gets the remark whose Min–Max range (overall percentage, inclusive) contains their result. If ranges overlap, the first match from the top is used.</div>
+                                <div class="transcript-remarks-hint">A student gets the remark whose Min–Max range
+                                    (overall percentage, inclusive) contains their result. If ranges overlap, the first
+                                    match from the top is used.</div>
                                 <div id="transcript-remark-rules"></div>
-                                <button id="btn-add-remark-rule" type="button" class="chip-btn" style="align-self:flex-start;">+ Add remark</button>
+                                <button id="btn-add-remark-rule" type="button" class="chip-btn"
+                                    style="align-self:flex-start;">+ Add remark</button>
                             </div>
                         </div>
 
@@ -511,7 +567,8 @@
                     <!-- Enroll new student -->
                     <details id="student-details" class="no-select"
                         style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
-                        <summary id="student-details-summary" style="font-weight:bold; cursor:pointer; color:#2563eb;">Enroll New Student</summary>
+                        <summary id="student-details-summary" style="font-weight:bold; cursor:pointer; color:#2563eb;">
+                            Enroll New Student</summary>
                         <div id="student-form"
                             style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
                             <input type="hidden" id="st-edit-id" value="">
@@ -532,7 +589,8 @@
                             <div><label>Class Roll</label><input type="text" id="st-roll" inputmode="numeric"
                                     maxlength="3" autocomplete="off"></div>
                             <div><label>Full Name</label><input type="text" id="st-name"></div>
-                            <div><label>Date of Birth</label><input type="text" id="st-dob" placeholder="DD/MM/YYYY" maxlength="10" autocomplete="off"></div>
+                            <div><label>Date of Birth</label><input type="text" id="st-dob" placeholder="DD/MM/YYYY"
+                                    maxlength="10" autocomplete="off"></div>
                             <div><label>Father's Name</label><input type="text" id="st-father"></div>
                             <div><label>Mother's Name</label><input type="text" id="st-mother"></div>
                             <div><label>Blood Group</label>
@@ -557,8 +615,8 @@
                             </div>
                             <div><label>Guardian Contact</label><input type="text" id="st-phone"></div>
                             <div><label>Birth Registration No.</label><input type="text" id="st-birth-reg"></div>
-                            <div style="grid-column: span 3;"><label class="no-select">Address</label><input
-                                    type="text" id="st-address"></div>
+                            <div style="grid-column: span 3;"><label class="no-select">Address</label><input type="text"
+                                    id="st-address"></div>
                             <div id="st-archive-fields"
                                 style="display:none; grid-column: span 3; grid-template-columns:1fr 2fr; gap:15px; background:#fef3c7; padding:12px; border-radius:6px; border:1px solid #fde68a;">
                                 <div><label id="st-archive-date-label">Graduation Date</label><input type="date"
@@ -570,7 +628,8 @@
                         <button id="btn-save-student"
                             style="margin-top:15px; background-color:#2563eb; width:200px;">Register Student</button>
                         <button id="btn-cancel-student" type="button"
-                            style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
+                            style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel
+                            Edit</button>
                     </details>
 
                     <!-- Status -->
@@ -618,15 +677,18 @@
                 <div id="db-teachers" class="tab-content">
                     <h2 class="no-select">Teacher Registry</h2>
 
-                    <details id="teacher-details" class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
-                        <summary class="no-select" style="font-weight:bold; cursor:pointer; color:#2563eb;">Add New Teacher</summary>
+                    <details id="teacher-details" class="no-select"
+                        style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                        <summary class="no-select" style="font-weight:bold; cursor:pointer; color:#2563eb;">Add New
+                            Teacher</summary>
                         <div id="teacher-form"
                             style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
                             <input type="hidden" id="tc-edit-id" value="">
                             <div><label class="no-select">Full Name</label><input type="text" id="tc-name"></div>
                             <div><label class="no-select">Title</label><input type="text" id="tc-title"
                                     placeholder="e.g. Senior Teacher"></div>
-                            <div><label class="no-select">Class Teacher Of</label><select id="tc-classes"></select></div>
+                            <div><label class="no-select">Class Teacher Of</label><select id="tc-classes"></select>
+                            </div>
                             <div><label>Contact Number</label><input type="text" id="tc-contact"></div>
                             <div><label>Blood Group</label>
                                 <select id="tc-blood">
@@ -644,12 +706,14 @@
                             <div><label> Father's Name</label><input type="text" id="tc-father"></div>
                             <div><label>Mother's Name</label><input type="text" id="tc-mother"></div>
                             <div><label>NID Number</label><input type="text" id="tc-nid"></div>
-                            <div style="grid-column: span 3;"><label class="no-select">Address</label><input type="text" id="tc-address"></div>
+                            <div style="grid-column: span 3;"><label class="no-select">Address</label><input type="text"
+                                    id="tc-address"></div>
                         </div>
                         <button id="btn-save-teacher"
                             style="margin-top:15px; background-color:#2563eb; width:200px;">Save Teacher</button>
                         <button id="btn-cancel-teacher" type="button"
-                            style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
+                            style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel
+                            Edit</button>
                     </details>
 
                     <table
@@ -672,7 +736,8 @@
                 <div id="db-subjects" class="tab-content">
                     <h2 class="no-select">Curriculum Subject Settings</h2>
 
-                    <details id="subject-details" class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                    <details id="subject-details" class="no-select"
+                        style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Add / Edit Subject</summary>
                         <div id="subject-form"
                             style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-top:15px;">
@@ -690,14 +755,19 @@
                                     Name</label><input type="text" id="sub-custom-name-input"
                                     placeholder="Enter subject name"><small id="sub-custom-error"
                                     class="field-error"></small></div>
-                            <div style="display:flex; flex-direction:column; justify-content:flex-end; gap:6px; min-width:190px;">
+                            <div
+                                style="display:flex; flex-direction:column; justify-content:flex-end; gap:6px; min-width:190px;">
                                 <label class="no-select" style="margin-bottom:0;">Appears in Exams</label>
                                 <div style="display:flex; gap:12px; align-items:center; height:38px;">
-                                    <label style="font-weight:normal; font-size:14px; display:flex; align-items:center; gap:6px; margin:0; cursor:pointer;">
-                                        <input type="checkbox" id="sub-monthly-check" checked style="width:auto; cursor:pointer; margin:0;"> Monthly
+                                    <label
+                                        style="font-weight:normal; font-size:14px; display:flex; align-items:center; gap:6px; margin:0; cursor:pointer;">
+                                        <input type="checkbox" id="sub-monthly-check" checked
+                                            style="width:auto; cursor:pointer; margin:0;"> Monthly
                                     </label>
-                                    <label style="font-weight:normal; font-size:14px; display:flex; align-items:center; gap:6px; margin:0; cursor:pointer;">
-                                        <input type="checkbox" id="sub-yearly-check" checked style="width:auto; cursor:pointer; margin:0;"> Yearly
+                                    <label
+                                        style="font-weight:normal; font-size:14px; display:flex; align-items:center; gap:6px; margin:0; cursor:pointer;">
+                                        <input type="checkbox" id="sub-yearly-check" checked
+                                            style="width:auto; cursor:pointer; margin:0;"> Yearly
                                     </label>
                                 </div>
                             </div>
@@ -795,14 +865,17 @@
                     <h2 class="no-select" style="text-align:left; margin-bottom: 20px;">Settings</h2>
 
                     <div style="display: flex; flex-direction: column; gap: 25px; max-width: 680px;">
-                        
+
                         <!-- SECTION: SCHOOL INFORMATION PROFILE -->
-                        <div id="school-info-form" style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                            <h3 style="margin-top: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                        <div id="school-info-form"
+                            style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                            <h3
+                                style="margin-top: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
                                 🏫 School Information Profile
                             </h3>
                             <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">
-                                Configure your institute name and address used across reports, transcripts, and certificates.
+                                Configure your institute name and address used across reports, transcripts, and
+                                certificates.
                             </p>
                             <div class="input-group">
                                 <label class="no-select">Institute Name</label>
@@ -815,22 +888,27 @@
                                     placeholder="Enter school physical address">
                             </div>
                             <div style="display: flex; align-items: center; gap: 12px; margin-top: 14px;">
-                                <button type="button" id="btn-save-school-info" style="background-color: #10b981;">Save Configuration</button>
+                                <button type="button" id="btn-save-school-info" style="background-color: #10b981;">Save
+                                    Configuration</button>
                                 <span id="school-info-feedback" style="font-size: 13px; font-weight: 600;"></span>
                             </div>
                         </div>
-                        
+
                         <!-- SECTION 1: CHANGE CREDENTIALS (USERNAME & PASSWORD) -->
-                        <div id="admin-password-form" style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                            <h3 style="margin-top: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                        <div id="admin-password-form"
+                            style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                            <h3
+                                style="margin-top: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
                                 🔑 Account Credentials (Username &amp; Password)
                             </h3>
                             <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">
                                 Update the username and password used to log in to the application.
                             </p>
 
-                            <div id="admin-pw-error" style="color: #ef4444; font-size: 13px; margin-bottom: 10px; font-weight: 500;"></div>
-                            <div id="admin-pw-success" style="color: #10b981; font-size: 13px; font-weight: bold; margin-bottom: 10px;"></div>
+                            <div id="admin-pw-error"
+                                style="color: #ef4444; font-size: 13px; margin-bottom: 10px; font-weight: 500;"></div>
+                            <div id="admin-pw-success"
+                                style="color: #10b981; font-size: 13px; font-weight: bold; margin-bottom: 10px;"></div>
 
                             <div class="input-group">
                                 <label class="no-select">Admin Username</label>
@@ -840,23 +918,51 @@
                             <div class="input-group">
                                 <label class="no-select">Current Password (Required to save changes)</label>
                                 <div class="password-input-wrapper">
-                                    <input type="password" id="admin-current-password" placeholder="Enter current password">
-                                    <button type="button" class="password-toggle-btn toggle-pw-btn" data-target="admin-current-password"
-                                        aria-label="Toggle password" tabindex="-1">
-                                        <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                        <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                    <input type="password" id="admin-current-password"
+                                        placeholder="Enter current password">
+                                    <button type="button" class="password-toggle-btn toggle-pw-btn"
+                                        data-target="admin-current-password" aria-label="Toggle password" tabindex="-1">
+                                        <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                        <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20"
+                                            height="20" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path
+                                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                                            </path>
+                                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
 
                             <div class="input-group">
-                                <label class="no-select">New Password <span style="font-weight:normal; color:#64748b;">(Leave blank to keep current password)</span></label>
+                                <label class="no-select">New Password <span
+                                        style="font-weight:normal; color:#64748b;">(Leave blank to keep current
+                                        password)</span></label>
                                 <div class="password-input-wrapper">
-                                    <input type="password" id="admin-new-password" placeholder="Enter new password (optional)">
-                                    <button type="button" class="password-toggle-btn toggle-pw-btn" data-target="admin-new-password"
-                                        aria-label="Toggle password" tabindex="-1">
-                                        <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                        <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                    <input type="password" id="admin-new-password"
+                                        placeholder="Enter new password (optional)">
+                                    <button type="button" class="password-toggle-btn toggle-pw-btn"
+                                        data-target="admin-new-password" aria-label="Toggle password" tabindex="-1">
+                                        <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                        <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20"
+                                            height="20" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path
+                                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                                            </path>
+                                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
@@ -864,24 +970,41 @@
                             <div class="input-group">
                                 <label class="no-select">Confirm New Password</label>
                                 <div class="password-input-wrapper">
-                                    <input type="password" id="admin-confirm-password" placeholder="Confirm new password">
-                                    <button type="button" class="password-toggle-btn toggle-pw-btn" data-target="admin-confirm-password"
-                                        aria-label="Toggle password" tabindex="-1">
-                                        <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                                        <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+                                    <input type="password" id="admin-confirm-password"
+                                        placeholder="Confirm new password">
+                                    <button type="button" class="password-toggle-btn toggle-pw-btn"
+                                        data-target="admin-confirm-password" aria-label="Toggle password" tabindex="-1">
+                                        <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20" fill="none"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                        <svg class="eye-off-icon" style="display:none;" viewBox="0 0 24 24" width="20"
+                                            height="20" fill="none" stroke="currentColor" stroke-width="2"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path
+                                                d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24">
+                                            </path>
+                                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                                        </svg>
                                     </button>
                                 </div>
                             </div>
 
-                            <button id="btn-update-admin-password" type="button" style="margin-top: 15px; background-color: #2563eb; width: 100%;">
+                            <button id="btn-update-admin-password" type="button"
+                                style="margin-top: 15px; background-color: #2563eb; width: 100%;">
                                 Update Credentials
                             </button>
                         </div>
 
                         <!-- SECTION 2: SECURITY QUESTIONS -->
-                        <div style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <h3 style="margin: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                        <div
+                            style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <h3
+                                    style="margin: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
                                     🛡️ Recovery Security Questions
                                 </h3>
                                 <button type="button" id="btn-toggle-security-questions"
@@ -893,12 +1016,16 @@
                                 Used to recover your account and reset your password if forgotten.
                             </p>
 
-                            <div id="admin-sec-error" style="color: #ef4444; font-size: 13px; margin-bottom: 10px; font-weight: 500;"></div>
-                            <div id="admin-sec-success" style="color: #10b981; font-size: 13px; font-weight: bold; margin-bottom: 10px;"></div>
+                            <div id="admin-sec-error"
+                                style="color: #ef4444; font-size: 13px; margin-bottom: 10px; font-weight: 500;"></div>
+                            <div id="admin-sec-success"
+                                style="color: #10b981; font-size: 13px; font-weight: bold; margin-bottom: 10px;"></div>
 
                             <!-- LOCKED PLACEHOLDER MESSAGE -->
-                            <div id="sec-questions-locked" style="padding: 30px 20px; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; color: #64748b; font-size: 13px;">
-                                Security questions and answers are hidden to protect privacy. Click <b>"Show"</b> above to view or edit them.
+                            <div id="sec-questions-locked"
+                                style="padding: 30px 20px; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; color: #64748b; font-size: 13px;">
+                                Security questions and answers are hidden to protect privacy. Click <b>"Show"</b> above
+                                to view or edit them.
                             </div>
 
                             <!-- EDITABLE QUESTIONS CONTAINER -->
@@ -906,30 +1033,36 @@
                                 <div class="input-group">
                                     <label class="no-select">Question 1</label>
                                     <input type="text" id="admin-q1" placeholder="Enter Question 1">
-                                    <input type="text" id="admin-a1" placeholder="Enter Answer 1" style="margin-top: 5px;">
+                                    <input type="text" id="admin-a1" placeholder="Enter Answer 1"
+                                        style="margin-top: 5px;">
                                 </div>
                                 <div class="input-group">
                                     <label class="no-select">Question 2</label>
                                     <input type="text" id="admin-q2" placeholder="Enter Question 2">
-                                    <input type="text" id="admin-a2" placeholder="Enter Answer 2" style="margin-top: 5px;">
+                                    <input type="text" id="admin-a2" placeholder="Enter Answer 2"
+                                        style="margin-top: 5px;">
                                 </div>
                                 <div class="input-group">
                                     <label class="no-select">Question 3 (Optional)</label>
                                     <input type="text" id="admin-q3" placeholder="Enter Question 3 (optional)">
-                                    <input type="text" id="admin-a3" placeholder="Enter Answer 3 (optional)" style="margin-top: 5px;">
+                                    <input type="text" id="admin-a3" placeholder="Enter Answer 3 (optional)"
+                                        style="margin-top: 5px;">
                                 </div>
                                 <div class="input-group">
                                     <label class="no-select">Question 4 (Optional)</label>
                                     <input type="text" id="admin-q4" placeholder="Enter Question 4 (optional)">
-                                    <input type="text" id="admin-a4" placeholder="Enter Answer 4 (optional)" style="margin-top: 5px;">
+                                    <input type="text" id="admin-a4" placeholder="Enter Answer 4 (optional)"
+                                        style="margin-top: 5px;">
                                 </div>
                                 <div class="input-group">
                                     <label class="no-select">Question 5 (Optional)</label>
                                     <input type="text" id="admin-q5" placeholder="Enter Question 5 (optional)">
-                                    <input type="text" id="admin-a5" placeholder="Enter Answer 5 (optional)" style="margin-top: 5px;">
+                                    <input type="text" id="admin-a5" placeholder="Enter Answer 5 (optional)"
+                                        style="margin-top: 5px;">
                                 </div>
 
-                                <button id="btn-save-security-questions" type="button" style="margin-top: 15px; background-color: #10b981; width: 100%;">
+                                <button id="btn-save-security-questions" type="button"
+                                    style="margin-top: 15px; background-color: #10b981; width: 100%;">
                                     Save Security Questions
                                 </button>
                             </div>
@@ -970,12 +1103,17 @@
 
     <!-- POP-UP for More Info (Student & Teacher Details) -->
     <div id="details-info-modal" class="modal-overlay" style="display:none;">
-        <div class="modal-box" style="width: 520px; max-width: 95vw; max-height: 85vh; display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
+        <div class="modal-box"
+            style="width: 520px; max-width: 95vw; max-height: 85vh; display: flex; flex-direction: column;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
                 <h3 id="info-modal-title" style="margin: 0; color: #1e293b; font-size: 17px;">Details</h3>
-                <button id="btn-close-info-modal-x" type="button" style="background: transparent; border: none; font-size: 20px; color: #64748b; cursor: pointer; width: auto; padding: 0 4px; line-height: 1;">
-                    <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="18" height="18" viewBox="0 0 48 48">
-                    <path d="M24,30.649L12.475,42.174c-1.102,1.102-2.888,1.102-3.989,0l-2.66-2.66c-1.102-1.102-1.102-2.888,0-3.989L17.351,24	L5.826,12.475c-1.102-1.102-1.102-2.888,0-3.989l2.66-2.66c1.102-1.102,2.888-1.102,3.989,0L24,17.351L35.525,5.826	c1.102-1.102,2.888-1.102,3.989,0l2.66,2.66c1.102,1.102,1.102,2.888,0,3.989L30.649,24l11.525,11.525	c1.102,1.102,1.102,2.888,0,3.989l-2.66,2.66c-1.102,1.102-2.888,1.102-3.989,0L24,30.649z"></path>
+                <button id="btn-close-info-modal-x" type="button" aria-label="Close"
+                    style="background: transparent; border: none; color: var(--black-soft); cursor: pointer; width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; line-height: 1;">
+                    <svg width="22" height="22" viewBox="6 6 12 12" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 9L9 15M9 9L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
                     </svg>
                 </button>
             </div>

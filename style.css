@@ -754,6 +754,11 @@ button:hover {
     min-height: 18px;
 }
 
+#btn-close-info-modal-x:hover {
+    color: var(--slate-800) !important;
+    background: var(--slate-100) !important;
+}
+
 
 /* ---------- NOTIFICATION CENTER ---------- */
 
