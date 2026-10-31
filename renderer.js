@@ -4,6 +4,21 @@
 // through ipcRenderer.invoke() to ask main.js to do it instead.
 // ============================================================
 const { ipcRenderer } = require('electron');
+const fs = require('fs');
+const path = require('path');
+
+const ACTION_ICONS = {
+    info: fs.readFileSync(path.join(__dirname, 'svg', 'Info.svg'), 'utf8'),
+    edit: fs.readFileSync(path.join(__dirname, 'svg', 'Edit.svg'), 'utf8'),
+    delete: fs.readFileSync(path.join(__dirname, 'svg', 'Delete.svg'), 'utf8'),
+    dropOut: fs.readFileSync(path.join(__dirname, 'svg', 'Drop out.svg'), 'utf8'),
+    graduate: fs.readFileSync(path.join(__dirname, 'svg', 'Students.svg'), 'utf8'),
+    reinstate: fs.readFileSync(path.join(__dirname, 'svg', 'Reinstate.svg'), 'utf8')
+};
+
+function renderActionIcon(svgString) {
+    return `<span style="width:13px; height:13px; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0;">${svgString}</span>`;
+}
 
 
 // Grab references to the three full-screen "views" of the app:
@@ -481,8 +496,8 @@ async function renderSubjectsTable() {
             <td>${s.monthly_marks ?? '<i style="color:gray;">—</i>'}</td>
             <td>${s.yearly_marks ?? '<i style="color:gray;">—</i>'}</td>
             <td>
-                <button onclick="editSubject(${s.id})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
-                <button onclick="deleteSubject(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">🗑 Delete</button>
+                <button onclick="editSubject(${s.id})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin-right:4px; line-height:1; vertical-align:middle;">${renderActionIcon(ACTION_ICONS.edit)}Edit</button>
+                <button onclick="deleteSubject(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; line-height:1; vertical-align:middle;">${renderActionIcon(ACTION_ICONS.delete)}Delete</button>
             </td>
         </tr>
     `).join('');
@@ -774,7 +789,7 @@ const STUDENT_VIEW_HEADERS = {
     Removed: ['Roll', 'Name', 'Last Class', 'Guardian Contact', 'Dropped Out On', 'Reason', 'Actions']
 };
 
-const STUDENT_BTN_STYLE = 'padding:4px 8px; font-size:11px; width:auto; display:inline-block; margin-right:4px; ';
+const STUDENT_BTN_STYLE = 'padding:4px 8px; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin-right:4px; line-height:1; vertical-align:middle; ';
 
 // Formats YYYY-MM-DD or DD/MM/YYYY or DD-MM-YYYY to DD/MM/YYYY
 function formatDob(text) {
@@ -812,8 +827,8 @@ function formatHistoryDate(text) {
 }
 
 function studentRowHtml(s, view) {
-    const infoBtn = `<button onclick="showStudentInfoModal(${s.id})" style="${STUDENT_BTN_STYLE}background:#0284c7;">ℹ️ More Info</button>`;
-    const editBtn = `<button onclick="editStudentById(${s.id})" style="${STUDENT_BTN_STYLE}background:#2563eb;">✏️ Edit</button>`;
+    const infoBtn = `<button onclick="showStudentInfoModal(${s.id})" style="${STUDENT_BTN_STYLE}background:#0284c7;">${renderActionIcon(ACTION_ICONS.info)}More Info</button>`;
+    const editBtn = `<button onclick="editStudentById(${s.id})" style="${STUDENT_BTN_STYLE}background:#2563eb;">${renderActionIcon(ACTION_ICONS.edit)}Edit</button>`;
 
     // Promote-mode checkbox column: shown only for Active view when promote mode is on.
     // Hidden via inline style when mode is off so toggling is instant without re-rendering.
@@ -836,12 +851,12 @@ function studentRowHtml(s, view) {
 
     if (view === 'Active') {
         const graduateBtn = isTen
-            ? `<button onclick="graduateStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#10b981;">🎓 Graduate</button>`
+            ? `<button onclick="graduateStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#10b981;">${renderActionIcon(ACTION_ICONS.graduate)}Graduate</button>`
             : '';
-        const dropBtn = `<button onclick="dropOutStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#ef4444;">❌ Drop Out</button>`;
+        const dropBtn = `<button onclick="dropOutStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#ef4444;">${renderActionIcon(ACTION_ICONS.dropOut)}Drop Out</button>`;
         html += `<td class="student-action-cell" style="${actionCellDisplay}">${infoBtn}${editBtn}${graduateBtn}${dropBtn}</td>`;
     } else {
-        const reinstateBtn = `<button onclick="reinstateStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#f59e0b;">↩️ Reinstate</button>`;
+        const reinstateBtn = `<button onclick="reinstateStudent(${s.id})" style="${STUDENT_BTN_STYLE}background:#f59e0b;">${renderActionIcon(ACTION_ICONS.reinstate)}Reinstate</button>`;
         html += `<td>${formatHistoryDate(s.status_date)}</td>`;
         if (view === 'Removed') html += `<td>${escapeHtml(s.removal_cause || '')}</td>`;
         html += `<td class="student-action-cell" style="${actionCellDisplay}">${infoBtn}${editBtn}${reinstateBtn}</td>`;
@@ -1614,9 +1629,9 @@ async function renderTeachersTable() {
             <td>${assignedClasses.length ? assignedClasses.map(escapeHtml).join(', ') : '<i style="color:gray;">None</i>'}</td>
             <td>${escapeHtml(t.contact_number || '')}</td>
             <td>
-                <button onclick="showTeacherInfoModal(${t.id})" style="padding:4px 8px; background:#0284c7; font-size:11px; width:auto; display:inline-block; margin-right:4px;">ℹ️ More Info</button>
-                <button onclick="editTeacherById(${t.id})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-block; margin-right:4px;">✏️ Edit</button>
-                <button onclick="deleteTeacher(${t.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-block;">🗑 Delete</button>
+                <button onclick="showTeacherInfoModal(${t.id})" style="padding:4px 8px; background:#0284c7; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin-right:4px; line-height:1; vertical-align:middle;">${renderActionIcon(ACTION_ICONS.info)}More Info</button>
+                <button onclick="editTeacherById(${t.id})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin-right:4px; line-height:1; vertical-align:middle;">${renderActionIcon(ACTION_ICONS.edit)}Edit</button>
+                <button onclick="deleteTeacher(${t.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; line-height:1; vertical-align:middle;">${renderActionIcon(ACTION_ICONS.delete)}Delete</button>
             </td>
         </tr>
     `;
