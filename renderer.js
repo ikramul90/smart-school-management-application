@@ -481,6 +481,8 @@ window.filterSubjectsByClass = function (classId) {
 
 let allLoadedSubjects = [];
 
+const SUBJECT_BTN_STYLE = 'padding:4px 8px; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin:2px 4px 2px 0; line-height:1; vertical-align:middle; ';
+
 async function renderSubjectsTable() {
     const subjects = await ipcRenderer.invoke('get-subjects');
     allLoadedSubjects = subjects;
@@ -494,8 +496,8 @@ async function renderSubjectsTable() {
             <td>${s.monthly_marks ?? '<i style="color:gray;">—</i>'}</td>
             <td>${s.yearly_marks ?? '<i style="color:gray;">—</i>'}</td>
             <td>
-                <button onclick="editSubject(${s.id})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin-right:4px; line-height:1; vertical-align:middle;">${renderActionIcon(ACTION_ICONS.edit)}Edit</button>
-                <button onclick="deleteSubject(${s.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; line-height:1; vertical-align:middle;">${renderActionIcon(ACTION_ICONS.delete)}Delete</button>
+                <button onclick="editSubject(${s.id})" style="${SUBJECT_BTN_STYLE}background:#2563eb;">${renderActionIcon(ACTION_ICONS.edit)}Edit</button>
+                <button onclick="deleteSubject(${s.id})" style="${SUBJECT_BTN_STYLE}background:#ef4444;">${renderActionIcon(ACTION_ICONS.delete)}Delete</button>
             </td>
         </tr>
     `).join('');
@@ -787,7 +789,7 @@ const STUDENT_VIEW_HEADERS = {
     Removed: ['Roll', 'Name', 'Last Class', 'Guardian Contact', 'Dropped Out On', 'Reason', 'Actions']
 };
 
-const STUDENT_BTN_STYLE = 'padding:4px 8px; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin-right:4px; line-height:1; vertical-align:middle; ';
+const STUDENT_BTN_STYLE = 'padding:4px 8px; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin:2px 4px 2px 0; line-height:1; vertical-align:middle; ';
 
 // Formats YYYY-MM-DD or DD/MM/YYYY or DD-MM-YYYY to DD/MM/YYYY
 function formatDob(text) {
@@ -1614,6 +1616,8 @@ async function loadTeachersPage() {
     await renderTeachersTable();
 }
 
+const TEACHER_BTN_STYLE = 'padding:4px 8px; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin:2px 4px 2px 0; line-height:1; vertical-align:middle; ';
+
 async function renderTeachersTable() {
     cachedTeachers = await ipcRenderer.invoke('get-teachers') || [];
     const tbody = document.getElementById('teacher-table-body');
@@ -1627,9 +1631,9 @@ async function renderTeachersTable() {
             <td>${assignedClasses.length ? assignedClasses.map(escapeHtml).join(', ') : '<i style="color:gray;">None</i>'}</td>
             <td>${escapeHtml(t.contact_number || '')}</td>
             <td>
-                <button onclick="showTeacherInfoModal(${t.id})" style="padding:4px 8px; background:#0284c7; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin-right:4px; line-height:1; vertical-align:middle;">${renderActionIcon(ACTION_ICONS.info)}Info</button>
-                <button onclick="editTeacherById(${t.id})" style="padding:4px 8px; background:#2563eb; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin-right:4px; line-height:1; vertical-align:middle;">${renderActionIcon(ACTION_ICONS.edit)}Edit</button>
-                <button onclick="deleteTeacher(${t.id})" style="padding:4px 8px; background:#ef4444; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; line-height:1; vertical-align:middle;">${renderActionIcon(ACTION_ICONS.delete)}Delete</button>
+                <button onclick="showTeacherInfoModal(${t.id})" style="${TEACHER_BTN_STYLE}background:#0284c7;">${renderActionIcon(ACTION_ICONS.info)}Info</button>
+                <button onclick="editTeacherById(${t.id})" style="${TEACHER_BTN_STYLE}background:#2563eb;">${renderActionIcon(ACTION_ICONS.edit)}Edit</button>
+                <button onclick="deleteTeacher(${t.id})" style="${TEACHER_BTN_STYLE}background:#ef4444;">${renderActionIcon(ACTION_ICONS.delete)}Delete</button>
             </td>
         </tr>
     `;
