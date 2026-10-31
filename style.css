@@ -6,6 +6,10 @@
     font-style: normal;
 }
 
+:root {
+    
+}
+
 body {
     margin: 0;
     background-color: #f4f6f9;
@@ -52,7 +56,7 @@ label {
     font-size: 14px;
 }
 
-#setup-screen>label:nth-of-type(1) {
+#setup-screen > label:nth-of-type(1) {
     color: #475569;
 }
 
@@ -66,13 +70,11 @@ label {
     margin: 20px 0;
 }
 
-#a1,
-#a2 {
+#a1, #a2 {
     margin-top: 5px;
 }
 
-input,
-select {
+input, select {
     width: 100%;
     padding: 10px;
     border: 1px solid #cbd5e1;
@@ -80,8 +82,7 @@ select {
     box-sizing: border-box;
 }
 
-input:disabled,
-select:disabled {
+input:disabled, select:disabled {
     background-color: #f1f5f9;
     color: #94a3b8;
     cursor: not-allowed;
@@ -195,24 +196,24 @@ button:hover {
     font-size: 16px;
 }
 
-.dashboard-sidebar-nav>hr {
+.dashboard-sidebar-nav > hr {
     border: 0;
     border-top: 1px solid #334155;
     margin-bottom: 20px;
 }
 
-.dashboard-sidebar-nav>hr.sidebar-divider {
+.dashboard-sidebar-nav > hr.sidebar-divider {
     border: 0;
     border-top: 1px solid #334155;
     margin: 6px 0 16px 0;
 }
 
-.dashboard-sidebar-nav>button {
+.dashboard-sidebar-nav > button {
     text-align: left;
     margin-bottom: 10px;
 }
 
-.dashboard-sidebar-nav>p {
+.dashboard-sidebar-nav > p {
     font-size: 12px;
     color: #94a3b8;
     text-transform: uppercase;
@@ -238,12 +239,7 @@ button:hover {
     overflow-y: auto;
 }
 
-#settings-admin,
-#db-students,
-#db-teachers,
-#db-grades,
-#db-subjects,
-#exams-tab {
+#settings-admin, #db-students, #db-teachers, #db-grades, #db-subjects, #exams-tab {
     display: none;
 }
 
@@ -328,14 +324,12 @@ button:hover {
     color: #e2e8f0;
 }
 
-.table-action-btn:active,
-.table-action-btn.active {
+.table-action-btn:active, .table-action-btn.active {
     background-color: #1e293b;
     color: #ffffff;
 }
 
-.table-action-btn:active svg,
-.table-action-btn.active svg {
+.table-action-btn:active svg, .table-action-btn.active svg {
     color: #ffffff;
 }
 
@@ -359,8 +353,7 @@ button:hover {
     text-align: center;
 }
 
-#db-grades th,
-#db-grades td {
+#db-grades th, #db-grades td {
     border: 1px solid black;
     padding: 8px 12px;
 }
@@ -397,22 +390,19 @@ button:hover {
     color: #166534;
 }
 
-.chip-btn.active,
-.chip-btn.active:hover {
+.chip-btn.active, .chip-btn.active:hover {
     background-color: #3b82f6;
     color: white;
 }
 
-.chip-btn.disabled,
-.chip-btn:disabled {
+.chip-btn.disabled, .chip-btn:disabled {
     cursor: not-allowed;
     background-color: #f1f5f9 !important;
     color: #94a3b8 !important;
     border-color: #e2e8f0;
 }
 
-.chip-btn.disabled:hover,
-.chip-btn:disabled:hover {
+.chip-btn.disabled:hover, .chip-btn:disabled:hover {
     background-color: #f1f5f9 !important;
     color: #94a3b8 !important;
 }
@@ -470,21 +460,17 @@ button:hover {
 }
 
 /* Hover State */
-[data-tooltip]:hover::before,
-[data-tooltip]:hover::after {
+[data-tooltip]:hover::before, [data-tooltip]:hover::after {
     opacity: 1 !important;
     visibility: visible;
     transform: translateY(0);
 }
 
-#student-details,
-#subject-details {
+#student-details, #subject-details {
     scroll-margin-top: 18px;
 }
 
-#student-details summary,
-#teacher-details summary,
-#subject-details summary {
+#student-details summary, #teacher-details summary, #subject-details summary {
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -496,15 +482,11 @@ button:hover {
     list-style: none;
 }
 
-#student-details summary::-webkit-details-marker,
-#teacher-details summary::-webkit-details-marker,
-#subject-details summary::-webkit-details-marker {
+#student-details summary::-webkit-details-marker, #teacher-details summary::-webkit-details-marker, #subject-details summary::-webkit-details-marker {
     display: none;
 }
 
-#student-details summary::before,
-#teacher-details summary::before,
-#subject-details summary::before {
+#student-details summary::before, #teacher-details summary::before, #subject-details summary::before {
     content: '';
     display: inline-block;
     width: 18px;
@@ -517,17 +499,13 @@ button:hover {
     transition: transform 0.2s ease;
 }
 
-#student-details[open] summary,
-#teacher-details[open] summary,
-#subject-details[open] summary {
+#student-details[open] summary, #teacher-details[open] summary, #subject-details[open] summary {
     margin: -15px -15px 0 -15px;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-#student-details[open] summary::before,
-#teacher-details[open] summary::before,
-#subject-details[open] summary::before {
+#student-details[open] summary::before, #teacher-details[open] summary::before, #subject-details[open] summary::before {
     transform: rotate(90deg);
 }
 
@@ -579,8 +557,7 @@ button:hover {
     color: #1e293b;
 }
 
-.marks-outof,
-.marks-progress {
+.marks-outof, .marks-progress {
     font-size: 13px;
     color: #64748b;
 }
@@ -824,8 +801,7 @@ button:hover {
     color: #475569;
 }
 
-.notif-item b,
-.notif-toast b {
+.notif-item b, .notif-toast b {
     display: block;
     color: #1e293b;
     margin-bottom: 2px;
@@ -844,18 +820,15 @@ button:hover {
     color: #ef4444;
 }
 
-.notif-item.warning,
-.notif-toast.warning {
+.notif-item.warning, .notif-toast.warning {
     border-left-color: #f59e0b;
 }
 
-.notif-item.error,
-.notif-toast.error {
+.notif-item.error, .notif-toast.error {
     border-left-color: #ef4444;
 }
 
-.notif-item.success,
-.notif-toast.success {
+.notif-item.success, .notif-toast.success {
     border-left-color: #10b981;
 }
 
@@ -916,14 +889,12 @@ button:hover {
     margin-bottom: 16px;
 }
 
-.promote-checkbox-cell,
-.promote-checkbox-head {
+.promote-checkbox-cell, .promote-checkbox-head {
     text-align: center;
     width: 36px;
 }
 
-.promote-checkbox-cell input[type="checkbox"],
-.promote-checkbox-head input[type="checkbox"] {
+.promote-checkbox-cell input[type="checkbox"], .promote-checkbox-head input[type="checkbox"] {
     width: auto;
     margin: 0;
     padding: 0;
@@ -947,16 +918,14 @@ button:hover {
 }
 
 /* ---------- EXAMS: all-marks read-only view ---------- */
-.exams-title-row,
-.marks-view-title-row {
+.exams-title-row, .marks-view-title-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 12px;
 }
 
-.marks-view-btn,
-.marks-back-btn {
+.marks-view-btn, .marks-back-btn {
     width: auto;
     padding: 6px 12px;
     font-size: 13px;
@@ -997,7 +966,7 @@ button:hover {
     align-items: flex-end;
 }
 
-.marks-view-year-filter>div {
+.marks-view-year-filter > div {
     flex: 1;
 }
 
@@ -1022,8 +991,7 @@ button:hover {
     text-align: center;
 }
 
-.marks-view-table th,
-.marks-view-table td {
+.marks-view-table th, .marks-view-table td {
     border-bottom: 1px solid #e2e8f0;
     border-right: 1px solid #e2e8f0;
     padding: 9px 12px;
@@ -1036,13 +1004,11 @@ button:hover {
     font-size: 12px;
 }
 
-.marks-view-table td:first-child,
-.marks-view-table th:first-child {
+.marks-view-table td:first-child, .marks-view-table th:first-child {
     width: 70px;
 }
 
-.marks-view-table td:nth-child(2),
-.marks-view-table th:nth-child(2) {
+.marks-view-table td:nth-child(2), .marks-view-table th:nth-child(2) {
     text-align: left;
     min-width: 180px;
 }
@@ -1056,9 +1022,6 @@ button:hover {
         display: block;
     }
 }
-
-
-
 
 
 /* ---------- EXAMS: Generate Transcript page ---------- */
@@ -1191,8 +1154,7 @@ button:hover {
     text-align: center;
 }
 
-.transcript-grade-scale-table th,
-.transcript-grade-scale-table td {
+.transcript-grade-scale-table th, .transcript-grade-scale-table td {
     border: 1px solid #000;
     padding: 1.5px 2px;
     line-height: 1.2;
@@ -1275,8 +1237,7 @@ button:hover {
     border: 1px solid #000;
 }
 
-.transcript-table th,
-.transcript-table td {
+.transcript-table th, .transcript-table td {
     border: 1px solid #000;
     padding: 4px 5px;
     font-weight: 600;
@@ -1290,8 +1251,7 @@ button:hover {
     font-size: 11.5px;
 }
 
-.transcript-table td.subject,
-.transcript-table td.transcript-subject {
+.transcript-table td.subject, .transcript-table td.transcript-subject {
     text-align: left;
     padding-left: 8px;
 }
@@ -1304,8 +1264,7 @@ button:hover {
     background: #f7f9fc;
 }
 
-.transcript-table tfoot td,
-.transcript-total-row td {
+.transcript-table tfoot td, .transcript-total-row td {
     font-weight: 700;
     padding: 4px 5px;
     font-size: 12px;
@@ -1337,26 +1296,21 @@ button:hover {
     gap: 10px;
 }
 
-.transcript-result-table,
-.transcript-remarks-table {
+.transcript-result-table, .transcript-remarks-table {
     width: 100%;
     border-collapse: collapse;
     border: 1px solid #000;
     font-size: 12px;
 }
 
-.transcript-result-table th,
-.transcript-result-table td,
-.transcript-remarks-table th,
-.transcript-remarks-table td {
+.transcript-result-table th, .transcript-result-table td, .transcript-remarks-table th, .transcript-remarks-table td {
     border: 1px solid #000;
     padding: 4px 6px;
     text-align: center;
     font-weight: 600;
 }
 
-.transcript-result-table th,
-.transcript-remarks-table th {
+.transcript-result-table th, .transcript-remarks-table th {
     background: #f1f5fa;
 }
 
@@ -1429,8 +1383,7 @@ button:hover {
     min-width: 180px;
 }
 
-.transcript-remark-rule .remark-min,
-.transcript-remark-rule .remark-max {
+.transcript-remark-rule .remark-min, .transcript-remark-rule .remark-max {
     width: 80px;
 }
 
@@ -1486,8 +1439,7 @@ button:hover {
     padding-left: 10px;
 }
 
-.transcript-gpwo-cell,
-.transcript-gpa-cell {
+.transcript-gpwo-cell, .transcript-gpa-cell {
     font-weight: 700;
 }
 
@@ -1571,8 +1523,7 @@ button:hover {
     overflow: hidden;
 }
 
-.dashboard-sidebar .nav-btn span,
-.dashboard-sidebar-watermark {
+.dashboard-sidebar .nav-btn span, .dashboard-sidebar-watermark {
     transition: opacity 0.2s ease;
 }
 
@@ -1580,14 +1531,12 @@ button:hover {
     transform: rotate(180deg);
 }
 
-.dashboard-sidebar.collapsed .sidebar-header>h3,
-.dashboard-sidebar.collapsed .sidebar-header #notif-bell {
+.dashboard-sidebar.collapsed .sidebar-header>h3, .dashboard-sidebar.collapsed .sidebar-header #notif-bell {
     opacity: 0;
     pointer-events: none;
 }
 
-.dashboard-sidebar.collapsed .nav-btn span,
-.dashboard-sidebar.collapsed .dashboard-sidebar-watermark {
+.dashboard-sidebar.collapsed .nav-btn span, .dashboard-sidebar.collapsed .dashboard-sidebar-watermark {
     opacity: 0;
 }
 

@@ -508,29 +508,7 @@
                 <div id="db-students" class="tab-content">
                     <h2 class="no-select">Student Registry</h2>
 
-                    <div class="students-filter-row">
-                        <div>
-                            <div style="padding: 0px 0px 10px 5px;" class="no-select">Status</div>
-                            <div id="student-view-tabs" class="chip-row no-select">
-                                <button class="chip-btn active" data-view="Active">Current</button>
-                                <button class="chip-btn" data-view="Graduated">Graduated</button>
-                                <button class="chip-btn" data-view="Removed">Dropped Out</button>
-                            </div>
-                        </div>
-                        <div id="student-actions-section">
-                            <div style="padding: 0px 5px 10px 0px; text-align: right;" class="no-select">Actions</div>
-                            <div class="chip-row no-select">
-                                <button type="button" id="btn-promote-mode" class="chip-btn">Promote</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ADVANCED CLASSIFICATION FILTERS -->
-                    <div style="padding: 0px 0px 10px 5px;" class="no-select">Classes</div>
-                    <div id="student-class-filter-buttons" class="chip-row no-select"></div>
-                    <select id="filter-student-class" style="display:none;"></select>
-
-                    <!-- DATA ENROLLMENT TRIGGER -->
+                    <!-- Enroll new student -->
                     <details id="student-details" class="no-select"
                         style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary id="student-details-summary" style="font-weight:bold; cursor:pointer; color:#2563eb;">Enroll New Student</summary>
@@ -592,10 +570,34 @@
                         <button id="btn-save-student"
                             style="margin-top:15px; background-color:#2563eb; width:200px;">Register Student</button>
                         <button id="btn-cancel-student" type="button"
-                            style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel
-                            Edit</button>
+                            style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
                     </details>
 
+                    <!-- Status -->
+                    <div class="students-filter-row">
+                        <div>
+                            <div style="padding: 0px 0px 10px 5px;" class="no-select">Status</div>
+                            <div id="student-view-tabs" class="chip-row no-select">
+                                <button class="chip-btn active" data-view="Active">Current</button>
+                                <button class="chip-btn" data-view="Graduated">Graduated</button>
+                                <button class="chip-btn" data-view="Removed">Dropped Out</button>
+                            </div>
+                        </div>
+                        <div id="student-actions-section">
+                            <div style="padding: 0px 5px 10px 0px; text-align: right;" class="no-select">Actions</div>
+                            <div class="chip-row no-select">
+                                <button type="button" id="btn-promote-mode" class="chip-btn">Promote</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Classes -->
+                    <div style="padding: 0px 0px 10px 5px;" class="no-select">Classes</div>
+                    <div id="student-class-filter-buttons" class="chip-row no-select"></div>
+                    <select id="filter-student-class" style="display:none;"></select>
+
+
+                    <!-- Database -->
                     <table style="width:100%; border-collapse:collapse; background:white;" border="1" cellpadding="8"
                         bordercolor="#e2e8f0">
                         <thead class="no-select" style="background:#f8fafc;">
@@ -670,8 +672,7 @@
                 <div id="db-subjects" class="tab-content">
                     <h2 class="no-select">Curriculum Subject Settings</h2>
 
-                    <details id="subject-details" class="no-select"
-                        style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                    <details id="subject-details" class="no-select" style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Add / Edit Subject</summary>
                         <div id="subject-form"
                             style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-top:15px;">

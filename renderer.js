@@ -229,6 +229,9 @@ window.switchTab = function (tabId) {
         tab.style.display = 'none';
     });
 
+    const studentDetails = document.getElementById('student-details');
+    if (studentDetails) studentDetails.classList.remove('details-highlight');
+
     // Show the specific clicked tab
     const targetTab = document.getElementById(tabId);
     if (targetTab) {
@@ -655,6 +658,9 @@ function renderStudentClassFilterChips(classes = allClassesForStudents) {
 }
 
 async function loadStudentsPage() {
+    const studentDetails = document.getElementById('student-details');
+    if (studentDetails) studentDetails.classList.remove('details-highlight');
+
     const classes = await ipcRenderer.invoke('get-classes-list');
     allClassesForStudents = classes;
 
@@ -1007,6 +1013,9 @@ window.editStudent = async function (id, classId, roll, name, bloodGroup, guardi
         details.classList.remove('details-highlight');
         void details.offsetWidth; // trigger reflow for restartable CSS animation
         details.classList.add('details-highlight');
+        details.addEventListener('animationend', () => {
+            details.classList.remove('details-highlight');
+        }, { once: true });
     }
 
     updateStudentSubjectSelection();
@@ -1042,6 +1051,8 @@ function resetStudentForm() {
     const cancelBtn = document.getElementById('btn-cancel-student');
     if (cancelBtn) cancelBtn.style.display = 'none';
     hideArchiveFields();
+    const studentDetails = document.getElementById('student-details');
+    if (studentDetails) studentDetails.classList.remove('details-highlight');
     updateStudentSubjectSelection();
 }
 
