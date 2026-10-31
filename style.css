@@ -8,83 +8,83 @@
 
 :root {
     /* Base Colors */
-    --white-1: white;
-    --white-2: #ffffff;
-    --black-1: black;
-    --black-2: #000;
-    --black-3: #111;
+    --white: white;
+    --white-pure: #ffffff;
+    --black: black;
+    --black-pure: #000;
+    --black-soft: #111;
     --transparent: transparent;
 
-    /* Slate */
-    --slate-1: #0f172a;
-    --slate-2: #1e293b;
-    --slate-3: #334155;
-    --slate-4: #475569;
-    --slate-5: #64748b;
-    --slate-6: #94a3b8;
-    --slate-7: #cbd5e1;
-    --slate-8: #e2e8f0;
-    --slate-9: #f1f5f9;
-    --slate-10: #f8fafc;
+    /* Slate Palette */
+    --slate-50: #f8fafc;
+    --slate-100: #f1f5f9;
+    --slate-200: #e2e8f0;
+    --slate-300: #cbd5e1;
+    --slate-400: #94a3b8;
+    --slate-500: #64748b;
+    --slate-600: #475569;
+    --slate-700: #334155;
+    --slate-800: #1e293b;
+    --slate-900: #0f172a;
 
-    /* Gray */
-    --gray-1: #1a202c;
-    --gray-2: #f4f6f9;
-    --gray-3: #f1f5fa;
-    --gray-4: #f7f9fc;
-    --gray-5: #AFBCD0;
-    --gray-6: #888a8cff;
+    /* Gray Shades & Surfaces */
+    --gray-900: #1a202c;
+    --gray-bg: #f4f6f9;
+    --gray-row-hover: #f1f5fa;
+    --gray-surface: #f7f9fc;
+    --gray-border: #AFBCD0;
+    --gray-muted: #888a8cff;
 
-    /* Blue */
-    --blue-1: #2563eb;
-    --blue-2: #1d4ed8;
-    --blue-3: #3b82f6;
-    --blue-4: #eff6ff;
+    /* Blue Palette */
+    --blue-50: #eff6ff;
+    --blue-500: #3b82f6;
+    --blue-600: #2563eb;
+    --blue-700: #1d4ed8;
 
-    /* Sky */
-    --sky-1: #38bdf8;
-    --sky-2: #0ea5e9;
-    --sky-3: #0369a1;
-    --sky-4: #bae6fd;
-    --sky-5: #f0f9ff;
+    /* Sky Palette */
+    --sky-50: #f0f9ff;
+    --sky-200: #bae6fd;
+    --sky-400: #38bdf8;
+    --sky-500: #0ea5e9;
+    --sky-700: #0369a1;
 
-    /* Green */
-    --green-1: #16a34a;
-    --green-2: #166534;
-    --green-3: #10b981;
-    --green-4: #dcfce7;
+    /* Green & Emerald Palette */
+    --green-100: #dcfce7;
+    --green-600: #16a34a;
+    --green-800: #166534;
+    --emerald-500: #10b981;
 
-    /* Amber */
-    --amber-1: #d97706;
-    --amber-2: #92400e;
-    --amber-3: #f59e0b;
-    --amber-4: #fde68a;
-    --amber-5: #fef3c7;
+    /* Amber Palette */
+    --amber-100: #fef3c7;
+    --amber-200: #fde68a;
+    --amber-500: #f59e0b;
+    --amber-600: #d97706;
+    --amber-800: #92400e;
 
-    /* Red */
-    --red-1: #dc2626;
-    --red-2: #ef4444;
+    /* Red Palette */
+    --red-500: #ef4444;
+    --red-600: #dc2626;
 
     /* Pink & Indigo */
-    --pink: #ec4899;
-    --indigo: #6366f1;
+    --pink-500: #ec4899;
+    --indigo-500: #6366f1;
 
-    /* Alpha / RGBA */
-    --rgba-black-1: rgba(0, 0, 0, 0.1);
-    --rgba-black-2: rgba(0, 0, 0, 0.4);
-    --rgba-black-3: rgba(0, 0, 0, 0.25);
-    --rgba-black-4: rgba(0, 0, 0, 0.2);
-    --rgba-black-5: rgba(0, 0, 0, 0.08);
-    --rgba-slate-1: rgba(15, 23, 42, 0.5);
-    --rgba-slate-2: rgba(15, 23, 42, 0.08);
-    --rgba-blue-1: rgba(37, 99, 235, 0.45);
-    --rgba-blue-2: rgba(37, 99, 235, 0.2);
-    --rgba-blue-3: rgba(37, 99, 235, 0);
+    /* Shadows, Overlays & Glows */
+    --shadow-card: rgba(0, 0, 0, 0.1);
+    --shadow-tooltip: rgba(0, 0, 0, 0.4);
+    --shadow-modal: rgba(0, 0, 0, 0.25);
+    --shadow-dialog: rgba(0, 0, 0, 0.2);
+    --shadow-subtle: rgba(0, 0, 0, 0.08);
+    --shadow-slate: rgba(15, 23, 42, 0.08);
+    --overlay-backdrop: rgba(15, 23, 42, 0.5);
+    --glow-blue-start: rgba(37, 99, 235, 0.45);
+    --glow-blue-mid: rgba(37, 99, 235, 0.2);
+    --glow-blue-fade: rgba(37, 99, 235, 0);
 }
 
 body {
     margin: 0;
-    background-color: var(--gray-2);
+    background-color: var(--gray-bg);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -97,22 +97,22 @@ body {
 }
 
 .card {
-    background: var(--white-1);
+    background: var(--white);
     padding: 30px;
     border-radius: 8px;
-    box-shadow: 0 4px 12px var(--rgba-black-1);
+    box-shadow: 0 4px 12px var(--shadow-card);
     width: 400px;
     display: none;
 }
 
 #setup-screen p:nth-of-type(1) {
     font-size: 13px;
-    color: var(--slate-5);
+    color: var(--slate-500);
     text-align: center;
 }
 
 h2 {
-    color: var(--gray-1);
+    color: var(--gray-900);
     margin-top: 0;
     text-align: center;
 }
@@ -129,7 +129,7 @@ label {
 }
 
 #setup-screen > label:nth-of-type(1) {
-    color: var(--slate-4);
+    color: var(--slate-600);
 }
 
 #setup-screen>.input-group:nth-of-type(3) {
@@ -138,7 +138,7 @@ label {
 
 #setup-screen hr {
     border: 0;
-    border-top: 1px solid var(--slate-8);
+    border-top: 1px solid var(--slate-200);
     margin: 20px 0;
 }
 
@@ -149,23 +149,23 @@ label {
 input, select {
     width: 100%;
     padding: 10px;
-    border: 1px solid var(--slate-7);
+    border: 1px solid var(--slate-300);
     border-radius: 4px;
     box-sizing: border-box;
 }
 
 input:disabled, select:disabled {
-    background-color: var(--slate-9);
-    color: var(--slate-6);
+    background-color: var(--slate-100);
+    color: var(--slate-400);
     cursor: not-allowed;
-    border-color: var(--slate-8);
+    border-color: var(--slate-200);
 }
 
 button {
     width: 100%;
     padding: 12px;
-    background-color: var(--blue-1);
-    color: var(--white-1);
+    background-color: var(--blue-600);
+    color: var(--white);
     border: none;
     border-radius: 4px;
     font-size: 16px;
@@ -174,7 +174,7 @@ button {
 }
 
 button:hover {
-    background-color: var(--blue-2);
+    background-color: var(--blue-700);
 }
 
 .password-input-wrapper {
@@ -196,7 +196,7 @@ button:hover {
     margin: 0;
     background: var(--transparent);
     border: none;
-    color: var(--slate-5);
+    color: var(--slate-500);
     border-radius: 4px;
     display: flex;
     align-items: center;
@@ -206,17 +206,17 @@ button:hover {
 }
 
 .password-toggle-btn:hover {
-    background-color: var(--slate-9);
-    color: var(--slate-2);
+    background-color: var(--slate-100);
+    color: var(--slate-800);
 }
 
 .password-toggle-btn:focus-visible {
-    outline: 2px solid var(--blue-3);
+    outline: 2px solid var(--blue-500);
     outline-offset: 1px;
 }
 
 .error {
-    color: var(--red-1);
+    color: var(--red-600);
     font-size: 14px;
     text-align: center;
     margin-bottom: 10px;
@@ -224,7 +224,7 @@ button:hover {
 
 .field-error {
     display: block;
-    color: var(--red-1);
+    color: var(--red-600);
     font-size: 12px;
     position: absolute;
     top: 100%;
@@ -249,8 +249,8 @@ button:hover {
 
 .dashboard-sidebar {
     width: 280px;
-    background-color: var(--slate-2);
-    color: var(--white-1);
+    background-color: var(--slate-800);
+    color: var(--white);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -264,19 +264,19 @@ button:hover {
 
 .dashboard-sidebar-nav>h3 {
     margin-top: 0;
-    color: var(--sky-1);
+    color: var(--sky-400);
     font-size: 16px;
 }
 
 .dashboard-sidebar-nav > hr {
     border: 0;
-    border-top: 1px solid var(--slate-3);
+    border-top: 1px solid var(--slate-700);
     margin-bottom: 20px;
 }
 
 .dashboard-sidebar-nav > hr.sidebar-divider {
     border: 0;
-    border-top: 1px solid var(--slate-3);
+    border-top: 1px solid var(--slate-700);
     margin: 6px 0 16px 0;
 }
 
@@ -287,7 +287,7 @@ button:hover {
 
 .dashboard-sidebar-nav > p {
     font-size: 12px;
-    color: var(--slate-6);
+    color: var(--slate-400);
     text-transform: uppercase;
     margin: 20px 0 5px 0px;
     font-weight: bold;
@@ -296,16 +296,16 @@ button:hover {
 
 .dashboard-sidebar-watermark {
     font-size: 11px;
-    color: var(--slate-5);
+    color: var(--slate-500);
     line-height: 1.4;
-    border-top: 1px solid var(--slate-3);
+    border-top: 1px solid var(--slate-700);
     padding-top: 10px;
     font-style: italic;
 }
 
 .dashboard-main {
     flex: 1;
-    background-color: var(--slate-10);
+    background-color: var(--slate-50);
     padding: 40px;
     box-sizing: border-box;
     overflow-y: auto;
@@ -322,7 +322,7 @@ button:hover {
 .nav-btn {
     background: none;
     border: none;
-    color: var(--gray-5);
+    color: var(--gray-border);
     text-align: left;
     padding: 10px 15px;
     width: 100%;
@@ -339,33 +339,33 @@ button:hover {
 
 .nav-btn svg {
     flex-shrink: 0;
-    color: var(--slate-7);
+    color: var(--slate-300);
     transition: color 0.15s ease;
 }
 
 .nav-btn:hover {
-    background-color: var(--slate-3);
-    color: var(--slate-8);
+    background-color: var(--slate-700);
+    color: var(--slate-200);
 }
 
 .nav-btn:hover svg {
-    color: var(--slate-8);
+    color: var(--slate-200);
 }
 
 .nav-btn.active {
-    background-color: var(--blue-3);
-    color: var(--white-2);
+    background-color: var(--blue-500);
+    color: var(--white-pure);
 }
 
 .nav-btn.active svg {
-    color: var(--white-2);
+    color: var(--white-pure);
 }
 
 /* Table row action buttons (Students, Teachers, Subjects) */
 .table-action-btn {
     background: var(--transparent);
     border: none;
-    color: var(--slate-6);
+    color: var(--slate-400);
     padding: 4px 6px;
     margin-right: 4px;
     border-radius: 4px;
@@ -383,26 +383,26 @@ button:hover {
 
 .table-action-btn svg {
     flex-shrink: 0;
-    color: var(--slate-6);
+    color: var(--slate-400);
     transition: color 0.15s ease;
 }
 
 .table-action-btn:hover {
-    background-color: var(--slate-3);
-    color: var(--slate-8);
+    background-color: var(--slate-700);
+    color: var(--slate-200);
 }
 
 .table-action-btn:hover svg {
-    color: var(--slate-8);
+    color: var(--slate-200);
 }
 
 .table-action-btn:active, .table-action-btn.active {
-    background-color: var(--slate-2);
-    color: var(--white-2);
+    background-color: var(--slate-800);
+    color: var(--white-pure);
 }
 
 .table-action-btn:active svg, .table-action-btn.active svg {
-    color: var(--white-2);
+    color: var(--white-pure);
 }
 
 .tab-content {
@@ -426,7 +426,7 @@ button:hover {
 }
 
 #db-grades th, #db-grades td {
-    border: 1px solid var(--black-1);
+    border: 1px solid var(--black);
     padding: 8px 12px;
 }
 
@@ -448,35 +448,35 @@ button:hover {
     padding: 8px 14px;
     font-size: 14px;
     font-weight: normal;
-    background-color: var(--slate-8);
-    color: var(--slate-2);
+    background-color: var(--slate-200);
+    color: var(--slate-800);
     border-radius: 6px;
 }
 
 .chip-btn:hover {
-    background-color: var(--slate-7);
+    background-color: var(--slate-300);
 }
 
 .chip-btn.done {
-    background-color: var(--green-4);
-    color: var(--green-2);
+    background-color: var(--green-100);
+    color: var(--green-800);
 }
 
 .chip-btn.active, .chip-btn.active:hover {
-    background-color: var(--blue-3);
-    color: var(--white-1);
+    background-color: var(--blue-500);
+    color: var(--white);
 }
 
 .chip-btn.disabled, .chip-btn:disabled {
     cursor: not-allowed;
-    background-color: var(--slate-9) !important;
-    color: var(--slate-6) !important;
-    border-color: var(--slate-8);
+    background-color: var(--slate-100) !important;
+    color: var(--slate-400) !important;
+    border-color: var(--slate-200);
 }
 
 .chip-btn.disabled:hover, .chip-btn:disabled:hover {
-    background-color: var(--slate-9) !important;
-    color: var(--slate-6) !important;
+    background-color: var(--slate-100) !important;
+    color: var(--slate-400) !important;
 }
 
 /* Custom floating tooltip */
@@ -494,8 +494,8 @@ button:hover {
     transform: translateY(4px);
 
     /* Pure Black Color & Opacity */
-    background-color: var(--gray-6) !important;
-    color: var(--white-2) !important;
+    background-color: var(--gray-muted) !important;
+    color: var(--white-pure) !important;
     opacity: 0;
     font-size: 12px;
     font-weight: 500;
@@ -506,7 +506,7 @@ button:hover {
     pointer-events: none;
     visibility: hidden;
     transition: opacity 0.15s ease-out, transform 0.15s ease-out, visibility 0.15s;
-    box-shadow: 0 4px 14px var(--rgba-black-2);
+    box-shadow: 0 4px 14px var(--shadow-tooltip);
     z-index: 999999;
 }
 
@@ -523,7 +523,7 @@ button:hover {
     height: 0;
     border-left: 5px solid var(--transparent);
     border-right: 5px solid var(--transparent);
-    border-top: 5px solid var(--gray-6);
+    border-top: 5px solid var(--gray-muted);
     opacity: 0;
     pointer-events: none;
     visibility: hidden;
@@ -583,30 +583,30 @@ button:hover {
 
 #student-details.disabled {
     cursor: not-allowed;
-    background-color: var(--slate-10) !important;
-    border-color: var(--slate-8) !important;
+    background-color: var(--slate-50) !important;
+    border-color: var(--slate-200) !important;
 }
 
 #student-details.disabled summary {
     cursor: not-allowed !important;
-    color: var(--slate-6) !important;
+    color: var(--slate-400) !important;
     pointer-events: none;
 }
 
 @keyframes formHighlightPulse {
     0% {
-        box-shadow: 0 0 0 0 var(--rgba-blue-1);
-        border-color: var(--blue-1) !important;
+        box-shadow: 0 0 0 0 var(--glow-blue-start);
+        border-color: var(--blue-600) !important;
     }
 
     40% {
-        box-shadow: 0 0 0 8px var(--rgba-blue-2);
-        border-color: var(--blue-1) !important;
+        box-shadow: 0 0 0 8px var(--glow-blue-mid);
+        border-color: var(--blue-600) !important;
     }
 
     100% {
-        box-shadow: 0 0 0 0 var(--rgba-blue-3);
-        border-color: var(--slate-7) !important;
+        box-shadow: 0 0 0 0 var(--glow-blue-fade);
+        border-color: var(--slate-300) !important;
     }
 }
 
@@ -626,17 +626,17 @@ button:hover {
 .marks-subject-title {
     font-size: 18px;
     font-weight: bold;
-    color: var(--slate-2);
+    color: var(--slate-800);
 }
 
 .marks-outof, .marks-progress {
     font-size: 13px;
-    color: var(--slate-5);
+    color: var(--slate-500);
 }
 
 .marks-card {
-    background: var(--white-1);
-    border: 1px solid var(--slate-8);
+    background: var(--white);
+    border: 1px solid var(--slate-200);
     border-radius: 8px;
     overflow: hidden;
 }
@@ -646,7 +646,7 @@ button:hover {
     grid-template-columns: 70px 1fr 120px 130px;
     align-items: center;
     padding: 6px 14px;
-    border-bottom: 1px solid var(--slate-8);
+    border-bottom: 1px solid var(--slate-200);
     font-size: 14px;
 }
 
@@ -655,14 +655,14 @@ button:hover {
 }
 
 .marks-row-head {
-    background: var(--slate-10);
+    background: var(--slate-50);
     font-size: 12px;
-    color: var(--slate-5);
+    color: var(--slate-500);
     padding: 8px 14px;
 }
 
 .marks-roll {
-    color: var(--slate-5);
+    color: var(--slate-500);
 }
 
 .mark-cell {
@@ -676,19 +676,19 @@ button:hover {
 }
 
 .st-ok {
-    color: var(--green-1);
+    color: var(--green-600);
 }
 
 .st-absent {
-    color: var(--amber-1);
+    color: var(--amber-600);
 }
 
 .st-empty {
-    color: var(--slate-6);
+    color: var(--slate-400);
 }
 
 .st-error {
-    color: var(--red-1);
+    color: var(--red-600);
 }
 
 .marks-foot {
@@ -696,33 +696,33 @@ button:hover {
     justify-content: space-between;
     margin-top: 10px;
     font-size: 13px;
-    color: var(--slate-5);
+    color: var(--slate-500);
 }
 
 .marks-note {
     font-size: 12px;
-    color: var(--slate-5);
+    color: var(--slate-500);
     margin-bottom: 8px;
 }
 
 .marks-warn {
     font-size: 13px;
-    color: var(--amber-2);
-    background: var(--amber-5);
-    border: 1px solid var(--amber-4);
+    color: var(--amber-800);
+    background: var(--amber-100);
+    border: 1px solid var(--amber-200);
     border-radius: 6px;
     padding: 8px 12px;
     margin-bottom: 8px;
 }
 
 .marks-msg-error {
-    color: var(--red-1);
+    color: var(--red-600);
 }
 
 .marks-empty-row {
     padding: 16px 14px;
     font-size: 14px;
-    color: var(--slate-5);
+    color: var(--slate-500);
 }
 
 
@@ -734,19 +734,19 @@ button:hover {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: var(--rgba-slate-1);
+    background: var(--overlay-backdrop);
     align-items: center;
     justify-content: center;
     z-index: 1000;
 }
 
 .modal-box {
-    background: var(--white-1);
+    background: var(--white);
     padding: 24px;
     border-radius: 8px;
     width: 420px;
     max-width: 90vw;
-    box-shadow: 0 10px 30px var(--rgba-black-3);
+    box-shadow: 0 10px 30px var(--shadow-modal);
 }
 
 .modal-box .error {
@@ -770,7 +770,7 @@ button:hover {
     padding: 0;
     margin: 0;
     background: var(--transparent);
-    color: var(--slate-7);
+    color: var(--slate-300);
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -778,8 +778,8 @@ button:hover {
 }
 
 #notif-bell:hover {
-    background-color: var(--slate-3);
-    color: var(--white-1);
+    background-color: var(--slate-700);
+    color: var(--white);
 }
 
 #notif-badge {
@@ -791,8 +791,8 @@ button:hover {
     padding: 0 4px;
     box-sizing: border-box;
     border-radius: 9px;
-    background: var(--red-2);
-    color: var(--white-1);
+    background: var(--red-500);
+    color: var(--white);
     font-size: 11px;
     font-weight: bold;
     align-items: center;
@@ -805,10 +805,10 @@ button:hover {
     width: 340px;
     max-width: calc(100vw - 16px);
     max-height: 420px;
-    background: var(--white-1);
-    border: 1px solid var(--slate-8);
+    background: var(--white);
+    border: 1px solid var(--slate-200);
     border-radius: 10px;
-    box-shadow: 0 10px 30px var(--rgba-black-3);
+    box-shadow: 0 10px 30px var(--shadow-modal);
     flex-direction: column;
     z-index: 900;
 }
@@ -822,25 +822,25 @@ button:hover {
     justify-content: space-between;
     align-items: center;
     padding: 10px 14px;
-    border-bottom: 1px solid var(--slate-8);
+    border-bottom: 1px solid var(--slate-200);
     font-size: 14px;
     font-weight: bold;
-    color: var(--slate-2);
+    color: var(--slate-800);
 }
 
 #notif-head button {
     width: auto;
     padding: 2px 8px;
     background: var(--transparent);
-    color: var(--slate-5);
+    color: var(--slate-500);
     font-size: 12px;
     font-weight: normal;
     border-radius: 4px;
 }
 
 #notif-head button:hover {
-    background: var(--slate-9);
-    color: var(--slate-2);
+    background: var(--slate-100);
+    color: var(--slate-800);
 }
 
 #notif-head #notif-close {
@@ -859,23 +859,23 @@ button:hover {
 
 .notif-empty {
     text-align: center;
-    color: var(--slate-6);
+    color: var(--slate-400);
     font-size: 13px;
     padding: 20px 0;
 }
 
 .notif-item {
-    border-left: 4px solid var(--blue-3);
-    background: var(--slate-10);
+    border-left: 4px solid var(--blue-500);
+    background: var(--slate-50);
     border-radius: 6px;
     padding: 8px 10px;
     font-size: 12px;
-    color: var(--slate-4);
+    color: var(--slate-600);
 }
 
 .notif-item b, .notif-toast b {
     display: block;
-    color: var(--slate-2);
+    color: var(--slate-800);
     margin-bottom: 2px;
     font-size: 13px;
 }
@@ -884,24 +884,24 @@ button:hover {
     display: block;
     margin-top: 4px;
     font-size: 11px;
-    color: var(--slate-6);
+    color: var(--slate-400);
 }
 
 .notif-item.unread b::after {
     content: " •";
-    color: var(--red-2);
+    color: var(--red-500);
 }
 
 .notif-item.warning, .notif-toast.warning {
-    border-left-color: var(--amber-3);
+    border-left-color: var(--amber-500);
 }
 
 .notif-item.error, .notif-toast.error {
-    border-left-color: var(--red-2);
+    border-left-color: var(--red-500);
 }
 
 .notif-item.success, .notif-toast.success {
-    border-left-color: var(--green-3);
+    border-left-color: var(--emerald-500);
 }
 
 #notif-toasts {
@@ -918,14 +918,14 @@ button:hover {
 .notif-toast {
     width: min(300px, calc(100vw - 40px));
     box-sizing: border-box;
-    background: var(--white-1);
-    border: 1px solid var(--slate-8);
-    border-left: 4px solid var(--blue-3);
+    background: var(--white);
+    border: 1px solid var(--slate-200);
+    border-left: 4px solid var(--blue-500);
     border-radius: 8px;
     padding: 10px 14px;
     font-size: 12px;
-    color: var(--slate-4);
-    box-shadow: 0 6px 18px var(--rgba-black-4);
+    color: var(--slate-600);
+    box-shadow: 0 6px 18px var(--shadow-dialog);
     opacity: 0;
     transform: translateX(-40px);
     transition: transform 0.35s ease, opacity 0.35s ease;
@@ -971,7 +971,7 @@ button:hover {
     margin: 0;
     padding: 0;
     cursor: pointer;
-    accent-color: var(--sky-2);
+    accent-color: var(--sky-500);
 }
 
 .promote-confirm-bar {
@@ -979,14 +979,14 @@ button:hover {
     align-items: center;
     justify-content: space-between;
     gap: 12px;
-    background: var(--sky-5);
-    border: 1px solid var(--sky-4);
+    background: var(--sky-50);
+    border: 1px solid var(--sky-200);
     border-radius: 8px;
     padding: 10px 16px;
     margin-top: 16px;
     font-size: 13px;
     font-weight: 600;
-    color: var(--sky-3);
+    color: var(--sky-700);
 }
 
 /* ---------- EXAMS: all-marks read-only view ---------- */
@@ -1028,10 +1028,10 @@ button:hover {
 }
 
 .marks-view-year-filter {
-    background: var(--white-1);
+    background: var(--white);
     padding: 20px;
     border-radius: 8px;
-    border: 1px solid var(--slate-8);
+    border: 1px solid var(--slate-200);
     margin-bottom: 20px;
     display: flex;
     gap: 15px;
@@ -1044,15 +1044,15 @@ button:hover {
 
 .marks-view-status {
     margin-bottom: 10px;
-    color: var(--slate-5);
+    color: var(--slate-500);
     font-size: 13px;
 }
 
 .marks-view-table-wrap {
     width: 100%;
     overflow-x: auto;
-    background: var(--white-1);
-    border: 1px solid var(--slate-8);
+    background: var(--white);
+    border: 1px solid var(--slate-200);
     border-radius: 8px;
 }
 
@@ -1064,15 +1064,15 @@ button:hover {
 }
 
 .marks-view-table th, .marks-view-table td {
-    border-bottom: 1px solid var(--slate-8);
-    border-right: 1px solid var(--slate-8);
+    border-bottom: 1px solid var(--slate-200);
+    border-right: 1px solid var(--slate-200);
     padding: 9px 12px;
     white-space: nowrap;
 }
 
 .marks-view-table th {
-    background: var(--slate-10);
-    color: var(--slate-4);
+    background: var(--slate-50);
+    color: var(--slate-600);
     font-size: 12px;
 }
 
@@ -1106,8 +1106,8 @@ button:hover {
     display: flex;
     flex-wrap: wrap;
     gap: 6px 16px;
-    background: var(--white-1);
-    border: 1px solid var(--slate-8);
+    background: var(--white);
+    border: 1px solid var(--slate-200);
     border-radius: 8px;
     padding: 12px 16px;
     margin-bottom: 16px;
@@ -1120,7 +1120,7 @@ button:hover {
     margin: 0;
     font-size: 13px;
     font-weight: normal;
-    color: var(--slate-3);
+    color: var(--slate-700);
     cursor: pointer;
 }
 
@@ -1149,17 +1149,17 @@ button:hover {
 }
 
 .transcript-page {
-    background: var(--white-1);
-    border: 1px solid var(--slate-7);
+    background: var(--white);
+    border: 1px solid var(--slate-300);
     border-radius: 4px;
-    box-shadow: 0 2px 8px var(--rgba-black-5);
+    box-shadow: 0 2px 8px var(--shadow-subtle);
     padding: 26px 25px 55px;
     width: 100%;
     max-width: 880px;
     box-sizing: border-box;
     margin: 0 auto;
     font-family: "Fira Sans", Arial, sans-serif;
-    color: var(--black-3);
+    color: var(--black-soft);
 }
 
 .transcript-header-top {
@@ -1185,7 +1185,7 @@ button:hover {
 .transcript-inst-name {
     font-size: 23px;
     font-weight: 700;
-    color: var(--slate-1);
+    color: var(--slate-900);
     line-height: 1.25;
     margin-bottom: 2px;
 }
@@ -1193,7 +1193,7 @@ button:hover {
 .transcript-inst-address {
     font-size: 16px;
     font-weight: 500;
-    color: var(--slate-3);
+    color: var(--slate-700);
     line-height: 1.2;
     margin-bottom: 4px;
 }
@@ -1222,19 +1222,19 @@ button:hover {
 .transcript-grade-scale-table {
     border-collapse: collapse;
     font-size: 8.5px;
-    border: 1px solid var(--black-2);
+    border: 1px solid var(--black-pure);
     text-align: center;
 }
 
 .transcript-grade-scale-table th, .transcript-grade-scale-table td {
-    border: 1px solid var(--black-2);
+    border: 1px solid var(--black-pure);
     padding: 1.5px 2px;
     line-height: 1.2;
     font-weight: 600;
 }
 
 .transcript-grade-scale-table thead th {
-    background: var(--gray-3);
+    background: var(--gray-row-hover);
     font-weight: 700;
 }
 
@@ -1248,10 +1248,10 @@ button:hover {
     font-weight: 700;
     letter-spacing: 0.8px;
     text-transform: uppercase;
-    border: 1px solid var(--black-2);
+    border: 1px solid var(--black-pure);
     display: inline-block;
     padding: 3px 18px;
-    background: var(--slate-10);
+    background: var(--slate-50);
 }
 
 .transcript-info-section {
@@ -1281,18 +1281,18 @@ button:hover {
 
 .transcript-info-row .info-label {
     font-weight: 400;
-    color: var(--black-3);
+    color: var(--black-soft);
 }
 
 .transcript-info-row .info-colon {
     font-weight: 700;
-    color: var(--black-3);
+    color: var(--black-soft);
     text-align: center;
 }
 
 .transcript-info-row .info-value {
     font-weight: 700;
-    color: var(--black-3);
+    color: var(--black-soft);
     word-break: break-word;
 }
 
@@ -1306,11 +1306,11 @@ button:hover {
     border-collapse: collapse;
     text-align: center;
     font-size: 12px;
-    border: 1px solid var(--black-2);
+    border: 1px solid var(--black-pure);
 }
 
 .transcript-table th, .transcript-table td {
-    border: 1px solid var(--black-2);
+    border: 1px solid var(--black-pure);
     padding: 4px 5px;
     font-weight: 600;
     text-align: center;
@@ -1318,7 +1318,7 @@ button:hover {
 }
 
 .transcript-table thead th {
-    background: var(--gray-3);
+    background: var(--gray-row-hover);
     line-height: 1.2;
     font-size: 11.5px;
 }
@@ -1333,7 +1333,7 @@ button:hover {
 }
 
 .transcript-table td.total {
-    background: var(--gray-4);
+    background: var(--gray-surface);
 }
 
 .transcript-table tfoot td, .transcript-total-row td {
@@ -1371,19 +1371,19 @@ button:hover {
 .transcript-result-table, .transcript-remarks-table {
     width: 100%;
     border-collapse: collapse;
-    border: 1px solid var(--black-2);
+    border: 1px solid var(--black-pure);
     font-size: 12px;
 }
 
 .transcript-result-table th, .transcript-result-table td, .transcript-remarks-table th, .transcript-remarks-table td {
-    border: 1px solid var(--black-2);
+    border: 1px solid var(--black-pure);
     padding: 4px 6px;
     text-align: center;
     font-weight: 600;
 }
 
 .transcript-result-table th, .transcript-remarks-table th {
-    background: var(--gray-3);
+    background: var(--gray-row-hover);
 }
 
 .transcript-remarks-table th {
@@ -1409,7 +1409,7 @@ button:hover {
     justify-self: center;
     text-align: center;
     padding-top: 6px;
-    border-top: 1px solid var(--black-2);
+    border-top: 1px solid var(--black-pure);
     font-size: 12px;
     font-weight: 700;
 }
@@ -1419,8 +1419,8 @@ button:hover {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    background: var(--white-1);
-    border: 1px solid var(--slate-8);
+    background: var(--white);
+    border: 1px solid var(--slate-200);
     border-radius: 8px;
     padding: 12px 16px;
     margin-bottom: 16px;
@@ -1428,7 +1428,7 @@ button:hover {
 
 .transcript-remarks-hint {
     font-size: 12px;
-    color: var(--slate-5);
+    color: var(--slate-500);
 }
 
 #transcript-remark-rules {
@@ -1463,11 +1463,11 @@ button:hover {
     width: auto;
     padding: 6px 10px;
     font-size: 12px;
-    background: var(--red-2);
+    background: var(--red-500);
 }
 
 .transcript-remark-rule .remark-remove:hover {
-    background: var(--red-1);
+    background: var(--red-600);
 }
 
 
@@ -1497,7 +1497,7 @@ button:hover {
     display: block;
     margin-bottom: 4px;
     font-size: 13px;
-    color: var(--slate-3);
+    color: var(--slate-700);
 }
 
 
@@ -1505,7 +1505,7 @@ button:hover {
 
 /* ---------- Transcript: Class Nine / Ten table ---------- */
 .transcript-optional-label td {
-    background: var(--gray-3);
+    background: var(--gray-row-hover);
     font-weight: 700;
     text-align: left;
     padding-left: 10px;
@@ -1517,7 +1517,7 @@ button:hover {
 
 .transcript-gpa-cell {
     font-size: 16px;
-    background: var(--gray-4);
+    background: var(--gray-surface);
 }
 
 .transcript-table td.transcript-gp-above-cell {
@@ -1525,7 +1525,7 @@ button:hover {
 }
 
 .transcript-gp-above-cell .gp-above-label {
-    border-bottom: 1.5px solid var(--black-2);
+    border-bottom: 1.5px solid var(--black-pure);
     padding: 3px 4px;
     font-size: 10px;
     font-weight: 700;
@@ -1557,7 +1557,7 @@ button:hover {
 .sidebar-header>h3 {
     flex: 1;
     margin: 0;
-    color: var(--sky-1);
+    color: var(--sky-400);
     font-size: 16px;
     transition: opacity 0.2s ease;
 }
@@ -1576,15 +1576,15 @@ button:hover {
     padding: 0 15px;
     flex-shrink: 0;
     background: var(--transparent);
-    color: var(--slate-7);
+    color: var(--slate-300);
     border-radius: 6px;
     display: flex;
     align-items: center;
 }
 
 #sidebar-toggle:hover {
-    background-color: var(--slate-3);
-    color: var(--white-2);
+    background-color: var(--slate-700);
+    color: var(--white-pure);
 }
 
 #sidebar-toggle svg {
@@ -1623,8 +1623,8 @@ button:hover {
 }
 
 .home-card {
-    background: var(--white-1);
-    border: 1px solid var(--slate-8);
+    background: var(--white);
+    border: 1px solid var(--slate-200);
     border-radius: 8px;
     padding: 18px 20px;
     display: flex;
@@ -1638,13 +1638,13 @@ button:hover {
 }
 
 .home-card.clickable:hover {
-    border-color: var(--blue-3);
-    box-shadow: 0 6px 16px var(--rgba-slate-2);
+    border-color: var(--blue-500);
+    box-shadow: 0 6px 16px var(--shadow-slate);
     transform: translateY(-2px);
 }
 
 .home-card.clickable:focus-visible {
-    outline: 2px solid var(--blue-3);
+    outline: 2px solid var(--blue-500);
     outline-offset: 2px;
 }
 
@@ -1653,8 +1653,8 @@ button:hover {
     height: 44px;
     flex-shrink: 0;
     border-radius: 10px;
-    background: var(--blue-4);
-    color: var(--blue-3);
+    background: var(--blue-50);
+    color: var(--blue-500);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1673,19 +1673,19 @@ button:hover {
 .home-card-value {
     font-size: 28px;
     font-weight: 700;
-    color: var(--slate-1);
+    color: var(--slate-900);
     line-height: 1.1;
 }
 
 .home-card-label {
     font-size: 13px;
-    color: var(--slate-5);
+    color: var(--slate-500);
     margin-top: 2px;
 }
 
 .home-card-note {
     font-size: 11px;
-    color: var(--slate-6);
+    color: var(--slate-400);
     margin-top: 4px;
 }
 
@@ -1693,12 +1693,12 @@ button:hover {
     display: flex;
     gap: 14px;
     font-size: 13px;
-    color: var(--slate-4);
+    color: var(--slate-600);
 }
 
 .home-gender-row b {
     font-size: 20px;
-    color: var(--slate-1);
+    color: var(--slate-900);
 }
 
 .home-gender-bar {
@@ -1706,7 +1706,7 @@ button:hover {
     height: 6px;
     margin-top: 8px;
     border-radius: 3px;
-    background: var(--slate-8);
+    background: var(--slate-200);
     overflow: hidden;
 }
 
@@ -1718,11 +1718,11 @@ button:hover {
 }
 
 #gender-bar-boys {
-    background: var(--blue-3);
+    background: var(--blue-500);
 }
 
 #gender-bar-girls {
-    background: var(--pink);
+    background: var(--pink-500);
 }
 
 .home-charts {
@@ -1733,8 +1733,8 @@ button:hover {
 }
 
 .home-panel {
-    background: var(--white-1);
-    border: 1px solid var(--slate-8);
+    background: var(--white);
+    border: 1px solid var(--slate-200);
     border-radius: 8px;
     padding: 18px 20px;
 }
@@ -1742,11 +1742,11 @@ button:hover {
 .home-panel-title {
     margin: 0 0 14px 0;
     font-size: 15px;
-    color: var(--slate-1);
+    color: var(--slate-900);
 }
 
 .home-empty {
-    color: var(--slate-6);
+    color: var(--slate-400);
     font-size: 13px;
     padding: 12px 0;
 }
@@ -1764,14 +1764,14 @@ button:hover {
     width: 78px;
     flex-shrink: 0;
     text-align: right;
-    color: var(--slate-4);
+    color: var(--slate-600);
     white-space: nowrap;
 }
 
 .hbar-track {
     flex: 1;
     height: 12px;
-    background: var(--slate-9);
+    background: var(--slate-100);
     border-radius: 4px;
     overflow: hidden;
 }
@@ -1779,7 +1779,7 @@ button:hover {
 .hbar-fill {
     width: 0;
     height: 100%;
-    background: var(--blue-3);
+    background: var(--blue-500);
     border-radius: 4px;
     transition: width 0.6s ease;
 }
@@ -1787,7 +1787,7 @@ button:hover {
 .hbar-value {
     width: 30px;
     font-weight: 600;
-    color: var(--slate-1);
+    color: var(--slate-900);
 }
 
 /* vertical bars (subjects per class) */
@@ -1816,7 +1816,7 @@ button:hover {
 .vbar-value {
     font-size: 11px;
     font-weight: 600;
-    color: var(--slate-1);
+    color: var(--slate-900);
     margin-bottom: 3px;
 }
 
@@ -1825,7 +1825,7 @@ button:hover {
     max-width: 26px;
     height: 0;
     min-height: 2px;
-    background: var(--indigo);
+    background: var(--indigo-500);
     border-radius: 4px 4px 0 0;
     transition: height 0.6s ease;
 }
@@ -1834,7 +1834,7 @@ button:hover {
     margin-top: 6px;
     height: 72px;
     font-size: 11px;
-    color: var(--slate-4);
+    color: var(--slate-600);
     white-space: nowrap;
     writing-mode: vertical-rl;
     transform: rotate(180deg);
