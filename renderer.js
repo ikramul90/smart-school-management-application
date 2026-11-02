@@ -280,6 +280,139 @@ document.getElementById('sidebar-toggle').addEventListener('click', () => {
 });
 syncSidebarTitles();
 
+// ---------- DETAILS / FORMS: smooth collapse / expand ----------
+function setupSmoothDetails(detailsId) {
+    const details = document.getElementById(detailsId);
+    if (!details) return;
+    const summary = details.querySelector('summary');
+    const content = details.querySelector('.details-collapse-wrapper');
+    if (!summary || !content) return;
+
+    let currentAnim = null;
+
+    function expand(duration = 400) {
+        if (details.open && !details.classList.contains('collapsing') && !currentAnim) return;
+
+        const startHeight = currentAnim ? (content.offsetHeight || 0) : 0;
+
+        if (currentAnim) {
+            currentAnim.cancel();
+            currentAnim = null;
+        }
+
+        details.classList.remove('collapsing');
+        details.open = true;
+
+        content.style.overflow = 'hidden';
+        content.style.height = 'auto';
+        content.style.paddingBottom = '16px';
+        const targetHeight = content.scrollHeight;
+
+        content.style.height = `${startHeight}px`;
+        const startPadding = startHeight > 0 && targetHeight > 0 ? `${Math.min(16, (startHeight / targetHeight) * 16)}px` : '0px';
+        content.style.paddingBottom = startPadding;
+
+        const anim = content.animate([
+            { height: `${startHeight}px`, opacity: startHeight > 0 ? (startHeight / targetHeight) : 0, paddingBottom: startPadding },
+            { height: `${targetHeight}px`, opacity: 1, paddingBottom: '16px' }
+        ], {
+            duration,
+            easing: 'ease-in-out'
+        });
+
+        currentAnim = anim;
+
+        anim.onfinish = () => {
+            content.style.height = '';
+            content.style.overflow = '';
+            content.style.opacity = '';
+            content.style.paddingBottom = '';
+            currentAnim = null;
+        };
+        anim.oncancel = () => {
+            currentAnim = null;
+        };
+    }
+
+    function collapse(duration = 400) {
+        if (!details.open && !currentAnim) return;
+
+        if (currentAnim) {
+            currentAnim.cancel();
+            currentAnim = null;
+        }
+
+        details.classList.add('collapsing');
+        content.style.overflow = 'hidden';
+        const startHeight = content.offsetHeight || content.scrollHeight;
+
+        const anim = content.animate([
+            { height: `${startHeight}px`, opacity: 1, paddingBottom: '16px' },
+            { height: '0px', opacity: 0, paddingBottom: '0px' }
+        ], {
+            duration,
+            easing: 'ease-in-out'
+        });
+
+        currentAnim = anim;
+
+        anim.onfinish = () => {
+            details.open = false;
+            details.classList.remove('collapsing');
+            content.style.height = '';
+            content.style.overflow = '';
+            content.style.opacity = '';
+            content.style.paddingBottom = '';
+            currentAnim = null;
+        };
+        anim.oncancel = () => {
+            currentAnim = null;
+        };
+    }
+
+    summary.addEventListener('click', (e) => {
+        if (details.classList.contains('disabled')) {
+            e.preventDefault();
+            return;
+        }
+        if (detailsId === 'student-details' && typeof promoteModeActive !== 'undefined' && promoteModeActive) {
+            e.preventDefault();
+            return;
+        }
+
+        e.preventDefault();
+
+        if (details.open && !details.classList.contains('collapsing')) {
+            collapse();
+        } else {
+            expand();
+        }
+    });
+
+    details.expandSmooth = expand;
+    details.collapseSmooth = collapse;
+}
+
+window.openDetailsSmooth = function (details) {
+    if (!details) return;
+    if (typeof details.expandSmooth === 'function') {
+        details.expandSmooth();
+    } else {
+        details.open = true;
+    }
+};
+
+window.closeDetailsSmooth = function (details) {
+    if (!details) return;
+    if (typeof details.collapseSmooth === 'function') {
+        details.collapseSmooth();
+    } else {
+        details.open = false;
+    }
+};
+
+['student-details', 'teacher-details', 'subject-details'].forEach(setupSmoothDetails);
+
 //  CRUD MANAGEMENT OPERATORS 
 
 // Load data automatically when entering a database tab
@@ -539,7 +672,7 @@ window.editSubject = function (id, classId, subjectName, sequence, monthlyMarks,
     document.getElementById('btn-cancel-subject').style.display = 'inline-block';
     const details = document.getElementById('subject-details');
     if (details) {
-        details.open = true;
+        window.openDetailsSmooth(details);
         details.scrollIntoView({ behavior: 'smooth', block: 'start' });
         details.classList.remove('details-highlight');
         void details.offsetWidth; // trigger reflow for restartable CSS animation
@@ -924,7 +1057,7 @@ function syncPromoteTabsState() {
     const studentSummary = document.getElementById('student-details-summary');
     if (studentDetails) {
         if (promoteModeActive) {
-            studentDetails.open = false;
+            window.closeDetailsSmooth(studentDetails);
             studentDetails.classList.add('disabled');
             studentDetails.setAttribute('data-tooltip', 'The promotion page is running. Cancel this first.');
             if (studentSummary) studentSummary.removeAttribute('data-tooltip');
@@ -1025,7 +1158,7 @@ window.editStudent = async function (id, classId, roll, name, bloodGroup, guardi
     document.getElementById('btn-cancel-student').style.display = 'inline-block';
     const details = document.getElementById('student-details');
     if (details) {
-        details.open = true;
+        window.openDetailsSmooth(details);
         details.scrollIntoView({ behavior: 'smooth', block: 'start' });
         details.classList.remove('details-highlight');
         void details.offsetWidth; // trigger reflow for restartable CSS animation
@@ -1686,7 +1819,7 @@ window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName
     document.getElementById('btn-save-teacher').textContent = 'Update Teacher';
     document.getElementById('btn-cancel-teacher').style.display = 'inline-block';
     const details = document.getElementById('teacher-details');
-    if (details) details.open = true;
+    if (details) window.openDetailsSmooth(details);
 };
 
 document.getElementById('btn-save-teacher').addEventListener('click', async () => {

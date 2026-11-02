@@ -538,8 +538,10 @@ button:hover {
     transform: translateY(0);
 }
 
-#student-details, #subject-details {
+#student-details, #teacher-details, #subject-details {
     scroll-margin-top: 18px;
+    padding: 0 !important;
+    overflow: hidden;
 }
 
 #student-details summary, #teacher-details summary, #subject-details summary {
@@ -548,10 +550,15 @@ button:hover {
     justify-content: flex-start;
     gap: 8px;
     cursor: pointer;
-    margin: -15px;
-    padding: 15px;
+    margin: 0 !important;
+    padding: 14px 16px !important;
     border-radius: 7px;
     list-style: none;
+    transition: background-color 0.2s ease;
+}
+
+#student-details summary:hover, #teacher-details summary:hover, #subject-details summary:hover {
+    background-color: var(--slate-50);
 }
 
 #student-details summary::-webkit-details-marker, #teacher-details summary::-webkit-details-marker, #subject-details summary::-webkit-details-marker {
@@ -568,17 +575,21 @@ button:hover {
     -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E") no-repeat center / contain;
     mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 18 15 12 9 6'%3E%3C/polyline%3E%3C/svg%3E") no-repeat center / contain;
     transform: rotate(0deg);
-    transition: transform 0.2s ease;
+    transition: transform 0.4s ease-in-out;
 }
 
-#student-details[open] summary, #teacher-details[open] summary, #subject-details[open] summary {
-    margin: -15px -15px 0 -15px;
+#student-details[open]:not(.collapsing) summary, #teacher-details[open]:not(.collapsing) summary, #subject-details[open]:not(.collapsing) summary {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-#student-details[open] summary::before, #teacher-details[open] summary::before, #subject-details[open] summary::before {
+#student-details[open]:not(.collapsing) summary::before, #teacher-details[open]:not(.collapsing) summary::before, #subject-details[open]:not(.collapsing) summary::before {
     transform: rotate(90deg);
+}
+
+.details-collapse-wrapper {
+    padding: 0 16px 16px 16px;
+    box-sizing: border-box;
 }
 
 #student-details.disabled {

@@ -566,70 +566,73 @@
 
                     <!-- Enroll new student -->
                     <details id="student-details" class="no-select"
-                        style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                        style="background: white; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary id="student-details-summary" style="font-weight:bold; cursor:pointer; color:#2563eb;">
                             Enroll New Student</summary>
-                        <div id="student-form"
-                            style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
-                            <input type="hidden" id="st-edit-id" value="">
-                            <div><label>Class</label><select id="st-class"
-                                    onchange="updateStudentSubjectSelection()"></select></div>
-                            <div id="stu-subject-selection"
-                                style="display:none; grid-column: span 3; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0;">
-                                <label class="no-select">Main Subjects <span
-                                        style="font-weight:normal; color:#64748b;">(choose exactly 3)</span></label>
-                                <div id="stu-main-subjects-list"
-                                    style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:12px;"></div>
-                                <label class="no-select">Optional Subject <span
-                                        style="font-weight:normal; color:#64748b;">(choose 1)</span></label>
-                                <select id="stu-optional-select">
-                                    <option value="">-- pick 3 main subjects first --</option>
-                                </select>
+                        <div class="details-collapse-wrapper">
+                            <div id="student-form"
+                                style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:10px;">
+                                <input type="hidden" id="st-edit-id" value="">
+                                <div><label>Class</label><select id="st-class"
+                                        onchange="updateStudentSubjectSelection()"></select></div>
+                                <div id="stu-subject-selection"
+                                    style="display:none; grid-column: span 3; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0;">
+                                    <label class="no-select">Main Subjects <span
+                                            style="font-weight:normal; color:#64748b;">(choose exactly 3)</span></label>
+                                    <div id="stu-main-subjects-list"
+                                        style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:12px;"></div>
+                                    <label class="no-select">Optional Subject <span
+                                            style="font-weight:normal; color:#64748b;">(choose 1)</span></label>
+                                    <select id="stu-optional-select">
+                                        <option value="">-- pick 3 main subjects first --</option>
+                                    </select>
+                                </div>
+                                <div><label>Class Roll</label><input type="text" id="st-roll" inputmode="numeric"
+                                        maxlength="3" autocomplete="off"></div>
+                                <div><label>Full Name</label><input type="text" id="st-name"></div>
+                                <div><label>Date of Birth</label><input type="text" id="st-dob" placeholder="DD/MM/YYYY"
+                                        maxlength="10" autocomplete="off"></div>
+                                <div><label>Father's Name</label><input type="text" id="st-father"></div>
+                                <div><label>Mother's Name</label><input type="text" id="st-mother"></div>
+                                <div><label>Blood Group</label>
+                                    <select id="st-blood">
+                                        <option value="">-- Select Blood Group --</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                    </select>
+                                </div>
+                                <div><label>Gender</label>
+                                    <select id="st-gender">
+                                        <option value="">-- Select Gender --</option>
+                                        <option value="Male">Male</option>
+                                        <option value="Female">Female</option>
+                                    </select>
+                                </div>
+                                <div><label>Guardian Contact</label><input type="text" id="st-phone"></div>
+                                <div><label>Birth Registration No.</label><input type="text" id="st-birth-reg"></div>
+                                <div style="grid-column: span 3;"><label class="no-select">Address</label><input type="text"
+                                        id="st-address"></div>
+                                <div id="st-archive-fields"
+                                    style="display:none; grid-column: span 3; grid-template-columns:1fr 2fr; gap:15px; background:#fef3c7; padding:12px; border-radius:6px; border:1px solid #fde68a;">
+                                    <div><label id="st-archive-date-label">Graduation Date</label><input type="date"
+                                            id="st-status-date"></div>
+                                    <div id="st-archive-cause-wrap"><label>Reason for Dropping Out</label><input type="text"
+                                            id="st-removal-cause"></div>
+                                </div>
                             </div>
-                            <div><label>Class Roll</label><input type="text" id="st-roll" inputmode="numeric"
-                                    maxlength="3" autocomplete="off"></div>
-                            <div><label>Full Name</label><input type="text" id="st-name"></div>
-                            <div><label>Date of Birth</label><input type="text" id="st-dob" placeholder="DD/MM/YYYY"
-                                    maxlength="10" autocomplete="off"></div>
-                            <div><label>Father's Name</label><input type="text" id="st-father"></div>
-                            <div><label>Mother's Name</label><input type="text" id="st-mother"></div>
-                            <div><label>Blood Group</label>
-                                <select id="st-blood">
-                                    <option value="">-- Select Blood Group --</option>
-                                    <option value="A+">A+</option>
-                                    <option value="A-">A-</option>
-                                    <option value="B+">B+</option>
-                                    <option value="B-">B-</option>
-                                    <option value="O+">O+</option>
-                                    <option value="O-">O-</option>
-                                    <option value="AB+">AB+</option>
-                                    <option value="AB-">AB-</option>
-                                </select>
-                            </div>
-                            <div><label>Gender</label>
-                                <select id="st-gender">
-                                    <option value="">-- Select Gender --</option>
-                                    <option value="Male">Male</option>
-                                    <option value="Female">Female</option>
-                                </select>
-                            </div>
-                            <div><label>Guardian Contact</label><input type="text" id="st-phone"></div>
-                            <div><label>Birth Registration No.</label><input type="text" id="st-birth-reg"></div>
-                            <div style="grid-column: span 3;"><label class="no-select">Address</label><input type="text"
-                                    id="st-address"></div>
-                            <div id="st-archive-fields"
-                                style="display:none; grid-column: span 3; grid-template-columns:1fr 2fr; gap:15px; background:#fef3c7; padding:12px; border-radius:6px; border:1px solid #fde68a;">
-                                <div><label id="st-archive-date-label">Graduation Date</label><input type="date"
-                                        id="st-status-date"></div>
-                                <div id="st-archive-cause-wrap"><label>Reason for Dropping Out</label><input type="text"
-                                        id="st-removal-cause"></div>
+                            <div style="margin-top:15px; display:flex; gap:10px;">
+                                <button id="btn-save-student"
+                                    style="background-color:#2563eb; width:200px;">Register Student</button>
+                                <button id="btn-cancel-student" type="button"
+                                    style="background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
                             </div>
                         </div>
-                        <button id="btn-save-student"
-                            style="margin-top:15px; background-color:#2563eb; width:200px;">Register Student</button>
-                        <button id="btn-cancel-student" type="button"
-                            style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel
-                            Edit</button>
                     </details>
 
                     <!-- Status -->
@@ -678,42 +681,45 @@
                     <h2 class="no-select">Teacher Registry</h2>
 
                     <details id="teacher-details" class="no-select"
-                        style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                        style="background: white; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary class="no-select" style="font-weight:bold; cursor:pointer; color:#2563eb;">Add New
                             Teacher</summary>
-                        <div id="teacher-form"
-                            style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:15px;">
-                            <input type="hidden" id="tc-edit-id" value="">
-                            <div><label class="no-select">Full Name</label><input type="text" id="tc-name"></div>
-                            <div><label class="no-select">Title</label><input type="text" id="tc-title"
-                                    placeholder="e.g. Senior Teacher"></div>
-                            <div><label class="no-select">Class Teacher Of</label><select id="tc-classes"></select>
+                        <div class="details-collapse-wrapper">
+                            <div id="teacher-form"
+                                style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:10px;">
+                                <input type="hidden" id="tc-edit-id" value="">
+                                <div><label class="no-select">Full Name</label><input type="text" id="tc-name"></div>
+                                <div><label class="no-select">Title</label><input type="text" id="tc-title"
+                                        placeholder="e.g. Senior Teacher"></div>
+                                <div><label class="no-select">Class Teacher Of</label><select id="tc-classes"></select>
+                                </div>
+                                <div><label>Contact Number</label><input type="text" id="tc-contact"></div>
+                                <div><label>Blood Group</label>
+                                    <select id="tc-blood">
+                                        <option value="">-- Select Blood Group --</option>
+                                        <option value="A+">A+</option>
+                                        <option value="A-">A-</option>
+                                        <option value="B+">B+</option>
+                                        <option value="B-">B-</option>
+                                        <option value="O+">O+</option>
+                                        <option value="O-">O-</option>
+                                        <option value="AB+">AB+</option>
+                                        <option value="AB-">AB-</option>
+                                    </select>
+                                </div>
+                                <div><label> Father's Name</label><input type="text" id="tc-father"></div>
+                                <div><label>Mother's Name</label><input type="text" id="tc-mother"></div>
+                                <div><label>NID Number</label><input type="text" id="tc-nid"></div>
+                                <div style="grid-column: span 3;"><label class="no-select">Address</label><input type="text"
+                                        id="tc-address"></div>
                             </div>
-                            <div><label>Contact Number</label><input type="text" id="tc-contact"></div>
-                            <div><label>Blood Group</label>
-                                <select id="tc-blood">
-                                    <option value="">-- Select Blood Group --</option>
-                                    <option value="A+">A+</option>
-                                    <option value="A-">A-</option>
-                                    <option value="B+">B+</option>
-                                    <option value="B-">B-</option>
-                                    <option value="O+">O+</option>
-                                    <option value="O-">O-</option>
-                                    <option value="AB+">AB+</option>
-                                    <option value="AB-">AB-</option>
-                                </select>
+                            <div style="margin-top:15px; display:flex; gap:10px;">
+                                <button id="btn-save-teacher"
+                                    style="background-color:#2563eb; width:200px;">Save Teacher</button>
+                                <button id="btn-cancel-teacher" type="button"
+                                    style="background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
                             </div>
-                            <div><label> Father's Name</label><input type="text" id="tc-father"></div>
-                            <div><label>Mother's Name</label><input type="text" id="tc-mother"></div>
-                            <div><label>NID Number</label><input type="text" id="tc-nid"></div>
-                            <div style="grid-column: span 3;"><label class="no-select">Address</label><input type="text"
-                                    id="tc-address"></div>
                         </div>
-                        <button id="btn-save-teacher"
-                            style="margin-top:15px; background-color:#2563eb; width:200px;">Save Teacher</button>
-                        <button id="btn-cancel-teacher" type="button"
-                            style="margin-top:15px; margin-left:10px; background-color:#64748b; width:150px; display:none;">Cancel
-                            Edit</button>
                     </details>
 
                     <table
@@ -737,51 +743,53 @@
                     <h2 class="no-select">Curriculum Subject Settings</h2>
 
                     <details id="subject-details" class="no-select"
-                        style="background: white; padding: 15px; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
+                        style="background: white; border-radius: 8px; border:1px solid #cbd5e1; margin-bottom:20px;">
                         <summary style="font-weight:bold; cursor:pointer; color:#2563eb;">Add / Edit Subject</summary>
-                        <div id="subject-form"
-                            style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-top:15px;">
-                            <input type="hidden" id="sub-edit-id" value="">
-                            <div style="width:100px; position: relative;"><label
-                                    class="no-select">Sequence</label><input type="text" id="sub-seq-input"
-                                    inputmode="numeric" value="1"><small id="sub-seq-error" class="field-error"></small>
-                            </div>
-                            <div style="flex:1; min-width:150px;"><label>Target Class</label><select
-                                    id="sub-class-select"></select></div>
-                            <div style="flex:1; min-width:150px;"><label>Subject Name</label><select
-                                    id="sub-name-select"></select></div>
-                            <div id="sub-custom-name-wrap"
-                                style="display:none; flex:1; min-width:180px; position: relative;"><label>Subject
-                                    Name</label><input type="text" id="sub-custom-name-input"
-                                    placeholder="Enter subject name"><small id="sub-custom-error"
-                                    class="field-error"></small></div>
-                            <div
-                                style="display:flex; flex-direction:column; justify-content:flex-end; gap:6px; min-width:190px;">
-                                <label class="no-select" style="margin-bottom:0;">Appears in Exams</label>
-                                <div style="display:flex; gap:12px; align-items:center; height:38px;">
-                                    <label
-                                        style="font-weight:normal; font-size:14px; display:flex; align-items:center; gap:6px; margin:0; cursor:pointer;">
-                                        <input type="checkbox" id="sub-monthly-check" checked
-                                            style="width:auto; cursor:pointer; margin:0;"> Monthly
-                                    </label>
-                                    <label
-                                        style="font-weight:normal; font-size:14px; display:flex; align-items:center; gap:6px; margin:0; cursor:pointer;">
-                                        <input type="checkbox" id="sub-yearly-check" checked
-                                            style="width:auto; cursor:pointer; margin:0;"> Yearly
-                                    </label>
+                        <div class="details-collapse-wrapper">
+                            <div id="subject-form"
+                                style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-top:10px;">
+                                <input type="hidden" id="sub-edit-id" value="">
+                                <div style="width:100px; position: relative;"><label
+                                        class="no-select">Sequence</label><input type="text" id="sub-seq-input"
+                                        inputmode="numeric" value="1"><small id="sub-seq-error" class="field-error"></small>
                                 </div>
+                                <div style="flex:1; min-width:150px;"><label>Target Class</label><select
+                                        id="sub-class-select"></select></div>
+                                <div style="flex:1; min-width:150px;"><label>Subject Name</label><select
+                                        id="sub-name-select"></select></div>
+                                <div id="sub-custom-name-wrap"
+                                    style="display:none; flex:1; min-width:180px; position: relative;"><label>Subject
+                                        Name</label><input type="text" id="sub-custom-name-input"
+                                        placeholder="Enter subject name"><small id="sub-custom-error"
+                                        class="field-error"></small></div>
+                                <div
+                                    style="display:flex; flex-direction:column; justify-content:flex-end; gap:6px; min-width:190px;">
+                                    <label class="no-select" style="margin-bottom:0;">Appears in Exams</label>
+                                    <div style="display:flex; gap:12px; align-items:center; height:38px;">
+                                        <label
+                                            style="font-weight:normal; font-size:14px; display:flex; align-items:center; gap:6px; margin:0; cursor:pointer;">
+                                            <input type="checkbox" id="sub-monthly-check" checked
+                                                style="width:auto; cursor:pointer; margin:0;"> Monthly
+                                        </label>
+                                        <label
+                                            style="font-weight:normal; font-size:14px; display:flex; align-items:center; gap:6px; margin:0; cursor:pointer;">
+                                            <input type="checkbox" id="sub-yearly-check" checked
+                                                style="width:auto; cursor:pointer; margin:0;"> Yearly
+                                        </label>
+                                    </div>
+                                </div>
+                                <div style="width:120px; position: relative;"><label>Monthly Total</label><input type="text"
+                                        id="sub-monthly-input" placeholder="e.g. 25" inputmode="numeric"><small
+                                        id="sub-monthly-error" class="field-error"></small></div>
+                                <div style="width:120px; position: relative;"><label>Yearly Total</label><input type="text"
+                                        id="sub-yearly-input" placeholder="e.g. 100" inputmode="numeric"><small
+                                        id="sub-yearly-error" class="field-error"></small></div>
+                                <button id="btn-add-subject"
+                                    style="background-color:#10b981; width:auto; padding:10px 20px;">Save Subject</button>
+                                <button id="btn-cancel-subject" type="button"
+                                    style="background-color:#64748b; width:auto; padding:10px 20px; display:none;">Cancel
+                                    Edit</button>
                             </div>
-                            <div style="width:120px; position: relative;"><label>Monthly Total</label><input type="text"
-                                    id="sub-monthly-input" placeholder="e.g. 25" inputmode="numeric"><small
-                                    id="sub-monthly-error" class="field-error"></small></div>
-                            <div style="width:120px; position: relative;"><label>Yearly Total</label><input type="text"
-                                    id="sub-yearly-input" placeholder="e.g. 100" inputmode="numeric"><small
-                                    id="sub-yearly-error" class="field-error"></small></div>
-                            <button id="btn-add-subject"
-                                style="background-color:#10b981; width:auto; padding:10px 20px;">Save Subject</button>
-                            <button id="btn-cancel-subject" type="button"
-                                style="background-color:#64748b; width:auto; padding:10px 20px; display:none;">Cancel
-                                Edit</button>
                         </div>
                     </details>
 
