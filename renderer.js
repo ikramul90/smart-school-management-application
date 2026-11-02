@@ -3493,15 +3493,24 @@ function setupCancelEdit(editIdField, formFields, saveBtnId, saveLabel, cancelBt
 
 const btnCancelStudent = document.getElementById('btn-cancel-student');
 if (btnCancelStudent) {
-    btnCancelStudent.addEventListener('click', resetStudentForm);
+    btnCancelStudent.addEventListener('click', () => {
+        resetStudentForm();
+        window.closeDetailsSmooth(document.getElementById('student-details'));
+    });
 }
 const btnCancelTeacher = document.getElementById('btn-cancel-teacher');
 if (btnCancelTeacher) {
-    btnCancelTeacher.addEventListener('click', resetTeacherForm);
+    btnCancelTeacher.addEventListener('click', () => {
+        resetTeacherForm();
+        window.closeDetailsSmooth(document.getElementById('teacher-details'));
+    });
 }
 const btnCancelSubject = document.getElementById('btn-cancel-subject');
 if (btnCancelSubject) {
-    btnCancelSubject.addEventListener('click', resetSubjectForm);
+    btnCancelSubject.addEventListener('click', () => {
+        resetSubjectForm();
+        window.closeDetailsSmooth(document.getElementById('subject-details'));
+    });
 }
 
 // ============================================================
