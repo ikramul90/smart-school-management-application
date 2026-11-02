@@ -1227,8 +1227,8 @@ button:hover {
 }
 
 .transcript-std-img {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 110px;
     object-fit: contain;
 }
 

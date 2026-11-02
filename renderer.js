@@ -273,10 +273,12 @@ function syncSidebarTitles() {
 }
 
 document.getElementById('sidebar-toggle').addEventListener('click', () => {
-    dashboardSidebar.classList.toggle('collapsed');
+    const isCollapsed = dashboardSidebar.classList.toggle('collapsed');
+    document.getElementById('sidebar-toggle').setAttribute('aria-label', isCollapsed ? 'Expand sidebar' : 'Collapse sidebar');
     syncSidebarTitles();
     closeNotificationPanel();   // the panel is anchored to the bell, which fades out
 });
+syncSidebarTitles();
 
 //  CRUD MANAGEMENT OPERATORS 
 
