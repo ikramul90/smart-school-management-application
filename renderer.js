@@ -2510,6 +2510,9 @@ function paintTranscriptPreview() {
     preview.innerHTML = transcriptStudents.map(st => `
         <div class="transcript-page">
             <div class="transcript-header-top">
+                <div class="transcript-std-img-wrap">
+                    <img src="Sample data/std.png" class="transcript-std-img" alt="School Logo" onerror="this.style.display='none'">
+                </div>
                 <div class="transcript-inst-header">
                     ${schoolName ? `<div class="transcript-inst-name">${escapeHtml(schoolName)}</div>` : ''}
                     ${schoolAddress ? `<div class="transcript-inst-address">${escapeHtml(schoolAddress)}</div>` : ''}
@@ -2518,7 +2521,7 @@ function paintTranscriptPreview() {
                 <div class="transcript-grade-scale-box">
                     <table class="transcript-grade-scale-table">
                         <thead>
-                            <tr><th>Range of Marks</th><th>Letter Grade</th><th>Grade Point</th></tr>
+                            <tr><th>Range</th><th>Letter Grade</th><th>Grade Point</th></tr>
                         </thead>
                         <tbody>
                             <tr><td>80 - 100%</td><td>A+</td><td>5.0</td></tr>

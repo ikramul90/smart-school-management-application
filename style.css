@@ -1183,12 +1183,12 @@ button:hover {
     align-items: center;
     justify-content: center;
     text-align: center;
-    padding: 0 230px;
+    padding: 0 30px;
     box-sizing: border-box;
 }
 
 .transcript-inst-name {
-    font-size: 23px;
+    font-size: 30px;
     font-weight: 700;
     color: var(--slate-900);
     line-height: 1.25;
@@ -1196,7 +1196,7 @@ button:hover {
 }
 
 .transcript-inst-address {
-    font-size: 16px;
+    font-size: 20px;
     font-weight: 500;
     color: var(--slate-700);
     line-height: 1.2;
@@ -1204,8 +1204,7 @@ button:hover {
 }
 
 .transcript-logo-wrap {
-    margin-top: 2px;
-    margin-bottom: 2px;
+    margin: 4px 0px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -1214,6 +1213,22 @@ button:hover {
 .transcript-inst-logo {
     width: 100px;
     height: 100px;
+    object-fit: contain;
+}
+
+.transcript-std-img-wrap {
+    position: absolute;
+    top: 100px;
+    left: 15px;
+    width: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.transcript-std-img {
+    width: 80px;
+    height: 80px;
     object-fit: contain;
 }
 
