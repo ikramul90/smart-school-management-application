@@ -539,7 +539,7 @@ button:hover {
 }
 
 #student-details, #teacher-details, #subject-details {
-    scroll-margin-top: 18px;
+    scroll-margin-top: 60px;
     padding: 0 !important;
     overflow: hidden;
 }

@@ -411,6 +411,23 @@ window.closeDetailsSmooth = function (details) {
     }
 };
 
+// Controls smooth scrolling to a form with custom top spacing (e.g. 24px)
+window.scrollToForm = function (details, offset = 24) {
+    if (!details) return;
+    const container = details.closest('.dashboard-main') || document.querySelector('.dashboard-main');
+    if (container) {
+        const detailsRect = details.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const targetScrollTop = container.scrollTop + (detailsRect.top - containerRect.top) - offset;
+        container.scrollTo({
+            top: Math.max(0, targetScrollTop),
+            behavior: 'smooth'
+        });
+    } else {
+        details.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+};
+
 ['student-details', 'teacher-details', 'subject-details'].forEach(setupSmoothDetails);
 
 //  CRUD MANAGEMENT OPERATORS 
@@ -673,7 +690,7 @@ window.editSubject = function (id, classId, subjectName, sequence, monthlyMarks,
     const details = document.getElementById('subject-details');
     if (details) {
         window.openDetailsSmooth(details);
-        details.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.scrollToForm(details, 24);
         details.classList.remove('details-highlight');
         void details.offsetWidth; // trigger reflow for restartable CSS animation
         details.classList.add('details-highlight');
@@ -1159,7 +1176,7 @@ window.editStudent = async function (id, classId, roll, name, bloodGroup, guardi
     const details = document.getElementById('student-details');
     if (details) {
         window.openDetailsSmooth(details);
-        details.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        window.scrollToForm(details, 24);
         details.classList.remove('details-highlight');
         void details.offsetWidth; // trigger reflow for restartable CSS animation
         details.classList.add('details-highlight');
@@ -1819,7 +1836,10 @@ window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName
     document.getElementById('btn-save-teacher').textContent = 'Update Teacher';
     document.getElementById('btn-cancel-teacher').style.display = 'inline-block';
     const details = document.getElementById('teacher-details');
-    if (details) window.openDetailsSmooth(details);
+    if (details) {
+        window.openDetailsSmooth(details);
+        window.scrollToForm(details, 24);
+    }
 };
 
 document.getElementById('btn-save-teacher').addEventListener('click', async () => {
