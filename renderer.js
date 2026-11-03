@@ -242,8 +242,8 @@ window.switchTab = function (tabId) {
         tab.style.display = 'none';
     });
 
-    const studentDetails = document.getElementById('student-details');
-    if (studentDetails) studentDetails.classList.remove('details-highlight');
+    // Clear form highlight animations from all details forms
+    ['student-details', 'teacher-details', 'subject-details'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('details-highlight'); });
 
     // Show the specific clicked tab
     const targetTab = document.getElementById(tabId);
@@ -428,6 +428,20 @@ window.scrollToForm = function (details, offset = 24) {
     }
 };
 
+window.triggerFormHighlight = function (details) {
+    if (!details) return;
+    window.openDetailsSmooth(details);
+    window.scrollToForm(details, 24);
+    details.classList.remove('details-highlight');
+    void details.offsetWidth;
+    details.classList.add('details-highlight');
+    const onEnd = () => {
+        details.classList.remove('details-highlight');
+        details.removeEventListener('animationend', onEnd);
+    };
+    details.addEventListener('animationend', onEnd);
+};
+
 ['student-details', 'teacher-details', 'subject-details'].forEach(setupSmoothDetails);
 
 //  CRUD MANAGEMENT OPERATORS 
@@ -572,6 +586,8 @@ let allClassesForTeachers = []; // filled by loadTeachersPage, tracks which clas
 
 // --- SUBJECT MATRICES GENERATOR ---
 async function loadSubjectsPage() {
+    const subjectDetails = document.getElementById('subject-details');
+    if (subjectDetails) subjectDetails.classList.remove('details-highlight');
     const classes = await ipcRenderer.invoke('get-classes-list');
     allClassesCache = classes;
 
@@ -689,11 +705,7 @@ window.editSubject = function (id, classId, subjectName, sequence, monthlyMarks,
     document.getElementById('btn-cancel-subject').style.display = 'inline-block';
     const details = document.getElementById('subject-details');
     if (details) {
-        window.openDetailsSmooth(details);
-        window.scrollToForm(details, 24);
-        details.classList.remove('details-highlight');
-        void details.offsetWidth; // trigger reflow for restartable CSS animation
-        details.classList.add('details-highlight');
+        window.triggerFormHighlight(details);
     }
 };
 
@@ -715,6 +727,8 @@ function resetSubjectForm() {
     updateSubjectNameOptions();
     document.getElementById('btn-add-subject').textContent = 'Save Subject';
     document.getElementById('btn-cancel-subject').style.display = 'none';
+    const subjectDetails = document.getElementById('subject-details');
+    if (subjectDetails) subjectDetails.classList.remove('details-highlight');
 }
 
 document.getElementById('btn-add-subject').addEventListener('click', async () => {
@@ -761,6 +775,10 @@ document.getElementById('btn-add-subject').addEventListener('click', async () =>
 window.deleteSubject = async function (id) {
     if (confirm("Delete this subject? This can't be undone.")) {
         await ipcRenderer.invoke('delete-subject', id);
+        const editIdEl = document.getElementById('sub-edit-id');
+        if (editIdEl && String(editIdEl.value) === String(id)) {
+            resetSubjectForm();
+        }
         renderSubjectsTable();
     }
 };
@@ -825,8 +843,8 @@ function renderStudentClassFilterChips(classes = allClassesForStudents) {
 }
 
 async function loadStudentsPage() {
-    const studentDetails = document.getElementById('student-details');
-    if (studentDetails) studentDetails.classList.remove('details-highlight');
+    // Clear form highlight animations from all details forms
+    ['student-details', 'teacher-details', 'subject-details'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('details-highlight'); });
 
     const classes = await ipcRenderer.invoke('get-classes-list');
     allClassesForStudents = classes;
@@ -1070,7 +1088,7 @@ function syncPromoteTabsState() {
         }
     });
 
-    const studentDetails = document.getElementById('student-details');
+    // Clear form highlight animations from all details forms
     const studentSummary = document.getElementById('student-details-summary');
     if (studentDetails) {
         if (promoteModeActive) {
@@ -1175,14 +1193,7 @@ window.editStudent = async function (id, classId, roll, name, bloodGroup, guardi
     document.getElementById('btn-cancel-student').style.display = 'inline-block';
     const details = document.getElementById('student-details');
     if (details) {
-        window.openDetailsSmooth(details);
-        window.scrollToForm(details, 24);
-        details.classList.remove('details-highlight');
-        void details.offsetWidth; // trigger reflow for restartable CSS animation
-        details.classList.add('details-highlight');
-        details.addEventListener('animationend', () => {
-            details.classList.remove('details-highlight');
-        }, { once: true });
+        window.triggerFormHighlight(details);
     }
 
     updateStudentSubjectSelection();
@@ -1218,8 +1229,8 @@ function resetStudentForm() {
     const cancelBtn = document.getElementById('btn-cancel-student');
     if (cancelBtn) cancelBtn.style.display = 'none';
     hideArchiveFields();
-    const studentDetails = document.getElementById('student-details');
-    if (studentDetails) studentDetails.classList.remove('details-highlight');
+    // Clear form highlight animations from all details forms
+    ['student-details', 'teacher-details', 'subject-details'].forEach(id => { const el = document.getElementById(id); if (el) el.classList.remove('details-highlight'); });
     updateStudentSubjectSelection();
 }
 
@@ -1759,6 +1770,8 @@ window.bulkPromoteSelected = async function () {
 let cachedTeachers = [];
 
 async function loadTeachersPage() {
+    const teacherDetails = document.getElementById('teacher-details');
+    if (teacherDetails) teacherDetails.classList.remove('details-highlight');
     allClassesForTeachers = await ipcRenderer.invoke('get-classes-list') || [];
     const classSelect = document.getElementById('tc-classes');
     if (classSelect) {
@@ -1807,6 +1820,8 @@ function resetTeacherForm() {
     if (saveBtn) saveBtn.textContent = 'Save Teacher';
     const cancelBtn = document.getElementById('btn-cancel-teacher');
     if (cancelBtn) cancelBtn.style.display = 'none';
+    const teacherDetails = document.getElementById('teacher-details');
+    if (teacherDetails) teacherDetails.classList.remove('details-highlight');
 }
 
 window.editTeacherById = function (id) {
@@ -1837,8 +1852,7 @@ window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName
     document.getElementById('btn-cancel-teacher').style.display = 'inline-block';
     const details = document.getElementById('teacher-details');
     if (details) {
-        window.openDetailsSmooth(details);
-        window.scrollToForm(details, 24);
+        window.triggerFormHighlight(details);
     }
 };
 
