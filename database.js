@@ -1,8 +1,23 @@
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs');
+const electron = require('electron');
 
-// creating a database file named school.db 
-const dbPath = path.join(__dirname, 'school.db');
+// When packaged as an installer/exe, store database in the user's AppData (userData)
+// so it has full read/write permissions and survives software updates.
+// During development, keep using the local project directory.
+const app = electron ? (electron.app || (electron.remote && electron.remote.app)) : null;
+const isPackaged = app ? app.isPackaged : false;
+const dbDir = (isPackaged && typeof app.getPath === 'function')
+    ? app.getPath('userData')
+    : __dirname;
+
+if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+}
+
+const dbPath = path.join(dbDir, 'school.db');
+console.log('[Database] Connected to database at:', dbPath);
 const db = new sqlite3.Database(dbPath);
 
 db.serialize(() => {
