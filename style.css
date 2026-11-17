@@ -211,13 +211,13 @@ body {
 }
 
 .setup-welcome-card.trial-license {
-    background: #eff6ff;
-    border-color: #bfdbfe;
-    color: #1e40af;
+    background: #fef2f2;    
+    border-color: #fecaca;  
+    color: #991b1b;     
 }
 
 .setup-welcome-card.trial-license .welcome-icon-box {
-    color: #2563eb;
+    color: #dc2626;       
 }
 
 .welcome-icon-box {

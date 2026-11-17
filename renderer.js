@@ -168,12 +168,12 @@ function displaySetupWelcomeMessage(decodedText) {
 
     if (decodedText === FULL_LICENSE_TEXT) {
         welcomeBox.className = 'setup-welcome-card full-license';
-        if (welcomeTitle) welcomeTitle.innerText = "Welcome to TCSAC Management Software";
-        if (welcomeDesc) welcomeDesc.innerText = "Activation verified successfully! Full license unlocked. Please configure your administrator profile below.";
+        if (welcomeTitle) welcomeTitle.innerText = "Welcome to Smart TCSAC Management Software";
+        if (welcomeDesc) welcomeDesc.innerText = "Activation verified successfully! Please configure your administrator profile below.\nThanks for your purchase.";
     } else {
         welcomeBox.className = 'setup-welcome-card trial-license';
-        if (welcomeTitle) welcomeTitle.innerText = "Welcome to Trial Management Software";
-        if (welcomeDesc) welcomeDesc.innerText = "Activation verified successfully! Trial version unlocked. Please configure your administrator profile below.";
+        if (welcomeTitle) welcomeTitle.innerText = "Trial version unlocked.";
+        if (welcomeDesc) welcomeDesc.innerText = "You are using a trial version. Make full payment to unlock all features.";
     }
 
     welcomeBox.style.display = 'flex';
