@@ -112,12 +112,7 @@ function startActivationVerification() {
     if (activationCheckingScreen) activationCheckingScreen.style.display = 'block';
 
     const progressBar = document.getElementById('checking-progress-bar');
-    const timerText = document.getElementById('checking-timer-text');
-    const statusText = document.getElementById('checking-status-text');
-
     if (progressBar) progressBar.style.width = '0%';
-    if (timerText) timerText.innerText = '10s';
-    if (statusText) statusText.innerText = 'Decoding Base32 bitstream...';
 
     const totalDurationMs = 10000;
     const intervalMs = 100;
@@ -129,23 +124,9 @@ function startActivationVerification() {
 
     activationCheckInterval = setInterval(() => {
         elapsedMs += intervalMs;
-        const remainingSeconds = Math.max(0, Math.ceil((totalDurationMs - elapsedMs) / 1000));
         const progressPercent = Math.min(100, (elapsedMs / totalDurationMs) * 100);
 
         if (progressBar) progressBar.style.width = progressPercent + '%';
-        if (timerText) timerText.innerText = remainingSeconds + 's';
-
-        if (statusText) {
-            if (elapsedMs < 3000) {
-                statusText.innerText = 'Decoding Base32 bitstream...';
-            } else if (elapsedMs < 6000) {
-                statusText.innerText = 'Computing reverse XOR verification...';
-            } else if (elapsedMs < 9000) {
-                statusText.innerText = 'Authenticating license signature...';
-            } else {
-                statusText.innerText = 'Finalizing validation check...';
-            }
-        }
 
         if (elapsedMs >= totalDurationMs) {
             clearInterval(activationCheckInterval);
