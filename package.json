@@ -38,7 +38,8 @@
       "!sample data/*",
       "!transcript samples/*",
       "!project text/*",
-      "!flowcharts/*"
+      "!flowcharts/*",
+      "!school.db"
     ],
     "win": {
       "target": [
@@ -57,8 +58,8 @@
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
       "shortcutName": "Smart School Management",
-      "installerIcon": "svg/icon.ico",
-      "uninstallerIcon": "svg/icon.ico"
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico"
     }
   }
 }

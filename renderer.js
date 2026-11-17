@@ -19,15 +19,203 @@ function renderActionIcon(svgString) {
 }
 
 
-// Grab references to the three full-screen "views" of the app:
-// setup (first run only), login, and the main dashboard.
+// Grab references to the full-screen "views" of the app:
+// activation & checking (first run only), setup (first run only), login, and the main dashboard.
+const activationScreen = document.getElementById('activation-screen');
+const activationCheckingScreen = document.getElementById('activation-checking-screen');
 const setupScreen = document.getElementById('setup-screen');
 const loginScreen = document.getElementById('login-screen');
 const dashboardScreen = document.getElementById('dashboard-screen');
 
 
+// ============================================================
+// FIRST-TIME SETUP: REVERSE CALCULATION ACTIVATION ENGINE
+// ============================================================
+const BASE32_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+const FULL_LICENSE_TEXT = "TCSAC Management Software";
+const TRIAL_LICENSE_TEXT = "Trial Management Software";
+
+// Pre-compute 32-bit XOR to ASCII lookup table (ASCII 0-255)
+// S Formula: (ASCII * 1664525 + 1013904223) >>> 0
+// K Formula: (S + 45294729) >>> 0
+// XOR: (S ^ K) >>> 0
+const XOR_TO_ASCII = new Map();
+for (let ascii = 0; ascii <= 255; ascii++) {
+    const s = (1664525 * ascii + 1013904223) >>> 0;
+    const k = (s + 45294729) >>> 0;
+    const xorVal = (s ^ k) >>> 0;
+    XOR_TO_ASCII.set(xorVal, ascii);
+}
+
+function base32ToBytes(base32) {
+    const clean = base32.toUpperCase().replace(/[\s-]+/g, "").replace(/=+$/, "");
+    if (!clean) throw new Error("Please enter an activation code.");
+
+    let bits = 0;
+    let value = 0;
+    const bytes = [];
+
+    for (let i = 0; i < clean.length; i++) {
+        const idx = BASE32_ALPHABET.indexOf(clean[i]);
+        if (idx === -1) {
+            throw new Error("Invalid character detected in activation code.");
+        }
+        value = (value << 5) | idx;
+        bits += 5;
+        if (bits >= 8) {
+            bytes.push((value >>> (bits - 8)) & 255);
+            bits -= 8;
+        }
+    }
+    return bytes;
+}
+
+function decodeActivationCode(code) {
+    const bytes = base32ToBytes(code);
+    if (bytes.length === 0 || bytes.length % 4 !== 0) {
+        throw new Error("Invalid activation code length.");
+    }
+
+    let decodedText = "";
+    for (let i = 0; i < bytes.length; i += 4) {
+        const xorVal =
+            ((bytes[i] << 24) |
+                (bytes[i + 1] << 16) |
+                (bytes[i + 2] << 8) |
+                bytes[i + 3]) >>> 0;
+
+        if (!XOR_TO_ASCII.has(xorVal)) {
+            throw new Error("Activation code is corrupted or unrecognized.");
+        }
+        decodedText += String.fromCharCode(XOR_TO_ASCII.get(xorVal));
+    }
+    return decodedText;
+}
+
+let activationCheckInterval = null;
+
+function startActivationVerification() {
+    const inputEl = document.getElementById('activation-code-input');
+    const errorEl = document.getElementById('activation-error');
+    if (!inputEl) return;
+
+    if (errorEl) errorEl.innerText = "";
+    const rawCode = inputEl.value.trim();
+
+    if (!rawCode) {
+        if (errorEl) errorEl.innerText = "Please enter an activation code to proceed.";
+        return;
+    }
+
+    // Switch to 10-second checking screen
+    if (activationScreen) activationScreen.style.display = 'none';
+    if (activationCheckingScreen) activationCheckingScreen.style.display = 'block';
+
+    const progressBar = document.getElementById('checking-progress-bar');
+    const timerText = document.getElementById('checking-timer-text');
+    const statusText = document.getElementById('checking-status-text');
+
+    if (progressBar) progressBar.style.width = '0%';
+    if (timerText) timerText.innerText = '10s';
+    if (statusText) statusText.innerText = 'Decoding Base32 bitstream...';
+
+    const totalDurationMs = 10000;
+    const intervalMs = 100;
+    let elapsedMs = 0;
+
+    if (activationCheckInterval) {
+        clearInterval(activationCheckInterval);
+    }
+
+    activationCheckInterval = setInterval(() => {
+        elapsedMs += intervalMs;
+        const remainingSeconds = Math.max(0, Math.ceil((totalDurationMs - elapsedMs) / 1000));
+        const progressPercent = Math.min(100, (elapsedMs / totalDurationMs) * 100);
+
+        if (progressBar) progressBar.style.width = progressPercent + '%';
+        if (timerText) timerText.innerText = remainingSeconds + 's';
+
+        if (statusText) {
+            if (elapsedMs < 3000) {
+                statusText.innerText = 'Decoding Base32 bitstream...';
+            } else if (elapsedMs < 6000) {
+                statusText.innerText = 'Computing reverse XOR verification...';
+            } else if (elapsedMs < 9000) {
+                statusText.innerText = 'Authenticating license signature...';
+            } else {
+                statusText.innerText = 'Finalizing validation check...';
+            }
+        }
+
+        if (elapsedMs >= totalDurationMs) {
+            clearInterval(activationCheckInterval);
+            activationCheckInterval = null;
+            finishActivationVerification(rawCode);
+        }
+    }, intervalMs);
+}
+
+function finishActivationVerification(code) {
+    const errorEl = document.getElementById('activation-error');
+
+    try {
+        const decodedText = decodeActivationCode(code);
+
+        if (decodedText === FULL_LICENSE_TEXT || decodedText === TRIAL_LICENSE_TEXT) {
+            // Success: reveal main setup screen with welcome text
+            if (activationCheckingScreen) activationCheckingScreen.style.display = 'none';
+            if (setupScreen) setupScreen.style.display = 'block';
+            displaySetupWelcomeMessage(decodedText);
+        } else {
+            throw new Error("Unrecognized license text.");
+        }
+    } catch (err) {
+        // Verification failed: return to activation screen and show error
+        if (activationCheckingScreen) activationCheckingScreen.style.display = 'none';
+        if (activationScreen) activationScreen.style.display = 'block';
+        if (errorEl) {
+            errorEl.innerText = "Invalid activation code. Please check your code and try again.";
+        }
+    }
+}
+
+function displaySetupWelcomeMessage(decodedText) {
+    const welcomeBox = document.getElementById('setup-welcome-message');
+    const welcomeTitle = document.getElementById('setup-welcome-title');
+    const welcomeDesc = document.getElementById('setup-welcome-desc');
+    if (!welcomeBox) return;
+
+    if (decodedText === FULL_LICENSE_TEXT) {
+        welcomeBox.className = 'setup-welcome-card full-license';
+        if (welcomeTitle) welcomeTitle.innerText = "Welcome to TCSAC Management Software";
+        if (welcomeDesc) welcomeDesc.innerText = "Activation verified successfully! Full license unlocked. Please configure your administrator profile below.";
+    } else {
+        welcomeBox.className = 'setup-welcome-card trial-license';
+        if (welcomeTitle) welcomeTitle.innerText = "Welcome to Trial Management Software";
+        if (welcomeDesc) welcomeDesc.innerText = "Activation verified successfully! Trial version unlocked. Please configure your administrator profile below.";
+    }
+
+    welcomeBox.style.display = 'flex';
+}
+
+const btnVerifyActivation = document.getElementById('btn-verify-activation');
+if (btnVerifyActivation) {
+    btnVerifyActivation.addEventListener('click', startActivationVerification);
+}
+
+const activationCodeInput = document.getElementById('activation-code-input');
+if (activationCodeInput) {
+    activationCodeInput.addEventListener('keydown', (e) => {
+        if ((e.key === 'Enter' && (e.ctrlKey || e.metaKey)) || (e.key === 'Enter' && !e.shiftKey)) {
+            e.preventDefault();
+            startActivationVerification();
+        }
+    });
+}
+
+
 // On app startup: ask main.js whether an admin account already
-// exists, and show either the first-time Setup screen or the
+// exists, and show either the first-time Activation screen or the
 // normal Login screen accordingly.
 window.addEventListener('DOMContentLoaded', async () => {
     const adminExists = await ipcRenderer.invoke('check-admin-exists');
@@ -35,7 +223,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (adminExists) {
         loginScreen.style.display = 'block';
     } else {
-        setupScreen.style.display = 'block';
+        activationScreen.style.display = 'block';
     }
 });
 
@@ -754,7 +942,7 @@ document.getElementById('btn-add-subject').addEventListener('click', async () =>
     }
 
     const sequence_order = document.getElementById('sub-seq-input').value || 1;
-        const monthly_marks = document.getElementById('sub-monthly-check').checked
+    const monthly_marks = document.getElementById('sub-monthly-check').checked
         ? (document.getElementById('sub-monthly-input').value || null) : null;
     const yearly_marks = document.getElementById('sub-yearly-check').checked
         ? (document.getElementById('sub-yearly-input').value || null) : null;
@@ -1163,7 +1351,7 @@ document.getElementById('btn-cancel-student').addEventListener('click', hideArch
 window.editStudentFromRow = function (s) {
     editStudent(s.id, s.class_id, s.roll, s.name || '', s.blood_group || '', s.guardian_contact || '',
         s.address || '', s.dob || '', s.fathers_name || '', s.mothers_name || '', s.birth_reg_number || '');
-        document.getElementById('st-gender').value = s.gender || '';
+    document.getElementById('st-gender').value = s.gender || '';
     if (s.status === 'Graduated' || s.status === 'Removed') showArchiveFields(s);
     else hideArchiveFields();
 };
@@ -1210,7 +1398,7 @@ window.editStudent = async function (id, classId, roll, name, bloodGroup, guardi
 function resetStudentForm() {
     const editIdEl = document.getElementById('st-edit-id');
     if (editIdEl) editIdEl.value = '';
-        ['st-roll', 'st-name', 'st-blood', 'st-gender', 'st-phone', 'st-address', 'st-dob', 'st-father', 'st-mother', 'st-birth-reg'].forEach(id => {
+    ['st-roll', 'st-name', 'st-blood', 'st-gender', 'st-phone', 'st-address', 'st-dob', 'st-father', 'st-mother', 'st-birth-reg'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
@@ -1651,10 +1839,10 @@ window.bulkPromoteSelected = async function () {
     if (!checked.length) return alert('No students selected. Tick the checkboxes first.');
 
     // Separate the checked students by class group
-    const classEight   = checked.filter(cb => cb.dataset.class === 'Class Eight');
-    const nineScience  = checked.filter(cb => cb.dataset.class === 'Class Nine (Science)');
-    const nineHum      = checked.filter(cb => cb.dataset.class === 'Class Nine (Humanities)');
-    const others       = checked.filter(cb =>
+    const classEight = checked.filter(cb => cb.dataset.class === 'Class Eight');
+    const nineScience = checked.filter(cb => cb.dataset.class === 'Class Nine (Science)');
+    const nineHum = checked.filter(cb => cb.dataset.class === 'Class Nine (Humanities)');
+    const others = checked.filter(cb =>
         !['Class Eight', 'Class Nine (Science)', 'Class Nine (Humanities)'].includes(cb.dataset.class)
     );
 
@@ -1688,10 +1876,10 @@ window.bulkPromoteSelected = async function () {
         showStudentDialog({
             title: 'Promote Class Eight Students',
             message: `${classEight.length} Class Eight student${classEight.length > 1 ? 's' : ''} selected. ` +
-                     `Which department are they moving into?`,
+                `Which department are they moving into?`,
             targets: [
-                { id: classId('Class Nine (Science)'),     label: 'Class Nine (Science)'     },
-                { id: classId('Class Nine (Humanities)'),  label: 'Class Nine (Humanities)'  }
+                { id: classId('Class Nine (Science)'), label: 'Class Nine (Science)' },
+                { id: classId('Class Nine (Humanities)'), label: 'Class Nine (Humanities)' }
             ].filter(t => t.id !== null),
             confirmText: 'Promote',
             confirmColor: '#0ea5e9',
@@ -1704,7 +1892,7 @@ window.bulkPromoteSelected = async function () {
                 const allPromotions = [
                     ...eightPromotions,
                     ...buildPromotions(nineScience, 'Class Ten (Science)'),
-                    ...buildPromotions(nineHum,     'Class Ten (Humanities)'),
+                    ...buildPromotions(nineHum, 'Class Ten (Humanities)'),
                     ...others.map(cb => {
                         // Derive next class from the PROMOTION_PATH via the class name stored on the checkbox
                         const next = ({
@@ -1739,7 +1927,7 @@ window.bulkPromoteSelected = async function () {
         // No Class Eight — fire directly without the dialog
         const promotions = [
             ...buildPromotions(nineScience, 'Class Ten (Science)'),
-            ...buildPromotions(nineHum,     'Class Ten (Humanities)'),
+            ...buildPromotions(nineHum, 'Class Ten (Humanities)'),
             ...others.map(cb => {
                 const next = ({
                     'Play': 'Nursery', 'Nursery': 'Class One',
@@ -2384,7 +2572,7 @@ function buildTranscriptTable(studentId) {
     let totalMarksAgg = { m1: 0, m2: 0, m3: 0, total: 0, stotal: 0, pctSum: 0, pctCount: 0 };
     let totalGP = 0;
     let gpCount = 0;
-    let hasFailedSubject = false;   
+    let hasFailedSubject = false;
 
     const body = transcriptSubjects.map((sub, i) => {
         const subMarks = transcriptMarksData[studentId]?.[sub.id] || { m1: '', m2: '', m3: '', total: null };
@@ -2408,7 +2596,7 @@ function buildTranscriptTable(studentId) {
             if (rowGrade.point !== '-') {
                 totalGP += parseFloat(rowGrade.point);
                 gpCount += 1;
-                if (rowGrade.letter === 'F') hasFailedSubject = true;   
+                if (rowGrade.letter === 'F') hasFailedSubject = true;
             }
         }
 
@@ -2461,8 +2649,8 @@ function buildTranscriptTable(studentId) {
     const overallGrade = gpa !== null ? getGradeFromPoint(gpa) : { letter: '-', point: '-' };
 
     if (visible.some(c => c.key === 'pct')) {
-    const avgPct = totalMarksAgg.pctCount > 0 ? Math.round(totalMarksAgg.pctSum / totalMarksAgg.pctCount) : '-';
-    tfootCells += `<td>${avgPct !== '-' ? avgPct + '%' : '-'}</td>`;
+        const avgPct = totalMarksAgg.pctCount > 0 ? Math.round(totalMarksAgg.pctSum / totalMarksAgg.pctCount) : '-';
+        tfootCells += `<td>${avgPct !== '-' ? avgPct + '%' : '-'}</td>`;
     }
     if (visible.some(c => c.key === 'grade')) {
         tfootCells += `<td>${overallGrade.letter}</td>`;
@@ -2556,8 +2744,8 @@ function getTranscriptRemark(avgPct) {
 // Same maths as the table: per-subject percentage -> grade -> average GPA.
 function getTranscriptStudentSummary(studentId) {
     if (transcriptIsNineTen) {
-    const r = computeNineTenResult(studentId);
-    return { total: r.total, hasMarks: r.hasMarks, hasFail: r.hasFail, avgPct: r.avgPct, gpa: r.gpa };
+        const r = computeNineTenResult(studentId);
+        return { total: r.total, hasMarks: r.hasMarks, hasFail: r.hasFail, avgPct: r.avgPct, gpa: r.gpa };
     }
     let total = 0, hasMarks = false, pctSum = 0, pctCount = 0, gpSum = 0, gpCount = 0, hasFail = false;
     transcriptSubjects.forEach(sub => {
@@ -2632,9 +2820,9 @@ function buildTranscriptResultSection(studentId, positions) {
 }
 
 ['transcript-show-section-position', 'transcript-show-class-position',
- 'transcript-show-working-days', 'transcript-show-total-present'].forEach(id => {
-    document.getElementById(id)?.addEventListener('change', () => paintTranscriptPreview());
-});
+    'transcript-show-working-days', 'transcript-show-total-present'].forEach(id => {
+        document.getElementById(id)?.addEventListener('change', () => paintTranscriptPreview());
+    });
 
 document.getElementById('btn-add-remark-rule')?.addEventListener('click', () => {
     transcriptRemarkRules.push({ text: '', min: '', max: '' });
@@ -2803,7 +2991,7 @@ async function loadTranscriptPreview() {
 
         if (token !== transcriptLoadToken) return;
 
-        
+
         // Attendance for this class + year + test (Half Yearly / Yearly), read from the database
         const attendanceRes = await ipcRenderer.invoke('get-attendance-sheet', {
             class_id: cls.id, year, term: test

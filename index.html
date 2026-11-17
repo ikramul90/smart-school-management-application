@@ -10,8 +10,52 @@
 
 <body>
 
+    <!-- 0. FIRST TIME ACTIVATION SCREEN -->
+    <div id="activation-screen" class="card">
+        <h2>Software Activation</h2>
+        <p>Enter your activation code to unlock setup and access the system.</p>
+        <div class="error" id="activation-error"></div>
+        <div class="input-group">
+            <label for="activation-code-input">Activation Code</label>
+            <textarea id="activation-code-input" rows="4"
+                placeholder="Paste your Base32 activation code here..."></textarea>
+        </div>
+        <button id="btn-verify-activation" type="button">Verify Code</button>
+    </div>
+
+    <!-- 0.(b) ACTIVATION VERIFICATION CHECKING SCREEN -->
+    <div id="activation-checking-screen" class="card">
+        <h2>Verifying Code</h2>
+        <p>Please wait while the system authenticates your activation credentials.</p>
+        <div class="checking-container">
+            <div class="checking-spinner"></div>
+            <div class="checking-progress-bar-container">
+                <div class="checking-progress-bar" id="checking-progress-bar"></div>
+            </div>
+            <div class="checking-status-row">
+                <span id="checking-status-text">Decoding Base32 bitstream...</span>
+                <span id="checking-timer-text">10s</span>
+            </div>
+        </div>
+    </div>
+
     <!-- 1. FIRST TIME SETUP SCREEN -->
     <div id="setup-screen" class="card">
+        <div id="setup-welcome-message" class="setup-welcome-card" style="display: none;">
+            <div class="welcome-icon-box" id="setup-welcome-icon">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
+            <div class="welcome-text-content">
+                <div class="welcome-title" id="setup-welcome-title">Welcome to TCSAC Management Software</div>
+                <div class="welcome-desc" id="setup-welcome-desc">Activation verified successfully. Please configure
+                    your administrator profile below.</div>
+            </div>
+        </div>
+
         <h2>TCSAC Portal Setup</h2>
         <p>Configure your administrator profile for first-time use.</p>
         <div class="error" id="setup-error"></div>
@@ -616,19 +660,19 @@
                                 </div>
                                 <div><label>Guardian Contact</label><input type="text" id="st-phone"></div>
                                 <div><label>Birth Registration No.</label><input type="text" id="st-birth-reg"></div>
-                                <div style="grid-column: span 3;"><label class="no-select">Address</label><input type="text"
-                                        id="st-address"></div>
+                                <div style="grid-column: span 3;"><label class="no-select">Address</label><input
+                                        type="text" id="st-address"></div>
                                 <div id="st-archive-fields"
                                     style="display:none; grid-column: span 3; grid-template-columns:1fr 2fr; gap:15px; background:#fef3c7; padding:12px; border-radius:6px; border:1px solid #fde68a;">
                                     <div><label id="st-archive-date-label">Graduation Date</label><input type="date"
                                             id="st-status-date"></div>
-                                    <div id="st-archive-cause-wrap"><label>Reason for Dropping Out</label><input type="text"
-                                            id="st-removal-cause"></div>
+                                    <div id="st-archive-cause-wrap"><label>Reason for Dropping Out</label><input
+                                            type="text" id="st-removal-cause"></div>
                                 </div>
                             </div>
                             <div style="margin-top:15px; display:flex; gap:10px;">
-                                <button id="btn-save-student"
-                                    style="background-color:#2563eb; width:200px;">Register Student</button>
+                                <button id="btn-save-student" style="background-color:#2563eb; width:200px;">Register
+                                    Student</button>
                                 <button id="btn-cancel-student" type="button"
                                     style="background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
                             </div>
@@ -710,12 +754,12 @@
                                 <div><label> Father's Name</label><input type="text" id="tc-father"></div>
                                 <div><label>Mother's Name</label><input type="text" id="tc-mother"></div>
                                 <div><label>NID Number</label><input type="text" id="tc-nid"></div>
-                                <div style="grid-column: span 3;"><label class="no-select">Address</label><input type="text"
-                                        id="tc-address"></div>
+                                <div style="grid-column: span 3;"><label class="no-select">Address</label><input
+                                        type="text" id="tc-address"></div>
                             </div>
                             <div style="margin-top:15px; display:flex; gap:10px;">
-                                <button id="btn-save-teacher"
-                                    style="background-color:#2563eb; width:200px;">Save Teacher</button>
+                                <button id="btn-save-teacher" style="background-color:#2563eb; width:200px;">Save
+                                    Teacher</button>
                                 <button id="btn-cancel-teacher" type="button"
                                     style="background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
                             </div>
@@ -751,7 +795,8 @@
                                 <input type="hidden" id="sub-edit-id" value="">
                                 <div style="width:100px; position: relative;"><label
                                         class="no-select">Sequence</label><input type="text" id="sub-seq-input"
-                                        inputmode="numeric" value="1"><small id="sub-seq-error" class="field-error"></small>
+                                        inputmode="numeric" value="1"><small id="sub-seq-error"
+                                        class="field-error"></small>
                                 </div>
                                 <div style="flex:1; min-width:150px;"><label>Target Class</label><select
                                         id="sub-class-select"></select></div>
@@ -778,14 +823,17 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div style="width:120px; position: relative;"><label>Monthly Total</label><input type="text"
-                                        id="sub-monthly-input" placeholder="e.g. 25" inputmode="numeric"><small
-                                        id="sub-monthly-error" class="field-error"></small></div>
-                                <div style="width:120px; position: relative;"><label>Yearly Total</label><input type="text"
-                                        id="sub-yearly-input" placeholder="e.g. 100" inputmode="numeric"><small
-                                        id="sub-yearly-error" class="field-error"></small></div>
+                                <div style="width:120px; position: relative;"><label>Monthly Total</label><input
+                                        type="text" id="sub-monthly-input" placeholder="e.g. 25"
+                                        inputmode="numeric"><small id="sub-monthly-error" class="field-error"></small>
+                                </div>
+                                <div style="width:120px; position: relative;"><label>Yearly Total</label><input
+                                        type="text" id="sub-yearly-input" placeholder="e.g. 100"
+                                        inputmode="numeric"><small id="sub-yearly-error" class="field-error"></small>
+                                </div>
                                 <button id="btn-add-subject"
-                                    style="background-color:#10b981; width:auto; padding:10px 20px;">Save Subject</button>
+                                    style="background-color:#10b981; width:auto; padding:10px 20px;">Save
+                                    Subject</button>
                                 <button id="btn-cancel-subject" type="button"
                                     style="background-color:#64748b; width:auto; padding:10px 20px; display:none;">Cancel
                                     Edit</button>
@@ -1118,8 +1166,7 @@
                 <h3 id="info-modal-title" style="margin: 0; color: #1e293b; font-size: 17px;">Details</h3>
                 <button id="btn-close-info-modal-x" type="button" aria-label="Close"
                     style="background: transparent; border: none; color: var(--black-soft); cursor: pointer; width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; line-height: 1;">
-                    <svg width="22" height="22" viewBox="6 6 12 12" fill="none"
-                        xmlns="http://www.w3.org/2000/svg">
+                    <svg width="22" height="22" viewBox="6 6 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M15 9L9 15M9 9L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                             stroke-linejoin="round" />
                     </svg>
