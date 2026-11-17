@@ -4,7 +4,8 @@
   "description": "This Application is developed by Ikramul ALam Chowdhury, a passionate developer looking to solve problems. The idea comes from generating bulk Report Cards for schools at once, removing the painful process the class teachers undergo while making report cards manually by hands. Request him to get new versions.",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dist": "electron-builder --win"
   },
   "keywords": [
     "electron",
@@ -23,5 +24,41 @@
   "devDependencies": {
     "electron": "^31.0.0",
     "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "com.tcsac.schoolmanagement",
+    "productName": "Smart School Management Software",
+    "directories": {
+      "output": "D:/Users/Ikramul/TCSAC",
+      "buildResources": "build"
+    },
+    "files": [
+      "**/*",
+      "!dist/*",
+      "!sample data/*",
+      "!transcript samples/*",
+      "!project text/*",
+      "!flowcharts/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Smart School Management",
+      "installerIcon": "svg/icon.ico",
+      "uninstallerIcon": "svg/icon.ico"
+    }
   }
 }

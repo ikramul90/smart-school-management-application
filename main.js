@@ -4,12 +4,19 @@ const fs = require('fs');
 const db = require('./database.js');
 
 
+// Set Windows AppUserModelId so taskbar grouping and shortcut icon link together
+if (process.platform === 'win32') {
+    app.setAppUserModelId('com.tcsac.schoolmanagement');
+}
+
 let mainWindow;
 
 function createWindow() {
+    const iconPath = path.join(__dirname, 'icon.ico');
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
+        icon: iconPath,
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false
