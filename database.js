@@ -257,6 +257,27 @@ db.serialize(() => {
         FOREIGN KEY(student_id) REFERENCES students(id)
     )`);
 
+    // 14. Auto-seed sample data (students, teachers, subjects) from seed.sql on fresh database
+    db.get("SELECT COUNT(*) as count FROM students", [], (err, row) => {
+        if (!err && row && row.count === 0) {
+            const seedPath = path.join(__dirname, 'seed.sql');
+            if (fs.existsSync(seedPath)) {
+                try {
+                    const sql = fs.readFileSync(seedPath, 'utf8');
+                    db.exec(sql, (execErr) => {
+                        if (execErr) {
+                            console.error("❌ Failed to seed sample data from seed.sql:", execErr);
+                        } else {
+                            console.log("🌱 Successfully seeded sample students, teachers, and subjects from seed.sql!");
+                        }
+                    });
+                } catch (readErr) {
+                    console.error("❌ Could not read seed.sql:", readErr);
+                }
+            }
+        }
+    });
+
     console.log("🎉 Database tables successfully initialized!");
 });
 

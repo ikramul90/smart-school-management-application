@@ -252,3 +252,209 @@ INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mot
 (208, 13, 'Sadia Islam', 'AB+', NULL, 'Sohel Islam', 'Sumaiya Khatun', 'Sohel Islam', '01438055257', 'Mirabazar, Sylhet', '2011-08-14', '20118284106727520', 14, 'Active', NULL),
 (209, 14, 'Siam Talukder', 'A+', NULL, 'Salim Talukder', 'Mahiya Akter', 'Salim Talukder', '01651702814', 'Shahjalal Uposhohor, Sylhet', '2011-10-17', '20110693751509398', 14, 'Active', NULL),
 (210, 15, 'Sabbir Alam', 'B+', NULL, 'Faruk Ayaan Alam', 'Afia Begum', 'Faruk Ayaan Alam', '01780562656', 'Lamabazar, Sylhet', '2011-09-09', '20115045547813767', 14, 'Active', NULL);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- INSERT queries for subjects table
+
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (19, 8, NULL, 'Bangla 1st', 1, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (20, 8, NULL, 'Bangla 2nd', 2, 25, 50);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (21, 8, NULL, 'English 1st', 3, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (22, 8, NULL, 'English 2nd', 4, 25, 50);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (23, 8, NULL, 'Math', 5, 50, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (24, 8, NULL, 'Science', 6, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (25, 8, NULL, 'Bangladesh & Global Studies', 7, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (26, 8, NULL, 'Agriculture/Domestic Science', 10, 25, 50);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (27, 8, NULL, 'Religious Education', 9, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (28, 8, NULL, 'ICT', 8, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (29, 8, NULL, 'Clothes/Manner/Presence', 11, 25, 50);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (30, 9, NULL, 'Bangla 1st', 1, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (31, 9, NULL, 'Bangla 2nd', 1, 25, 50);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (32, 9, NULL, 'English 1st', 3, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (33, 9, NULL, 'English 2nd', 4, 25, 50);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (34, 9, NULL, 'Math', 5, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (35, 9, NULL, 'Science', 6, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (36, 9, NULL, 'Bangladesh & Global Studies', 7, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (37, 9, NULL, 'ICT', 8, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (38, 9, NULL, 'Religious Education', 9, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (39, 9, NULL, 'Agriculture/Domestic Science', 10, 25, 50);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (40, 9, NULL, 'Clothes/Manner/Presence', 11, NULL, 50);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (41, 1, NULL, 'Bangla', 1, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (42, 1, NULL, 'English', 2, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (43, 1, NULL, 'Math', 3, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (44, 1, NULL, 'Religious Education', 4, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (45, 1, NULL, 'General Knowledge', 5, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (46, 1, NULL, 'Spoken', 6, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (47, 1, NULL, 'Drawing', 7, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (49, 2, NULL, 'Bangla', 1, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (50, 2, NULL, 'English', 2, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (51, 2, NULL, 'Math', 3, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (52, 2, NULL, 'Religious Education', 4, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (53, 2, NULL, 'General Knowledge', 5, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (54, 2, NULL, 'Spoken', 6, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (55, 2, NULL, 'Drawing', 7, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (56, 2, NULL, 'Clothes/Manner/Presence', 8, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (57, 3, NULL, 'Bangla', 1, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (58, 3, NULL, 'English', 2, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (59, 3, NULL, 'Math', 3, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (60, 3, NULL, 'Religious Education', 4, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (61, 3, NULL, 'General Knowledge', 5, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (62, 3, NULL, 'Spoken', 6, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (63, 3, NULL, 'Drawing', 7, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (64, 3, NULL, 'Clothes/Manner/Presence', 8, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (65, 4, NULL, 'Bangla', 1, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (66, 4, NULL, 'English', 2, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (72, 4, NULL, 'Math', 3, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (73, 4, NULL, 'Religious Education', 4, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (74, 4, NULL, 'General Knowledge', 5, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (75, 4, NULL, 'Spoken', 6, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (76, 4, NULL, 'Drawing', 7, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (77, 4, NULL, 'Clothes/Manner/Presence', 8, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (78, 5, NULL, 'Bangla 1st', 1, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (79, 5, NULL, 'Bangla 2nd', 2, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (80, 5, NULL, 'English 1st', 3, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (81, 5, NULL, 'English 2nd', 4, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (82, 5, NULL, 'Math', 5, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (83, 5, NULL, 'Science', 6, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (84, 5, NULL, 'Bangladesh & Global Studies', 7, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (85, 5, NULL, 'General Knowledge', 9, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (86, 5, NULL, 'Spoken', 10, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (87, 5, NULL, 'Drawing', 11, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (89, 5, NULL, 'Clothes/Manner/Presence', 12, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (90, 6, NULL, 'Bangla 1st', 1, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (91, 6, NULL, 'Bangla 2nd', 2, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (92, 6, NULL, 'English 1st', 3, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (93, 6, NULL, 'English 2nd', 4, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (94, 6, NULL, 'Math', 5, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (95, 6, NULL, 'Science', 6, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (96, 6, NULL, 'Bangladesh & Global Studies', 7, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (97, 6, NULL, 'General Knowledge', 9, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (98, 6, NULL, 'Religious Education', 8, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (99, 5, NULL, 'Religious Education', 8, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (100, 6, NULL, 'Drawing', 11, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (101, 6, NULL, 'Spoken', 10, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (103, 1, NULL, 'Clothes/Manner/Presence', 12, 50, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (105, 6, NULL, 'Clothes/Manner/Presence', 12, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (106, 10, NULL, 'Bangla 1st', 1, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (107, 10, NULL, 'Bangla 2nd', 2, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (108, 10, NULL, 'English 1st', 3, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (109, 10, NULL, 'English 2nd', 4, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (110, 10, NULL, 'Math', 5, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (111, 10, NULL, 'Science', 6, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (112, 10, NULL, 'Bangladesh & Global Studies', 7, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (113, 10, NULL, 'ICT', 8, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (115, 10, NULL, 'Agriculture/Domestic Science', 10, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (116, 10, NULL, 'Clothes/Manner/Presence', 11, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (117, 10, NULL, 'Bangla 1st', 9, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (118, 11, NULL, 'Bangla 1st', 1, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (119, 11, NULL, 'Bangla 2nd', 2, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (120, 11, NULL, 'English 1st', 3, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (121, 11, NULL, 'English 2nd', 4, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (122, 11, NULL, 'General Math', 5, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (123, 11, NULL, 'ICT', 6, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (124, 11, NULL, 'Religious Education', 7, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (125, 12, NULL, 'Bangla 1st', 1, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (126, 12, NULL, 'Bangla 2nd', 2, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (127, 12, NULL, 'English 1st', 3, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (128, 12, NULL, 'English 2nd', 4, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (129, 12, NULL, 'General Math', 5, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (130, 12, NULL, 'ICT', 6, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (131, 12, NULL, 'Religious Education', 7, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (132, 13, NULL, 'Bangla 1st', 1, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (133, 13, NULL, 'Bangla 2nd', 2, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (134, 13, NULL, 'English 1st', 3, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (135, 13, NULL, 'English 2nd', 4, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (136, 13, NULL, 'General Math', 5, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (137, 13, NULL, 'ICT', 6, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (138, 13, NULL, 'Religious Education', 7, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (139, 14, NULL, 'Bangla 1st', 1, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (140, 14, NULL, 'Bangla 2nd', 2, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (141, 14, NULL, 'English 1st', 3, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (142, 14, NULL, 'English 2nd', 4, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (143, 14, NULL, 'General Math', 5, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (144, 14, NULL, 'ICT', 6, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (145, 14, NULL, 'Religious Education', 7, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (146, 11, NULL, 'Physics', 9, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (147, 11, NULL, 'Chemistry', 10, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (148, 11, NULL, 'Biology', 11, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (149, 11, NULL, 'Higher Math', 12, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (150, 11, NULL, 'Agriculture/Domestic Science', 13, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (151, 11, NULL, 'Clothes/Manner/Presence', 14, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (152, 13, NULL, 'Physics', 9, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (153, 13, NULL, 'Chemistry', 10, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (154, 13, NULL, 'Biology', 11, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (155, 13, NULL, 'Higher Math', 12, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (156, 13, NULL, 'Agriculture/Domestic Science', 13, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (157, 13, NULL, 'Clothes/Manner/Presence', 14, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (158, 12, NULL, 'History', 9, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (159, 12, NULL, 'Geography & Environment', 10, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (160, 12, NULL, 'Civics & Citizenship', 11, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (161, 12, NULL, 'Economics', 12, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (162, 12, NULL, 'Agriculture/Domestic Science', 13, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (163, 12, NULL, 'Clothes/Manner/Presence', 14, NULL, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (164, 14, NULL, 'History', 9, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (165, 14, NULL, 'Geography & Environment', 10, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (166, 14, NULL, 'Civics & Citizenship', 11, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (167, 14, NULL, 'Economics', 12, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (168, 14, NULL, 'Agriculture/Domestic Science', 13, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (169, 14, NULL, 'Clothes/Manner/Presence', 14, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (171, 1, NULL, 'Physical Education', 13, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (172, 8, NULL, 'Physical Education', 12, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (174, 4, NULL, 'Physical Education', 9, 23, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (175, 7, NULL, 'Bangla 1st', 1, 25, NULL);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (176, 11, NULL, 'Bangladesh & Global Studies', 8, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (177, 12, NULL, 'General Science', 8, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (178, 13, NULL, 'Bangladesh & Global Studies', 8, 25, 100);
+INSERT INTO subjects (id, class_id, class_teacher_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (179, 14, NULL, 'General Science', 8, 25, 100);
+
+
+
+
+
+
+
+-- INSERT queries for teachers table
+-- Covers all subject areas: Bangla, English, Math, Science, ICT, Religious Ed,
+-- BGS, Physics, Chemistry, Biology, Higher Math, History, Geography, Civics,
+-- Economics, Agriculture, Drawing, Physical Education, etc.
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (1, 'Md. Rafiqul Islam', 'Mr.', NULL, 'Md. Sirajul Islam', 'Fatema Begum', NULL, '01711234567', 'B+', '1991234567890', 'Mirpur, Dhaka');
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (2, 'Nasrin Akter', 'Mrs.', NULL, 'Md. Abul Kalam', 'Rahela Begum', NULL, '01812345678', 'O+', '1992345678901', 'Dhanmondi, Dhaka');
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (3, 'Md. Shafiqul Hasan', 'Mr.', NULL, 'Md. Nurul Hasan', 'Amina Begum', NULL, '01913456789', 'A+', '1993456789012', 'Mohammadpur, Dhaka');
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (4, 'Sultana Parvin', 'Mrs.', NULL, 'Md. Jahurul Islam', 'Sufia Begum', NULL, '01614567890', 'AB+', '1994567890123', 'Uttara, Dhaka');
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (5, 'Md. Kamrul Hossain', 'Mr.', NULL, 'Md. Fazlul Hossain', 'Hasina Begum', NULL, '01715678901', 'B-', '1995678901234', 'Gulshan, Dhaka');
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (6, 'Roksana Begum', 'Ms.', NULL, 'Md. Abdur Rahman', 'Nazma Begum', NULL, '01816789012', 'O-', '1996789012345', 'Khilgaon, Dhaka');
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (7, 'Md. Zahirul Islam', 'Mr.', NULL, 'Md. Nazrul Islam', 'Moriam Begum', NULL, '01917890123', 'A-', '1997890123456', 'Rayer Bazar, Dhaka');
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (8, 'Sharmin Sultana', 'Mrs.', NULL, 'Md. Alauddin', 'Kohinoor Begum', NULL, '01618901234', 'B+', '1998901234567', 'Lalbagh, Dhaka');
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (9, 'Md. Anisur Rahman', 'Mr.', NULL, 'Md. Mizanur Rahman', 'Bilkis Begum', NULL, '01719012345', 'O+', '1999012345678', 'Demra, Dhaka');
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (10, 'Tahmina Khanam', 'Ms.', NULL, 'Md. Lutfur Rahman', 'Anjuara Begum', NULL, '01810123456', 'A+', '1990123456789', 'Badda, Dhaka');
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (11, 'Md. Saiful Islam', 'Mr.', NULL, 'Md. Touhidul Islam', 'Sahera Begum', NULL, '01911234560', 'AB-', '1991234560987', 'Jatrabari, Dhaka');
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (12, 'Farzana Yesmin', 'Mrs.', NULL, 'Md. Humayun Kabir', 'Layla Begum', NULL, '01612345671', 'B+', '1992345671098', 'Rampura, Dhaka');
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (13, 'Md. Rezaul Karim', 'Mr.', NULL, 'Md. Shamsul Karim', 'Rahima Begum', NULL, '01713456782', 'O+', '1993456782109', 'Tejgaon, Dhaka');
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (14, 'Moriom Akter', 'Mrs.', NULL, 'Md. Nurul Amin', 'Parul Begum', NULL, '01814567893', 'A+', '1994567893210', 'Shyamoli, Dhaka');
+
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (15, 'Md. Habibur Rahman', 'Mr.', NULL, 'Md. Idris Ali', 'Aklima Begum', NULL, '01915678904', 'AB+', '1995678904321', 'Azimpur, Dhaka');
