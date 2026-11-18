@@ -88,15 +88,13 @@ db.serialize(() => {
         }
     });
 
-    // 4. Subjects Table (Maps classes to class teachers and tracks subjects)
+    // 4. Subjects Table (Tracks subjects per class)
     db.run(`CREATE TABLE IF NOT EXISTS subjects (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         class_id INTEGER,
-        class_teacher_id INTEGER,
         subject_name TEXT NOT NULL,
         sequence_order INTEGER, -- To keep your exact layout order
-        FOREIGN KEY(class_id) REFERENCES classes(id),
-        FOREIGN KEY(class_teacher_id) REFERENCES teachers(id)
+        FOREIGN KEY(class_id) REFERENCES classes(id)
     )`);
 
         // Migration: add marks-total columns to subjects if they don't exist yet (safe to run every startup)
