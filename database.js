@@ -67,6 +67,7 @@ db.serialize(() => {
     // 3. Teachers Table
     db.run(`CREATE TABLE IF NOT EXISTS teachers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
+        teacher_id_number TEXT,
         name TEXT NOT NULL,
         title TEXT,
         signature_path TEXT,
@@ -79,10 +80,13 @@ db.serialize(() => {
         address TEXT
     )`);
 
-    // Migration: add address column to teachers if it doesn't exist yet
+    // Migration: add teacher_id_number and address columns to teachers if they don't exist yet
     db.all("PRAGMA table_info(teachers)", [], (err, columns) => {
         if (err || !columns) return;
         const columnNames = columns.map(c => c.name);
+        if (!columnNames.includes('teacher_id_number')) {
+            db.run(`ALTER TABLE teachers ADD COLUMN teacher_id_number TEXT`);
+        }
         if (!columnNames.includes('address')) {
             db.run(`ALTER TABLE teachers ADD COLUMN address TEXT`);
         }

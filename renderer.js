@@ -1960,6 +1960,7 @@ async function renderTeachersTable() {
         const assignedClasses = allClassesForTeachers.filter(c => c.class_teacher_id === t.id).map(c => c.class_name);
         return `
         <tr>
+            <td><span style="font-weight:600; color:#2563eb;">${escapeHtml(t.teacher_id_number || '-')}</span></td>
             <td><b>${escapeHtml(t.name || '')}</b></td>
             <td>${escapeHtml(t.title || '')}</td>
             <td>${assignedClasses.length ? assignedClasses.map(escapeHtml).join(', ') : '<i style="color:gray;">None</i>'}</td>
@@ -1977,7 +1978,7 @@ async function renderTeachersTable() {
 function resetTeacherForm() {
     const editIdEl = document.getElementById('tc-edit-id');
     if (editIdEl) editIdEl.value = '';
-    ['tc-name', 'tc-title', 'tc-contact', 'tc-blood', 'tc-father', 'tc-mother', 'tc-nid', 'tc-address'].forEach(id => {
+    ['tc-teacher-id', 'tc-name', 'tc-title', 'tc-contact', 'tc-blood', 'tc-father', 'tc-mother', 'tc-nid', 'tc-address'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
@@ -1996,11 +1997,13 @@ function resetTeacherForm() {
 window.editTeacherById = function (id) {
     const t = cachedTeachers.find(item => item.id === id);
     if (!t) return;
-    window.editTeacher(t.id, t.name, t.title, t.contact_number, t.blood_group, t.fathers_name, t.mothers_name, t.nid_number, t.address);
+    window.editTeacher(t.id, t.name, t.title, t.contact_number, t.blood_group, t.fathers_name, t.mothers_name, t.nid_number, t.address, t.teacher_id_number);
 };
 
-window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName, mothersName, nid, address) {
+window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName, mothersName, nid, address, teacherIdNumber) {
     document.getElementById('tc-edit-id').value = id || '';
+    const teacherIdEl = document.getElementById('tc-teacher-id');
+    if (teacherIdEl) teacherIdEl.value = teacherIdNumber || '';
     document.getElementById('tc-name').value = name || '';
     document.getElementById('tc-title').value = title || '';
     document.getElementById('tc-contact').value = contact || '';
@@ -2028,6 +2031,7 @@ window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName
 document.getElementById('btn-save-teacher').addEventListener('click', async () => {
     const editId = document.getElementById('tc-edit-id').value;
     const t = {
+        teacher_id_number: document.getElementById('tc-teacher-id')?.value.trim() || '',
         name: document.getElementById('tc-name').value.trim(),
         title: document.getElementById('tc-title').value.trim(),
         contact_number: document.getElementById('tc-contact').value.trim(),
@@ -4552,6 +4556,7 @@ window.showTeacherInfoModal = function (id) {
     const assignedClasses = allClassesForTeachers.filter(c => c.class_teacher_id === t.id).map(c => c.class_name);
 
     const items = [
+        ['Teacher ID', t.teacher_id_number ? `<b>${escapeHtml(t.teacher_id_number)}</b>` : '<i style="color:#94a3b8;">None</i>'],
         ['Full Name', t.name ? `<b>${escapeHtml(t.name)}</b>` : ''],
         ['Title / Designation', t.title ? escapeHtml(t.title) : ''],
         ['Class Teacher Of', assignedClasses.length ? assignedClasses.map(escapeHtml).join(', ') : '<i style="color:#94a3b8;">None</i>'],

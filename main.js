@@ -825,8 +825,8 @@ ipcMain.handle('get-teachers', async () => {
 
 ipcMain.handle('add-teacher', async (event, t) => {
     try {
-        const r = await dbRun(`INSERT INTO teachers (name, title, fathers_name, mothers_name, contact_number, blood_group, nid_number, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null, t.address || null]);
+        const r = await dbRun(`INSERT INTO teachers (teacher_id_number, name, title, fathers_name, mothers_name, contact_number, blood_group, nid_number, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [t.teacher_id_number || null, t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null, t.address || null]);
         await runDataChecks();
         return { success: true, id: r.lastID };
     } catch (e) {
@@ -856,8 +856,8 @@ ipcMain.handle('set-teacher-classes', async (event, { teacher_id, class_ids }) =
 
 ipcMain.handle('update-teacher', async (event, t) => {
     try {
-        await dbRun(`UPDATE teachers SET name = ?, title = ?, fathers_name = ?, mothers_name = ?, contact_number = ?, blood_group = ?, nid_number = ?, address = ? WHERE id = ?`,
-            [t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null, t.address || null, t.id]);
+        await dbRun(`UPDATE teachers SET teacher_id_number = ?, name = ?, title = ?, fathers_name = ?, mothers_name = ?, contact_number = ?, blood_group = ?, nid_number = ?, address = ? WHERE id = ?`,
+            [t.teacher_id_number || null, t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null, t.address || null, t.id]);
         await runDataChecks();
         return { success: true };
     } catch (e) {

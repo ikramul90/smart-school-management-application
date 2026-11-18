@@ -429,35 +429,35 @@ INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks,
 -- BGS, Physics, Chemistry, Biology, Higher Math, History, Geography, Civics,
 -- Economics, Agriculture, Drawing, Physical Education, etc.
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (1, 'Md. Rafiqul Islam', 'Mr.', NULL, 'Md. Sirajul Islam', 'Fatema Begum', NULL, '01711234567', 'B+', '1991234567890', 'Mirpur, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (1, 'Md. Rafiqul Islam', 'Mr.', NULL, 'Md. Sirajul Islam', 'Fatema Begum', NULL, '01711234567', 'B+', '1991234567890', 'Mirpur, Dhaka', 'T-2027-01');
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (2, 'Nasrin Akter', 'Mrs.', NULL, 'Md. Abul Kalam', 'Rahela Begum', NULL, '01812345678', 'O+', '1992345678901', 'Dhanmondi, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (2, 'Nasrin Akter', 'Mrs.', NULL, 'Md. Abul Kalam', 'Rahela Begum', NULL, '01812345678', 'O+', '1992345678901', 'Dhanmondi, Dhaka', 'T-2027-02');
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (3, 'Md. Shafiqul Hasan', 'Mr.', NULL, 'Md. Nurul Hasan', 'Amina Begum', NULL, '01913456789', 'A+', '1993456789012', 'Mohammadpur, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (3, 'Md. Shafiqul Hasan', 'Mr.', NULL, 'Md. Nurul Hasan', 'Amina Begum', NULL, '01913456789', 'A+', '1993456789012', 'Mohammadpur, Dhaka', 'T-2027-03');
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (4, 'Sultana Parvin', 'Mrs.', NULL, 'Md. Jahurul Islam', 'Sufia Begum', NULL, '01614567890', 'AB+', '1994567890123', 'Uttara, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (4, 'Sultana Parvin', 'Mrs.', NULL, 'Md. Jahurul Islam', 'Sufia Begum', NULL, '01614567890', 'AB+', '1994567890123', 'Uttara, Dhaka', 'T-2027-04');
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (5, 'Md. Kamrul Hossain', 'Mr.', NULL, 'Md. Fazlul Hossain', 'Hasina Begum', NULL, '01715678901', 'B-', '1995678901234', 'Gulshan, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (5, 'Md. Kamrul Hossain', 'Mr.', NULL, 'Md. Fazlul Hossain', 'Hasina Begum', NULL, '01715678901', 'B-', '1995678901234', 'Gulshan, Dhaka', 'T-2027-05');
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (6, 'Roksana Begum', 'Ms.', NULL, 'Md. Abdur Rahman', 'Nazma Begum', NULL, '01816789012', 'O-', '1996789012345', 'Khilgaon, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (6, 'Roksana Begum', 'Ms.', NULL, 'Md. Abdur Rahman', 'Nazma Begum', NULL, '01816789012', 'O-', '1996789012345', 'Khilgaon, Dhaka', 'T-2027-06');
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (7, 'Md. Zahirul Islam', 'Mr.', NULL, 'Md. Nazrul Islam', 'Moriam Begum', NULL, '01917890123', 'A-', '1997890123456', 'Rayer Bazar, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (7, 'Md. Zahirul Islam', 'Mr.', NULL, 'Md. Nazrul Islam', 'Moriam Begum', NULL, '01917890123', 'A-', '1997890123456', 'Rayer Bazar, Dhaka', 'T-2027-07');
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (8, 'Sharmin Sultana', 'Mrs.', NULL, 'Md. Alauddin', 'Kohinoor Begum', NULL, '01618901234', 'B+', '1998901234567', 'Lalbagh, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (8, 'Sharmin Sultana', 'Mrs.', NULL, 'Md. Alauddin', 'Kohinoor Begum', NULL, '01618901234', 'B+', '1998901234567', 'Lalbagh, Dhaka', 'T-2027-08');
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (9, 'Md. Anisur Rahman', 'Mr.', NULL, 'Md. Mizanur Rahman', 'Bilkis Begum', NULL, '01719012345', 'O+', '1999012345678', 'Demra, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (9, 'Md. Anisur Rahman', 'Mr.', NULL, 'Md. Mizanur Rahman', 'Bilkis Begum', NULL, '01719012345', 'O+', '1999012345678', 'Demra, Dhaka', 'T-2027-09');
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (10, 'Tahmina Khanam', 'Ms.', NULL, 'Md. Lutfur Rahman', 'Anjuara Begum', NULL, '01810123456', 'A+', '1990123456789', 'Badda, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (10, 'Tahmina Khanam', 'Ms.', NULL, 'Md. Lutfur Rahman', 'Anjuara Begum', NULL, '01810123456', 'A+', '1990123456789', 'Badda, Dhaka', 'T-2027-10');
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (11, 'Md. Saiful Islam', 'Mr.', NULL, 'Md. Touhidul Islam', 'Sahera Begum', NULL, '01911234560', 'AB-', '1991234560987', 'Jatrabari, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (11, 'Md. Saiful Islam', 'Mr.', NULL, 'Md. Touhidul Islam', 'Sahera Begum', NULL, '01911234560', 'AB-', '1991234560987', 'Jatrabari, Dhaka', 'T-2027-11');
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (12, 'Farzana Yesmin', 'Mrs.', NULL, 'Md. Humayun Kabir', 'Layla Begum', NULL, '01612345671', 'B+', '1992345671098', 'Rampura, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (12, 'Farzana Yesmin', 'Mrs.', NULL, 'Md. Humayun Kabir', 'Layla Begum', NULL, '01612345671', 'B+', '1992345671098', 'Rampura, Dhaka', 'T-2027-12');
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (13, 'Md. Rezaul Karim', 'Mr.', NULL, 'Md. Shamsul Karim', 'Rahima Begum', NULL, '01713456782', 'O+', '1993456782109', 'Tejgaon, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (13, 'Md. Rezaul Karim', 'Mr.', NULL, 'Md. Shamsul Karim', 'Rahima Begum', NULL, '01713456782', 'O+', '1993456782109', 'Tejgaon, Dhaka', 'T-2027-13');
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (14, 'Moriom Akter', 'Mrs.', NULL, 'Md. Nurul Amin', 'Parul Begum', NULL, '01814567893', 'A+', '1994567893210', 'Shyamoli, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (14, 'Moriom Akter', 'Mrs.', NULL, 'Md. Nurul Amin', 'Parul Begum', NULL, '01814567893', 'A+', '1994567893210', 'Shyamoli, Dhaka', 'T-2027-14');
 
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address) VALUES (15, 'Md. Habibur Rahman', 'Mr.', NULL, 'Md. Idris Ali', 'Aklima Begum', NULL, '01915678904', 'AB+', '1995678904321', 'Azimpur, Dhaka');
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (15, 'Md. Habibur Rahman', 'Mr.', NULL, 'Md. Idris Ali', 'Aklima Begum', NULL, '01915678904', 'AB+', '1995678904321', 'Azimpur, Dhaka', 'T-2027-15');
 
 
 
