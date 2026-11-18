@@ -207,7 +207,7 @@ db.serialize(() => {
         is_dismissed INTEGER DEFAULT 0
     )`);
 
-    // 12. School Information Table (Stores school profile name and address)
+    // 12. School Information Table (Stores school profile name, address, and logo path)
     // Self-repairing: if an old/incorrect school_info table exists, rebuild it.
     db.all("PRAGMA table_info(school_info)", [], (err, columns) => {
         const names = (columns || []).map(c => c.name);
@@ -216,13 +216,14 @@ db.serialize(() => {
         const createAndSeed = () => {
             db.run(`CREATE TABLE IF NOT EXISTS school_info (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT DEFAULT 'The Cadet School & College (TCSAC)',
-                address TEXT DEFAULT ''
+                name TEXT DEFAULT '',
+                address TEXT DEFAULT '',
+                logo_path TEXT DEFAULT NULL
             )`, () => {
                 db.get("SELECT COUNT(*) as count FROM school_info", [], (err2, row) => {
                     if (row && row.count === 0) {
-                        db.run(`INSERT INTO school_info (name, address) VALUES (?, ?)`,
-                            ['The Cadet School & College (TCSAC)', '']);
+                        db.run(`INSERT INTO school_info (name, address, logo_path) VALUES (?, ?, ?)`,
+                            ['', '', null]);
                     }
                 });
             });
@@ -233,6 +234,9 @@ db.serialize(() => {
             db.run("DROP TABLE school_info", createAndSeed);
         } else {
             createAndSeed();
+            if (names.length > 0 && !names.includes('logo_path')) {
+                db.run(`ALTER TABLE school_info ADD COLUMN logo_path TEXT DEFAULT NULL`);
+            }
         }
     });
 

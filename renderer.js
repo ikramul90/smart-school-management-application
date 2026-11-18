@@ -24,6 +24,7 @@ function renderActionIcon(svgString) {
 const activationScreen = document.getElementById('activation-screen');
 const activationCheckingScreen = document.getElementById('activation-checking-screen');
 const setupScreen = document.getElementById('setup-screen');
+const schoolSetupScreen = document.getElementById('school-setup-screen');
 const loginScreen = document.getElementById('login-screen');
 const dashboardScreen = document.getElementById('dashboard-screen');
 
@@ -208,10 +209,211 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// Reusable Logo Upload Zone controller (supports both Setup Screen & Settings Tab)
+function attachLogoZoneHandlers({ zoneId, fileInputId, previewId, phId, clearBtnId, filenameId, onError }) {
+    const zone = document.getElementById(zoneId);
+    const fileInput = document.getElementById(fileInputId);
+    const preview = document.getElementById(previewId);
+    const ph = document.getElementById(phId);
+    const clearBtn = document.getElementById(clearBtnId);
+    const filename = document.getElementById(filenameId);
+
+    const state = {
+        dataUrl: null,
+        file: null,
+        isRemoved: false
+    };
+
+    function setLogo(dataUrl, nameText) {
+        state.dataUrl = dataUrl;
+        state.isRemoved = false;
+        if (dataUrl) {
+            if (preview) {
+                preview.src = dataUrl;
+                preview.style.display = 'block';
+            }
+            if (ph) ph.style.display = 'none';
+            if (clearBtn) clearBtn.style.display = 'flex';
+            if (zone) zone.classList.add('has-logo');
+            if (filename) filename.textContent = nameText || '';
+        } else {
+            reset();
+        }
+    }
+
+    function reset() {
+        state.dataUrl = null;
+        state.file = null;
+        state.isRemoved = true;
+        if (preview) {
+            preview.src = '';
+            preview.style.display = 'none';
+        }
+        if (ph) ph.style.display = 'flex';
+        if (clearBtn) clearBtn.style.display = 'none';
+        if (zone) {
+            zone.classList.remove('has-logo');
+            zone.classList.remove('drag-over');
+        }
+        if (filename) filename.textContent = '';
+        if (fileInput) fileInput.value = '';
+    }
+
+    function handleFile(file) {
+        if (!file) return;
+        if (!file.type.startsWith('image/')) {
+            if (onError) onError('Please upload a valid image file (PNG, JPG, SVG).');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            if (onError) onError('File exceeds 5 MB limit.');
+            return;
+        }
+        if (onError) onError('');
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const dataUrl = e.target.result;
+            state.file = file;
+            setLogo(dataUrl, file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)');
+        };
+        reader.readAsDataURL(file);
+    }
+
+    if (zone && fileInput) {
+        zone.addEventListener('click', () => fileInput.click());
+        zone.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                fileInput.click();
+            }
+        });
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files && fileInput.files[0]) {
+                handleFile(fileInput.files[0]);
+            }
+        });
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zone.classList.add('drag-over');
+        });
+        zone.addEventListener('dragleave', (e) => {
+            if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+        });
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+    }
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            reset();
+            if (onError) onError('');
+        });
+        clearBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.stopPropagation();
+                e.preventDefault();
+                reset();
+                if (onError) onError('');
+            }
+        });
+    }
+
+    return {
+        setLogo,
+        reset,
+        getState: () => state
+    };
+}
+
+let schoolSetupLogoController = null;
+
+async function initSchoolSetupScreen() {
+    const titleInput = document.getElementById('ss-title');
+    const addrInput = document.getElementById('ss-address');
+    const errEl = document.getElementById('ss-error');
+    const okEl = document.getElementById('ss-success');
+    const saveBtn = document.getElementById('btn-save-school-setup');
+
+    if (errEl) errEl.innerText = '';
+    if (okEl) okEl.style.display = 'none';
+
+    try {
+        const info = await ipcRenderer.invoke('get-school-info');
+        if (titleInput && !titleInput.value) titleInput.value = info?.name || '';
+        if (addrInput && !addrInput.value) addrInput.value = info?.address || '';
+    } catch (e) {}
+
+    if (!schoolSetupLogoController) {
+        schoolSetupLogoController = attachLogoZoneHandlers({
+            zoneId: 'ss-logo-zone',
+            fileInputId: 'ss-logo-input',
+            previewId: 'ss-logo-preview',
+            phId: 'ss-logo-ph',
+            clearBtnId: 'ss-logo-clear',
+            filenameId: 'ss-logo-filename',
+            onError: (msg) => {
+                if (errEl) errEl.innerText = msg;
+            }
+        });
+    }
+
+    if (saveBtn && !saveBtn.dataset.bound) {
+        saveBtn.dataset.bound = 'true';
+        saveBtn.addEventListener('click', async () => {
+            const title = titleInput?.value.trim() || '';
+            const address = addrInput?.value.trim() || '';
+            if (errEl) errEl.innerText = '';
+
+            if (!title) {
+                if (errEl) errEl.innerText = 'Institute name is required.';
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving...';
+
+            const logoState = schoolSetupLogoController ? schoolSetupLogoController.getState() : {};
+            const saveResult = await ipcRenderer.invoke('save-school-info', {
+                name: title,
+                address,
+                logo_data_url: logoState.dataUrl || null,
+                logo_removed: logoState.isRemoved
+            });
+
+            if (saveResult && saveResult.success) {
+                cachedSchoolInfo = {
+                    name: title,
+                    address,
+                    logo_path: saveResult.logo_path || null,
+                    logo_data_url: logoState.dataUrl || null
+                };
+                if (okEl) {
+                    okEl.style.display = 'block';
+                    okEl.textContent = 'Configuration saved successfully!';
+                }
+                setTimeout(() => {
+                    if (schoolSetupScreen) schoolSetupScreen.style.display = 'none';
+                    if (loginScreen) loginScreen.style.display = 'block';
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save Configuration';
+                }, 800);
+            } else {
+                saveBtn.disabled = false;
+                saveBtn.textContent = 'Save Configuration';
+                if (errEl) errEl.innerText = 'Error saving school configuration: ' + ((saveResult && saveResult.message) || 'Unknown error');
+            }
+        });
+    }
+}
+
 // First-time setup form: collects the new admin's username,
-// password, and two security-question answers, then sends them
-// to main.js to be saved. Reloads the page into the login screen
-// on success.
+// password, and two security-question answers, then transitions to School Setup.
 document.getElementById('btn-save-setup').addEventListener('click', async () => {
     const username = document.getElementById('setup-username').value.trim();
     const password = document.getElementById('setup-password').value.trim();
@@ -231,8 +433,13 @@ document.getElementById('btn-save-setup').addEventListener('click', async () => 
     });
 
     if (result.success) {
-        alert("System initialized cleanly!");
-        location.reload(); // Reloads page to show the login screen now
+        setupScreen.style.display = 'none';
+        if (schoolSetupScreen) {
+            schoolSetupScreen.style.display = 'block';
+            await initSchoolSetupScreen();
+        } else {
+            loginScreen.style.display = 'block';
+        }
     } else {
         document.getElementById('setup-error').innerText = "Database Setup Error: " + result.message;
     }
@@ -2396,7 +2603,7 @@ let transcriptIsNineTen = false;           // true when the open class is Nine/T
 let transcriptClassName = '';              // class_name of the open class
 let transcriptStudentSubjects = {};        // studentId -> { mains: [names], optional: name | null }
 let transcriptSiblingEntries = [];         // other department's totals, for the combined class position
-let cachedSchoolInfo = { name: 'The Cadet School & College (TCSAC)', address: '' };
+let cachedSchoolInfo = { name: '', address: '' };
 
 const TRANSCRIPT_GRADING_SCALE = [
     { min: 79.5, letter: 'A+', point: '5.0' },
@@ -2847,18 +3054,19 @@ function paintTranscriptPreview() {
 
     const schoolName = cachedSchoolInfo?.name || '';
     const schoolAddress = cachedSchoolInfo?.address || '';
+    const schoolLogo = cachedSchoolInfo?.logo_data_url || 'assets/logo.png';
     const positions = computeTranscriptClassPositions();
 
     preview.innerHTML = transcriptStudents.map(st => `
         <div class="transcript-page">
             <div class="transcript-header-top">
                 <div class="transcript-std-img-wrap">
-                    <img src="Sample data/std.png" class="transcript-std-img" alt="School Logo" onerror="this.style.display='none'">
+                    <img src="assets/std.png" class="transcript-std-img" alt="Student Photo" onerror="this.style.display='none'">
                 </div>
                 <div class="transcript-inst-header">
                     ${schoolName ? `<div class="transcript-inst-name">${escapeHtml(schoolName)}</div>` : ''}
                     ${schoolAddress ? `<div class="transcript-inst-address">${escapeHtml(schoolAddress)}</div>` : ''}
-                    <div class="transcript-logo-wrap"><img src="sample data/TCSAC_logo.png" class="transcript-inst-logo" alt="School Logo" onerror="this.style.display='none'"></div>
+                    <div class="transcript-logo-wrap"><img src="${schoolLogo}" class="transcript-inst-logo" alt="School Logo" onerror="this.src='assets/logo.png'"></div>
                 </div>
                 <div class="transcript-grade-scale-box">
                     <table class="transcript-grade-scale-table">
@@ -3703,8 +3911,31 @@ if (btnCancelSubject) {
 // ============================================================
 // SCHOOL INFORMATION PROFILE (Settings -> School Info)
 // ============================================================
+let settingsLogoController = null;
+
+function initSettingsLogoZone() {
+    if (!settingsLogoController) {
+        const feedback = document.getElementById('school-info-feedback');
+        settingsLogoController = attachLogoZoneHandlers({
+            zoneId: 'settings-logo-zone',
+            fileInputId: 'settings-logo-input',
+            previewId: 'settings-logo-preview',
+            phId: 'settings-logo-ph',
+            clearBtnId: 'settings-logo-clear',
+            filenameId: 'settings-logo-filename',
+            onError: (msg) => {
+                if (feedback) {
+                    feedback.style.color = '#ef4444';
+                    feedback.textContent = msg;
+                }
+            }
+        });
+    }
+}
+
 async function loadSchoolInfo() {
     try {
+        initSettingsLogoZone();
         const info = await ipcRenderer.invoke('get-school-info');
         if (info) {
             cachedSchoolInfo = info;
@@ -3713,6 +3944,14 @@ async function loadSchoolInfo() {
 
             if (nameEl) nameEl.value = info.name || '';
             if (addrEl) addrEl.value = info.address || '';
+
+            if (settingsLogoController) {
+                if (info.logo_data_url) {
+                    settingsLogoController.setLogo(info.logo_data_url, 'Current Logo');
+                } else {
+                    settingsLogoController.reset();
+                }
+            }
         }
     } catch (err) {
         console.error('Error loading school info:', err);
@@ -3720,6 +3959,7 @@ async function loadSchoolInfo() {
 }
 
 function setupSchoolInfoHandlers() {
+    initSettingsLogoZone();
     const btnSaveSchoolInfo = document.getElementById('btn-save-school-info');
     if (btnSaveSchoolInfo) {
         btnSaveSchoolInfo.addEventListener('click', async () => {
@@ -3727,12 +3967,22 @@ function setupSchoolInfoHandlers() {
             const address = document.getElementById('school-address-input')?.value.trim() || '';
             const feedback = document.getElementById('school-info-feedback');
 
+            const logoState = settingsLogoController ? settingsLogoController.getState() : {};
+
             const result = await ipcRenderer.invoke('save-school-info', {
-                name, address
+                name,
+                address,
+                logo_data_url: logoState.dataUrl || null,
+                logo_removed: logoState.isRemoved
             });
 
             if (result && result.success) {
-                cachedSchoolInfo = { name, address };
+                cachedSchoolInfo = {
+                    name,
+                    address,
+                    logo_path: result.logo_path || null,
+                    logo_data_url: logoState.dataUrl || null
+                };
                 if (feedback) {
                     feedback.style.color = '#10b981';
                     feedback.textContent = 'Configuration saved successfully!';

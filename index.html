@@ -46,14 +46,13 @@
                 </svg>
             </div>
             <div class="welcome-text-content">
-                <div class="welcome-title" id="setup-welcome-title">Welcome to TCSAC Management Software</div>
-                <div class="welcome-desc" id="setup-welcome-desc">Activation verified successfully. Please configure
-                    your administrator profile below.</div>
+                <div class="welcome-title" id="setup-welcome-title">Welcome to Smart School Management Software</div>
+                <div class="welcome-desc" id="setup-welcome-desc">Activation verified successfully. Please configure your administrator profile below.</div>
             </div>
         </div>
 
-        <h2>TCSAC Portal Setup</h2>
-        <p>Configure your administrator profile for first-time use.</p>
+        <h2>Portal Setup</h2>
+        <p>Configure your administrator profile.</p>
         <div class="error" id="setup-error"></div>
         <div class="input-group">
             <label>Admin Username</label>
@@ -183,8 +182,58 @@
     </div>
 
     <!-- App configuration setup screen -->
-    <div>
-        
+    <div id="school-setup-screen" class="card" style="display: none; width: 420px; max-width: 100%;">
+        <h2 class="no-select">School Setup</h2>
+        <p class="subtitle" style="font-size: 13px; color: #64748b; text-align: center; margin-bottom: 20px; line-height: 1.5;">
+            Configure your institute profile. This information appears across reports, transcripts, and certificates.
+        </p>
+
+        <div class="input-group">
+            <label for="ss-title">Institute Name</label>
+            <input type="text" id="ss-title" placeholder="" autocomplete="off">
+        </div>
+
+        <div class="input-group">
+            <label for="ss-address">Institute Address</label>
+            <input type="text" id="ss-address" placeholder="" autocomplete="off">
+        </div>
+
+        <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 18px 0;">
+
+        <div class="input-group">
+            <div class="logo-label-row">
+                <label>Institute Logo</label>
+                <span class="logo-hint">PNG, JPG, SVG — max 5 MB</span>
+            </div>
+
+            <div id="ss-logo-zone" class="logo-zone" tabindex="0" role="button" aria-label="Upload institute logo">
+                <div class="logo-ph" id="ss-logo-ph">
+                    <div class="logo-ph-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="16 16 12 12 8 16"></polyline>
+                            <line x1="12" y1="12" x2="12" y2="21"></line>
+                            <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                        </svg>
+                    </div>
+                    <span class="logo-ph-text">Click to upload logo</span>
+                    <span class="logo-ph-sub">or drag and drop here</span>
+                </div>
+                <img id="ss-logo-preview" class="logo-preview-img" alt="Logo preview">
+                <button id="ss-logo-clear" class="logo-clear-btn" type="button" aria-label="Remove logo">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <input type="file" id="ss-logo-input" accept="image/*" style="display:none" aria-hidden="true">
+            <div id="ss-logo-filename" class="logo-filename-text"></div>
+        </div>
+        <p style="font-size: 11px; color: #94a3b8; margin-top: -6px; margin-bottom: 12px; text-align: left;">This can be changed later in the Settings.</p>
+
+        <div class="error" id="ss-error" style="min-height: 18px; margin-bottom: 8px;"></div>
+        <div id="ss-success" style="font-size: 13px; color: #16a34a; font-weight: 600; text-align: center; min-height: 18px; margin-bottom: 8px; display: none;">Configuration saved successfully.</div>
+        <button id="btn-save-school-setup" type="button" style="width: 100%;">Save Configuration</button>
     </div>
 
     <!-- 3. REAL DASHBOARD & PORTAL MAIN LAYOUT -->
@@ -939,13 +988,39 @@
                             </p>
                             <div class="input-group">
                                 <label class="no-select">Institute Name</label>
-                                <input type="text" id="school-name-input" placeholder="Enter school institute name"
-                                    value="The Cadet School & College (TCSAC)">
+                                <input type="text" id="school-name-input" placeholder="Enter school name">
                             </div>
                             <div class="input-group">
                                 <label class="no-select">Institute Address</label>
-                                <input type="text" id="school-address-input"
-                                    placeholder="Enter school physical address">
+                                <input type="text" id="school-address-input" placeholder="Enter school physical address">
+                            </div>
+                            <div class="input-group" style="margin-top: 14px;">
+                                <div class="logo-label-row">
+                                    <label class="no-select">Institute Logo</label>
+                                    <span class="logo-hint">PNG, JPG, SVG — max 5 MB</span>
+                                </div>
+                                <div id="settings-logo-zone" class="logo-zone" tabindex="0" role="button" aria-label="Upload institute logo">
+                                    <div class="logo-ph" id="settings-logo-ph">
+                                        <div class="logo-ph-icon">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="16 16 12 12 8 16"></polyline>
+                                                <line x1="12" y1="12" x2="12" y2="21"></line>
+                                                <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                                            </svg>
+                                        </div>
+                                        <span class="logo-ph-text">Click to upload logo</span>
+                                        <span class="logo-ph-sub">or drag and drop here</span>
+                                    </div>
+                                    <img id="settings-logo-preview" class="logo-preview-img" alt="Logo preview">
+                                    <button id="settings-logo-clear" class="logo-clear-btn" type="button" aria-label="Remove logo">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <input type="file" id="settings-logo-input" accept="image/*" style="display:none" aria-hidden="true">
+                                <div id="settings-logo-filename" class="logo-filename-text"></div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 12px; margin-top: 14px;">
                                 <button type="button" id="btn-save-school-info" style="background-color: #10b981;">Save

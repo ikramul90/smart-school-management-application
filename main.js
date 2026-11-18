@@ -184,17 +184,45 @@ ipcMain.handle('reset-admin-password-via-questions', async (event, { answers, ne
 
 // --- SETTINGS SCREEN REGISTRATION ---
 
+const getMediaDir = (subfolder = '') => {
+    const baseDir = (app && app.isPackaged && typeof app.getPath === 'function')
+        ? app.getPath('userData')
+        : __dirname;
+    const targetDir = path.join(baseDir, 'media', subfolder);
+    if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir, { recursive: true });
+    }
+    return targetDir;
+};
+
 // Get School Information
 ipcMain.handle('get-school-info', async () => {
     return new Promise((resolve) => {
         db.get("SELECT * FROM school_info ORDER BY id ASC LIMIT 1", [], (err, row) => {
-            if (err) {
-                console.error('get-school-info failed:', err.message);
-                resolve({ name: 'The Cadet School & College (TCSAC)', address: '' });
-            } else if (!row) {
-                resolve({ name: 'The Cadet School & College (TCSAC)', address: '' });
+            const defaultInfo = { name: '', address: '', logo_path: null, logo_data_url: null };
+            if (err || !row) {
+                resolve(defaultInfo);
             } else {
-                resolve(row);
+                let logoDataUrl = null;
+                if (row.logo_path && fs.existsSync(row.logo_path)) {
+                    try {
+                        const ext = path.extname(row.logo_path).slice(1).toLowerCase() || 'png';
+                        const mimeType = ext === 'svg' ? 'image/svg+xml' : (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg' : `image/${ext}`;
+                        const base64 = fs.readFileSync(row.logo_path).toString('base64');
+                        logoDataUrl = `data:${mimeType};base64,${base64}`;
+                    } catch (e) {
+                        console.error('Failed to read logo file:', e.message);
+                    }
+                } else if (row.logo_path && !fs.existsSync(row.logo_path)) {
+                    row.logo_path = null;
+                }
+                resolve({
+                    id: row.id,
+                    name: row.name || defaultInfo.name,
+                    address: row.address || '',
+                    logo_path: row.logo_path || null,
+                    logo_data_url: logoDataUrl
+                });
             }
         });
     });
@@ -203,26 +231,61 @@ ipcMain.handle('get-school-info', async () => {
 // Save or Update School Information
 ipcMain.handle('save-school-info', async (event, data) => {
     return new Promise((resolve) => {
-        db.get("SELECT id FROM school_info ORDER BY id ASC LIMIT 1", [], (err, row) => {
+        db.get("SELECT id, logo_path FROM school_info ORDER BY id ASC LIMIT 1", [], (err, row) => {
             if (err) {
                 console.error('save-school-info (lookup) failed:', err.message);
                 return resolve({ success: false, message: err.message });
             }
+
+            let newLogoPath = row ? row.logo_path : null;
+
+            if (data.logo_removed) {
+                if (newLogoPath && fs.existsSync(newLogoPath)) {
+                    try { fs.unlinkSync(newLogoPath); } catch (e) {}
+                }
+                newLogoPath = null;
+            } else if (data.logo_data_url) {
+                try {
+                    const matches = data.logo_data_url.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+                    if (matches && matches.length === 3) {
+                        const mimeType = matches[1];
+                        const ext = mimeType === 'image/svg+xml' ? '.svg' : (mimeType === 'image/jpeg' || mimeType === 'image/jpg') ? '.jpg' : '.png';
+                        const targetDir = getMediaDir('logos');
+                        const targetFile = path.join(targetDir, `school_logo_${Date.now()}${ext}`);
+
+                        // Remove existing logos
+                        try {
+                            const files = fs.readdirSync(targetDir);
+                            for (const f of files) {
+                                if (f.startsWith('school_logo_')) {
+                                    fs.unlinkSync(path.join(targetDir, f));
+                                }
+                            }
+                        } catch (e) {}
+
+                        fs.writeFileSync(targetFile, Buffer.from(matches[2], 'base64'));
+                        newLogoPath = targetFile;
+                    }
+                } catch (saveImgErr) {
+                    console.error('Failed to save uploaded logo:', saveImgErr.message);
+                }
+            }
+
             if (row) {
-                const query = `UPDATE school_info SET name = ?, address = ? WHERE id = ?`;
-                db.run(query, [data.name, data.address, row.id], function (e) {
+                const query = `UPDATE school_info SET name = ?, address = ?, logo_path = ? WHERE id = ?`;
+                db.run(query, [data.name, data.address, newLogoPath, row.id], function (e) {
                     if (e) {
                         console.error('save-school-info (update) failed:', e.message);
                         resolve({ success: false, message: e.message });
-                    } else resolve({ success: true });
+                    } else resolve({ success: true, logo_path: newLogoPath });
                 });
             } else {
-                const query = `INSERT INTO school_info (name, address) VALUES (?, ?)`;
-                db.run(query, [data.name, data.address], function (e) {
+                const query = `INSERT INTO school_info (name, address, logo_path) VALUES (?, ?, ?)`;
+                db.run(query, [data.name, data.address, newLogoPath], function (e) {
                     if (e) {
                         console.error('save-school-info (insert) failed:', e.message);
                         resolve({ success: false, message: e.message });
-                    } else resolve({ success: true });
+                    } else resolve({ success: true, logo_path: newLogoPath });
                 });
             }
         });

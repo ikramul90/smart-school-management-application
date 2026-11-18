@@ -2051,3 +2051,133 @@ button:hover {
     writing-mode: vertical-rl;
     transform: rotate(180deg);
 }
+
+
+/* ============================================================
+   LOGO UPLOAD ZONE (Setup screen & Settings tab)
+   ============================================================ */
+.logo-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+.logo-label-row label { margin: 0; }
+.logo-hint { font-size: 11px; color: var(--slate-400, #94a3b8); font-weight: 400; }
+
+.logo-zone {
+    width: 100%;
+    height: 128px;
+    border: 1.5px dashed var(--slate-300, #cbd5e1);
+    border-radius: 6px;
+    background: var(--slate-50, #f8fafc);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.logo-zone:hover {
+    border-color: var(--blue-500, #3b82f6);
+    background: var(--blue-50, #eff6ff);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.logo-zone.drag-over {
+    border-color: var(--blue-600, #2563eb);
+    background: var(--blue-100, #dbeafe);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.logo-zone.has-logo {
+    border-style: solid;
+    border-color: var(--slate-200, #e2e8f0);
+    background: #ffffff;
+}
+
+.logo-zone.has-logo:hover {
+    border-color: var(--blue-500, #3b82f6);
+    background: var(--blue-50, #eff6ff);
+}
+
+.logo-ph {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    pointer-events: none;
+}
+
+.logo-ph-icon {
+    width: 36px;
+    height: 36px;
+    background: var(--blue-100, #dbeafe);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-ph-icon svg { color: var(--blue-600, #2563eb); }
+
+.logo-ph-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--slate-600, #475569);
+}
+
+.logo-ph-sub {
+    font-size: 11px;
+    color: var(--slate-400, #94a3b8);
+    font-weight: 400;
+}
+
+.logo-preview-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 12px;
+    display: none;
+}
+
+.logo-clear-btn {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: #ffffff;
+    border: 1px solid var(--slate-200, #e2e8f0);
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    transition: background 0.15s, border-color 0.15s;
+    z-index: 2;
+}
+
+.logo-clear-btn:hover {
+    background: #ef4444;
+    border-color: #dc2626;
+}
+
+.logo-clear-btn:hover svg { color: #ffffff; }
+.logo-clear-btn svg { color: #64748b; transition: color 0.15s; }
+
+.logo-filename-text {
+    font-size: 11px;
+    color: var(--slate-400, #94a3b8);
+    margin-top: 4px;
+    text-align: right;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
