@@ -888,6 +888,14 @@ ipcMain.handle('get-teachers', async () => {
 
 ipcMain.handle('add-teacher', async (event, t) => {
     try {
+        // Enforce unique teacher_id_number (if provided)
+        if (t.teacher_id_number) {
+            const existing = await dbGet(
+                `SELECT id FROM teachers WHERE LOWER(teacher_id_number) = LOWER(?)`,
+                [t.teacher_id_number]
+            );
+            if (existing) return { success: false, error: `Teacher ID "${t.teacher_id_number}" is already in use by another teacher.` };
+        }
         const r = await dbRun(`INSERT INTO teachers (teacher_id_number, name, title, fathers_name, mothers_name, contact_number, blood_group, nid_number, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [t.teacher_id_number || null, t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null, t.address || null]);
         await runDataChecks();
@@ -919,6 +927,14 @@ ipcMain.handle('set-teacher-classes', async (event, { teacher_id, class_ids }) =
 
 ipcMain.handle('update-teacher', async (event, t) => {
     try {
+        // Enforce unique teacher_id_number (if provided), excluding the teacher being edited
+        if (t.teacher_id_number) {
+            const existing = await dbGet(
+                `SELECT id FROM teachers WHERE LOWER(teacher_id_number) = LOWER(?) AND id != ?`,
+                [t.teacher_id_number, t.id]
+            );
+            if (existing) return { success: false, error: `Teacher ID "${t.teacher_id_number}" is already in use by another teacher.` };
+        }
         await dbRun(`UPDATE teachers SET teacher_id_number = ?, name = ?, title = ?, fathers_name = ?, mothers_name = ?, contact_number = ?, blood_group = ?, nid_number = ?, address = ? WHERE id = ?`,
             [t.teacher_id_number || null, t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null, t.address || null, t.id]);
         await runDataChecks();

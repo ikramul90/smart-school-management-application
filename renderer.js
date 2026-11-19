@@ -2199,6 +2199,8 @@ function resetTeacherForm() {
     if (cancelBtn) cancelBtn.style.display = 'none';
     const teacherDetails = document.getElementById('teacher-details');
     if (teacherDetails) teacherDetails.classList.remove('details-highlight');
+    const errorEl = document.getElementById('tc-error');
+    if (errorEl) { errorEl.style.display = 'none'; errorEl.textContent = ''; }
 }
 
 window.editTeacherById = function (id) {
@@ -2237,6 +2239,9 @@ window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName
 
 document.getElementById('btn-save-teacher').addEventListener('click', async () => {
     const editId = document.getElementById('tc-edit-id').value;
+    const errorEl = document.getElementById('tc-error');
+    if (errorEl) { errorEl.style.display = 'none'; errorEl.textContent = ''; }
+
     const t = {
         teacher_id_number: document.getElementById('tc-teacher-id')?.value.trim() || '',
         name: document.getElementById('tc-name').value.trim(),
@@ -2279,7 +2284,13 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
         await loadTeachersPage();
     } else {
         console.error('save-teacher failed:', res.error);
-        alert('Could not save teacher: ' + res.error);
+        const errorEl = document.getElementById('tc-error');
+        if (errorEl) {
+            errorEl.textContent = res.error || 'Could not save teacher.';
+            errorEl.style.display = 'block';
+        } else {
+            alert('Could not save teacher: ' + res.error);
+        }
     }
 });
 
@@ -3105,6 +3116,7 @@ function paintTranscriptPreview() {
                     <div class="transcript-info-row"><span class="info-label">Mother's Name</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(st.mothers_name || st.mother_name || '-').toUpperCase()}</span></div>
                     <div class="transcript-info-row"><span class="info-label">Class</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(classNameFormatted)}</span></div>
                     <div class="transcript-info-row"><span class="info-label">Roll No</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(String(st.roll))}</span></div>
+                    <div class="transcript-info-row"><span class="info-label">Student ID</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(String(st.roll))}</span></div>
                 </div>
                 <div class="transcript-info-col transcript-info-col-right">
                     <div class="transcript-info-row"><span class="info-label">Exam</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(test).toUpperCase()}</span></div>
