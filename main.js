@@ -423,7 +423,11 @@ ipcMain.handle('get-students', async (event, filters) => {
         query += ` ORDER BY students.class_id, students.roll`;
 
         db.all(query, params, (err, rows) => {
-            resolve(rows || []);
+            const students = (rows || []).map(s => ({
+                ...s,
+                photo_data_url: s.photo_path && fs.existsSync(s.photo_path) ? fileToDataUrl(s.photo_path) : null
+            }));
+            resolve(students);
         });
     });
 });
@@ -675,8 +679,12 @@ db.all("SELECT id, dob FROM students WHERE dob IS NOT NULL AND dob LIKE '%-%'", 
 ipcMain.handle('add-student', async (event, s) => {
     try {
         const cleanDob = normalizeDateToDDMMYYYY(s.dob);
-            const r = await dbRun(`INSERT INTO students (roll, name, blood_group, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, gender, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')`,
-            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id, s.gender || null]);
+        let photoPath = null;
+        if (s.photo_data_url && s.photo_data_url.startsWith('data:')) {
+            photoPath = saveMediaFile(s.photo_data_url, 'students/photos', 'student_photo');
+        }
+        const r = await dbRun(`INSERT INTO students (roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, gender, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')`,
+            [s.roll, s.name, s.blood_group, photoPath, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id, s.gender || null]);
         await runDataChecks();
         return { success: true, id: r.lastID };
     } catch (e) {
@@ -714,9 +722,22 @@ ipcMain.handle('update-student', async (event, s) => {
             return { success: false, error: 'Please enter the reason for dropping out.' };
         }
 
+        let newPhotoPath = current.photo_path;
+        if (s.photo_removed) {
+            if (newPhotoPath && fs.existsSync(newPhotoPath)) {
+                try { fs.unlinkSync(newPhotoPath); } catch (e) {}
+            }
+            newPhotoPath = null;
+        } else if (s.photo_data_url && s.photo_data_url.startsWith('data:')) {
+            if (newPhotoPath && fs.existsSync(newPhotoPath)) {
+                try { fs.unlinkSync(newPhotoPath); } catch (e) {}
+            }
+            newPhotoPath = saveMediaFile(s.photo_data_url, 'students/photos', 'student_photo');
+        }
+
         const cleanDob = normalizeDateToDDMMYYYY(s.dob);
-            await dbRun(`UPDATE students SET roll = ?, name = ?, blood_group = ?, fathers_name = ?, mothers_name = ?, guardian_name = ?, guardian_contact = ?, address = ?, dob = ?, birth_reg_number = ?, class_id = ?, gender = ? WHERE id = ?`,
-            [s.roll, s.name, s.blood_group, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id, s.gender || null, s.id]);
+        await dbRun(`UPDATE students SET roll = ?, name = ?, blood_group = ?, photo_path = ?, fathers_name = ?, mothers_name = ?, guardian_name = ?, guardian_contact = ?, address = ?, dob = ?, birth_reg_number = ?, class_id = ?, gender = ? WHERE id = ?`,
+            [s.roll, s.name, s.blood_group, newPhotoPath, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id, s.gender || null, s.id]);
 
         if (s.archive && archived) await saveArchiveDetails(current, s.archive);
 

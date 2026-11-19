@@ -2266,7 +2266,8 @@ button:hover {
    ============================================================ */
 
 /* Row that holds the two upload fields (spans the full 3-column grid) */
-.tc-upload-row {
+.tc-upload-row,
+.st-upload-row {
     grid-column: span 3;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -2274,7 +2275,8 @@ button:hover {
 }
 
 /* Photo: portrait-ish box, 1 column wide */
-.tc-upload-photo {
+.tc-upload-photo,
+.st-upload-photo {
     grid-column: span 1;
 }
 
@@ -2285,6 +2287,7 @@ button:hover {
 
 .tc-upload-photo .logo-zone,
 .tc-upload-sign .logo-zone,
+.st-upload-photo .logo-zone,
 #head-teacher-sign-zone {
     height: 150px;
 }
@@ -2296,7 +2299,8 @@ button:hover {
 }
 
 /* Photo fills the box like an ID photo */
-.tc-upload-photo .logo-preview-img {
+.tc-upload-photo .logo-preview-img,
+.st-upload-photo .logo-preview-img {
     padding: 6px;
 }
 
@@ -2314,12 +2318,14 @@ button:hover {
 }
 
 @media (max-width: 720px) {
-    .tc-upload-row {
+    .tc-upload-row,
+    .st-upload-row {
         grid-template-columns: 1fr;
     }
 
     .tc-upload-photo,
-    .tc-upload-sign {
+    .tc-upload-sign,
+    .st-upload-photo {
         grid-column: span 1;
     }
 }

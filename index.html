@@ -722,8 +722,41 @@
                                 </div>
                                 <div><label>Guardian Contact</label><input type="text" id="st-phone"></div>
                                 <div><label>Birth Registration No.</label><input type="text" id="st-birth-reg"></div>
-                                <div style="grid-column: span 3;"><label class="no-select">Address</label><input
+                                <div style="grid-column: span 2;"><label class="no-select">Address</label><input
                                         type="text" id="st-address"></div>
+
+                                <!-- Student Photo Upload -->
+                                <div class="st-upload-row">
+                                    <div class="st-upload-photo">
+                                        <div class="logo-label-row">
+                                            <label class="no-select">Student Photo <span style="color:#ef4444;">*</span></label>
+                                            <span class="logo-hint">PNG, JPG (max 2 MB)</span>
+                                        </div>
+                                        <div id="st-photo-zone" class="logo-zone" tabindex="0" role="button" aria-label="Upload student photo">
+                                            <div class="logo-ph" id="st-photo-ph">
+                                                <div class="logo-ph-icon">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <polyline points="16 16 12 12 8 16"></polyline>
+                                                        <line x1="12" y1="12" x2="12" y2="21"></line>
+                                                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                                                    </svg>
+                                                </div>
+                                                <span class="logo-ph-text">Click to upload photo</span>
+                                                <span class="logo-ph-sub">or drag and drop here</span>
+                                            </div>
+                                            <img id="st-photo-preview" class="logo-preview-img" alt="Student photo preview">
+                                            <button id="st-photo-clear" class="logo-clear-btn" type="button" aria-label="Remove photo">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="tc-upload-note">Recommended size: 300&times;300 px or 600&times;600 px (1:1 ratio)</div>
+                                        <input type="file" id="st-photo-input" accept="image/png,image/jpeg,image/webp" style="display:none" aria-hidden="true">
+                                        <div id="st-photo-filename" class="logo-filename-text"></div>
+                                    </div>
+                                </div>
                                 <div id="st-archive-fields"
                                     style="display:none; grid-column: span 3; grid-template-columns:1fr 2fr; gap:15px; background:#fef3c7; padding:12px; border-radius:6px; border:1px solid #fde68a;">
                                     <div><label id="st-archive-date-label">Graduation Date</label><input type="date"
@@ -738,6 +771,7 @@
                                 <button id="btn-cancel-student" type="button"
                                     style="background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
                             </div>
+                            <div id="st-error" style="display:none; color:#ef4444; font-size:13px; margin-top:8px; font-weight:500;"></div>
                         </div>
                     </details>
 

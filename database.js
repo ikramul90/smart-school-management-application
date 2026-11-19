@@ -98,6 +98,15 @@ db.serialize(() => {
         }
     });
 
+    // Migration: ensure students table has photo_path column
+    db.all("PRAGMA table_info(students)", [], (err, columns) => {
+        if (err || !columns) return;
+        const columnNames = columns.map(c => c.name);
+        if (!columnNames.includes('photo_path')) {
+            db.run(`ALTER TABLE students ADD COLUMN photo_path TEXT`);
+        }
+    });
+
     // 4. Subjects Table (Tracks subjects per class)
     db.run(`CREATE TABLE IF NOT EXISTS subjects (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -1592,8 +1592,9 @@ document.getElementById('btn-cancel-student').addEventListener('click', hideArch
 // Fills the enrollment form with a student's data so it can be edited.
 // Graduated / Dropped Out students also get their date (and reason) fields.
 window.editStudentFromRow = function (s) {
+    const photoSrc = s.photo_data_url || s.photo_path || '';
     editStudent(s.id, s.class_id, s.roll, s.name || '', s.blood_group || '', s.guardian_contact || '',
-        s.address || '', s.dob || '', s.fathers_name || '', s.mothers_name || '', s.birth_reg_number || '');
+        s.address || '', s.dob || '', s.fathers_name || '', s.mothers_name || '', s.birth_reg_number || '', photoSrc);
     document.getElementById('st-gender').value = s.gender || '';
     if (s.status === 'Graduated' || s.status === 'Removed') showArchiveFields(s);
     else hideArchiveFields();
@@ -1608,7 +1609,7 @@ window.editStudentById = function (id) {
 // "Register Student" button: gathers the enrollment form fields
 // into one object and sends it to main.js to insert. Shows an
 // alert with the exact database error if the save fails.
-window.editStudent = async function (id, classId, roll, name, bloodGroup, guardianContact, address, dob, fathersName, mothersName, birthRegNumber) {
+window.editStudent = async function (id, classId, roll, name, bloodGroup, guardianContact, address, dob, fathersName, mothersName, birthRegNumber, photoSrc) {
     document.getElementById('st-edit-id').value = id;
     document.getElementById('st-class').value = classId || '';
     document.getElementById('st-roll').value = formatRoll(roll);
@@ -1620,6 +1621,11 @@ window.editStudent = async function (id, classId, roll, name, bloodGroup, guardi
     document.getElementById('st-father').value = fathersName || '';
     document.getElementById('st-mother').value = mothersName || '';
     document.getElementById('st-birth-reg').value = birthRegNumber || '';
+    if (window.StudentUpload) {
+        window.StudentUpload.setPhoto(photoSrc || '');
+    }
+    const errBox = document.getElementById('st-error');
+    if (errBox) { errBox.style.display = 'none'; errBox.textContent = ''; }
     document.getElementById('btn-save-student').textContent = 'Update Student';
     document.getElementById('btn-cancel-student').style.display = 'inline-block';
     const details = document.getElementById('student-details');
@@ -1645,6 +1651,11 @@ function resetStudentForm() {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
+    if (window.StudentUpload) {
+        window.StudentUpload.reset();
+    }
+    const errBox = document.getElementById('st-error');
+    if (errBox) { errBox.style.display = 'none'; errBox.textContent = ''; }
     const formClass = document.getElementById('st-class');
     if (formClass && formClass.options.length > 0) {
         formClass.selectedIndex = 0;
@@ -1667,6 +1678,9 @@ function resetStudentForm() {
 
 document.getElementById('btn-save-student').addEventListener('click', async () => {
     const editId = document.getElementById('st-edit-id').value;
+    const photoDataUrl = window.StudentUpload ? window.StudentUpload.getPhoto() : '';
+    const isPhotoRemoved = window.StudentUpload ? window.StudentUpload.isPhotoRemoved() : false;
+
     const s = {
         class_id: document.getElementById('st-class').value,
         roll: parseInt(document.getElementById('st-roll').value, 10),
@@ -1679,10 +1693,26 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
         guardian_contact: document.getElementById('st-phone').value.trim(),
         address: document.getElementById('st-address').value.trim(),
         dob: document.getElementById('st-dob').value || '',
-        birth_reg_number: document.getElementById('st-birth-reg').value.trim()
+        birth_reg_number: document.getElementById('st-birth-reg').value.trim(),
+        photo_data_url: photoDataUrl,
+        photo_removed: isPhotoRemoved
     };
 
     if (!s.roll || !s.name) return alert("Roll and Name are required!");
+
+    if (!photoDataUrl) {
+        const zone = document.getElementById('st-photo-zone');
+        if (zone) {
+            zone.classList.add('upload-error');
+            setTimeout(() => zone.classList.remove('upload-error'), 2500);
+        }
+        const errBox = document.getElementById('st-error');
+        if (errBox) {
+            errBox.style.display = 'block';
+            errBox.textContent = 'Student photo is required!';
+        }
+        return alert("Student photo is required!");
+    }
 
     if (s.dob) {
         s.dob = formatDob(s.dob);
@@ -2237,21 +2267,21 @@ async function renderTeachersTable() {
     }).join('');
 }
 
-// --- TEACHER PHOTO & SIGNATURE UPLOAD LOGIC ---
+// --- TEACHER & STUDENT PHOTO & SIGNATURE UPLOAD LOGIC ---
 (function () {
     const MAX_BYTES = 2 * 1024 * 1024; // 2 MB
     const ALLOWED = ['image/png', 'image/jpeg', 'image/webp'];
 
     function $(id) { return document.getElementById(id); }
 
-    function showError(msg) {
-        const box = $('tc-error');
+    function showError(msg, targetBoxId = 'tc-error') {
+        const box = $(targetBoxId);
         if (!box) return;
         box.textContent = msg;
         box.style.display = msg ? 'block' : 'none';
     }
 
-    function createUploader(prefix, label) {
+    function createUploader(prefix, label, targetErrorId = 'tc-error') {
         const zone = $(prefix + '-zone');
         const input = $(prefix + '-input');
         const preview = $(prefix + '-preview');
@@ -2265,7 +2295,7 @@ async function renderTeachersTable() {
 
         function flashError(msg) {
             zone.classList.add('upload-error');
-            showError(msg);
+            showError(msg, targetErrorId);
             setTimeout(() => { zone.classList.remove('upload-error'); }, 2500);
         }
 
@@ -2304,7 +2334,7 @@ async function renderTeachersTable() {
                 input.value = '';
                 return;
             }
-            showError('');
+            showError('', targetErrorId);
             isRemoved = false;
             const reader = new FileReader();
             reader.onload = (e) => { render(e.target.result, file.name, file.size); };
@@ -2361,8 +2391,8 @@ async function renderTeachersTable() {
     }
 
     function init() {
-        const photo = createUploader('tc-photo', 'Photo');
-        const sign = createUploader('tc-sign', 'Signature');
+        const photo = createUploader('tc-photo', 'Photo', 'tc-error');
+        const sign = createUploader('tc-sign', 'Signature', 'tc-error');
 
         window.TeacherUploads = {
             getPhoto: () => (photo ? photo.get() : ''),
@@ -2374,7 +2404,18 @@ async function renderTeachersTable() {
             reset: () => {
                 if (photo) photo.reset();
                 if (sign) sign.reset();
-                showError('');
+                showError('', 'tc-error');
+            }
+        };
+
+        const studentPhoto = createUploader('st-photo', 'Student Photo', 'st-error');
+        window.StudentUpload = {
+            getPhoto: () => (studentPhoto ? studentPhoto.get() : ''),
+            isPhotoRemoved: () => (studentPhoto ? studentPhoto.isRemoved() : false),
+            setPhoto: (url) => { if (studentPhoto) studentPhoto.set(url); },
+            reset: () => {
+                if (studentPhoto) studentPhoto.reset();
+                showError('', 'st-error');
             }
         };
     }
@@ -3308,7 +3349,9 @@ function paintTranscriptPreview() {
     const showStudentPhoto = document.getElementById('transcript-show-student-photo')?.checked ?? true;
 
     preview.innerHTML = transcriptStudents.map(st => {
-        const photoSrc = (showStudentPhoto && st.photo_path) ? st.photo_path : 'assets/std.png';
+        const photoSrc = (showStudentPhoto && (st.photo_data_url || st.photo_path))
+            ? (st.photo_data_url || st.photo_path)
+            : 'assets/std.png';
         const photoImgTag = showStudentPhoto
             ? `<img src="${photoSrc}" class="transcript-std-img" alt="Student Photo" onerror="this.src='assets/std.png'">`
             : '';
@@ -5181,6 +5224,7 @@ window.showStudentInfoModal = async function (id) {
         ['Class', s.class_name ? escapeHtml(s.class_name) : ''],
         ['Class Roll', s.roll !== undefined && s.roll !== null ? formatRoll(s.roll) : ''],
         ['Status', s.status ? `<span style="display:inline-block; padding:2px 8px; border-radius:4px; font-size:12px; font-weight:bold; ${s.status === 'Active' ? 'background:#dcfce7; color:#15803d;' : (s.status === 'Graduated' ? 'background:#dbeafe; color:#1d4ed8;' : 'background:#fee2e2; color:#b91c1c;')}">${escapeHtml(s.status)}</span>` : ''],
+        ['Gender', s.gender ? escapeHtml(s.gender) : ''],
         ['Guardian Contact', s.guardian_contact ? escapeHtml(s.guardian_contact) : ''],
         ['Blood Group', s.blood_group ? `<span style="color:#dc2626; font-weight:bold;">${escapeHtml(s.blood_group)}</span>` : ''],
         ['Date of Birth', s.dob ? formatHistoryDate(s.dob) : ''],
@@ -5201,7 +5245,30 @@ window.showStudentInfoModal = async function (id) {
         items.push(['Drop Out Reason', s.removal_cause ? escapeHtml(s.removal_cause) : '']);
     }
 
-    openDetailsInfoModal(`Student Profile: ${s.name || 'Details'}`, renderInfoGrid(items));
+    const photoSrc = s.photo_data_url || s.photo_path;
+    const photoHtml = photoSrc
+        ? `<div style="width:130px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; border:1px solid #e2e8f0; border-radius:8px; padding:6px; background:#f8fafc; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <img src="${photoSrc}" alt="${escapeHtml(s.name || 'Student Photo')}" style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff;">
+            <span style="font-size:11px; color:#64748b; margin-top:6px; font-weight:600; text-align:center;">Student Photo</span>
+          </div>`
+        : `<div style="width:130px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1.5px dashed #cbd5e1; border-radius:8px; padding:12px 6px; background:#f8fafc; text-align:center; min-height:130px;">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:6px;">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span style="font-size:11px; color:#94a3b8; font-weight:500;">No Photo</span>
+          </div>`;
+
+    const bodyHtml = `
+        <div style="display:flex; gap:16px; align-items:flex-start;">
+            <div style="flex:1; min-width:0;">
+                ${renderInfoGrid(items)}
+            </div>
+            ${photoHtml}
+        </div>
+    `;
+
+    openDetailsInfoModal(`Student Profile: ${s.name || 'Details'}`, bodyHtml);
 };
 
 window.showTeacherInfoModal = function (id) {
