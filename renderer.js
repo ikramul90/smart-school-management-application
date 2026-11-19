@@ -4022,7 +4022,12 @@ function closeNotificationPanel() {
 
 // A small pop-up that slides in, waits, then slides out to the right.
 function showNotificationToast(n) {
+    // Only show notification toasts when the user is logged into the main application (dashboard)
+    if (!notificationsStarted || !dashboardScreen || dashboardScreen.style.display !== 'block') {
+        return;
+    }
     const wrap = document.getElementById('notif-toasts');
+    if (!wrap) return;
     while (wrap.children.length >= MAX_VISIBLE_TOASTS) wrap.removeChild(wrap.firstChild);
 
     const toast = document.createElement('div');
@@ -4051,8 +4056,11 @@ function showNotificationToast(n) {
     startTimer();
 }
 
-// main.js says something changed: refresh, and slide in the brand-new messages.
+// main.js says something changed: refresh, and slide in the brand-new messages (inside dashboard only).
 ipcRenderer.on('notifications-changed', async (event, payload) => {
+    if (!notificationsStarted || !dashboardScreen || dashboardScreen.style.display !== 'block') {
+        return;
+    }
     await refreshNotifications();
     if (notificationPanelIsOpen()) await markNotificationsRead();
     ((payload && payload.newOnes) || []).forEach(showNotificationToast);
@@ -4080,8 +4088,16 @@ document.addEventListener('keydown', (e) => {
 async function startNotificationCenter() {
     if (notificationsStarted) return;
     notificationsStarted = true;
-    await refreshNotifications();                      // existing messages: badge only, no pop-up
-    await ipcRenderer.invoke('run-data-checks');       // new problems found now slide in
+    await refreshNotifications();                      // existing messages: badge only
+    await ipcRenderer.invoke('run-data-checks');       // check data conditions
+
+    // Pop up reminder toast inside the main application after login if Head Teacher signature is missing
+    setTimeout(() => {
+        const headTeacherNotif = (notificationList || []).find(n => n.key === 'head-teacher:missing-signature');
+        if (headTeacherNotif) {
+            showNotificationToast(headTeacherNotif);
+        }
+    }, 600);
 }
 
 
