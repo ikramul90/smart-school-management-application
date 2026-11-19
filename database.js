@@ -80,7 +80,7 @@ db.serialize(() => {
         address TEXT
     )`);
 
-    // Migration: add teacher_id_number and address columns to teachers if they don't exist yet
+    // Migration: add teacher_id_number, address, photo_path, signature_path columns to teachers if they don't exist yet
     db.all("PRAGMA table_info(teachers)", [], (err, columns) => {
         if (err || !columns) return;
         const columnNames = columns.map(c => c.name);
@@ -89,6 +89,12 @@ db.serialize(() => {
         }
         if (!columnNames.includes('address')) {
             db.run(`ALTER TABLE teachers ADD COLUMN address TEXT`);
+        }
+        if (!columnNames.includes('photo_path')) {
+            db.run(`ALTER TABLE teachers ADD COLUMN photo_path TEXT`);
+        }
+        if (!columnNames.includes('signature_path')) {
+            db.run(`ALTER TABLE teachers ADD COLUMN signature_path TEXT`);
         }
     });
 

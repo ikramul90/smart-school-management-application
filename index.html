@@ -47,7 +47,8 @@
             </div>
             <div class="welcome-text-content">
                 <div class="welcome-title" id="setup-welcome-title">Welcome to Smart School Management Software</div>
-                <div class="welcome-desc" id="setup-welcome-desc">Activation verified successfully. Please configure your administrator profile below.</div>
+                <div class="welcome-desc" id="setup-welcome-desc">Activation verified successfully. Please configure
+                    your administrator profile below.</div>
             </div>
         </div>
 
@@ -184,7 +185,8 @@
     <!-- App configuration setup screen -->
     <div id="school-setup-screen" class="card" style="display: none; width: 420px; max-width: 100%;">
         <h2 class="no-select">School Setup</h2>
-        <p class="subtitle" style="font-size: 13px; color: #64748b; text-align: center; margin-bottom: 20px; line-height: 1.5;">
+        <p class="subtitle"
+            style="font-size: 13px; color: #64748b; text-align: center; margin-bottom: 20px; line-height: 1.5;">
             Configure your institute profile. This information appears across reports, transcripts, and certificates.
         </p>
 
@@ -209,7 +211,8 @@
             <div id="ss-logo-zone" class="logo-zone" tabindex="0" role="button" aria-label="Upload institute logo">
                 <div class="logo-ph" id="ss-logo-ph">
                     <div class="logo-ph-icon">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="16 16 12 12 8 16"></polyline>
                             <line x1="12" y1="12" x2="12" y2="21"></line>
                             <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
@@ -220,7 +223,8 @@
                 </div>
                 <img id="ss-logo-preview" class="logo-preview-img" alt="Logo preview">
                 <button id="ss-logo-clear" class="logo-clear-btn" type="button" aria-label="Remove logo">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
                         <line x1="18" y1="6" x2="6" y2="18"></line>
                         <line x1="6" y1="6" x2="18" y2="18"></line>
                     </svg>
@@ -229,10 +233,13 @@
             <input type="file" id="ss-logo-input" accept="image/*" style="display:none" aria-hidden="true">
             <div id="ss-logo-filename" class="logo-filename-text"></div>
         </div>
-        <p style="font-size: 11px; color: #94a3b8; margin-top: -6px; margin-bottom: 12px; text-align: left;">This can be changed later in the Settings.</p>
+        <p style="font-size: 11px; color: #94a3b8; margin-top: -6px; margin-bottom: 12px; text-align: left;">This can be
+            changed later in the Settings.</p>
 
         <div class="error" id="ss-error" style="min-height: 18px; margin-bottom: 8px;"></div>
-        <div id="ss-success" style="font-size: 13px; color: #16a34a; font-weight: 600; text-align: center; min-height: 18px; margin-bottom: 8px; display: none;">Configuration saved successfully.</div>
+        <div id="ss-success"
+            style="font-size: 13px; color: #16a34a; font-weight: 600; text-align: center; min-height: 18px; margin-bottom: 8px; display: none;">
+            Configuration saved successfully.</div>
         <button id="btn-save-school-setup" type="button" style="width: 100%;">Save Configuration</button>
     </div>
 
@@ -813,6 +820,74 @@
                                 <div><label>NID Number</label><input type="text" id="tc-nid"></div>
                                 <div style="grid-column: span 3;"><label class="no-select">Address</label><input
                                         type="text" id="tc-address"></div>
+
+                                <!-- ===== NEW: PHOTO & SIGNATURE UPLOAD ===== -->
+                                <div class="tc-upload-row">
+
+                                    <!-- Photo -->
+                                    <div class="tc-upload-photo">
+                                        <div class="logo-label-row">
+                                            <label class="no-select">Teacher Photo</label>
+                                            <span class="logo-hint">PNG, JPG — max 2 MB</span>
+                                        </div>
+                                        <div id="tc-photo-zone" class="logo-zone" tabindex="0" role="button" aria-label="Upload teacher photo">
+                                            <div class="logo-ph" id="tc-photo-ph">
+                                                <div class="logo-ph-icon">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <polyline points="16 16 12 12 8 16"></polyline>
+                                                        <line x1="12" y1="12" x2="12" y2="21"></line>
+                                                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                                                    </svg>
+                                                </div>
+                                                <span class="logo-ph-text">Click to upload photo</span>
+                                                <span class="logo-ph-sub">or drag and drop here</span>
+                                            </div>
+                                            <img id="tc-photo-preview" class="logo-preview-img" alt="Teacher photo preview">
+                                            <button id="tc-photo-clear" class="logo-clear-btn" type="button" aria-label="Remove photo">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="tc-upload-note">Recommended size: 300&times;300 px or 600&times;600 px (1:1 ratio)</div>
+                                        <input type="file" id="tc-photo-input" accept="image/png,image/jpeg,image/webp" style="display:none" aria-hidden="true">
+                                        <div id="tc-photo-filename" class="logo-filename-text"></div>
+                                    </div>
+
+                                    <!-- Signature -->
+                                    <div class="tc-upload-sign">
+                                        <div class="logo-label-row">
+                                            <label class="no-select">Teacher Signature</label>
+                                            <span class="logo-hint">PNG, JPG — max 2 MB</span>
+                                        </div>
+                                        <div id="tc-sign-zone" class="logo-zone" tabindex="0" role="button" aria-label="Upload teacher signature">
+                                            <div class="logo-ph" id="tc-sign-ph">
+                                                <div class="logo-ph-icon">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <polyline points="16 16 12 12 8 16"></polyline>
+                                                        <line x1="12" y1="12" x2="12" y2="21"></line>
+                                                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                                                    </svg>
+                                                </div>
+                                                <span class="logo-ph-text">Click to upload signature</span>
+                                                <span class="logo-ph-sub">or drag and drop here</span>
+                                            </div>
+                                            <img id="tc-sign-preview" class="logo-preview-img" alt="Teacher signature preview">
+                                            <button id="tc-sign-clear" class="logo-clear-btn" type="button" aria-label="Remove signature">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="tc-upload-note">Recommended size: 200&times;80 px (5:2 ratio)</div>
+                                        <input type="file" id="tc-sign-input" accept="image/png,image/jpeg,image/webp" style="display:none" aria-hidden="true">
+                                        <div id="tc-sign-filename" class="logo-filename-text"></div>
+                                    </div>
+
+                                </div>
+                                <!-- ===== END UPLOAD ===== -->
                             </div>
                             <div style="margin-top:15px; display:flex; gap:10px;">
                                 <button id="btn-save-teacher" style="background-color:#2563eb; width:200px;">Save
@@ -820,7 +895,9 @@
                                 <button id="btn-cancel-teacher" type="button"
                                     style="background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
                             </div>
-                            <div id="tc-error" style="display:none; color:#ef4444; font-size:13px; margin-top:8px; font-weight:500;"></div>
+                            <div id="tc-error"
+                                style="display:none; color:#ef4444; font-size:13px; margin-top:8px; font-weight:500;">
+                            </div>
                         </div>
                     </details>
 
@@ -998,17 +1075,21 @@
                             </div>
                             <div class="input-group">
                                 <label class="no-select">Institute Address</label>
-                                <input type="text" id="school-address-input" placeholder="Enter school physical address">
+                                <input type="text" id="school-address-input"
+                                    placeholder="Enter school physical address">
                             </div>
                             <div class="input-group" style="margin-top: 14px;">
                                 <div class="logo-label-row">
                                     <label class="no-select">Institute Logo</label>
                                     <span class="logo-hint">PNG, JPG, SVG — max 5 MB</span>
                                 </div>
-                                <div id="settings-logo-zone" class="logo-zone" tabindex="0" role="button" aria-label="Upload institute logo">
+                                <div id="settings-logo-zone" class="logo-zone" tabindex="0" role="button"
+                                    aria-label="Upload institute logo">
                                     <div class="logo-ph" id="settings-logo-ph">
                                         <div class="logo-ph-icon">
-                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                stroke-linejoin="round">
                                                 <polyline points="16 16 12 12 8 16"></polyline>
                                                 <line x1="12" y1="12" x2="12" y2="21"></line>
                                                 <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
@@ -1018,14 +1099,18 @@
                                         <span class="logo-ph-sub">or drag and drop here</span>
                                     </div>
                                     <img id="settings-logo-preview" class="logo-preview-img" alt="Logo preview">
-                                    <button id="settings-logo-clear" class="logo-clear-btn" type="button" aria-label="Remove logo">
-                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <button id="settings-logo-clear" class="logo-clear-btn" type="button"
+                                        aria-label="Remove logo">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                            stroke-linejoin="round">
                                             <line x1="18" y1="6" x2="6" y2="18"></line>
                                             <line x1="6" y1="6" x2="18" y2="18"></line>
                                         </svg>
                                     </button>
                                 </div>
-                                <input type="file" id="settings-logo-input" accept="image/*" style="display:none" aria-hidden="true">
+                                <input type="file" id="settings-logo-input" accept="image/*" style="display:none"
+                                    aria-hidden="true">
                                 <div id="settings-logo-filename" class="logo-filename-text"></div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 12px; margin-top: 14px;">
@@ -1245,7 +1330,7 @@
     <!-- POP-UP for More Info (Student & Teacher Details) -->
     <div id="details-info-modal" class="modal-overlay" style="display:none;">
         <div class="modal-box"
-            style="width: 520px; max-width: 95vw; max-height: 85vh; display: flex; flex-direction: column;">
+            style="width: 550px; max-width: 95vw; max-height: 85vh; display: flex; flex-direction: column;">
             <div
                 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px;">
                 <h3 id="info-modal-title" style="margin: 0; color: #1e293b; font-size: 17px;">Details</h3>

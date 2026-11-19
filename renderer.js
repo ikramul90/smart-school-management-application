@@ -2182,6 +2182,155 @@ async function renderTeachersTable() {
     }).join('');
 }
 
+// --- TEACHER PHOTO & SIGNATURE UPLOAD LOGIC ---
+(function () {
+    const MAX_BYTES = 2 * 1024 * 1024; // 2 MB
+    const ALLOWED = ['image/png', 'image/jpeg', 'image/webp'];
+
+    function $(id) { return document.getElementById(id); }
+
+    function showError(msg) {
+        const box = $('tc-error');
+        if (!box) return;
+        box.textContent = msg;
+        box.style.display = msg ? 'block' : 'none';
+    }
+
+    function createUploader(prefix, label) {
+        const zone = $(prefix + '-zone');
+        const input = $(prefix + '-input');
+        const preview = $(prefix + '-preview');
+        const ph = $(prefix + '-ph');
+        const clearBtn = $(prefix + '-clear');
+        const nameEl = $(prefix + '-filename');
+        if (!zone || !input) return null;
+
+        let dataUrl = '';
+        let isRemoved = false;
+
+        function flashError(msg) {
+            zone.classList.add('upload-error');
+            showError(msg);
+            setTimeout(() => { zone.classList.remove('upload-error'); }, 2500);
+        }
+
+        function render(url, fileName, sizeBytes) {
+            dataUrl = url || '';
+            if (dataUrl) {
+                preview.src = dataUrl;
+                preview.style.display = 'block';
+                if (ph) ph.style.display = 'none';
+                if (clearBtn) clearBtn.style.display = 'flex';
+                zone.classList.add('has-logo');
+                if (nameEl) {
+                    nameEl.textContent = fileName
+                        ? fileName + (sizeBytes ? ' (' + Math.round(sizeBytes / 1024) + ' KB)' : '')
+                        : '';
+                }
+            } else {
+                preview.removeAttribute('src');
+                preview.style.display = 'none';
+                if (ph) ph.style.display = 'flex';
+                if (clearBtn) clearBtn.style.display = 'none';
+                zone.classList.remove('has-logo');
+                if (nameEl) nameEl.textContent = '';
+                input.value = '';
+            }
+        }
+
+        function handleFile(file) {
+            if (!file) return;
+            if (ALLOWED.indexOf(file.type) === -1) {
+                flashError(label + ': please upload a PNG, JPG or WebP image.');
+                return;
+            }
+            if (file.size > MAX_BYTES) {
+                flashError(label + ' exceeds the 2 MB limit (' + (file.size / 1024 / 1024).toFixed(2) + ' MB).');
+                input.value = '';
+                return;
+            }
+            showError('');
+            isRemoved = false;
+            const reader = new FileReader();
+            reader.onload = (e) => { render(e.target.result, file.name, file.size); };
+            reader.onerror = () => { flashError('Could not read the ' + label.toLowerCase() + ' file.'); };
+            reader.readAsDataURL(file);
+        }
+
+        zone.addEventListener('click', () => { input.click(); });
+        zone.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); }
+        });
+        input.addEventListener('change', () => { handleFile(input.files[0]); });
+
+        if (clearBtn) {
+            clearBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                isRemoved = true;
+                render('');
+            });
+            clearBtn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    isRemoved = true;
+                    render('');
+                }
+            });
+        }
+
+        zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
+        zone.addEventListener('dragleave', (e) => {
+            if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+        });
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        return {
+            get: () => dataUrl,
+            set: (url) => {
+                isRemoved = false;
+                render(url || '', url ? 'Saved image' : '');
+            },
+            reset: () => {
+                isRemoved = false;
+                render('');
+            },
+            isRemoved: () => isRemoved
+        };
+    }
+
+    function init() {
+        const photo = createUploader('tc-photo', 'Photo');
+        const sign = createUploader('tc-sign', 'Signature');
+
+        window.TeacherUploads = {
+            getPhoto: () => (photo ? photo.get() : ''),
+            getSignature: () => (sign ? sign.get() : ''),
+            isPhotoRemoved: () => (photo ? photo.isRemoved() : false),
+            isSignatureRemoved: () => (sign ? sign.isRemoved() : false),
+            setPhoto: (url) => { if (photo) photo.set(url); },
+            setSignature: (url) => { if (sign) sign.set(url); },
+            reset: () => {
+                if (photo) photo.reset();
+                if (sign) sign.reset();
+                showError('');
+            }
+        };
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+
 function resetTeacherForm() {
     const editIdEl = document.getElementById('tc-edit-id');
     if (editIdEl) editIdEl.value = '';
@@ -2192,6 +2341,9 @@ function resetTeacherForm() {
     const classSelect = document.getElementById('tc-classes');
     if (classSelect) {
         classSelect.value = '';
+    }
+    if (window.TeacherUploads) {
+        window.TeacherUploads.reset();
     }
     const saveBtn = document.getElementById('btn-save-teacher');
     if (saveBtn) saveBtn.textContent = 'Save Teacher';
@@ -2206,10 +2358,12 @@ function resetTeacherForm() {
 window.editTeacherById = function (id) {
     const t = cachedTeachers.find(item => item.id === id);
     if (!t) return;
-    window.editTeacher(t.id, t.name, t.title, t.contact_number, t.blood_group, t.fathers_name, t.mothers_name, t.nid_number, t.address, t.teacher_id_number);
+    const photoSrc = t.photo_data_url || t.photo_path || '';
+    const signSrc = t.signature_data_url || t.signature_path || '';
+    window.editTeacher(t.id, t.name, t.title, t.contact_number, t.blood_group, t.fathers_name, t.mothers_name, t.nid_number, t.address, t.teacher_id_number, photoSrc, signSrc);
 };
 
-window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName, mothersName, nid, address, teacherIdNumber) {
+window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName, mothersName, nid, address, teacherIdNumber, photoSrc, signSrc) {
     document.getElementById('tc-edit-id').value = id || '';
     const teacherIdEl = document.getElementById('tc-teacher-id');
     if (teacherIdEl) teacherIdEl.value = teacherIdNumber || '';
@@ -2221,6 +2375,11 @@ window.editTeacher = function (id, name, title, contact, bloodGroup, fathersName
     document.getElementById('tc-mother').value = mothersName || '';
     document.getElementById('tc-nid').value = nid || '';
     document.getElementById('tc-address').value = address || '';
+
+    if (window.TeacherUploads) {
+        window.TeacherUploads.setPhoto(photoSrc || '');
+        window.TeacherUploads.setSignature(signSrc || '');
+    }
 
     // Pre-select this teacher's currently assigned class
     const classSelect = document.getElementById('tc-classes');
@@ -2251,7 +2410,11 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
         fathers_name: document.getElementById('tc-father').value.trim(),
         mothers_name: document.getElementById('tc-mother').value.trim(),
         nid_number: document.getElementById('tc-nid').value.trim(),
-        address: document.getElementById('tc-address')?.value.trim() || ''
+        address: document.getElementById('tc-address')?.value.trim() || '',
+        photo_data_url: window.TeacherUploads ? window.TeacherUploads.getPhoto() : '',
+        photo_removed: window.TeacherUploads ? window.TeacherUploads.isPhotoRemoved() : false,
+        signature_data_url: window.TeacherUploads ? window.TeacherUploads.getSignature() : '',
+        signature_removed: window.TeacherUploads ? window.TeacherUploads.isSignatureRemoved() : false
     };
 
     if (!t.name) return alert("Teacher name is required!");
@@ -2605,6 +2768,7 @@ let transcriptClasses = [];
 let transcriptSelectedClassId = null;
 let transcriptStudents = [];
 let transcriptSubjects = [];
+let transcriptCurrentClassTeacher = null;
 let transcriptHiddenColumns = new Set(['pct', 'gpwo', 'gpa']);   // unchecked by default: percentage, grade points w/o optional, side GPA
 let transcriptLoadToken = 0;               // ignores stale async loads
 let transcriptMarksData = {};              // studentId -> subjectId -> { m1, m2, m3, total }
@@ -2694,6 +2858,7 @@ function openTranscriptPage() {
     transcriptSelectedClassId = null;
     transcriptStudents = [];
     transcriptSubjects = [];
+    transcriptCurrentClassTeacher = null;
     transcriptHighestBySubject = {};
     document.getElementById('transcript-columns-section').style.display = 'none';
     const optionsSection = document.getElementById('transcript-options-section');
@@ -3006,6 +3171,11 @@ function buildTranscriptResultSection(studentId, positions) {
     if (show('transcript-show-total-present')) cols.push(['Total Present', transcriptAttendance.present[studentId] ?? 'N/A']);
     const remark = getTranscriptRemark(s.avgPct);
 
+    const sigSrc = (transcriptCurrentClassTeacher && (transcriptCurrentClassTeacher.signature_data_url || transcriptCurrentClassTeacher.signature_path)) || '';
+    const teacherSigHtml = sigSrc
+        ? `<img src="${sigSrc}" class="transcript-sig-img" alt="Class Teacher Signature" onerror="this.style.display='none'">`
+        : '';
+
     return `
             <div class="transcript-result-summary">
                 <table class="transcript-result-table">
@@ -3017,8 +3187,14 @@ function buildTranscriptResultSection(studentId, positions) {
                 </table>
             </div>
             <div class="transcript-signature-row">
-                <div class="transcript-signature-box">Class Teacher</div>
-                <div class="transcript-signature-box">Principal</div>
+                <div class="transcript-signature-col">
+                    <div class="transcript-signature-space">${teacherSigHtml}</div>
+                    <div class="transcript-signature-box">Class Teacher</div>
+                </div>
+                <div class="transcript-signature-col">
+                    <div class="transcript-signature-space"></div>
+                    <div class="transcript-signature-box">Principal</div>
+                </div>
             </div>`;
 }
 
@@ -3165,7 +3341,8 @@ async function loadTranscriptPreview() {
     status.textContent = 'Loading students...';
 
     try {
-        const [students, allSubjects, schoolInfo] = await Promise.all([
+        const [classesList, students, allSubjects, schoolInfo, allTeachers] = await Promise.all([
+            ipcRenderer.invoke('get-classes-list').catch(() => []),
             ipcRenderer.invoke('get-students', { class_id: cls.id, status: 'Active' }).catch(err => {
                 console.error('Failed to get students:', err);
                 return [];
@@ -3177,8 +3354,15 @@ async function loadTranscriptPreview() {
             ipcRenderer.invoke('get-school-info').catch(err => {
                 console.warn('Failed to get school info:', err);
                 return cachedSchoolInfo;
+            }),
+            ipcRenderer.invoke('get-teachers').catch(err => {
+                console.error('Failed to get teachers:', err);
+                return [];
             })
         ]);
+        if (classesList && classesList.length) transcriptClasses = classesList;
+        const currentCls = transcriptClasses.find(c => String(c.id) === String(transcriptSelectedClassId)) || cls;
+        transcriptCurrentClassTeacher = (allTeachers || []).find(t => t.id === currentCls.class_teacher_id) || null;
         if (schoolInfo) cachedSchoolInfo = schoolInfo;
         if (token !== transcriptLoadToken) return;
 
@@ -4839,5 +5023,28 @@ window.showTeacherInfoModal = function (id) {
         ['Address', t.address ? escapeHtml(t.address) : '']
     ];
 
-    openDetailsInfoModal(`Teacher Profile: ${t.name || 'Details'}`, renderInfoGrid(items));
+    const photoSrc = t.photo_data_url || t.photo_path;
+    const photoHtml = photoSrc
+        ? `<div style="width:130px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; border:1px solid #e2e8f0; border-radius:8px; padding:6px; background:#f8fafc; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+            <img src="${photoSrc}" alt="${escapeHtml(t.name || 'Teacher Photo')}" style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff;">
+            <span style="font-size:11px; color:#64748b; margin-top:6px; font-weight:600; text-align:center;">Teacher Photo</span>
+          </div>`
+        : `<div style="width:130px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1.5px dashed #cbd5e1; border-radius:8px; padding:12px 6px; background:#f8fafc; text-align:center; min-height:130px;">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:6px;">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span style="font-size:11px; color:#94a3b8; font-weight:500;">No Photo</span>
+          </div>`;
+
+    const bodyHtml = `
+        <div style="display:flex; gap:16px; align-items:flex-start;">
+            <div style="flex:1; min-width:0;">
+                ${renderInfoGrid(items)}
+            </div>
+            ${photoHtml}
+        </div>
+    `;
+
+    openDetailsInfoModal(`Teacher Profile: ${t.name || 'Details'}`, bodyHtml);
 };

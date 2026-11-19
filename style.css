@@ -245,13 +245,13 @@ body {
 }
 
 .setup-welcome-card.trial-license {
-    background: #fef2f2;    
-    border-color: #fecaca;  
-    color: #991b1b;     
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #991b1b;
 }
 
 .setup-welcome-card.trial-license .welcome-icon-box {
-    color: #dc2626;       
+    color: #dc2626;
 }
 
 .welcome-icon-box {
@@ -1639,10 +1639,34 @@ button:hover {
 
 .transcript-signature-row {
     margin-top: auto;
-    padding-top: 40px;
+    padding-top: 20px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     column-gap: 70px;
+}
+
+.transcript-signature-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-self: center;
+    width: 190px;
+}
+
+.transcript-signature-space {
+    height: 70px;
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 8px;
+}
+
+.transcript-sig-img {
+    max-height: 42px;
+    max-width: 160px;
+    object-fit: contain;
+    display: block;
 }
 
 .transcript-signature-box {
@@ -1653,6 +1677,10 @@ button:hover {
     border-top: 1px solid var(--black-pure);
     font-size: 12px;
     font-weight: 700;
+}
+
+.transcript-signature-col .transcript-signature-box {
+    width: 100%;
 }
 
 /* Remarks setup (Tools area) */
@@ -2096,8 +2124,16 @@ button:hover {
     justify-content: space-between;
     margin-bottom: 5px;
 }
-.logo-label-row label { margin: 0; }
-.logo-hint { font-size: 11px; color: var(--slate-400, #94a3b8); font-weight: 400; }
+
+.logo-label-row label {
+    margin: 0;
+}
+
+.logo-hint {
+    font-size: 11px;
+    color: var(--slate-400, #94a3b8);
+    font-weight: 400;
+}
 
 .logo-zone {
     width: 100%;
@@ -2157,7 +2193,9 @@ button:hover {
     justify-content: center;
 }
 
-.logo-ph-icon svg { color: var(--blue-600, #2563eb); }
+.logo-ph-icon svg {
+    color: var(--blue-600, #2563eb);
+}
 
 .logo-ph-text {
     font-size: 12px;
@@ -2203,8 +2241,14 @@ button:hover {
     border-color: #dc2626;
 }
 
-.logo-clear-btn:hover svg { color: #ffffff; }
-.logo-clear-btn svg { color: #64748b; transition: color 0.15s; }
+.logo-clear-btn:hover svg {
+    color: #ffffff;
+}
+
+.logo-clear-btn svg {
+    color: #64748b;
+    transition: color 0.15s;
+}
 
 .logo-filename-text {
     font-size: 11px;
@@ -2214,4 +2258,75 @@ button:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* ============================================================
+   TEACHER FORM – PHOTO & SIGNATURE UPLOAD
+   Builds on the existing .logo-zone styles in style.css.
+   ============================================================ */
+
+/* Row that holds the two upload fields (spans the full 3-column grid) */
+.tc-upload-row {
+    grid-column: span 3;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 15px;
+}
+
+/* Photo: portrait-ish box, 1 column wide */
+.tc-upload-photo {
+    grid-column: span 1;
+}
+
+/* Signature: wide box, 2 columns wide */
+.tc-upload-sign {
+    grid-column: span 2;
+}
+
+.tc-upload-photo .logo-zone,
+.tc-upload-sign .logo-zone {
+    height: 150px;
+}
+
+/* Signature preview needs less padding so thin strokes stay readable */
+.tc-upload-sign .logo-preview-img {
+    padding: 8px;
+}
+
+/* Photo fills the box like an ID photo */
+.tc-upload-photo .logo-preview-img {
+    padding: 6px;
+}
+
+/* Keyboard focus ring (matches the input focus look) */
+.logo-zone:focus-visible {
+    outline: none;
+    border-color: var(--blue-500, #3b82f6);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+/* Error state when a file is rejected */
+.logo-zone.upload-error {
+    border-color: var(--red-500, #ef4444);
+    background: #fef2f2;
+}
+
+@media (max-width: 720px) {
+    .tc-upload-row {
+        grid-template-columns: 1fr;
+    }
+
+    .tc-upload-photo,
+    .tc-upload-sign {
+        grid-column: span 1;
+    }
+}
+
+/* Static size guidance shown under each upload box (no logic) */
+.tc-upload-note {
+    font-size: 11px;
+    color: var(--slate-500, #64748b);
+    font-weight: 400;
+    line-height: 1.4;
+    margin-top: 6px;
 }

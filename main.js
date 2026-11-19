@@ -195,6 +195,40 @@ const getMediaDir = (subfolder = '') => {
     return targetDir;
 };
 
+const saveMediaFile = (dataUrl, folder, prefix) => {
+    if (!dataUrl || typeof dataUrl !== 'string') return null;
+    const matches = dataUrl.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+    if (!matches || matches.length !== 3) return null;
+    const mimeType = matches[1];
+    const ext = mimeType === 'image/svg+xml' ? '.svg'
+        : (mimeType === 'image/jpeg' || mimeType === 'image/jpg') ? '.jpg'
+        : mimeType === 'image/webp' ? '.webp'
+        : '.png';
+    const targetDir = getMediaDir(folder);
+    const fileName = `${prefix}_${Date.now()}_${Math.floor(Math.random() * 10000)}${ext}`;
+    const targetFile = path.join(targetDir, fileName);
+    fs.writeFileSync(targetFile, Buffer.from(matches[2], 'base64'));
+    return targetFile;
+};
+
+const fileToDataUrl = (filePath) => {
+    if (!filePath || typeof filePath !== 'string') return null;
+    try {
+        const resolvedPath = path.isAbsolute(filePath) ? filePath : path.join(__dirname, filePath);
+        if (!fs.existsSync(resolvedPath)) return null;
+        const ext = path.extname(resolvedPath).slice(1).toLowerCase() || 'png';
+        const mimeType = ext === 'svg' ? 'image/svg+xml'
+            : (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg'
+            : ext === 'webp' ? 'image/webp'
+            : `image/${ext}`;
+        const base64 = fs.readFileSync(resolvedPath).toString('base64');
+        return `data:${mimeType};base64,${base64}`;
+    } catch (e) {
+        console.error('Failed to read file as data URL:', filePath, e.message);
+        return null;
+    }
+};
+
 // Get School Information
 ipcMain.handle('get-school-info', async () => {
     return new Promise((resolve) => {
@@ -881,7 +915,13 @@ ipcMain.handle('get-dashboard-stats', async () => {
 ipcMain.handle('get-teachers', async () => {
     return new Promise((resolve) => {
         db.all(`SELECT * FROM teachers ORDER BY name`, [], (err, rows) => {
-            resolve(rows || []);
+            if (err || !rows) return resolve([]);
+            const teachers = rows.map(r => ({
+                ...r,
+                photo_data_url: fileToDataUrl(r.photo_path),
+                signature_data_url: fileToDataUrl(r.signature_path)
+            }));
+            resolve(teachers);
         });
     });
 });
@@ -896,8 +936,33 @@ ipcMain.handle('add-teacher', async (event, t) => {
             );
             if (existing) return { success: false, error: `Teacher ID "${t.teacher_id_number}" is already in use by another teacher.` };
         }
-        const r = await dbRun(`INSERT INTO teachers (teacher_id_number, name, title, fathers_name, mothers_name, contact_number, blood_group, nid_number, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [t.teacher_id_number || null, t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null, t.address || null]);
+
+        let photoPath = null;
+        if (t.photo_data_url && t.photo_data_url.startsWith('data:')) {
+            photoPath = saveMediaFile(t.photo_data_url, 'teachers/photos', 'teacher_photo');
+        }
+
+        let signaturePath = null;
+        if (t.signature_data_url && t.signature_data_url.startsWith('data:')) {
+            signaturePath = saveMediaFile(t.signature_data_url, 'teachers/signatures', 'teacher_sig');
+        }
+
+        const r = await dbRun(
+            `INSERT INTO teachers (teacher_id_number, name, title, photo_path, signature_path, fathers_name, mothers_name, contact_number, blood_group, nid_number, address) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                t.teacher_id_number || null,
+                t.name,
+                t.title || null,
+                photoPath,
+                signaturePath,
+                t.fathers_name || null,
+                t.mothers_name || null,
+                t.contact_number || null,
+                t.blood_group || null,
+                t.nid_number || null,
+                t.address || null
+            ]
+        );
         await runDataChecks();
         return { success: true, id: r.lastID };
     } catch (e) {
@@ -935,8 +1000,54 @@ ipcMain.handle('update-teacher', async (event, t) => {
             );
             if (existing) return { success: false, error: `Teacher ID "${t.teacher_id_number}" is already in use by another teacher.` };
         }
-        await dbRun(`UPDATE teachers SET teacher_id_number = ?, name = ?, title = ?, fathers_name = ?, mothers_name = ?, contact_number = ?, blood_group = ?, nid_number = ?, address = ? WHERE id = ?`,
-            [t.teacher_id_number || null, t.name, t.title, t.fathers_name || null, t.mothers_name || null, t.contact_number, t.blood_group, t.nid_number || null, t.address || null, t.id]);
+
+        const existingRow = await dbGet(`SELECT photo_path, signature_path FROM teachers WHERE id = ?`, [t.id]);
+        let newPhotoPath = existingRow ? existingRow.photo_path : null;
+        let newSigPath = existingRow ? existingRow.signature_path : null;
+
+        // Photo update / removal
+        if (t.photo_removed) {
+            if (newPhotoPath && fs.existsSync(newPhotoPath)) {
+                try { fs.unlinkSync(newPhotoPath); } catch (e) {}
+            }
+            newPhotoPath = null;
+        } else if (t.photo_data_url && t.photo_data_url.startsWith('data:')) {
+            if (newPhotoPath && fs.existsSync(newPhotoPath)) {
+                try { fs.unlinkSync(newPhotoPath); } catch (e) {}
+            }
+            newPhotoPath = saveMediaFile(t.photo_data_url, 'teachers/photos', 'teacher_photo');
+        }
+
+        // Signature update / removal
+        if (t.signature_removed) {
+            if (newSigPath && fs.existsSync(newSigPath)) {
+                try { fs.unlinkSync(newSigPath); } catch (e) {}
+            }
+            newSigPath = null;
+        } else if (t.signature_data_url && t.signature_data_url.startsWith('data:')) {
+            if (newSigPath && fs.existsSync(newSigPath)) {
+                try { fs.unlinkSync(newSigPath); } catch (e) {}
+            }
+            newSigPath = saveMediaFile(t.signature_data_url, 'teachers/signatures', 'teacher_sig');
+        }
+
+        await dbRun(
+            `UPDATE teachers SET teacher_id_number = ?, name = ?, title = ?, photo_path = ?, signature_path = ?, fathers_name = ?, mothers_name = ?, contact_number = ?, blood_group = ?, nid_number = ?, address = ? WHERE id = ?`,
+            [
+                t.teacher_id_number || null,
+                t.name,
+                t.title || null,
+                newPhotoPath,
+                newSigPath,
+                t.fathers_name || null,
+                t.mothers_name || null,
+                t.contact_number || null,
+                t.blood_group || null,
+                t.nid_number || null,
+                t.address || null,
+                t.id
+            ]
+        );
         await runDataChecks();
         return { success: true };
     } catch (e) {
@@ -988,6 +1099,15 @@ ipcMain.handle('update-subject', async (event, data) => {
 
 ipcMain.handle('delete-teacher', async (event, id) => {
     try {
+        const existingRow = await dbGet(`SELECT photo_path, signature_path FROM teachers WHERE id = ?`, [id]);
+        if (existingRow) {
+            if (existingRow.photo_path && fs.existsSync(existingRow.photo_path)) {
+                try { fs.unlinkSync(existingRow.photo_path); } catch (e) {}
+            }
+            if (existingRow.signature_path && fs.existsSync(existingRow.signature_path)) {
+                try { fs.unlinkSync(existingRow.signature_path); } catch (e) {}
+            }
+        }
         await dbRun(`UPDATE classes SET class_teacher_id = NULL WHERE class_teacher_id = ?`, [id]);
         await dbRun(`DELETE FROM teachers WHERE id = ?`, [id]);
         await runDataChecks();
