@@ -3012,7 +3012,8 @@ function buildTranscriptResultSection(studentId, positions) {
 }
 
 ['transcript-show-section-position', 'transcript-show-class-position',
-    'transcript-show-working-days', 'transcript-show-total-present'].forEach(id => {
+    'transcript-show-working-days', 'transcript-show-total-present',
+    'transcript-show-student-photo'].forEach(id => {
         document.getElementById(id)?.addEventListener('change', () => paintTranscriptPreview());
     });
 
@@ -3057,11 +3058,18 @@ function paintTranscriptPreview() {
     const schoolLogo = cachedSchoolInfo?.logo_data_url || 'assets/logo.png';
     const positions = computeTranscriptClassPositions();
 
-    preview.innerHTML = transcriptStudents.map(st => `
+    const showStudentPhoto = document.getElementById('transcript-show-student-photo')?.checked ?? true;
+
+    preview.innerHTML = transcriptStudents.map(st => {
+        const photoSrc = (showStudentPhoto && st.photo_path) ? st.photo_path : 'assets/std.png';
+        const photoImgTag = showStudentPhoto
+            ? `<img src="${photoSrc}" class="transcript-std-img" alt="Student Photo" onerror="this.src='assets/std.png'">`
+            : '';
+        return `
         <div class="transcript-page">
             <div class="transcript-header-top">
                 <div class="transcript-std-img-wrap">
-                    <img src="assets/std.png" class="transcript-std-img" alt="Student Photo" onerror="this.style.display='none'">
+                    ${photoImgTag}
                 </div>
                 <div class="transcript-inst-header">
                     ${schoolName ? `<div class="transcript-inst-name">${escapeHtml(schoolName)}</div>` : ''}
@@ -3109,7 +3117,8 @@ function paintTranscriptPreview() {
                 ${buildTranscriptTable(st.id)}
             </div>
             ${buildTranscriptResultSection(st.id, positions)}
-        </div>`).join('');
+        </div>`;
+    }).join('');
 }
 
 async function loadTranscriptPreview() {
