@@ -1241,6 +1241,11 @@ ipcMain.handle('generate-transcripts-pdf', async (event, { html, defaultFileName
         let styleCss = '';
         if (fs.existsSync(styleCssPath)) {
             styleCss = fs.readFileSync(styleCssPath, 'utf8');
+            // Replace relative font paths with absolute paths so the temp HTML
+            // file can resolve the fonts regardless of where it is written.
+            const fontsDir = path.join(__dirname, 'fonts').replace(/\\/g, '/');
+            styleCss = styleCss.replace(/url\(['"]?\.\/fonts\//g, `url('${fontsDir}/`);
+            styleCss = styleCss.replace(/url\(['"]?fonts\//g, `url('${fontsDir}/`);
         }
 
         const processedHtml = inlineImagesAsBase64(html);
