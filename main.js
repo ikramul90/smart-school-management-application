@@ -233,29 +233,41 @@ const fileToDataUrl = (filePath) => {
 ipcMain.handle('get-school-info', async () => {
     return new Promise((resolve) => {
         db.get("SELECT * FROM school_info ORDER BY id ASC LIMIT 1", [], (err, row) => {
-            const defaultInfo = { name: '', address: '', logo_path: null, logo_data_url: null };
+            const defaultInfo = {
+                name: '',
+                address: '',
+                logo_path: null,
+                logo_data_url: null,
+                head_teacher_name: '',
+                head_teacher_signature_path: null,
+                head_teacher_signature_data_url: null
+            };
             if (err || !row) {
                 resolve(defaultInfo);
             } else {
                 let logoDataUrl = null;
                 if (row.logo_path && fs.existsSync(row.logo_path)) {
-                    try {
-                        const ext = path.extname(row.logo_path).slice(1).toLowerCase() || 'png';
-                        const mimeType = ext === 'svg' ? 'image/svg+xml' : (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg' : `image/${ext}`;
-                        const base64 = fs.readFileSync(row.logo_path).toString('base64');
-                        logoDataUrl = `data:${mimeType};base64,${base64}`;
-                    } catch (e) {
-                        console.error('Failed to read logo file:', e.message);
-                    }
+                    logoDataUrl = fileToDataUrl(row.logo_path);
                 } else if (row.logo_path && !fs.existsSync(row.logo_path)) {
                     row.logo_path = null;
                 }
+
+                let headSigDataUrl = null;
+                if (row.head_teacher_signature_path && fs.existsSync(row.head_teacher_signature_path)) {
+                    headSigDataUrl = fileToDataUrl(row.head_teacher_signature_path);
+                } else if (row.head_teacher_signature_path && !fs.existsSync(row.head_teacher_signature_path)) {
+                    row.head_teacher_signature_path = null;
+                }
+
                 resolve({
                     id: row.id,
                     name: row.name || defaultInfo.name,
                     address: row.address || '',
                     logo_path: row.logo_path || null,
-                    logo_data_url: logoDataUrl
+                    logo_data_url: logoDataUrl,
+                    head_teacher_name: row.head_teacher_name || '',
+                    head_teacher_signature_path: row.head_teacher_signature_path || null,
+                    head_teacher_signature_data_url: headSigDataUrl
                 });
             }
         });
@@ -278,31 +290,11 @@ ipcMain.handle('save-school-info', async (event, data) => {
                     try { fs.unlinkSync(newLogoPath); } catch (e) {}
                 }
                 newLogoPath = null;
-            } else if (data.logo_data_url) {
-                try {
-                    const matches = data.logo_data_url.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-                    if (matches && matches.length === 3) {
-                        const mimeType = matches[1];
-                        const ext = mimeType === 'image/svg+xml' ? '.svg' : (mimeType === 'image/jpeg' || mimeType === 'image/jpg') ? '.jpg' : '.png';
-                        const targetDir = getMediaDir('logos');
-                        const targetFile = path.join(targetDir, `school_logo_${Date.now()}${ext}`);
-
-                        // Remove existing logos
-                        try {
-                            const files = fs.readdirSync(targetDir);
-                            for (const f of files) {
-                                if (f.startsWith('school_logo_')) {
-                                    fs.unlinkSync(path.join(targetDir, f));
-                                }
-                            }
-                        } catch (e) {}
-
-                        fs.writeFileSync(targetFile, Buffer.from(matches[2], 'base64'));
-                        newLogoPath = targetFile;
-                    }
-                } catch (saveImgErr) {
-                    console.error('Failed to save uploaded logo:', saveImgErr.message);
+            } else if (data.logo_data_url && data.logo_data_url.startsWith('data:')) {
+                if (newLogoPath && fs.existsSync(newLogoPath)) {
+                    try { fs.unlinkSync(newLogoPath); } catch (e) {}
                 }
+                newLogoPath = saveMediaFile(data.logo_data_url, 'logos', 'school_logo');
             }
 
             if (row) {
@@ -311,7 +303,10 @@ ipcMain.handle('save-school-info', async (event, data) => {
                     if (e) {
                         console.error('save-school-info (update) failed:', e.message);
                         resolve({ success: false, message: e.message });
-                    } else resolve({ success: true, logo_path: newLogoPath });
+                    } else {
+                        runDataChecks();
+                        resolve({ success: true, logo_path: newLogoPath });
+                    }
                 });
             } else {
                 const query = `INSERT INTO school_info (name, address, logo_path) VALUES (?, ?, ?)`;
@@ -319,7 +314,62 @@ ipcMain.handle('save-school-info', async (event, data) => {
                     if (e) {
                         console.error('save-school-info (insert) failed:', e.message);
                         resolve({ success: false, message: e.message });
-                    } else resolve({ success: true, logo_path: newLogoPath });
+                    } else {
+                        runDataChecks();
+                        resolve({ success: true, logo_path: newLogoPath });
+                    }
+                });
+            }
+        });
+    });
+});
+
+// Save Head Teacher Information
+ipcMain.handle('save-head-teacher-info', async (event, data) => {
+    return new Promise((resolve) => {
+        db.get("SELECT id, head_teacher_signature_path FROM school_info ORDER BY id ASC LIMIT 1", [], (err, row) => {
+            if (err) {
+                console.error('save-head-teacher-info (lookup) failed:', err.message);
+                return resolve({ success: false, message: err.message });
+            }
+
+            let newSigPath = row ? row.head_teacher_signature_path : null;
+
+            if (data.signature_removed) {
+                if (newSigPath && fs.existsSync(newSigPath)) {
+                    try { fs.unlinkSync(newSigPath); } catch (e) {}
+                }
+                newSigPath = null;
+            } else if (data.signature_data_url && data.signature_data_url.startsWith('data:')) {
+                if (newSigPath && fs.existsSync(newSigPath)) {
+                    try { fs.unlinkSync(newSigPath); } catch (e) {}
+                }
+                newSigPath = saveMediaFile(data.signature_data_url, 'head_teacher', 'head_teacher_sig');
+            }
+
+            const headTeacherName = (data.head_teacher_name || '').trim();
+
+            if (row) {
+                const query = `UPDATE school_info SET head_teacher_name = ?, head_teacher_signature_path = ? WHERE id = ?`;
+                db.run(query, [headTeacherName, newSigPath, row.id], function (e) {
+                    if (e) {
+                        console.error('save-head-teacher-info (update) failed:', e.message);
+                        resolve({ success: false, message: e.message });
+                    } else {
+                        runDataChecks();
+                        resolve({ success: true, signature_path: newSigPath });
+                    }
+                });
+            } else {
+                const query = `INSERT INTO school_info (name, address, logo_path, head_teacher_name, head_teacher_signature_path) VALUES (?, ?, ?, ?, ?)`;
+                db.run(query, ['', '', null, headTeacherName, newSigPath], function (e) {
+                    if (e) {
+                        console.error('save-head-teacher-info (insert) failed:', e.message);
+                        resolve({ success: false, message: e.message });
+                    } else {
+                        runDataChecks();
+                        resolve({ success: true, signature_path: newSigPath });
+                    }
                 });
             }
         });
@@ -519,10 +569,27 @@ async function runMissingFieldsCheck() {
     return syncConditionNotifications('missing:', toKeep.concat(summary));
 }
 
+// Reminds administrator to upload the Head Teacher / Principal signature if missing.
+async function runHeadTeacherSignatureCheck() {
+    const info = await dbGet(`SELECT head_teacher_signature_path FROM school_info ORDER BY id ASC LIMIT 1`);
+    const wanted = [];
+    if (!info || !info.head_teacher_signature_path || !fs.existsSync(info.head_teacher_signature_path)) {
+        wanted.push({
+            key: 'head-teacher:missing-signature',
+            severity: 'info',
+            title: 'Head Teacher Signature Required',
+            message: 'Please upload the Head Teacher / Principal signature in Settings to appear on student transcripts.',
+            target: JSON.stringify({ tab: 'settings-admin', section: 'head-teacher-info-form' })
+        });
+    }
+    return syncConditionNotifications('head-teacher:', wanted);
+}
+
 // Runs every data check. A failed check must never break the action that triggered it.
 async function runDataChecks() {
     try { await runDuplicateRollCheck(); } catch (e) { console.error('Data check failed:', e.message); }
     try { await runMissingFieldsCheck(); } catch (e) { console.error('Data check failed:', e.message); }
+    try { await runHeadTeacherSignatureCheck(); } catch (e) { console.error('Data check failed:', e.message); }
 }
 
 ipcMain.handle('get-notifications', async () => {

@@ -224,12 +224,14 @@ db.serialize(() => {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT DEFAULT '',
                 address TEXT DEFAULT '',
-                logo_path TEXT DEFAULT NULL
+                logo_path TEXT DEFAULT NULL,
+                head_teacher_name TEXT DEFAULT '',
+                head_teacher_signature_path TEXT DEFAULT NULL
             )`, () => {
                 db.get("SELECT COUNT(*) as count FROM school_info", [], (err2, row) => {
                     if (row && row.count === 0) {
-                        db.run(`INSERT INTO school_info (name, address, logo_path) VALUES (?, ?, ?)`,
-                            ['', '', null]);
+                        db.run(`INSERT INTO school_info (name, address, logo_path, head_teacher_name, head_teacher_signature_path) VALUES (?, ?, ?, ?, ?)`,
+                            ['', '', null, '', null]);
                     }
                 });
             });
@@ -242,6 +244,12 @@ db.serialize(() => {
             createAndSeed();
             if (names.length > 0 && !names.includes('logo_path')) {
                 db.run(`ALTER TABLE school_info ADD COLUMN logo_path TEXT DEFAULT NULL`);
+            }
+            if (names.length > 0 && !names.includes('head_teacher_name')) {
+                db.run(`ALTER TABLE school_info ADD COLUMN head_teacher_name TEXT DEFAULT ''`);
+            }
+            if (names.length > 0 && !names.includes('head_teacher_signature_path')) {
+                db.run(`ALTER TABLE school_info ADD COLUMN head_teacher_signature_path TEXT DEFAULT NULL`);
             }
         }
     });

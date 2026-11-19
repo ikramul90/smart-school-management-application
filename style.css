@@ -1663,8 +1663,8 @@ button:hover {
 }
 
 .transcript-sig-img {
-    max-height: 42px;
-    max-width: 160px;
+    max-height: 55px;
+    max-width: 170px;
     object-fit: contain;
     display: block;
 }
@@ -2284,12 +2284,14 @@ button:hover {
 }
 
 .tc-upload-photo .logo-zone,
-.tc-upload-sign .logo-zone {
+.tc-upload-sign .logo-zone,
+#head-teacher-sign-zone {
     height: 150px;
 }
 
 /* Signature preview needs less padding so thin strokes stay readable */
-.tc-upload-sign .logo-preview-img {
+.tc-upload-sign .logo-preview-img,
+#head-teacher-sign-zone .logo-preview-img {
     padding: 8px;
 }
 

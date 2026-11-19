@@ -209,8 +209,21 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// Reusable Logo Upload Zone controller (supports both Setup Screen & Settings Tab)
-function attachLogoZoneHandlers({ zoneId, fileInputId, previewId, phId, clearBtnId, filenameId, onError }) {
+// Reusable Logo & Signature Upload Zone controller (supports Setup Screen, Settings Tab, etc.)
+function attachLogoZoneHandlers(options = {}) {
+    const {
+        zoneId,
+        fileInputId,
+        previewId,
+        phId,
+        clearBtnId,
+        filenameId,
+        onError,
+        maxBytes = 2 * 1024 * 1024,
+        allowedTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'],
+        label = 'Image'
+    } = options;
+
     const zone = document.getElementById(zoneId);
     const fileInput = document.getElementById(fileInputId);
     const preview = document.getElementById(previewId);
@@ -218,24 +231,39 @@ function attachLogoZoneHandlers({ zoneId, fileInputId, previewId, phId, clearBtn
     const clearBtn = document.getElementById(clearBtnId);
     const filename = document.getElementById(filenameId);
 
+    if (!zone || !fileInput) return null;
+
     const state = {
         dataUrl: null,
         file: null,
         isRemoved: false
     };
 
-    function setLogo(dataUrl, nameText) {
-        state.dataUrl = dataUrl;
-        state.isRemoved = false;
+    function flashError(msg) {
+        zone.classList.add('upload-error');
+        if (onError) onError(msg);
+        setTimeout(() => {
+            zone.classList.remove('upload-error');
+        }, 2500);
+    }
+
+    function setLogo(dataUrl, nameText, sizeBytes) {
+        state.dataUrl = dataUrl || null;
         if (dataUrl) {
+            state.isRemoved = false;
             if (preview) {
                 preview.src = dataUrl;
                 preview.style.display = 'block';
             }
             if (ph) ph.style.display = 'none';
             if (clearBtn) clearBtn.style.display = 'flex';
-            if (zone) zone.classList.add('has-logo');
-            if (filename) filename.textContent = nameText || '';
+            zone.classList.add('has-logo');
+            if (filename) {
+                filename.textContent = nameText
+                    ? nameText + (sizeBytes ? ' (' + Math.round(sizeBytes / 1024) + ' KB)' : '')
+                    : '';
+            }
+            if (onError) onError('');
         } else {
             reset();
         }
@@ -246,59 +274,77 @@ function attachLogoZoneHandlers({ zoneId, fileInputId, previewId, phId, clearBtn
         state.file = null;
         state.isRemoved = true;
         if (preview) {
-            preview.src = '';
+            preview.removeAttribute('src');
             preview.style.display = 'none';
         }
         if (ph) ph.style.display = 'flex';
         if (clearBtn) clearBtn.style.display = 'none';
-        if (zone) {
-            zone.classList.remove('has-logo');
-            zone.classList.remove('drag-over');
-        }
+        zone.classList.remove('has-logo');
+        zone.classList.remove('drag-over');
         if (filename) filename.textContent = '';
         if (fileInput) fileInput.value = '';
     }
 
     function handleFile(file) {
         if (!file) return;
-        if (!file.type.startsWith('image/')) {
-            if (onError) onError('Please upload a valid image file (PNG, JPG, SVG).');
+        if (allowedTypes && allowedTypes.length && !allowedTypes.includes(file.type)) {
+            flashError(`${label}: please upload a PNG, JPG or WebP image.`);
+            if (fileInput) fileInput.value = '';
             return;
         }
-        if (file.size > 5 * 1024 * 1024) {
-            if (onError) onError('File exceeds 5 MB limit.');
+        const limitBytes = maxBytes;
+        if (file.size > limitBytes) {
+            const mb = (limitBytes / (1024 * 1024)).toFixed(0);
+            flashError(`${label} exceeds the ${mb} MB limit (${(file.size / 1024 / 1024).toFixed(2)} MB).`);
+            if (fileInput) fileInput.value = '';
             return;
         }
         if (onError) onError('');
+        state.isRemoved = false;
+        state.file = file;
         const reader = new FileReader();
         reader.onload = (e) => {
-            const dataUrl = e.target.result;
-            state.file = file;
-            setLogo(dataUrl, file.name + ' (' + (file.size / 1024).toFixed(0) + ' KB)');
+            setLogo(e.target.result, file.name, file.size);
+        };
+        reader.onerror = () => {
+            flashError(`Could not read the ${label.toLowerCase()} file.`);
         };
         reader.readAsDataURL(file);
     }
 
-    if (zone && fileInput) {
-        zone.addEventListener('click', () => fileInput.click());
+    if (!zone.dataset.bound) {
+        zone.dataset.bound = 'true';
+
+        zone.addEventListener('click', () => {
+            fileInput.value = '';
+            fileInput.click();
+        });
+
         zone.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
+                fileInput.value = '';
                 fileInput.click();
             }
         });
+
         fileInput.addEventListener('change', () => {
             if (fileInput.files && fileInput.files[0]) {
                 handleFile(fileInput.files[0]);
             }
         });
+
         zone.addEventListener('dragover', (e) => {
             e.preventDefault();
             zone.classList.add('drag-over');
         });
+
         zone.addEventListener('dragleave', (e) => {
-            if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+            if (!zone.contains(e.relatedTarget)) {
+                zone.classList.remove('drag-over');
+            }
         });
+
         zone.addEventListener('drop', (e) => {
             e.preventDefault();
             zone.classList.remove('drag-over');
@@ -306,28 +352,32 @@ function attachLogoZoneHandlers({ zoneId, fileInputId, previewId, phId, clearBtn
                 handleFile(e.dataTransfer.files[0]);
             }
         });
-    }
 
-    if (clearBtn) {
-        clearBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            reset();
-            if (onError) onError('');
-        });
-        clearBtn.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
+        if (clearBtn) {
+            clearBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
-                e.preventDefault();
                 reset();
                 if (onError) onError('');
-            }
-        });
+            });
+            clearBtn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    reset();
+                    if (onError) onError('');
+                }
+            });
+        }
     }
 
     return {
         setLogo,
         reset,
-        getState: () => state
+        getState: () => ({
+            dataUrl: state.dataUrl,
+            file: state.file,
+            isRemoved: state.isRemoved
+        })
     };
 }
 
@@ -343,12 +393,6 @@ async function initSchoolSetupScreen() {
     if (errEl) errEl.innerText = '';
     if (okEl) okEl.style.display = 'none';
 
-    try {
-        const info = await ipcRenderer.invoke('get-school-info');
-        if (titleInput && !titleInput.value) titleInput.value = info?.name || '';
-        if (addrInput && !addrInput.value) addrInput.value = info?.address || '';
-    } catch (e) {}
-
     if (!schoolSetupLogoController) {
         schoolSetupLogoController = attachLogoZoneHandlers({
             zoneId: 'ss-logo-zone',
@@ -357,11 +401,22 @@ async function initSchoolSetupScreen() {
             phId: 'ss-logo-ph',
             clearBtnId: 'ss-logo-clear',
             filenameId: 'ss-logo-filename',
+            label: 'School Logo',
+            maxBytes: 5 * 1024 * 1024,
             onError: (msg) => {
                 if (errEl) errEl.innerText = msg;
             }
         });
     }
+
+    try {
+        const info = await ipcRenderer.invoke('get-school-info');
+        if (titleInput && !titleInput.value) titleInput.value = info?.name || '';
+        if (addrInput && !addrInput.value) addrInput.value = info?.address || '';
+        if (schoolSetupLogoController && info?.logo_data_url) {
+            schoolSetupLogoController.setLogo(info.logo_data_url, 'Current Logo');
+        }
+    } catch (e) {}
 
     if (saveBtn && !saveBtn.dataset.bound) {
         saveBtn.dataset.bound = 'true';
@@ -3176,6 +3231,11 @@ function buildTranscriptResultSection(studentId, positions) {
         ? `<img src="${sigSrc}" class="transcript-sig-img" alt="Class Teacher Signature" onerror="this.style.display='none'">`
         : '';
 
+    const principalSigSrc = cachedSchoolInfo?.head_teacher_signature_data_url || cachedSchoolInfo?.head_teacher_signature_path || '';
+    const principalSigHtml = principalSigSrc
+        ? `<img src="${principalSigSrc}" class="transcript-sig-img" alt="Principal Signature" onerror="this.style.display='none'">`
+        : '';
+
     return `
             <div class="transcript-result-summary">
                 <table class="transcript-result-table">
@@ -3192,7 +3252,7 @@ function buildTranscriptResultSection(studentId, positions) {
                     <div class="transcript-signature-box">Class Teacher</div>
                 </div>
                 <div class="transcript-signature-col">
-                    <div class="transcript-signature-space"></div>
+                    <div class="transcript-signature-space">${principalSigHtml}</div>
                     <div class="transcript-signature-box">Principal</div>
                 </div>
             </div>`;
@@ -3882,6 +3942,27 @@ function notificationPanelIsOpen() {
     return document.getElementById('notif-panel').classList.contains('open');
 }
 
+function handleNotificationTarget(targetStr) {
+    if (!targetStr) return;
+    try {
+        const target = typeof targetStr === 'string' ? JSON.parse(targetStr) : targetStr;
+        if (target.tab) {
+            window.switchTab(target.tab);
+        }
+        if (target.section) {
+            setTimeout(() => {
+                const el = document.getElementById(target.section);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    window.triggerFormHighlight?.(el);
+                }
+            }, 150);
+        }
+    } catch (e) {
+        console.error('Failed to handle notification target:', e);
+    }
+}
+
 function updateNotificationBadge() {
     const badge = document.getElementById('notif-badge');
     const unread = notificationList.filter(n => !n.is_read).length;
@@ -3899,6 +3980,14 @@ function renderNotificationPanel() {
         const item = document.createElement('div');
         item.className = 'notif-item ' + n.severity + (n.is_read ? '' : ' unread');
         item.innerHTML = `<b>${escapeHtml(n.title)}</b>${escapeHtml(n.message)}<small>${escapeHtml(notificationTimeAgo(n.created_at))}</small>`;
+        if (n.target) {
+            item.style.cursor = 'pointer';
+            item.title = 'Click to open';
+            item.addEventListener('click', () => {
+                handleNotificationTarget(n.target);
+                closeNotificationPanel();
+            });
+        }
         list.appendChild(item);
     });
     updateNotificationBadge();
@@ -3939,6 +4028,14 @@ function showNotificationToast(n) {
     const toast = document.createElement('div');
     toast.className = 'notif-toast ' + n.severity;
     toast.innerHTML = `<b>${escapeHtml(n.title)}</b>${escapeHtml(n.message)}`;
+    if (n.target) {
+        toast.style.cursor = 'pointer';
+        toast.title = 'Click to open';
+        toast.addEventListener('click', () => {
+            handleNotificationTarget(n.target);
+            toast.remove();
+        });
+    }
     wrap.appendChild(toast);
     requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('in')));
 
@@ -4117,6 +4214,7 @@ if (btnCancelSubject) {
 // SCHOOL INFORMATION PROFILE (Settings -> School Info)
 // ============================================================
 let settingsLogoController = null;
+let headTeacherSignController = null;
 
 function initSettingsLogoZone() {
     if (!settingsLogoController) {
@@ -4128,6 +4226,30 @@ function initSettingsLogoZone() {
             phId: 'settings-logo-ph',
             clearBtnId: 'settings-logo-clear',
             filenameId: 'settings-logo-filename',
+            label: 'School Logo',
+            maxBytes: 5 * 1024 * 1024,
+            onError: (msg) => {
+                if (feedback) {
+                    feedback.style.color = '#ef4444';
+                    feedback.textContent = msg;
+                }
+            }
+        });
+    }
+}
+
+function initHeadTeacherSignZone() {
+    if (!headTeacherSignController) {
+        const feedback = document.getElementById('head-teacher-info-feedback');
+        headTeacherSignController = attachLogoZoneHandlers({
+            zoneId: 'head-teacher-sign-zone',
+            fileInputId: 'head-teacher-sign-input',
+            previewId: 'head-teacher-sign-preview',
+            phId: 'head-teacher-sign-ph',
+            clearBtnId: 'head-teacher-sign-clear',
+            filenameId: 'head-teacher-sign-filename',
+            label: 'Signature',
+            maxBytes: 2 * 1024 * 1024,
             onError: (msg) => {
                 if (feedback) {
                     feedback.style.color = '#ef4444';
@@ -4141,20 +4263,31 @@ function initSettingsLogoZone() {
 async function loadSchoolInfo() {
     try {
         initSettingsLogoZone();
+        initHeadTeacherSignZone();
         const info = await ipcRenderer.invoke('get-school-info');
         if (info) {
             cachedSchoolInfo = info;
             const nameEl = document.getElementById('school-name-input');
             const addrEl = document.getElementById('school-address-input');
+            const headNameEl = document.getElementById('head-teacher-name-input');
 
             if (nameEl) nameEl.value = info.name || '';
             if (addrEl) addrEl.value = info.address || '';
+            if (headNameEl) headNameEl.value = info.head_teacher_name || '';
 
             if (settingsLogoController) {
                 if (info.logo_data_url) {
                     settingsLogoController.setLogo(info.logo_data_url, 'Current Logo');
                 } else {
                     settingsLogoController.reset();
+                }
+            }
+
+            if (headTeacherSignController) {
+                if (info.head_teacher_signature_data_url) {
+                    headTeacherSignController.setLogo(info.head_teacher_signature_data_url, 'Current Signature');
+                } else {
+                    headTeacherSignController.reset();
                 }
             }
         }
@@ -4166,7 +4299,8 @@ async function loadSchoolInfo() {
 function setupSchoolInfoHandlers() {
     initSettingsLogoZone();
     const btnSaveSchoolInfo = document.getElementById('btn-save-school-info');
-    if (btnSaveSchoolInfo) {
+    if (btnSaveSchoolInfo && !btnSaveSchoolInfo.dataset.bound) {
+        btnSaveSchoolInfo.dataset.bound = 'true';
         btnSaveSchoolInfo.addEventListener('click', async () => {
             const name = document.getElementById('school-name-input')?.value.trim() || '';
             const address = document.getElementById('school-address-input')?.value.trim() || '';
@@ -4183,6 +4317,7 @@ function setupSchoolInfoHandlers() {
 
             if (result && result.success) {
                 cachedSchoolInfo = {
+                    ...cachedSchoolInfo,
                     name,
                     address,
                     logo_path: result.logo_path || null,
@@ -4207,7 +4342,56 @@ function setupSchoolInfoHandlers() {
     }
 }
 
+function setupHeadTeacherInfoHandlers() {
+    initHeadTeacherSignZone();
+    const btnSaveHeadTeacherInfo = document.getElementById('btn-save-head-teacher-info');
+    if (btnSaveHeadTeacherInfo && !btnSaveHeadTeacherInfo.dataset.bound) {
+        btnSaveHeadTeacherInfo.dataset.bound = 'true';
+        btnSaveHeadTeacherInfo.addEventListener('click', async () => {
+            const headTeacherName = document.getElementById('head-teacher-name-input')?.value.trim() || '';
+            const feedback = document.getElementById('head-teacher-info-feedback');
+            const signState = headTeacherSignController ? headTeacherSignController.getState() : {};
+
+            btnSaveHeadTeacherInfo.disabled = true;
+            btnSaveHeadTeacherInfo.textContent = 'Saving...';
+
+            const result = await ipcRenderer.invoke('save-head-teacher-info', {
+                head_teacher_name: headTeacherName,
+                signature_data_url: signState.dataUrl || null,
+                signature_removed: signState.isRemoved
+            });
+
+            btnSaveHeadTeacherInfo.disabled = false;
+            btnSaveHeadTeacherInfo.textContent = 'Save Configuration';
+
+            if (result && result.success) {
+                cachedSchoolInfo = {
+                    ...cachedSchoolInfo,
+                    head_teacher_name: headTeacherName,
+                    head_teacher_signature_path: result.signature_path || null,
+                    head_teacher_signature_data_url: signState.dataUrl || null
+                };
+                if (feedback) {
+                    feedback.style.color = '#10b981';
+                    feedback.textContent = 'Configuration saved successfully!';
+                    setTimeout(() => { if (feedback) feedback.textContent = ''; }, 3000);
+                }
+                // If transcript is currently open, repaint preview to show the new signature immediately
+                if (document.getElementById('transcript-page')?.style.display === 'block') {
+                    paintTranscriptPreview();
+                }
+            } else {
+                if (feedback) {
+                    feedback.style.color = '#ef4444';
+                    feedback.textContent = 'Error: ' + ((result && result.message) || 'Failed to save configuration');
+                }
+            }
+        });
+    }
+}
+
 setupSchoolInfoHandlers();
+setupHeadTeacherInfoHandlers();
 loadSchoolInfo();
 
 
