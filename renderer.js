@@ -94,6 +94,40 @@ function decodeActivationCode(code) {
 }
 
 let activationCheckInterval = null;
+let currentVerifiedLicenseType = 'trial';
+let appLicenseStatus = { isTrial: true, license_type: 'trial' };
+
+async function refreshLicenseStatus() {
+    try {
+        const res = await ipcRenderer.invoke('get-license-status');
+        if (res && res.success) {
+            appLicenseStatus = res;
+        }
+    } catch (err) {
+        console.warn('Could not fetch license status:', err);
+    }
+    updateTrialUiIndicators();
+}
+
+function updateTrialUiIndicators() {
+    const isTrial = !!(appLicenseStatus && appLicenseStatus.isTrial);
+    const pill = document.getElementById('home-trial-pill');
+    if (pill) {
+        pill.style.display = isTrial ? 'inline-flex' : 'none';
+    }
+    const genBtn = document.getElementById('btn-generate-transcript');
+    if (genBtn) {
+        if (isTrial) {
+            genBtn.classList.add('btn-trial-disabled');
+            genBtn.title = 'PDF generation is disabled in Trial Version.';
+            genBtn.textContent = '📄 Generate PDF (Disabled in Trial)';
+        } else {
+            genBtn.classList.remove('btn-trial-disabled');
+            genBtn.title = 'Export all displayed transcripts as a single PDF document';
+            genBtn.textContent = '📄 Generate Transcripts PDF';
+        }
+    }
+}
 
 function startActivationVerification() {
     const inputEl = document.getElementById('activation-code-input');
@@ -144,6 +178,7 @@ function finishActivationVerification(code) {
         const decodedText = decodeActivationCode(code);
 
         if (decodedText === FULL_LICENSE_TEXT || decodedText === TRIAL_LICENSE_TEXT) {
+            currentVerifiedLicenseType = (decodedText === FULL_LICENSE_TEXT) ? 'full' : 'trial';
             // Success: reveal main setup screen with welcome text
             if (activationCheckingScreen) activationCheckingScreen.style.display = 'none';
             if (setupScreen) setupScreen.style.display = 'block';
@@ -201,6 +236,7 @@ if (activationCodeInput) {
 // normal Login screen accordingly.
 window.addEventListener('DOMContentLoaded', async () => {
     const adminExists = await ipcRenderer.invoke('check-admin-exists');
+    await refreshLicenseStatus();
 
     if (adminExists) {
         loginScreen.style.display = 'block';
@@ -484,7 +520,8 @@ document.getElementById('btn-save-setup').addEventListener('click', async () => 
         username, password,
         q1: "What was your first school's name?", a1,
         q2: "What is your favorite book?", a2,
-        q3: "", a3: "", q4: "", a4: "", q5: "", a5: ""
+        q3: "", a3: "", q4: "", a4: "", q5: "", a5: "",
+        license_type: currentVerifiedLicenseType
     });
 
     if (result.success) {
@@ -517,6 +554,7 @@ document.getElementById('btn-login').addEventListener('click', async () => {
     if (response.success) {
         loginScreen.style.display = 'none';
         dashboardScreen.style.display = 'block';
+        await refreshLicenseStatus();
         startNotificationCenter();
         loadDashboardStats();
     } else {
@@ -1700,6 +1738,19 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
 
     if (!s.roll || !s.name) return alert("Roll and Name are required!");
 
+    if (!editId && appLicenseStatus && appLicenseStatus.isTrial) {
+        const classStudents = await ipcRenderer.invoke('get-students', { class_id: s.class_id, status: 'Active' });
+        if (classStudents && classStudents.length >= 5) {
+            const errBox = document.getElementById('st-error');
+            const msg = 'Trial Limit: Maximum 5 active students allowed per class in trial mode. Please upgrade to the full license to add more students.';
+            if (errBox) {
+                errBox.style.display = 'block';
+                errBox.textContent = msg;
+            }
+            return alert(msg);
+        }
+    }
+
     if (!photoDataUrl) {
         const zone = document.getElementById('st-photo-zone');
         if (zone) {
@@ -2514,6 +2565,18 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
     };
 
     if (!t.name) return alert("Teacher name is required!");
+
+    if (!editId && appLicenseStatus && appLicenseStatus.isTrial) {
+        const teachersList = await ipcRenderer.invoke('get-teachers');
+        if (teachersList && teachersList.length >= 5) {
+            const msg = 'Trial Limit: Maximum 5 teachers allowed in trial mode. Please upgrade to the full license to add more teachers.';
+            if (errorEl) {
+                errorEl.style.display = 'block';
+                errorEl.textContent = msg;
+            }
+            return alert(msg);
+        }
+    }
 
     const selectedVal = document.getElementById('tc-classes')?.value;
     if (!selectedVal) {
@@ -3348,6 +3411,17 @@ function paintTranscriptPreview() {
 
     const showStudentPhoto = document.getElementById('transcript-show-student-photo')?.checked ?? true;
 
+    const isTrial = !!(appLicenseStatus && appLicenseStatus.isTrial);
+    const trialWatermarkHtml = isTrial
+        ? `<div class="transcript-trial-watermark">
+               <span class="transcript-trial-watermark-brand">EduKit Solutions</span>
+               <img src="icon.ico" class="transcript-trial-watermark-icon" alt="EduKit Solutions">
+           </div>
+           <div class="transcript-trial-footer">
+               Unlicensed Trial Version, All copyrights reserved &copy; EduKit Solutions.
+           </div>`
+        : '';
+
     preview.innerHTML = transcriptStudents.map(st => {
         const photoSrc = (showStudentPhoto && (st.photo_data_url || st.photo_path))
             ? (st.photo_data_url || st.photo_path)
@@ -3357,6 +3431,7 @@ function paintTranscriptPreview() {
             : '';
         return `
         <div class="transcript-page">
+            ${trialWatermarkHtml}
             <div class="transcript-header-top">
                 <div class="transcript-std-img-wrap">
                     ${photoImgTag}
@@ -3573,6 +3648,7 @@ async function loadTranscriptPreview() {
         columnsSection.style.display = 'block';
         if (optionsSection) optionsSection.style.display = 'block';
         generateBtn.style.display = 'inline-block';
+        updateTrialUiIndicators();
         renderTranscriptToggles();
         paintTranscriptPreview();
     } catch (err) {
@@ -3592,6 +3668,13 @@ if (showAllExamTotalsEl) {
     });
 }
 document.getElementById('btn-generate-transcript').addEventListener('click', async () => {
+    if (appLicenseStatus && appLicenseStatus.isTrial) {
+        alert('Generating PDF is disabled in the Trial Version. Please upgrade to the full license to export transcript PDFs.');
+        const status = document.getElementById('transcript-status');
+        if (status) status.textContent = 'PDF generation is disabled in Trial Mode.';
+        return;
+    }
+
     const preview = document.getElementById('transcript-preview');
     const status = document.getElementById('transcript-status');
     const generateBtn = document.getElementById('btn-generate-transcript');

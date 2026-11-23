@@ -181,8 +181,21 @@ db.serialize(() => {
         q2 TEXT, a2 TEXT,
         q3 TEXT, a3 TEXT,
         q4 TEXT, a4 TEXT,
-        q5 TEXT, a5 TEXT
+        q5 TEXT, a5 TEXT,
+        license_type TEXT DEFAULT 'trial'
     )`);
+
+    // Ensure license_type column exists on admin_profile (self-repairing migration)
+    db.all("PRAGMA table_info(admin_profile)", [], (err, columns) => {
+        const names = (columns || []).map(c => c.name);
+        if (names.length > 0 && !names.includes('license_type')) {
+            db.run(`ALTER TABLE admin_profile ADD COLUMN license_type TEXT DEFAULT 'trial'`, (err2) => {
+                if (!err2) {
+                    console.log("✅ Added license_type column to admin_profile");
+                }
+            });
+        }
+    });
 
 
         // 9. Student Subjects Table (Nine/Ten Main + Optional subject selections)

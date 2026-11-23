@@ -46,10 +46,22 @@ ipcMain.handle('check-admin-exists', async () => {
     });
 });
 
+// Helper: get current license status
+async function getLicenseStatus() {
+    try {
+        const row = await dbGet(`SELECT license_type FROM admin_profile ORDER BY id DESC LIMIT 1`);
+        const licenseType = (row && row.license_type === 'full') ? 'full' : 'trial';
+        return { license_type: licenseType, isTrial: licenseType === 'trial' };
+    } catch (e) {
+        return { license_type: 'trial', isTrial: true };
+    }
+}
+
 // Save a brand new admin profile (First-time setup)
 ipcMain.handle('setup-admin', async (event, data) => {
     return new Promise((resolve) => {
-        const query = `INSERT INTO admin_profile (username, password_hash, q1, a1, q2, a2, q3, a3, q4, a4, q5, a5) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const licenseType = (data && data.license_type === 'full') ? 'full' : 'trial';
+        const query = `INSERT INTO admin_profile (username, password_hash, q1, a1, q2, a2, q3, a3, q4, a4, q5, a5, license_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         db.run(query, [
             data.username, 
             data.password, // For production later, we will hash this. Keeping it simple for testing!
@@ -57,12 +69,34 @@ ipcMain.handle('setup-admin', async (event, data) => {
             data.q2, data.a2,
             data.q3, data.a3,
             data.q4, data.a4,
-            data.q5, data.a5
+            data.q5, data.a5,
+            licenseType
         ], function(err) {
             if (err) resolve({ success: false, message: err.message });
-            else resolve({ success: true });
+            else resolve({ success: true, license_type: licenseType });
         });
     });
+});
+
+// Get current license status ('trial' vs 'full')
+ipcMain.handle('get-license-status', async () => {
+    try {
+        const status = await getLicenseStatus();
+        return { success: true, ...status };
+    } catch (err) {
+        return { success: false, license_type: 'trial', isTrial: true };
+    }
+});
+
+// Update license type (for upgrade / testing)
+ipcMain.handle('update-license-type', async (event, licenseType) => {
+    try {
+        const val = (licenseType === 'full') ? 'full' : 'trial';
+        await dbRun(`UPDATE admin_profile SET license_type = ? WHERE id = (SELECT id FROM admin_profile ORDER BY id DESC LIMIT 1)`, [val]);
+        return { success: true, license_type: val, isTrial: val === 'trial' };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
 });
 
 // Verify login details
@@ -678,6 +712,16 @@ db.all("SELECT id, dob FROM students WHERE dob IS NOT NULL AND dob LIKE '%-%'", 
 // --- ADD / EDIT STUDENT ---
 ipcMain.handle('add-student', async (event, s) => {
     try {
+        const license = await getLicenseStatus();
+        if (license.isTrial) {
+            const countRow = await dbGet(`SELECT COUNT(*) as count FROM students WHERE class_id = ? AND status = 'Active'`, [s.class_id]);
+            if (countRow && countRow.count >= 5) {
+                return {
+                    success: false,
+                    error: 'Trial Limit: Maximum 5 active students allowed per class in trial mode. Please upgrade to the full license to add more students.'
+                };
+            }
+        }
         const cleanDob = normalizeDateToDDMMYYYY(s.dob);
         let photoPath = null;
         if (s.photo_data_url && s.photo_data_url.startsWith('data:')) {
@@ -858,6 +902,17 @@ ipcMain.handle('reinstate-student', async (event, { id, new_roll }) => {
         const st = await getStudentWithClass(id);
         if (!st || st.status === 'Active') return { success: false, error: 'This student is already active.' };
 
+        const license = await getLicenseStatus();
+        if (license.isTrial) {
+            const countRow = await dbGet(`SELECT COUNT(*) as count FROM students WHERE class_id = ? AND status = 'Active'`, [st.class_id]);
+            if (countRow && countRow.count >= 5) {
+                return {
+                    success: false,
+                    error: 'Trial Limit: Maximum 5 active students allowed per class in trial mode. Please upgrade to the full license to add more students.'
+                };
+            }
+        }
+
         const roll = parseInt(new_roll, 10);
         if (!Number.isInteger(roll) || roll <= 0) return { success: false, error: 'Enter a valid roll number.' };
 
@@ -1016,6 +1071,17 @@ ipcMain.handle('get-teachers', async () => {
 
 ipcMain.handle('add-teacher', async (event, t) => {
     try {
+        const license = await getLicenseStatus();
+        if (license.isTrial) {
+            const countRow = await dbGet(`SELECT COUNT(*) as count FROM teachers`);
+            if (countRow && countRow.count >= 5) {
+                return {
+                    success: false,
+                    error: 'Trial Limit: Maximum 5 teachers allowed in trial mode. Please upgrade to the full license to add more teachers.'
+                };
+            }
+        }
+
         // Enforce unique teacher_id_number (if provided)
         if (t.teacher_id_number) {
             const existing = await dbGet(
@@ -1432,7 +1498,7 @@ function inlineImagesAsBase64(htmlContent) {
             const resolvedPath = path.isAbsolute(src) ? src : path.join(__dirname, src);
             if (fs.existsSync(resolvedPath)) {
                 const ext = path.extname(resolvedPath).slice(1).toLowerCase() || 'png';
-                const mimeType = ext === 'svg' ? 'image/svg+xml' : (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg' : `image/${ext}`;
+                const mimeType = ext === 'svg' ? 'image/svg+xml' : (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg' : (ext === 'ico') ? 'image/x-icon' : `image/${ext}`;
                 const base64 = fs.readFileSync(resolvedPath).toString('base64');
                 return `<img ${before}src="data:${mimeType};base64,${base64}"${after}>`;
             }
@@ -1448,6 +1514,14 @@ ipcMain.handle('generate-transcripts-pdf', async (event, { html, defaultFileName
     let tempFilePath = null;
     let pdfWin = null;
     try {
+        const license = await getLicenseStatus();
+        if (license.isTrial) {
+            return {
+                success: false,
+                error: 'PDF generation is disabled in the Trial Version. Please upgrade to the full license to export transcript PDFs.'
+            };
+        }
+
         const { canceled, filePath } = await dialog.showSaveDialog(mainWindow, {
             title: 'Save Transcripts PDF',
             defaultPath: defaultFileName || 'Transcripts.pdf',
