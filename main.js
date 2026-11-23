@@ -723,6 +723,8 @@ ipcMain.handle('add-student', async (event, s) => {
             }
         }
         const cleanDob = normalizeDateToDDMMYYYY(s.dob);
+        if (!s.student_id_number) return { success: false, error: 'Student ID is required.' };
+        if (!s.guardian_contact) return { success: false, error: 'Guardian Contact is required.' };
         let photoPath = null;
         if (s.photo_data_url && s.photo_data_url.startsWith('data:')) {
             photoPath = saveMediaFile(s.photo_data_url, 'students/photos', 'student_photo');
@@ -780,6 +782,8 @@ ipcMain.handle('update-student', async (event, s) => {
         }
 
         const cleanDob = normalizeDateToDDMMYYYY(s.dob);
+        if (!s.student_id_number) return { success: false, error: 'Student ID is required.' };
+        if (!s.guardian_contact) return { success: false, error: 'Guardian Contact is required.' };
         await dbRun(`UPDATE students SET roll = ?, name = ?, blood_group = ?, photo_path = ?, fathers_name = ?, mothers_name = ?, guardian_name = ?, guardian_contact = ?, address = ?, dob = ?, birth_reg_number = ?, class_id = ?, gender = ?, student_id_number = ? WHERE id = ?`,
             [s.roll, s.name, s.blood_group, newPhotoPath, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id, s.gender || null, s.student_id_number || null, s.id]);
 
@@ -1090,6 +1094,10 @@ ipcMain.handle('add-teacher', async (event, t) => {
             );
             if (existing) return { success: false, error: `Teacher ID "${t.teacher_id_number}" is already in use by another teacher.` };
         }
+
+        // Mandatory field checks
+        if (!t.teacher_id_number) return { success: false, error: 'Teacher ID is required.' };
+        if (!t.contact_number) return { success: false, error: 'Contact Number is required.' };
 
         let photoPath = null;
         if (t.photo_data_url && t.photo_data_url.startsWith('data:')) {

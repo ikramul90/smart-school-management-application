@@ -1740,6 +1740,8 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
     };
 
     if (!s.roll || !s.name) return alert("Roll and Name are required!");
+    if (!s.student_id_number) return alert("Student ID is required!");
+    if (!s.guardian_contact) return alert("Guardian Contact is required!");
 
     if (!editId && appLicenseStatus && appLicenseStatus.isTrial) {
         const classStudents = await ipcRenderer.invoke('get-students', { class_id: s.class_id, status: 'Active' });
@@ -2568,6 +2570,22 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
     };
 
     if (!t.name) return alert("Teacher name is required!");
+    if (!t.teacher_id_number) return alert("Teacher ID is required!");
+    if (!t.contact_number) return alert("Contact Number is required!");
+    if (!t.photo_data_url) {
+        const photoZone = document.getElementById('tc-photo-zone');
+        if (photoZone) { photoZone.classList.add('upload-error'); setTimeout(() => photoZone.classList.remove('upload-error'), 2500); }
+        const errEl = document.getElementById('tc-error');
+        if (errEl) { errEl.style.display = 'block'; errEl.textContent = 'Teacher photo is required!'; }
+        return alert("Teacher photo is required!");
+    }
+    if (!t.signature_data_url) {
+        const signZone = document.getElementById('tc-sign-zone');
+        if (signZone) { signZone.classList.add('upload-error'); setTimeout(() => signZone.classList.remove('upload-error'), 2500); }
+        const errEl = document.getElementById('tc-error');
+        if (errEl) { errEl.style.display = 'block'; errEl.textContent = 'Teacher signature is required!'; }
+        return alert("Teacher signature is required!");
+    }
 
     if (!editId && appLicenseStatus && appLicenseStatus.isTrial) {
         const teachersList = await ipcRenderer.invoke('get-teachers');
