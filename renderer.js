@@ -120,7 +120,7 @@ function updateTrialUiIndicators() {
         if (isTrial) {
             genBtn.classList.add('btn-trial-disabled');
             genBtn.title = 'PDF generation is disabled in Trial Version.';
-            genBtn.textContent = '📄 Generate PDF (Disabled in Trial)';
+            genBtn.textContent = '📄 Generate PDF (Disabled in Trial Version)';
         } else {
             genBtn.classList.remove('btn-trial-disabled');
             genBtn.title = 'Export all displayed transcripts as a single PDF document';

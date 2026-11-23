@@ -1,5 +1,5 @@
 {
-  "name": "smart-school-management-software",
+  "name": "smart-school-management-application",
   "version": "1.0.0",
   "description": "This Application is developed by Ikramul ALam Chowdhury",
   "main": "main.js",
@@ -27,7 +27,7 @@
   },
   "build": {
     "appId": "com.tcsac.schoolmanagement",
-    "productName": "Smart School Management Software",
+    "productName": "Edukit Campus",
     "directories": {
       "output": "D:/Users/Ikramul/TCSAC",
       "buildResources": "build"
@@ -57,7 +57,7 @@
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "Smart School Management",
+      "shortcutName": "EduKit Campus",
       "installerIcon": "build/icon.ico",
       "uninstallerIcon": "build/icon.ico"
     }
