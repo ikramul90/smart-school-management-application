@@ -49,6 +49,7 @@ db.serialize(() => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         roll INTEGER NOT NULL,
         name TEXT NOT NULL,
+        student_id_number TEXT,
         blood_group TEXT,
         photo_path TEXT,
         fathers_name TEXT,
@@ -63,6 +64,18 @@ db.serialize(() => {
         removal_cause TEXT,
         FOREIGN KEY(class_id) REFERENCES classes(id)
     )`);
+
+    // Ensure student_id_number column exists on students (self-repairing migration)
+    db.all("PRAGMA table_info(students)", [], (err, columns) => {
+        const names = (columns || []).map(c => c.name);
+        if (names.length > 0 && !names.includes('student_id_number')) {
+            db.run(`ALTER TABLE students ADD COLUMN student_id_number TEXT DEFAULT NULL`, (err2) => {
+                if (!err2) {
+                    console.log("✅ Added student_id_number column to students");
+                }
+            });
+        }
+    });
 
     // 3. Teachers Table
     db.run(`CREATE TABLE IF NOT EXISTS teachers (

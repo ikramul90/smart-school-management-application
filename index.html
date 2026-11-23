@@ -679,8 +679,11 @@
                             <div id="student-form"
                                 style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:10px;">
                                 <input type="hidden" id="st-edit-id" value="">
+                                <div><label>Student ID</label><input type="text" id="st-student-id" placeholder="e.g. S-2027-01"></div>
                                 <div><label>Class</label><select id="st-class"
                                         onchange="updateStudentSubjectSelection()"></select></div>
+                                <div><label>Class Roll</label><input type="text" id="st-roll" inputmode="numeric"
+                                        maxlength="3" autocomplete="off"></div>
                                 <div id="stu-subject-selection"
                                     style="display:none; grid-column: span 3; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0;">
                                     <label class="no-select">Main Subjects <span
@@ -693,8 +696,6 @@
                                         <option value="">-- pick 3 main subjects first --</option>
                                     </select>
                                 </div>
-                                <div><label>Class Roll</label><input type="text" id="st-roll" inputmode="numeric"
-                                        maxlength="3" autocomplete="off"></div>
                                 <div><label>Full Name</label><input type="text" id="st-name"></div>
                                 <div><label>Date of Birth</label><input type="text" id="st-dob" placeholder="DD/MM/YYYY"
                                         maxlength="10" autocomplete="off"></div>
@@ -722,7 +723,7 @@
                                 </div>
                                 <div><label>Guardian Contact</label><input type="text" id="st-phone"></div>
                                 <div><label>Birth Registration No.</label><input type="text" id="st-birth-reg"></div>
-                                <div style="grid-column: span 2;"><label class="no-select">Address</label><input
+                                <div><label class="no-select">Address</label><input
                                         type="text" id="st-address"></div>
 
                                 <!-- Student Photo Upload -->

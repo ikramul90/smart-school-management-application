@@ -727,8 +727,8 @@ ipcMain.handle('add-student', async (event, s) => {
         if (s.photo_data_url && s.photo_data_url.startsWith('data:')) {
             photoPath = saveMediaFile(s.photo_data_url, 'students/photos', 'student_photo');
         }
-        const r = await dbRun(`INSERT INTO students (roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, gender, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active')`,
-            [s.roll, s.name, s.blood_group, photoPath, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id, s.gender || null]);
+        const r = await dbRun(`INSERT INTO students (roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, gender, status, student_id_number) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Active', ?)`,
+            [s.roll, s.name, s.blood_group, photoPath, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id, s.gender || null, s.student_id_number || null]);
         await runDataChecks();
         return { success: true, id: r.lastID };
     } catch (e) {
@@ -780,8 +780,8 @@ ipcMain.handle('update-student', async (event, s) => {
         }
 
         const cleanDob = normalizeDateToDDMMYYYY(s.dob);
-        await dbRun(`UPDATE students SET roll = ?, name = ?, blood_group = ?, photo_path = ?, fathers_name = ?, mothers_name = ?, guardian_name = ?, guardian_contact = ?, address = ?, dob = ?, birth_reg_number = ?, class_id = ?, gender = ? WHERE id = ?`,
-            [s.roll, s.name, s.blood_group, newPhotoPath, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id, s.gender || null, s.id]);
+        await dbRun(`UPDATE students SET roll = ?, name = ?, blood_group = ?, photo_path = ?, fathers_name = ?, mothers_name = ?, guardian_name = ?, guardian_contact = ?, address = ?, dob = ?, birth_reg_number = ?, class_id = ?, gender = ?, student_id_number = ? WHERE id = ?`,
+            [s.roll, s.name, s.blood_group, newPhotoPath, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id, s.gender || null, s.student_id_number || null, s.id]);
 
         if (s.archive && archived) await saveArchiveDetails(current, s.archive);
 

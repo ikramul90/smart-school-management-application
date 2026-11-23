@@ -1634,6 +1634,8 @@ window.editStudentFromRow = function (s) {
     editStudent(s.id, s.class_id, s.roll, s.name || '', s.blood_group || '', s.guardian_contact || '',
         s.address || '', s.dob || '', s.fathers_name || '', s.mothers_name || '', s.birth_reg_number || '', photoSrc);
     document.getElementById('st-gender').value = s.gender || '';
+    const stIdEl = document.getElementById('st-student-id');
+    if (stIdEl) stIdEl.value = s.student_id_number || '';
     if (s.status === 'Graduated' || s.status === 'Removed') showArchiveFields(s);
     else hideArchiveFields();
 };
@@ -1685,7 +1687,7 @@ window.editStudent = async function (id, classId, roll, name, bloodGroup, guardi
 function resetStudentForm() {
     const editIdEl = document.getElementById('st-edit-id');
     if (editIdEl) editIdEl.value = '';
-    ['st-roll', 'st-name', 'st-blood', 'st-gender', 'st-phone', 'st-address', 'st-dob', 'st-father', 'st-mother', 'st-birth-reg'].forEach(id => {
+    ['st-student-id', 'st-roll', 'st-name', 'st-blood', 'st-gender', 'st-phone', 'st-address', 'st-dob', 'st-father', 'st-mother', 'st-birth-reg'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
     });
@@ -1720,6 +1722,7 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
     const isPhotoRemoved = window.StudentUpload ? window.StudentUpload.isPhotoRemoved() : false;
 
     const s = {
+        student_id_number: document.getElementById('st-student-id')?.value.trim() || '',
         class_id: document.getElementById('st-class').value,
         roll: parseInt(document.getElementById('st-roll').value, 10),
         name: document.getElementById('st-name').value.trim(),
@@ -3470,7 +3473,7 @@ function paintTranscriptPreview() {
                     <div class="transcript-info-row"><span class="info-label">Mother's Name</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(st.mothers_name || st.mother_name || '-').toUpperCase()}</span></div>
                     <div class="transcript-info-row"><span class="info-label">Class</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(classNameFormatted)}</span></div>
                     <div class="transcript-info-row"><span class="info-label">Roll No</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(String(st.roll))}</span></div>
-                    <div class="transcript-info-row"><span class="info-label">Student ID</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(String(st.roll))}</span></div>
+                    <div class="transcript-info-row"><span class="info-label">Student ID</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(String(st.student_id_number || st.roll))}</span></div>
                 </div>
                 <div class="transcript-info-col transcript-info-col-right">
                     <div class="transcript-info-row"><span class="info-label">Exam</span><span class="info-colon">:</span><span class="info-value">${escapeHtml(test).toUpperCase()}</span></div>
