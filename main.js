@@ -709,9 +709,44 @@ db.all("SELECT id, dob FROM students WHERE dob IS NOT NULL AND dob LIKE '%-%'", 
     }
 });
 
+// --- MANDATORY FIELD CHECKS (the fields marked with a red * in the forms) ---
+// Kept here as well as in the form so the rules hold even if a record is saved some other way.
+function isBlank(v) {
+    return v === undefined || v === null || !String(v).trim();
+}
+
+// Returns an error message, or null when all mandatory student text fields are present.
+// (Photo is checked separately because add and update treat an existing photo differently.)
+function missingStudentField(s) {
+    if (isBlank(s.student_id_number)) return 'Student ID is required.';
+    if (isBlank(s.class_id)) return 'Class is required.';
+    if (!s.roll) return 'Class Roll is required.';
+    if (isBlank(s.name)) return 'Full Name is required.';
+    if (isBlank(s.guardian_contact)) return 'Guardian Contact is required.';
+    return null;
+}
+
+// Returns an error message, or null when all mandatory teacher text fields are present.
+// (Photo and Signature are checked separately, like the student photo.)
+function missingTeacherField(t) {
+    if (isBlank(t.teacher_id_number)) return 'Teacher ID is required.';
+    if (isBlank(t.name)) return 'Full Name is required.';
+    if (isBlank(t.contact_number)) return 'Contact Number is required.';
+    if (isBlank(t.nid_number)) return 'NID Number is required.';
+    return null;
+}
+
+function isNewImage(dataUrl) {
+    return !!dataUrl && String(dataUrl).startsWith('data:');
+}
+
 // --- ADD / EDIT STUDENT ---
 ipcMain.handle('add-student', async (event, s) => {
     try {
+        const missing = missingStudentField(s);
+        if (missing) return { success: false, error: missing };
+        if (!isNewImage(s.photo_data_url)) return { success: false, error: 'Student Photo is required.' };
+
         const license = await getLicenseStatus();
         if (license.isTrial) {
             const countRow = await dbGet(`SELECT COUNT(*) as count FROM students WHERE class_id = ? AND status = 'Active'`, [s.class_id]);
@@ -723,8 +758,6 @@ ipcMain.handle('add-student', async (event, s) => {
             }
         }
         const cleanDob = normalizeDateToDDMMYYYY(s.dob);
-        if (!s.student_id_number) return { success: false, error: 'Student ID is required.' };
-        if (!s.guardian_contact) return { success: false, error: 'Guardian Contact is required.' };
         let photoPath = null;
         if (s.photo_data_url && s.photo_data_url.startsWith('data:')) {
             photoPath = saveMediaFile(s.photo_data_url, 'students/photos', 'student_photo');
@@ -768,6 +801,12 @@ ipcMain.handle('update-student', async (event, s) => {
             return { success: false, error: 'Please enter the reason for dropping out.' };
         }
 
+        const missing = missingStudentField(s);
+        if (missing) return { success: false, error: missing };
+        // A photo must remain after this save: either a new one, or the existing one (not removed).
+        const willHavePhoto = s.photo_removed ? false : (isNewImage(s.photo_data_url) || !!current.photo_path);
+        if (!willHavePhoto) return { success: false, error: 'Student Photo is required.' };
+
         let newPhotoPath = current.photo_path;
         if (s.photo_removed) {
             if (newPhotoPath && fs.existsSync(newPhotoPath)) {
@@ -782,8 +821,6 @@ ipcMain.handle('update-student', async (event, s) => {
         }
 
         const cleanDob = normalizeDateToDDMMYYYY(s.dob);
-        if (!s.student_id_number) return { success: false, error: 'Student ID is required.' };
-        if (!s.guardian_contact) return { success: false, error: 'Guardian Contact is required.' };
         await dbRun(`UPDATE students SET roll = ?, name = ?, blood_group = ?, photo_path = ?, fathers_name = ?, mothers_name = ?, guardian_name = ?, guardian_contact = ?, address = ?, dob = ?, birth_reg_number = ?, class_id = ?, gender = ?, student_id_number = ? WHERE id = ?`,
             [s.roll, s.name, s.blood_group, newPhotoPath, s.fathers_name || null, s.mothers_name || null, s.guardian_name, s.guardian_contact, s.address, cleanDob, s.birth_reg_number || null, s.class_id, s.gender || null, s.student_id_number || null, s.id]);
 
@@ -1075,6 +1112,12 @@ ipcMain.handle('get-teachers', async () => {
 
 ipcMain.handle('add-teacher', async (event, t) => {
     try {
+        // Mandatory field checks
+        const missing = missingTeacherField(t);
+        if (missing) return { success: false, error: missing };
+        if (!isNewImage(t.photo_data_url)) return { success: false, error: 'Teacher Photo is required.' };
+        if (!isNewImage(t.signature_data_url)) return { success: false, error: 'Teacher Signature is required.' };
+
         const license = await getLicenseStatus();
         if (license.isTrial) {
             const countRow = await dbGet(`SELECT COUNT(*) as count FROM teachers`);
@@ -1094,10 +1137,6 @@ ipcMain.handle('add-teacher', async (event, t) => {
             );
             if (existing) return { success: false, error: `Teacher ID "${t.teacher_id_number}" is already in use by another teacher.` };
         }
-
-        // Mandatory field checks
-        if (!t.teacher_id_number) return { success: false, error: 'Teacher ID is required.' };
-        if (!t.contact_number) return { success: false, error: 'Contact Number is required.' };
 
         let photoPath = null;
         if (t.photo_data_url && t.photo_data_url.startsWith('data:')) {
@@ -1154,6 +1193,10 @@ ipcMain.handle('set-teacher-classes', async (event, { teacher_id, class_ids }) =
 
 ipcMain.handle('update-teacher', async (event, t) => {
     try {
+        // Mandatory field checks
+        const missing = missingTeacherField(t);
+        if (missing) return { success: false, error: missing };
+
         // Enforce unique teacher_id_number (if provided), excluding the teacher being edited
         if (t.teacher_id_number) {
             const existing = await dbGet(
@@ -1166,6 +1209,12 @@ ipcMain.handle('update-teacher', async (event, t) => {
         const existingRow = await dbGet(`SELECT photo_path, signature_path FROM teachers WHERE id = ?`, [t.id]);
         let newPhotoPath = existingRow ? existingRow.photo_path : null;
         let newSigPath = existingRow ? existingRow.signature_path : null;
+
+        // A photo and a signature must remain after this save: either a new one, or the existing one (not removed).
+        const willHavePhoto = t.photo_removed ? false : (isNewImage(t.photo_data_url) || !!newPhotoPath);
+        if (!willHavePhoto) return { success: false, error: 'Teacher Photo is required.' };
+        const willHaveSig = t.signature_removed ? false : (isNewImage(t.signature_data_url) || !!newSigPath);
+        if (!willHaveSig) return { success: false, error: 'Teacher Signature is required.' };
 
         // Photo update / removal
         if (t.photo_removed) {

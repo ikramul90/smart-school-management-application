@@ -1739,9 +1739,42 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
         photo_removed: isPhotoRemoved
     };
 
-    if (!s.roll || !s.name) return alert("Roll and Name are required!");
-    if (!s.student_id_number) return alert("Student ID is required!");
-    if (!s.guardian_contact) return alert("Guardian Contact is required!");
+    // --- Mandatory fields (marked with a red * in the form), checked in form order ---
+    const errBox = document.getElementById('st-error');
+    if (errBox) { errBox.style.display = 'none'; errBox.textContent = ''; }
+    const fail = (msg, focusId) => {
+        if (errBox) { errBox.style.display = 'block'; errBox.textContent = msg; }
+        alert(msg);
+        const el = focusId ? document.getElementById(focusId) : null;
+        if (el) el.focus();
+    };
+
+    if (!s.student_id_number) return fail("Student ID is required!", 'st-student-id');
+    if (!s.class_id) return fail("Class is required!", 'st-class');
+    if (!s.roll) return fail("Class Roll is required!", 'st-roll');
+
+    // Nine/Ten only: exactly 3 Main subjects are mandatory (Optional is filled in automatically)
+    const cls = allClassesForStudents.find(c => String(c.id) === String(s.class_id));
+    const pool = cls && MAIN_SUBJECT_POOLS[cls.class_name];
+    let subjectSelections = null;
+    if (pool && !editingArchiveStatus) {
+        const mains = Array.from(document.querySelectorAll('.stu-main-checkbox:checked')).map(cb => cb.value);
+        if (mains.length !== 3) return fail("Please select exactly 3 Main Subjects!");
+        const optional = document.getElementById('stu-optional-select').value;
+        subjectSelections = mains.map(name => ({ subject_name: name, role: 'main' }));
+        if (optional) subjectSelections.push({ subject_name: optional, role: 'optional' });
+    }
+
+    if (!s.name) return fail("Full Name is required!", 'st-name');
+    if (!s.guardian_contact) return fail("Guardian Contact is required!", 'st-phone');
+    if (!photoDataUrl) {
+        const zone = document.getElementById('st-photo-zone');
+        if (zone) {
+            zone.classList.add('upload-error');
+            setTimeout(() => zone.classList.remove('upload-error'), 2500);
+        }
+        return fail("Student Photo is required!");
+    }
 
     if (!editId && appLicenseStatus && appLicenseStatus.isTrial) {
         const classStudents = await ipcRenderer.invoke('get-students', { class_id: s.class_id, status: 'Active' });
@@ -1756,20 +1789,6 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
         }
     }
 
-    if (!photoDataUrl) {
-        const zone = document.getElementById('st-photo-zone');
-        if (zone) {
-            zone.classList.add('upload-error');
-            setTimeout(() => zone.classList.remove('upload-error'), 2500);
-        }
-        const errBox = document.getElementById('st-error');
-        if (errBox) {
-            errBox.style.display = 'block';
-            errBox.textContent = 'Student photo is required!';
-        }
-        return alert("Student photo is required!");
-    }
-
     if (s.dob) {
         s.dob = formatDob(s.dob);
         const parts = s.dob.split('/');
@@ -1782,20 +1801,6 @@ document.getElementById('btn-save-student').addEventListener('click', async () =
         if (d < 1 || d > 31 || m < 1 || m > 12 || y < 1950 || y > 2100) {
             return alert("Please enter a valid Date of Birth (DD/MM/YYYY)!");
         }
-    }
-
-    // Nine/Ten Main + Optional subject validation
-    const cls = allClassesForStudents.find(c => String(c.id) === String(s.class_id));
-    const pool = cls && MAIN_SUBJECT_POOLS[cls.class_name];
-    let subjectSelections = null;
-    if (pool && !editingArchiveStatus) {
-        const mains = Array.from(document.querySelectorAll('.stu-main-checkbox:checked')).map(cb => cb.value);
-        const optional = document.getElementById('stu-optional-select').value;
-        if (mains.length !== 3 || !optional) {
-            return alert("Please select exactly 3 Main subjects and 1 Optional subject.");
-        }
-        subjectSelections = mains.map(name => ({ subject_name: name, role: 'main' }))
-            .concat([{ subject_name: optional, role: 'optional' }]);
     }
 
     const updateData = { ...s, id: editId };
@@ -2569,22 +2574,29 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
         signature_removed: window.TeacherUploads ? window.TeacherUploads.isSignatureRemoved() : false
     };
 
-    if (!t.name) return alert("Teacher name is required!");
-    if (!t.teacher_id_number) return alert("Teacher ID is required!");
-    if (!t.contact_number) return alert("Contact Number is required!");
+    // --- Mandatory fields (marked with a red * in the form), checked in form order ---
+    const fail = (msg, focusId) => {
+        if (errorEl) { errorEl.style.display = 'block'; errorEl.textContent = msg; }
+        alert(msg);
+        const el = focusId ? document.getElementById(focusId) : null;
+        if (el) el.focus();
+    };
+
+    if (!t.teacher_id_number) return fail("Teacher ID is required!", 'tc-teacher-id');
+    if (!t.name) return fail("Full Name is required!", 'tc-name');
+    const selectedVal = document.getElementById('tc-classes')?.value;
+    if (!selectedVal) return fail("Please select a class for 'Class Teacher Of'!", 'tc-classes');
+    if (!t.contact_number) return fail("Contact Number is required!", 'tc-contact');
+    if (!t.nid_number) return fail("NID Number is required!", 'tc-nid');
     if (!t.photo_data_url) {
         const photoZone = document.getElementById('tc-photo-zone');
         if (photoZone) { photoZone.classList.add('upload-error'); setTimeout(() => photoZone.classList.remove('upload-error'), 2500); }
-        const errEl = document.getElementById('tc-error');
-        if (errEl) { errEl.style.display = 'block'; errEl.textContent = 'Teacher photo is required!'; }
-        return alert("Teacher photo is required!");
+        return fail("Teacher Photo is required!");
     }
     if (!t.signature_data_url) {
         const signZone = document.getElementById('tc-sign-zone');
         if (signZone) { signZone.classList.add('upload-error'); setTimeout(() => signZone.classList.remove('upload-error'), 2500); }
-        const errEl = document.getElementById('tc-error');
-        if (errEl) { errEl.style.display = 'block'; errEl.textContent = 'Teacher signature is required!'; }
-        return alert("Teacher signature is required!");
+        return fail("Teacher Signature is required!");
     }
 
     if (!editId && appLicenseStatus && appLicenseStatus.isTrial) {
@@ -2599,10 +2611,6 @@ document.getElementById('btn-save-teacher').addEventListener('click', async () =
         }
     }
 
-    const selectedVal = document.getElementById('tc-classes')?.value;
-    if (!selectedVal) {
-        return alert("Please select a class for 'Class Teacher Of'!");
-    }
     const selectedClassIds = [parseInt(selectedVal, 10)];
 
     // Warn if selected class already belongs to a different teacher
