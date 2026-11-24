@@ -5797,6 +5797,116 @@ document.getElementById('btn-view-copyright')?.addEventListener('click', () => {
     openDetailsInfoModal('© Copyright Notice', html);
 });
 
+document.getElementById('btn-view-eula')?.addEventListener('click', () => {
+    const html = `
+        <div style="font-size:13.5px; line-height:1.8; color:#0f172a;">
+            <p style="margin-top:0;">
+                <b>Software:</b> EduKit Campus<br>
+                <b>Provider:</b> EduKit Solutions ("we," "us," or "our")<br>
+                <b>Version:</b> 1.0.0<br>
+                <b>Effective Date:</b> 01 December 2026
+            </p>
+            <p>Please read this End-User License Agreement ("Agreement") carefully before installing or using <b>EduKit Campus</b> ("Software"). By installing, activating, or using the Software, or by signing or accepting this Agreement, the educational institution ("Institute") agrees to be bound by its terms. The person accepting this Agreement confirms that they have authority to bind the Institute.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">1. Grant of License</h4>
+            <p>Subject to full payment of the applicable one-time license fee and compliance with this Agreement, <b>EduKit Solutions</b> grants the Institute a non-exclusive, non-transferable, perpetual (lifetime) license to install and use the Software on <b>one (1) desktop computer or laptop</b>, solely for the internal academic and administrative operations of one (1) institute at one (1) campus.</p>
+            <p>The Institute may make backup copies of the Software and of its own data for its own protection. The Institute's authorized staff may access the licensed computer remotely, but the Software must not be installed or run on any other computer. A separate license is required for each additional campus or institute. The license may not be transferred to a new owner, a merged institute, or any other organization without our prior written consent.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">2. Free Trial Version</h4>
+            <p>Before purchasing a license, the Institute may use the trial version of the Software free of charge under the following conditions:</p>
+            <ul style="margin-top:4px; padding-left:20px;">
+                <li><b>Duration:</b> The trial period lasts two (2) days from initial setup.</li>
+                <li><b>Feature limits:</b> The trial version is limited to storing a maximum of five (5) student records and five (5) teacher records, and certain advanced features may be restricted.</li>
+                <li><b>Expiration:</b> When the 2-day trial ends, the Software automatically locks until a valid activation code is entered.</li>
+                <li><b>Trial data:</b> Data entered during the trial remains stored locally on the Institute's computer and can continue to be used once the Software is activated.</li>
+            </ul>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">3. Activation and Device Transfers</h4>
+            <ul style="margin-top:4px; padding-left:20px;">
+                <li><b>Activation:</b> Upon receiving full payment, EduKit Solutions will provide the activation code, or an authorized representative will enter the code directly on the Institute's computer, to unlock the full version.</li>
+                <li><b>Single-device rule:</b> One license may not be used to activate the Software on multiple computers at the same time.</li>
+                <li><b>Changing computers:</b> While EduKit Solutions remains in operation, the Institute may request to move the Software to a replacement computer, subject to a transfer fee of <b>1,000 BDT</b> payable before the transfer. The transfer will be carried out by an authorized EduKit Solutions staff member, and only with the Institute's permission. EduKit Solutions will use the Institute's data only to complete the transfer, will keep it confidential, and will delete any copy it received once the transfer is finished. The Software and its activation must be completely removed from the old computer.</li>
+                <li><b>Lost, stolen, or broken computers:</b> If the old computer is lost, stolen, or broken and the activation cannot be removed from it, the transfer cannot be made and the activation will not be moved to another computer, unless EduKit Solutions agrees otherwise in writing.</li>
+            </ul>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">4. Restrictions on Use</h4>
+            <p>The Institute agrees not to:</p>
+            <ul style="margin-top:4px; padding-left:20px;">
+                <li>Copy, distribute, rent, lease, lend, sublicense, or resell the Software, or share its activation code with anyone outside the Institute, or install the activated Software on unauthorized computers.</li>
+                <li>Reverse-engineer, decompile, disassemble, modify, or attempt to extract the source code of the Software, or bypass its licensing mechanism.</li>
+                <li>Remove or alter any copyright notices, branding, or proprietary labels inside the Software.</li>
+            </ul>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">5. Payments and No-Refund Policy</h4>
+            <ul style="margin-top:4px; padding-left:20px;">
+                <li><b>One-time fee:</b> The license is sold for a one-time fee of <b>15,000 BDT</b>, as agreed at the time of purchase. Unless stated otherwise in writing, the fee is exclusive of applicable taxes. Payment is due in full.</li>
+                <li><b>No refunds:</b> Because the Institute is given access to a free trial version to test the Software before purchasing, all payments are non-refundable once the activation code has been issued or entered, including if this Agreement is later terminated. This does not limit any right the Institute may have under applicable law that cannot be waived.</li>
+            </ul>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">6. Software Updates and Upgrades</h4>
+            <p>EduKit Solutions may release updates and upgrades at its discretion and provides them free of charge to licensed Institutes while the Software is actively maintained. EduKit Solutions has no obligation to develop, provide, or continue providing any updates, upgrades, or maintenance. We will give reasonable notice if we stop releasing updates. Any updates already released will remain usable under this license.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">7. Customer Support and Discontinuation of Operations</h4>
+            <ul style="margin-top:4px; padding-left:20px;">
+                <li><b>Free Support (Discretionary):</b> EduKit Solutions provides initial setup assistance and technical support (via WhatsApp or remote session during our available hours) free of charge. Support is provided at our sole discretion and is not guaranteed for any fixed period, such as lifetime or a set number of years.</li>
+                <li><b>Ending Support by Official Notice:</b> EduKit Solutions may modify, pause, or permanently stop providing customer support at any time by issuing an official notice (via WhatsApp, email, or our official Facebook/web page) at least 15 days in advance.</li>
+                <li><b>Closure, Relocation, or Unavailability of Proprietor:</b> EduKit Solutions is operated as an independent business. If EduKit Solutions ceases operations, or if its sole proprietor relocates, becomes permanently unavailable, or passes away, all technical support, software updates, and device transfer services will automatically end without liability or refund.</li>
+                <li><b>Continued Use of Software:</b> Because EduKit Campus operates offline on the Institute's computer, ending support or closing operations does not affect the Institute's perpetual license. The Institute may continue using the installed Software and its locally stored data indefinitely.</li>
+            </ul>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">8. Backups and Data Responsibility</h4>
+            <p>Because the Software stores all data locally on the Institute's computer, the Institute is solely responsible for regularly backing up the Software's database and media files and storing those backups safely on a separate device. The Institute must also verify all marks, results, transcripts, and other outputs generated by the Software for accuracy before using them officially or distributing them to students, parents, boards, or authorities.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">9. Ownership and Intellectual Property</h4>
+            <p>EduKit Campus is licensed, not sold. EduKit Solutions retains all ownership, copyright, and intellectual property rights in the Software, its design, code, and documentation. Third-party open-source libraries included in the Software are governed by their respective licenses, as listed in the <b>THIRD-PARTY-LICENSES</b> file supplied with the Software.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">10. Data Ownership and Privacy</h4>
+            <p>The Institute retains full ownership of all student, teacher, staff, and administrative records entered into the Software. Because the Software operates offline and stores data locally on the Institute's computer, our handling of information is governed by the <b>EduKit Campus Privacy Policy</b>. If this Agreement and the Privacy Policy conflict on how data is handled, the Privacy Policy prevails; on all other matters, this Agreement prevails.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">11. Disclaimer of Warranties</h4>
+            <p>The Software is provided "AS IS" without warranties of any kind, whether express or implied. While we strive to make EduKit Campus reliable and accurate, we do not guarantee that the Software will be completely free of bugs, interruptions, or compatibility issues caused by the Institute's hardware or operating system.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">12. Limitation of Liability</h4>
+            <p>To the maximum extent permitted by applicable law:</p>
+            <ul style="margin-top:4px; padding-left:20px;">
+                <li>EduKit Solutions is not liable for any indirect, incidental, or consequential damages, including loss of data (including where the Institute has not kept backups as required by Section 8), business interruption, or financial loss arising from the use of, or inability to use, the Software.</li>
+                <li>Our total cumulative liability under this Agreement shall not exceed the one-time license fee actually paid by the Institute for the Software.</li>
+            </ul>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">13. Termination</h4>
+            <p>This Agreement remains effective until terminated. If the Institute breaches this Agreement (for example, by unauthorized copying or sharing of the activation code), EduKit Solutions may give written notice describing the breach. If the breach is not fixed within 7 to 14 days of the notice, or cannot be fixed, the license terminates. We may terminate immediately where the breach involves unauthorized sharing or use of the activation code on other computers.</p>
+            <p>Upon termination, the Institute must stop using the Software and uninstall it. The Institute keeps ownership of its data files. Termination does not entitle the Institute to a refund.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">14. General Terms</h4>
+            <ul style="margin-top:4px; padding-left:20px;">
+                <li><b>Entire agreement:</b> This Agreement, together with the Privacy Policy, is the entire agreement between the parties about the Software and replaces earlier discussions about it.</li>
+                <li><b>Amendments:</b> This Agreement may be changed only in writing signed or accepted by both parties. Updated versions supplied with new releases of the Software apply to those releases once the Institute accepts them.</li>
+                <li><b>Severability:</b> If any part of this Agreement is found unenforceable, the rest remains in effect.</li>
+                <li><b>No waiver:</b> Failure to enforce a term is not a waiver of it.</li>
+                <li><b>Survival:</b> Sections 4, 5, 9, 10, 11, 12, 13, and 15 continue after termination.</li>
+                <li><b>Language:</b> This Agreement is written in English. A Bangla translation soft-copy is provided for convenience; if the two differ, the English version prevails.</li>
+            </ul>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">15. Governing Law and Jurisdiction</h4>
+            <p>This Agreement is governed by and construed in accordance with the laws of Bangladesh. Any dispute arising out of or relating to this Agreement is subject to the exclusive jurisdiction of the courts of Bangladesh.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">16. Contact Information</h4>
+            <p>
+                For licensing, device transfers, updates, or support inquiries, please contact:<br>
+                <b>EduKit Solutions</b><br>
+                <b>Email:</b> edukitsolutions@gmail.com<br>
+                <b>LinkedIn:</b> linkedin.com/company/146668574<br>
+                <b>Facebook:</b> facebook.com/EduKitSolutions<br>
+                <b>Phone:</b> +880 15702-56457<br>
+                <b>Location:</b> TB Hospital Road, Moulvibazar Sadar, Sylhet, Bangladesh
+            </p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">17. Acceptance</h4>
+            <p style="margin-bottom:0;">By signing below, or by clicking "I agree" when installing the Software, the Institute confirms that it has read and accepts this Agreement and the <b>EduKit Campus Privacy Policy</b>.</p>
+        </div>`;
+    openDetailsInfoModal('📜 End-User License Agreement (EULA)', html);
+});
+
 function renderInfoGrid(items) {
     return `<div style="display:grid; grid-template-columns: 140px 1fr; row-gap:10px; column-gap:12px; font-size:13.5px; line-height:1.5;">` +
         items.map(([label, val]) => `
