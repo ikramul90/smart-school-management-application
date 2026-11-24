@@ -350,105 +350,184 @@
                 <div id="home-tab" class="tab-content">
                     <h1 class="no-select"
                         style="margin-top: 0; color: #0f172a; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
-                        Welcome to, EduKit Campus <span id="home-trial-pill" class="trial-mode-pill" style="display:none;">Trial Version</span></h1>
+                        Welcome to, EduKit Campus <span id="home-trial-pill" class="trial-mode-pill"
+                            style="display:none;">Trial Version</span></h1>
 
-                    <!-- SUMMARY CARDS -->
-                    <div class="home-cards">
+                    <!-- TRIAL EXPIRED LOCKDOWN CARD -->
+                    <div id="home-trial-expired" class="trial-expired-card" style="display:none;">
+                        <div class="trial-expired-badge">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                            <span>Trial Period Expired (2-Day Limit Reached)</span>
+                        </div>
+                        <h2 class="trial-expired-title">
+                            <span>Trial Version Expired</span>
+                        </h2>
+                        <p class="trial-expired-desc">
+                            This application was operating under a temporary <strong>2-day trial version</strong>. The
+                            trial period has now concluded. All software features, student &amp; teacher records,
+                            examination modules, and transcript tools have been <strong>closed</strong>. To continue
+                            using the software and unlock permanent full lifetime access, please make payment to get the
+                            original version.
+                        </p>
 
-                        <div class="home-card">
-                            <span class="home-card-icon">
-                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M12 6V2h4v2.5h-4M6 22V10l6-4 6 4v12M6 13H2v9M18 13h4v9M2 22h20M10 22v-4h4v4M12 11h.01"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
+                        <div class="trial-expired-info-box">
+                            <div class="trial-expired-info-title">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                    <line x1="2" y1="10" x2="22" y2="10"></line>
                                 </svg>
-                            </span>
-                            <div class="home-card-body">
-                                <div class="home-card-value" id="stat-classes">0</div>
-                                <div class="home-card-label">Total Classes</div>
+                                <span>How to Obtain the Real Version:</span>
                             </div>
+                            <ul class="trial-expired-info-list">
+                                <li>Make payment to purchase the original full version of <strong>EduKit
+                                        Campus</strong>.</li>
+                                <li>Upon payment confirmation, you will receive your genuine <strong>Full License
+                                        Activation Key</strong>.</li>
+                                <li>Activating the real version unlocks all modules, removes student/teacher limits,
+                                    enables PDF transcript exports, and restores full access immediately without losing
+                                    any of your existing data.</li>
+                            </ul>
                         </div>
 
-                        <div class="home-card clickable" role="button" tabindex="0" onclick="switchTab('db-students')"
-                            onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchTab('db-students'); }">
-                            <span class="home-card-icon">
-                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M17 14.5001V11.4945C17 11.315 17 11.2253 16.9727 11.146C16.9485 11.076 16.9091 11.0122 16.8572 10.9592C16.7986 10.8993 16.7183 10.8592 16.5578 10.779L12 8.50006M4 9.50006V16.3067C4 16.6786 4 16.8645 4.05802 17.0274C4.10931 17.1713 4.1929 17.3016 4.30238 17.4082C4.42622 17.5287 4.59527 17.6062 4.93335 17.7612L11.3334 20.6945C11.5786 20.8069 11.7012 20.8631 11.8289 20.8853C11.9421 20.9049 12.0579 20.9049 12.1711 20.8853C12.2988 20.8631 12.4214 20.8069 12.6666 20.6945L19.0666 17.7612C19.4047 17.6062 19.5738 17.5287 19.6976 17.4082C19.8071 17.3016 19.8907 17.1713 19.942 17.0274C20 16.8645 20 16.6786 20 16.3067V9.50006M2 8.50006L11.6422 3.67895C11.7734 3.61336 11.839 3.58056 11.9078 3.56766C11.9687 3.55622 12.0313 3.55622 12.0922 3.56766C12.161 3.58056 12.2266 3.61336 12.3578 3.67895L22 8.50006L12.3578 13.3212C12.2266 13.3868 12.161 13.4196 12.0922 13.4325C12.0313 13.4439 11.9687 13.4439 11.9078 13.4325C11.839 13.4196 11.7734 13.3868 11.6422 13.3212L2 8.50006Z"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                            </span>
-                            <div class="home-card-body">
-                                <div class="home-card-value" id="stat-students">0</div>
-                                <div class="home-card-label">Total Students</div>
+                        <div class="trial-activation-box">
+                            <label for="trial-expired-key-input">Enter original Version Activation Token</label>
+                            <textarea id="trial-expired-key-input" rows="3"
+                                placeholder="Paste your genuine Full Version Activation Code here..."></textarea>
+
+                            <div id="trial-expired-error" class="error" style="display:none; margin-top:8px;"></div>
+                            <div id="trial-expired-success" class="success-message"
+                                style="display:none; margin-top:8px; color: #16a34a; font-weight:600; font-size:14px;">
+                            </div>
+
+                            <div class="trial-activation-actions">
+                                <button id="btn-trial-activate-full" class="btn-activate-full" type="button">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                                    </svg>
+                                    <span>Activate Real Version</span>
+                                </button>
+                                <button id="btn-trial-close-app" class="btn-trial-close-app" type="button">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+                                        <line x1="12" y1="2" x2="12" y2="12"></line>
+                                    </svg>
+                                    <span>Close Application</span>
+                                </button>
                             </div>
                         </div>
-
-                        <div class="home-card clickable" role="button" tabindex="0" onclick="switchTab('db-teachers')"
-                            onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchTab('db-teachers'); }">
-                            <span class="home-card-icon">
-                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M22 21V19C22 17.1362 20.7252 15.5701 19 15.126M15.5 3.29076C16.9659 3.88415 18 5.32131 18 7C18 8.67869 16.9659 10.1159 15.5 10.7092M17 21C17 19.1362 17 18.2044 16.6955 17.4693C16.2895 16.4892 15.5108 15.7105 14.5307 15.3045C13.7956 15 12.8638 15 11 15H8C6.13623 15 5.20435 15 4.46927 15.3045C3.48915 15.7105 2.71046 16.4892 2.30448 17.4693C2 18.2044 2 19.1362 2 21M13.5 7C13.5 9.20914 11.7091 11 9.5 11C7.29086 11 5.5 9.20914 5.5 7C5.5 4.79086 7.29086 3 9.5 3C11.7091 3 13.5 4.79086 13.5 7Z"
-                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round" />
-                                </svg>
-                            </span>
-                            <div class="home-card-body">
-                                <div class="home-card-value" id="stat-teachers">0</div>
-                                <div class="home-card-label">Total Teachers</div>
-                            </div>
-                        </div>
-
-                        <div class="home-card">
-                            <span class="home-card-icon">
-                                <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <!-- man (left) -->
-                                        <circle cx="7" cy="4.5" r="2" />
-                                        <path d="M4 14V9.5A1.5 1.5 0 0 1 5.5 8h3A1.5 1.5 0 0 1 10 9.5V14H4Z" />
-                                        <path d="M5.5 14v7.5M8.5 14v7.5" />
-
-                                        <!-- woman (right) -->
-                                        <circle cx="17" cy="4.5" r="2" />
-                                        <path d="M15.5 8h3L21 15H13l2.5-7Z" />
-                                        <path d="M15.5 15v6.5M18.5 15v6.5" />
-                                    </g>
-                                </svg>
-                            </span>
-                            <div class="home-card-body">
-                                <div class="home-card-label" style="margin: 0 0 4px 0;">Students by Gender</div>
-                                <div class="home-gender-row">
-                                    <span><b id="stat-boys">0</b> Boys</span>
-                                    <span><b id="stat-girls">0</b> Girls</span>
-                                </div>
-                                <div class="home-gender-bar">
-                                    <span id="gender-bar-boys"></span><span id="gender-bar-girls"></span>
-                                </div>
-                                <div class="home-card-note" id="stat-gender-unset"></div>
-                            </div>
-                        </div>
-
                     </div>
 
-                    <!-- CHARTS -->
-                    <div class="home-charts">
-                        <div class="home-panel">
-                            <h3 class="home-panel-title no-select">Students in Each Class</h3>
-                            <div id="chart-students-per-class"></div>
+                    <!-- NORMAL DASHBOARD HOME CONTENT (CLOSED WHEN TRIAL EXPIRED) -->
+                    <div id="home-normal-content">
+                        <!-- SUMMARY CARDS -->
+                        <div class="home-cards">
+
+                            <div class="home-card">
+                                <span class="home-card-icon">
+                                    <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M12 6V2h4v2.5h-4M6 22V10l6-4 6 4v12M6 13H2v9M18 13h4v9M2 22h20M10 22v-4h4v4M12 11h.01"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                                <div class="home-card-body">
+                                    <div class="home-card-value" id="stat-classes">0</div>
+                                    <div class="home-card-label">Total Classes</div>
+                                </div>
+                            </div>
+
+                            <div class="home-card clickable" role="button" tabindex="0"
+                                onclick="switchTab('db-students')"
+                                onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchTab('db-students'); }">
+                                <span class="home-card-icon">
+                                    <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M17 14.5001V11.4945C17 11.315 17 11.2253 16.9727 11.146C16.9485 11.076 16.9091 11.0122 16.8572 10.9592C16.7986 10.8993 16.7183 10.8592 16.5578 10.779L12 8.50006M4 9.50006V16.3067C4 16.6786 4 16.8645 4.05802 17.0274C4.10931 17.1713 4.1929 17.3016 4.30238 17.4082C4.42622 17.5287 4.59527 17.6062 4.93335 17.7612L11.3334 20.6945C11.5786 20.8069 11.7012 20.8631 11.8289 20.8853C11.9421 20.9049 12.0579 20.9049 12.1711 20.8853C12.2988 20.8631 12.4214 20.8069 12.6666 20.6945L19.0666 17.7612C19.4047 17.6062 19.5738 17.5287 19.6976 17.4082C19.8071 17.3016 19.8907 17.1713 19.942 17.0274C20 16.8645 20 16.6786 20 16.3067V9.50006M2 8.50006L11.6422 3.67895C11.7734 3.61336 11.839 3.58056 11.9078 3.56766C11.9687 3.55622 12.0313 3.55622 12.0922 3.56766C12.161 3.58056 12.2266 3.61336 12.3578 3.67895L22 8.50006L12.3578 13.3212C12.2266 13.3868 12.161 13.4196 12.0922 13.4325C12.0313 13.4439 11.9687 13.4439 11.9078 13.4325C11.839 13.4196 11.7734 13.3868 11.6422 13.3212L2 8.50006Z"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                                <div class="home-card-body">
+                                    <div class="home-card-value" id="stat-students">0</div>
+                                    <div class="home-card-label">Total Students</div>
+                                </div>
+                            </div>
+
+                            <div class="home-card clickable" role="button" tabindex="0"
+                                onclick="switchTab('db-teachers')"
+                                onkeydown="if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); switchTab('db-teachers'); }">
+                                <span class="home-card-icon">
+                                    <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path
+                                            d="M22 21V19C22 17.1362 20.7252 15.5701 19 15.126M15.5 3.29076C16.9659 3.88415 18 5.32131 18 7C18 8.67869 16.9659 10.1159 15.5 10.7092M17 21C17 19.1362 17 18.2044 16.6955 17.4693C16.2895 16.4892 15.5108 15.7105 14.5307 15.3045C13.7956 15 12.8638 15 11 15H8C6.13623 15 5.20435 15 4.46927 15.3045C3.48915 15.7105 2.71046 16.4892 2.30448 17.4693C2 18.2044 2 19.1362 2 21M13.5 7C13.5 9.20914 11.7091 11 9.5 11C7.29086 11 5.5 9.20914 5.5 7C5.5 4.79086 7.29086 3 9.5 3C11.7091 3 13.5 4.79086 13.5 7Z"
+                                            stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                            stroke-linejoin="round" />
+                                    </svg>
+                                </span>
+                                <div class="home-card-body">
+                                    <div class="home-card-value" id="stat-teachers">0</div>
+                                    <div class="home-card-label">Total Teachers</div>
+                                </div>
+                            </div>
+
+                            <div class="home-card">
+                                <span class="home-card-icon">
+                                    <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                                            stroke-linejoin="round">
+                                            <!-- man (left) -->
+                                            <circle cx="7" cy="4.5" r="2" />
+                                            <path d="M4 14V9.5A1.5 1.5 0 0 1 5.5 8h3A1.5 1.5 0 0 1 10 9.5V14H4Z" />
+                                            <path d="M5.5 14v7.5M8.5 14v7.5" />
+
+                                            <!-- woman (right) -->
+                                            <circle cx="17" cy="4.5" r="2" />
+                                            <path d="M15.5 8h3L21 15H13l2.5-7Z" />
+                                            <path d="M15.5 15v6.5M18.5 15v6.5" />
+                                        </g>
+                                    </svg>
+                                </span>
+                                <div class="home-card-body">
+                                    <div class="home-card-label" style="margin: 0 0 4px 0;">Students by Gender</div>
+                                    <div class="home-gender-row">
+                                        <span><b id="stat-boys">0</b> Boys</span>
+                                        <span><b id="stat-girls">0</b> Girls</span>
+                                    </div>
+                                    <div class="home-gender-bar">
+                                        <span id="gender-bar-boys"></span><span id="gender-bar-girls"></span>
+                                    </div>
+                                    <div class="home-card-note" id="stat-gender-unset"></div>
+                                </div>
+                            </div>
+
                         </div>
-                        <div class="home-panel">
-                            <h3 class="home-panel-title no-select">Subjects in Each Class</h3>
-                            <div id="chart-subjects-per-class"></div>
+
+                        <!-- CHARTS -->
+                        <div class="home-charts">
+                            <div class="home-panel">
+                                <h3 class="home-panel-title no-select">Students in Each Class</h3>
+                                <div id="chart-students-per-class"></div>
+                            </div>
+                            <div class="home-panel">
+                                <h3 class="home-panel-title no-select">Subjects in Each Class</h3>
+                                <div id="chart-subjects-per-class"></div>
+                            </div>
                         </div>
-                    </div>
+                    </div> <!-- /home-normal-content -->
                 </div>
 
                 <!-- TAB CONTENT: EXAMS SKELETON HOLDER -->
@@ -679,14 +758,17 @@
                             <div id="student-form"
                                 style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:10px;">
                                 <input type="hidden" id="st-edit-id" value="">
-                                <div><label>Student ID <span style="color:#ef4444;">*</span></label><input type="text" id="st-student-id" placeholder="e.g. S-2027-01"></div>
+                                <div><label>Student ID <span style="color:#ef4444;">*</span></label><input type="text"
+                                        id="st-student-id" placeholder="e.g. S-2027-01"></div>
                                 <div><label>Class <span style="color:#ef4444;">*</span></label><select id="st-class"
                                         onchange="updateStudentSubjectSelection()"></select></div>
-                                <div><label>Class Roll <span style="color:#ef4444;">*</span></label><input type="text" id="st-roll" inputmode="numeric"
-                                        maxlength="3" autocomplete="off"></div>
+                                <div><label>Class Roll <span style="color:#ef4444;">*</span></label><input type="text"
+                                        id="st-roll" inputmode="numeric" maxlength="3" autocomplete="off"></div>
                                 <div id="stu-subject-selection"
                                     style="display:none; grid-column: span 3; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0;">
-                                    <label class="no-select">Main Subjects <span style="font-weight:normal; color:#64748b;">(choose exactly 3)</span> <span style="color:#ef4444;">*</span></label>
+                                    <label class="no-select">Main Subjects <span
+                                            style="font-weight:normal; color:#64748b;">(choose exactly 3)</span> <span
+                                            style="color:#ef4444;">*</span></label>
                                     <div id="stu-main-subjects-list"
                                         style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:12px;"></div>
                                     <label class="no-select">Optional Subject <span
@@ -695,7 +777,8 @@
                                         <option value="">-- pick 3 main subjects first --</option>
                                     </select>
                                 </div>
-                                <div><label>Full Name <span style="color:#ef4444;">*</span></label><input type="text" id="st-name"></div>
+                                <div><label>Full Name <span style="color:#ef4444;">*</span></label><input type="text"
+                                        id="st-name"></div>
                                 <div><label>Date of Birth</label><input type="text" id="st-dob" placeholder="DD/MM/YYYY"
                                         maxlength="10" autocomplete="off"></div>
                                 <div><label>Father's Name</label><input type="text" id="st-father"></div>
@@ -720,40 +803,51 @@
                                         <option value="Female">Female</option>
                                     </select>
                                 </div>
-                                <div><label>Guardian Contact <span style="color:#ef4444;">*</span></label><input type="text" id="st-phone"></div>
+                                <div><label>Guardian Contact <span style="color:#ef4444;">*</span></label><input
+                                        type="text" id="st-phone"></div>
                                 <div><label>Birth Registration No.</label><input type="text" id="st-birth-reg"></div>
-                                <div><label class="no-select">Address</label><input
-                                        type="text" id="st-address"></div>
+                                <div><label class="no-select">Address</label><input type="text" id="st-address"></div>
 
                                 <!-- Student Photo Upload -->
                                 <div class="st-upload-row">
                                     <div class="st-upload-photo">
                                         <div class="logo-label-row">
-                                            <label class="no-select">Student Photo <span style="color:#ef4444;">*</span></label>
+                                            <label class="no-select">Student Photo <span
+                                                    style="color:#ef4444;">*</span></label>
                                             <span class="logo-hint">PNG, JPG (max 2 MB)</span>
                                         </div>
-                                        <div id="st-photo-zone" class="logo-zone" tabindex="0" role="button" aria-label="Upload student photo">
+                                        <div id="st-photo-zone" class="logo-zone" tabindex="0" role="button"
+                                            aria-label="Upload student photo">
                                             <div class="logo-ph" id="st-photo-ph">
                                                 <div class="logo-ph-icon">
-                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                        stroke-linejoin="round">
                                                         <polyline points="16 16 12 12 8 16"></polyline>
                                                         <line x1="12" y1="12" x2="12" y2="21"></line>
-                                                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                                                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3">
+                                                        </path>
                                                     </svg>
                                                 </div>
                                                 <span class="logo-ph-text">Click to upload photo</span>
                                                 <span class="logo-ph-sub">or drag and drop here</span>
                                             </div>
-                                            <img id="st-photo-preview" class="logo-preview-img" alt="Student photo preview">
-                                            <button id="st-photo-clear" class="logo-clear-btn" type="button" aria-label="Remove photo">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <img id="st-photo-preview" class="logo-preview-img"
+                                                alt="Student photo preview">
+                                            <button id="st-photo-clear" class="logo-clear-btn" type="button"
+                                                aria-label="Remove photo">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                                    stroke-linejoin="round">
                                                     <line x1="18" y1="6" x2="6" y2="18"></line>
                                                     <line x1="6" y1="6" x2="18" y2="18"></line>
                                                 </svg>
                                             </button>
                                         </div>
-                                        <div class="tc-upload-note">Recommended size: 300&times;300 px or 600&times;600 px (1:1 ratio)</div>
-                                        <input type="file" id="st-photo-input" accept="image/png,image/jpeg,image/webp" style="display:none" aria-hidden="true">
+                                        <div class="tc-upload-note">Recommended size: 300&times;300 px or 600&times;600
+                                            px (1:1 ratio)</div>
+                                        <input type="file" id="st-photo-input" accept="image/png,image/jpeg,image/webp"
+                                            style="display:none" aria-hidden="true">
                                         <div id="st-photo-filename" class="logo-filename-text"></div>
                                     </div>
                                 </div>
@@ -771,7 +865,9 @@
                                 <button id="btn-cancel-student" type="button"
                                     style="background-color:#64748b; width:150px; display:none;">Cancel Edit</button>
                             </div>
-                            <div id="st-error" style="display:none; color:#ef4444; font-size:13px; margin-top:8px; font-weight:500;"></div>
+                            <div id="st-error"
+                                style="display:none; color:#ef4444; font-size:13px; margin-top:8px; font-weight:500;">
+                            </div>
                         </div>
                     </details>
 
@@ -828,14 +924,19 @@
                             <div id="teacher-form"
                                 style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:10px;">
                                 <input type="hidden" id="tc-edit-id" value="">
-                                <div><label class="no-select">Teacher ID <span style="color:#ef4444;">*</span></label><input type="text" id="tc-teacher-id"
+                                <div><label class="no-select">Teacher ID <span
+                                            style="color:#ef4444;">*</span></label><input type="text" id="tc-teacher-id"
                                         placeholder="e.g. T-101"></div>
-                                <div><label class="no-select">Full Name <span style="color:#ef4444;">*</span></label><input type="text" id="tc-name"></div>
+                                <div><label class="no-select">Full Name <span
+                                            style="color:#ef4444;">*</span></label><input type="text" id="tc-name">
+                                </div>
                                 <div><label class="no-select">Title</label><input type="text" id="tc-title"
                                         placeholder="e.g. Senior Teacher"></div>
-                                <div><label class="no-select">Class Teacher Of  <span style="color:#ef4444;">*</span></label><select id="tc-classes"></select>
+                                <div><label class="no-select">Class Teacher Of <span
+                                            style="color:#ef4444;">*</span></label><select id="tc-classes"></select>
                                 </div>
-                                <div><label>Contact Number <span style="color:#ef4444;">*</span></label><input type="text" id="tc-contact"></div>
+                                <div><label>Contact Number <span style="color:#ef4444;">*</span></label><input
+                                        type="text" id="tc-contact"></div>
                                 <div><label>Blood Group</label>
                                     <select id="tc-blood">
                                         <option value="">-- Select Blood Group --</option>
@@ -851,7 +952,8 @@
                                 </div>
                                 <div><label> Father's Name</label><input type="text" id="tc-father"></div>
                                 <div><label>Mother's Name</label><input type="text" id="tc-mother"></div>
-                                <div><label>NID Number <span style="color:#ef4444;">*</span></label><input type="text" id="tc-nid"></div>
+                                <div><label>NID Number <span style="color:#ef4444;">*</span></label><input type="text"
+                                        id="tc-nid"></div>
                                 <div style="grid-column: span 3;"><label class="no-select">Address</label><input
                                         type="text" id="tc-address"></div>
 
@@ -861,62 +963,83 @@
                                     <!-- Photo -->
                                     <div class="tc-upload-photo">
                                         <div class="logo-label-row">
-                                            <label class="no-select">Teacher Photo <span style="color:#ef4444;">*</span></label>
+                                            <label class="no-select">Teacher Photo <span
+                                                    style="color:#ef4444;">*</span></label>
                                             <span class="logo-hint">PNG, JPG (max 2 MB)</span>
                                         </div>
-                                        <div id="tc-photo-zone" class="logo-zone" tabindex="0" role="button" aria-label="Upload teacher photo">
+                                        <div id="tc-photo-zone" class="logo-zone" tabindex="0" role="button"
+                                            aria-label="Upload teacher photo">
                                             <div class="logo-ph" id="tc-photo-ph">
                                                 <div class="logo-ph-icon">
-                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                        stroke-linejoin="round">
                                                         <polyline points="16 16 12 12 8 16"></polyline>
                                                         <line x1="12" y1="12" x2="12" y2="21"></line>
-                                                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                                                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3">
+                                                        </path>
                                                     </svg>
                                                 </div>
                                                 <span class="logo-ph-text">Click to upload photo</span>
                                                 <span class="logo-ph-sub">or drag and drop here</span>
                                             </div>
-                                            <img id="tc-photo-preview" class="logo-preview-img" alt="Teacher photo preview">
-                                            <button id="tc-photo-clear" class="logo-clear-btn" type="button" aria-label="Remove photo">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <img id="tc-photo-preview" class="logo-preview-img"
+                                                alt="Teacher photo preview">
+                                            <button id="tc-photo-clear" class="logo-clear-btn" type="button"
+                                                aria-label="Remove photo">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                                    stroke-linejoin="round">
                                                     <line x1="18" y1="6" x2="6" y2="18"></line>
                                                     <line x1="6" y1="6" x2="18" y2="18"></line>
                                                 </svg>
                                             </button>
                                         </div>
-                                        <div class="tc-upload-note">Recommended size: 300&times;300 px or 600&times;600 px (1:1 ratio)</div>
-                                        <input type="file" id="tc-photo-input" accept="image/png,image/jpeg,image/webp" style="display:none" aria-hidden="true">
+                                        <div class="tc-upload-note">Recommended size: 300&times;300 px or 600&times;600
+                                            px (1:1 ratio)</div>
+                                        <input type="file" id="tc-photo-input" accept="image/png,image/jpeg,image/webp"
+                                            style="display:none" aria-hidden="true">
                                         <div id="tc-photo-filename" class="logo-filename-text"></div>
                                     </div>
 
                                     <!-- Signature -->
                                     <div class="tc-upload-sign">
                                         <div class="logo-label-row">
-                                            <label class="no-select">Teacher Signature <span style="color:#ef4444;">*</span></label>
+                                            <label class="no-select">Teacher Signature <span
+                                                    style="color:#ef4444;">*</span></label>
                                             <span class="logo-hint">PNG, JPG (max 2 MB)</span>
                                         </div>
-                                        <div id="tc-sign-zone" class="logo-zone" tabindex="0" role="button" aria-label="Upload teacher signature">
+                                        <div id="tc-sign-zone" class="logo-zone" tabindex="0" role="button"
+                                            aria-label="Upload teacher signature">
                                             <div class="logo-ph" id="tc-sign-ph">
                                                 <div class="logo-ph-icon">
-                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+                                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                                        stroke-linejoin="round">
                                                         <polyline points="16 16 12 12 8 16"></polyline>
                                                         <line x1="12" y1="12" x2="12" y2="21"></line>
-                                                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+                                                        <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3">
+                                                        </path>
                                                     </svg>
                                                 </div>
                                                 <span class="logo-ph-text">Click to upload signature</span>
                                                 <span class="logo-ph-sub">or drag and drop here</span>
                                             </div>
-                                            <img id="tc-sign-preview" class="logo-preview-img" alt="Teacher signature preview">
-                                            <button id="tc-sign-clear" class="logo-clear-btn" type="button" aria-label="Remove signature">
-                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <img id="tc-sign-preview" class="logo-preview-img"
+                                                alt="Teacher signature preview">
+                                            <button id="tc-sign-clear" class="logo-clear-btn" type="button"
+                                                aria-label="Remove signature">
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                                    stroke-linejoin="round">
                                                     <line x1="18" y1="6" x2="6" y2="18"></line>
                                                     <line x1="6" y1="6" x2="18" y2="18"></line>
                                                 </svg>
                                             </button>
                                         </div>
                                         <div class="tc-upload-note">Recommended size: 200&times;80 px (5:2 ratio)</div>
-                                        <input type="file" id="tc-sign-input" accept="image/png,image/jpeg,image/webp" style="display:none" aria-hidden="true">
+                                        <input type="file" id="tc-sign-input" accept="image/png,image/jpeg,image/webp"
+                                            style="display:none" aria-hidden="true">
                                         <div id="tc-sign-filename" class="logo-filename-text"></div>
                                     </div>
 
@@ -1157,15 +1280,18 @@
                         <!-- HEAD TEACHER INFORMATION PROFILE -->
                         <div id="head-teacher-info-form"
                             style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                            <h3 style="margin-top: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                            <h3
+                                style="margin-top: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
                                 👨‍🏫 Head Teacher Information Profile
                             </h3>
                             <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">
-                                Configure head teacher / principal name and signature used across transcripts and reports.
+                                Configure head teacher / principal name and signature used across transcripts and
+                                reports.
                             </p>
                             <div class="input-group">
                                 <label class="no-select">Head Teacher / Principal Name</label>
-                                <input type="text" id="head-teacher-name-input" placeholder="Enter head teacher or principal name">
+                                <input type="text" id="head-teacher-name-input"
+                                    placeholder="Enter head teacher or principal name">
                             </div>
                             <div class="input-group" style="margin-top: 14px;">
                                 <div class="logo-label-row">
@@ -1187,7 +1313,8 @@
                                         <span class="logo-ph-text">Click to upload signature</span>
                                         <span class="logo-ph-sub">or drag and drop here</span>
                                     </div>
-                                    <img id="head-teacher-sign-preview" class="logo-preview-img" alt="Head teacher signature preview">
+                                    <img id="head-teacher-sign-preview" class="logo-preview-img"
+                                        alt="Head teacher signature preview">
                                     <button id="head-teacher-sign-clear" class="logo-clear-btn" type="button"
                                         aria-label="Remove signature">
                                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
@@ -1199,12 +1326,13 @@
                                     </button>
                                 </div>
                                 <div class="tc-upload-note">Recommended size: 200&times;80 px (5:2 ratio)</div>
-                                <input type="file" id="head-teacher-sign-input" accept="image/png,image/jpeg,image/webp" style="display:none"
-                                    aria-hidden="true">
+                                <input type="file" id="head-teacher-sign-input" accept="image/png,image/jpeg,image/webp"
+                                    style="display:none" aria-hidden="true">
                                 <div id="head-teacher-sign-filename" class="logo-filename-text"></div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 12px; margin-top: 14px;">
-                                <button type="button" id="btn-save-head-teacher-info" style="background-color: #10b981;">Save
+                                <button type="button" id="btn-save-head-teacher-info"
+                                    style="background-color: #10b981;">Save
                                     Configuration</button>
                                 <span id="head-teacher-info-feedback" style="font-size: 13px; font-weight: 600;"></span>
                             </div>

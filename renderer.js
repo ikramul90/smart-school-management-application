@@ -111,21 +111,191 @@ async function refreshLicenseStatus() {
 
 function updateTrialUiIndicators() {
     const isTrial = !!(appLicenseStatus && appLicenseStatus.isTrial);
+    const isExpired = !!(appLicenseStatus && appLicenseStatus.isTrialExpired);
+
     const pill = document.getElementById('home-trial-pill');
     if (pill) {
-        pill.style.display = isTrial ? 'inline-flex' : 'none';
+        if (!isTrial) {
+            pill.style.display = 'none';
+        } else if (isExpired) {
+            pill.style.display = 'inline-flex';
+            pill.style.backgroundColor = '#fee2e2';
+            pill.style.borderColor = '#ef4444';
+            pill.style.color = '#b91c1c';
+            pill.textContent = 'Trial Expired (Locked)';
+        } else {
+            pill.style.display = 'inline-flex';
+            pill.style.backgroundColor = '#fef3c7';
+            pill.style.borderColor = '#f59e0b';
+            pill.style.color = '#b45309';
+            const remainingHours = appLicenseStatus.remainingHours;
+            if (typeof remainingHours === 'number' && remainingHours > 0) {
+                pill.textContent = `Trial Version (${remainingHours}h left)`;
+            } else {
+                pill.textContent = 'Trial Version (2 Days)';
+            }
+        }
     }
+
+    const expiredCard = document.getElementById('home-trial-expired');
+    const normalContent = document.getElementById('home-normal-content');
+    const navButtons = document.querySelectorAll('.dashboard-sidebar-nav .nav-btn');
+    const notifBell = document.getElementById('notif-bell');
+
+    if (isExpired) {
+        // Show expired message card in the dashboard
+        if (expiredCard) expiredCard.style.display = 'block';
+        // Close/hide all normal dashboard things (cards, charts)
+        if (normalContent) normalContent.style.display = 'none';
+
+        // Close/disable all navigation buttons except Home
+        navButtons.forEach(btn => {
+            const tab = btn.getAttribute('data-tab');
+            if (tab && tab !== 'home-tab') {
+                btn.classList.add('nav-btn-locked');
+                btn.disabled = true;
+                btn.title = 'All other modules are closed because the trial version has expired. Please make payment to get the real version.';
+            } else if (tab === 'home-tab') {
+                btn.classList.add('active');
+            }
+        });
+
+        if (notifBell) {
+            notifBell.disabled = true;
+            notifBell.style.pointerEvents = 'none';
+            notifBell.style.opacity = '0.35';
+        }
+
+        // Force visible tab to be home-tab and hide all other tabs
+        const allTabs = document.querySelectorAll('.dashboard-main .tab-content');
+        allTabs.forEach(t => {
+            if (t.id === 'home-tab') {
+                t.style.display = 'block';
+            } else {
+                t.style.display = 'none';
+            }
+        });
+    } else {
+        // Normal trial or full version
+        if (expiredCard) expiredCard.style.display = 'none';
+        if (normalContent) normalContent.style.display = 'block';
+
+        navButtons.forEach(btn => {
+            btn.classList.remove('nav-btn-locked');
+            btn.disabled = false;
+            btn.removeAttribute('title');
+        });
+
+        if (notifBell) {
+            notifBell.disabled = false;
+            notifBell.style.pointerEvents = 'auto';
+            notifBell.style.opacity = '1';
+        }
+    }
+
     const genBtn = document.getElementById('btn-generate-transcript');
     if (genBtn) {
         if (isTrial) {
             genBtn.classList.add('btn-trial-disabled');
-            genBtn.title = 'PDF generation is disabled in Trial Version.';
+            genBtn.title = isExpired ? 'Software is locked (Trial Expired).' : 'PDF generation is disabled in Trial Version.';
             genBtn.textContent = '📄 Generate PDF (Disabled in Trial Version)';
         } else {
             genBtn.classList.remove('btn-trial-disabled');
             genBtn.title = 'Export all displayed transcripts as a single PDF document';
             genBtn.textContent = '📄 Generate Transcripts PDF';
         }
+    }
+}
+
+let trialExpiredActionsInitialized = false;
+function setupTrialExpiredActions() {
+    if (trialExpiredActionsInitialized) return;
+    trialExpiredActionsInitialized = true;
+
+    const btnActivate = document.getElementById('btn-trial-activate-full');
+    const inputKey = document.getElementById('trial-expired-key-input');
+    const errEl = document.getElementById('trial-expired-error');
+    const successEl = document.getElementById('trial-expired-success');
+    const btnCloseApp = document.getElementById('btn-trial-close-app');
+
+    if (btnCloseApp) {
+        btnCloseApp.addEventListener('click', async () => {
+            await ipcRenderer.invoke('quit-app');
+        });
+    }
+
+    if (btnActivate && inputKey) {
+        const handleFullActivation = async () => {
+            if (errEl) {
+                errEl.innerText = '';
+                errEl.style.display = 'none';
+            }
+            if (successEl) {
+                successEl.innerText = '';
+                successEl.style.display = 'none';
+            }
+
+            const rawCode = inputKey.value.trim();
+            if (!rawCode) {
+                if (errEl) {
+                    errEl.innerText = 'Please enter your Full Version activation code.';
+                    errEl.style.display = 'block';
+                }
+                return;
+            }
+
+            try {
+                const decodedText = decodeActivationCode(rawCode);
+                if (decodedText === FULL_LICENSE_TEXT) {
+                    btnActivate.disabled = true;
+                    btnActivate.innerHTML = 'Activating...';
+
+                    const res = await ipcRenderer.invoke('update-license-type', 'full');
+                    if (res && res.success) {
+                        currentVerifiedLicenseType = 'full';
+                        await refreshLicenseStatus();
+                        if (successEl) {
+                            successEl.innerText = '🎉 Real Full Version activated successfully! All modules and features are now fully open.';
+                            successEl.style.display = 'block';
+                        }
+                        inputKey.value = '';
+                        startNotificationCenter();
+                        loadDashboardStats();
+                    } else {
+                        throw new Error((res && res.error) || 'Failed to update license.');
+                    }
+                } else if (decodedText === TRIAL_LICENSE_TEXT) {
+                    if (errEl) {
+                        errEl.innerText = 'This is a Trial activation code, but your 2-day trial has already expired. Please make payment to get the real version code.';
+                        errEl.style.display = 'block';
+                    }
+                } else {
+                    throw new Error('Unrecognized activation key.');
+                }
+            } catch (e) {
+                if (errEl) {
+                    errEl.innerText = 'Invalid activation code. Please check your payment code and try again.';
+                    errEl.style.display = 'block';
+                }
+            } finally {
+                btnActivate.disabled = false;
+                btnActivate.innerHTML = `
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                    </svg>
+                    <span>Activate Real Version</span>
+                `;
+            }
+        };
+
+        btnActivate.addEventListener('click', handleFullActivation);
+        inputKey.addEventListener('keydown', (e) => {
+            if ((e.key === 'Enter' && (e.ctrlKey || e.metaKey)) || (e.key === 'Enter' && !e.shiftKey)) {
+                e.preventDefault();
+                handleFullActivation();
+            }
+        });
     }
 }
 
@@ -237,6 +407,14 @@ if (activationCodeInput) {
 window.addEventListener('DOMContentLoaded', async () => {
     const adminExists = await ipcRenderer.invoke('check-admin-exists');
     await refreshLicenseStatus();
+    setupTrialExpiredActions();
+
+    // Periodic check every 60 seconds
+    setInterval(async () => {
+        if (appLicenseStatus && appLicenseStatus.isTrial && !appLicenseStatus.isTrialExpired) {
+            await refreshLicenseStatus();
+        }
+    }, 60000);
 
     if (adminExists) {
         loginScreen.style.display = 'block';
@@ -555,8 +733,11 @@ document.getElementById('btn-login').addEventListener('click', async () => {
         loginScreen.style.display = 'none';
         dashboardScreen.style.display = 'block';
         await refreshLicenseStatus();
-        startNotificationCenter();
-        loadDashboardStats();
+        setupTrialExpiredActions();
+        if (!appLicenseStatus || !appLicenseStatus.isTrialExpired) {
+            startNotificationCenter();
+            loadDashboardStats();
+        }
     } else {
         document.getElementById('login-error').innerText = response.message;
     }
@@ -705,6 +886,11 @@ if (btnSubmitResetPassword) {
 // verification, then swaps the login screen out for the dashboard
 // if correct.
 window.switchTab = function (tabId) {
+    if (appLicenseStatus && appLicenseStatus.isTrialExpired && tabId !== 'home-tab') {
+        alert('Trial Version Expired: All features and modules are closed. Please make payment to get the real version.');
+        return;
+    }
+
     // Hide all tab contents
     const tabs = document.querySelectorAll('.tab-content');
     tabs.forEach(tab => {

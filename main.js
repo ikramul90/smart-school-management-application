@@ -49,11 +49,44 @@ ipcMain.handle('check-admin-exists', async () => {
 // Helper: get current license status
 async function getLicenseStatus() {
     try {
-        const row = await dbGet(`SELECT license_type FROM admin_profile ORDER BY id DESC LIMIT 1`);
+        const row = await dbGet(`SELECT id, license_type, trial_started_at FROM admin_profile ORDER BY id DESC LIMIT 1`);
         const licenseType = (row && row.license_type === 'full') ? 'full' : 'trial';
-        return { license_type: licenseType, isTrial: licenseType === 'trial' };
+        const isTrial = licenseType === 'trial';
+
+        let trialStartedAt = row ? row.trial_started_at : null;
+        if (isTrial && row && !trialStartedAt) {
+            trialStartedAt = new Date().toISOString();
+            await dbRun(`UPDATE admin_profile SET trial_started_at = ? WHERE id = ?`, [trialStartedAt, row.id]);
+        }
+
+        let isTrialExpired = false;
+        let remainingHours = 0;
+        let daysLeft = '0.0';
+
+        if (isTrial && trialStartedAt) {
+            const startedMs = new Date(trialStartedAt).getTime();
+            const nowMs = Date.now();
+            const TRIAL_DURATION_MS = 2 * 24 * 60 * 60 * 1000; // 2 days
+            const elapsedMs = nowMs - startedMs;
+            if (!isNaN(startedMs) && elapsedMs >= TRIAL_DURATION_MS) {
+                isTrialExpired = true;
+            } else if (!isNaN(startedMs)) {
+                const remMs = Math.max(0, TRIAL_DURATION_MS - elapsedMs);
+                remainingHours = Math.ceil(remMs / (1000 * 60 * 60));
+                daysLeft = (remMs / (1000 * 60 * 60 * 24)).toFixed(1);
+            }
+        }
+
+        return {
+            license_type: licenseType,
+            isTrial,
+            isTrialExpired,
+            trialStartedAt,
+            remainingHours,
+            daysLeft
+        };
     } catch (e) {
-        return { license_type: 'trial', isTrial: true };
+        return { license_type: 'trial', isTrial: true, isTrialExpired: false, remainingHours: 48, daysLeft: '2.0' };
     }
 }
 
@@ -61,17 +94,19 @@ async function getLicenseStatus() {
 ipcMain.handle('setup-admin', async (event, data) => {
     return new Promise((resolve) => {
         const licenseType = (data && data.license_type === 'full') ? 'full' : 'trial';
-        const query = `INSERT INTO admin_profile (username, password_hash, q1, a1, q2, a2, q3, a3, q4, a4, q5, a5, license_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        const trialStartedAt = (licenseType === 'trial') ? new Date().toISOString() : null;
+        const query = `INSERT INTO admin_profile (username, password_hash, q1, a1, q2, a2, q3, a3, q4, a4, q5, a5, license_type, trial_started_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
         db.run(query, [
-            data.username, 
+            data.username,
             data.password, // For production later, we will hash this. Keeping it simple for testing!
             data.q1, data.a1,
             data.q2, data.a2,
             data.q3, data.a3,
             data.q4, data.a4,
             data.q5, data.a5,
-            licenseType
-        ], function(err) {
+            licenseType,
+            trialStartedAt
+        ], function (err) {
             if (err) resolve({ success: false, message: err.message });
             else resolve({ success: true, license_type: licenseType });
         });
@@ -84,7 +119,7 @@ ipcMain.handle('get-license-status', async () => {
         const status = await getLicenseStatus();
         return { success: true, ...status };
     } catch (err) {
-        return { success: false, license_type: 'trial', isTrial: true };
+        return { success: false, license_type: 'trial', isTrial: true, isTrialExpired: false };
     }
 });
 
@@ -92,11 +127,37 @@ ipcMain.handle('get-license-status', async () => {
 ipcMain.handle('update-license-type', async (event, licenseType) => {
     try {
         const val = (licenseType === 'full') ? 'full' : 'trial';
-        await dbRun(`UPDATE admin_profile SET license_type = ? WHERE id = (SELECT id FROM admin_profile ORDER BY id DESC LIMIT 1)`, [val]);
-        return { success: true, license_type: val, isTrial: val === 'trial' };
+        const trialStartedAt = (val === 'trial') ? new Date().toISOString() : null;
+        await dbRun(`UPDATE admin_profile SET license_type = ?, trial_started_at = ? WHERE id = (SELECT id FROM admin_profile ORDER BY id DESC LIMIT 1)`, [val, trialStartedAt]);
+        const status = await getLicenseStatus();
+        return { success: true, ...status };
     } catch (err) {
         return { success: false, error: err.message };
     }
+});
+
+// Set trial started date (for testing / admin / reset)
+ipcMain.handle('set-trial-started-at', async (event, dateIsoOrOffsetDays) => {
+    try {
+        let newDateStr;
+        if (typeof dateIsoOrOffsetDays === 'number') {
+            newDateStr = new Date(Date.now() + dateIsoOrOffsetDays * 24 * 60 * 60 * 1000).toISOString();
+        } else if (typeof dateIsoOrOffsetDays === 'string') {
+            newDateStr = dateIsoOrOffsetDays;
+        } else {
+            newDateStr = new Date().toISOString();
+        }
+        await dbRun(`UPDATE admin_profile SET trial_started_at = ? WHERE id = (SELECT id FROM admin_profile ORDER BY id DESC LIMIT 1)`, [newDateStr]);
+        const status = await getLicenseStatus();
+        return { success: true, ...status };
+    } catch (err) {
+        return { success: false, error: err.message };
+    }
+});
+
+// Exit / Close application
+ipcMain.handle('quit-app', () => {
+    app.quit();
 });
 
 // Verify login details
@@ -236,8 +297,8 @@ const saveMediaFile = (dataUrl, folder, prefix) => {
     const mimeType = matches[1];
     const ext = mimeType === 'image/svg+xml' ? '.svg'
         : (mimeType === 'image/jpeg' || mimeType === 'image/jpg') ? '.jpg'
-        : mimeType === 'image/webp' ? '.webp'
-        : '.png';
+            : mimeType === 'image/webp' ? '.webp'
+                : '.png';
     const targetDir = getMediaDir(folder);
     const fileName = `${prefix}_${Date.now()}_${Math.floor(Math.random() * 10000)}${ext}`;
     const targetFile = path.join(targetDir, fileName);
@@ -253,8 +314,8 @@ const fileToDataUrl = (filePath) => {
         const ext = path.extname(resolvedPath).slice(1).toLowerCase() || 'png';
         const mimeType = ext === 'svg' ? 'image/svg+xml'
             : (ext === 'jpg' || ext === 'jpeg') ? 'image/jpeg'
-            : ext === 'webp' ? 'image/webp'
-            : `image/${ext}`;
+                : ext === 'webp' ? 'image/webp'
+                    : `image/${ext}`;
         const base64 = fs.readFileSync(resolvedPath).toString('base64');
         return `data:${mimeType};base64,${base64}`;
     } catch (e) {
@@ -321,12 +382,12 @@ ipcMain.handle('save-school-info', async (event, data) => {
 
             if (data.logo_removed) {
                 if (newLogoPath && fs.existsSync(newLogoPath)) {
-                    try { fs.unlinkSync(newLogoPath); } catch (e) {}
+                    try { fs.unlinkSync(newLogoPath); } catch (e) { }
                 }
                 newLogoPath = null;
             } else if (data.logo_data_url && data.logo_data_url.startsWith('data:')) {
                 if (newLogoPath && fs.existsSync(newLogoPath)) {
-                    try { fs.unlinkSync(newLogoPath); } catch (e) {}
+                    try { fs.unlinkSync(newLogoPath); } catch (e) { }
                 }
                 newLogoPath = saveMediaFile(data.logo_data_url, 'logos', 'school_logo');
             }
@@ -371,12 +432,12 @@ ipcMain.handle('save-head-teacher-info', async (event, data) => {
 
             if (data.signature_removed) {
                 if (newSigPath && fs.existsSync(newSigPath)) {
-                    try { fs.unlinkSync(newSigPath); } catch (e) {}
+                    try { fs.unlinkSync(newSigPath); } catch (e) { }
                 }
                 newSigPath = null;
             } else if (data.signature_data_url && data.signature_data_url.startsWith('data:')) {
                 if (newSigPath && fs.existsSync(newSigPath)) {
-                    try { fs.unlinkSync(newSigPath); } catch (e) {}
+                    try { fs.unlinkSync(newSigPath); } catch (e) { }
                 }
                 newSigPath = saveMediaFile(data.signature_data_url, 'head_teacher', 'head_teacher_sig');
             }
@@ -445,7 +506,7 @@ ipcMain.handle('get-students', async (event, filters) => {
                  ORDER BY h.id DESC LIMIT 1) AS status_date
             FROM students LEFT JOIN classes ON students.class_id = classes.id WHERE 1=1`;
         let params = [];
-        
+
         if (filters && filters.class_id) {
             query += ` AND students.class_id = ?`;
             params.push(filters.class_id);
@@ -748,6 +809,12 @@ ipcMain.handle('add-student', async (event, s) => {
         if (!isNewImage(s.photo_data_url)) return { success: false, error: 'Student Photo is required.' };
 
         const license = await getLicenseStatus();
+        if (license.isTrialExpired) {
+            return {
+                success: false,
+                error: 'Trial Expired: Your 2-day trial has ended. Please make payment to get the real version.'
+            };
+        }
         if (license.isTrial) {
             const countRow = await dbGet(`SELECT COUNT(*) as count FROM students WHERE class_id = ? AND status = 'Active'`, [s.class_id]);
             if (countRow && countRow.count >= 5) {
@@ -810,12 +877,12 @@ ipcMain.handle('update-student', async (event, s) => {
         let newPhotoPath = current.photo_path;
         if (s.photo_removed) {
             if (newPhotoPath && fs.existsSync(newPhotoPath)) {
-                try { fs.unlinkSync(newPhotoPath); } catch (e) {}
+                try { fs.unlinkSync(newPhotoPath); } catch (e) { }
             }
             newPhotoPath = null;
         } else if (s.photo_data_url && s.photo_data_url.startsWith('data:')) {
             if (newPhotoPath && fs.existsSync(newPhotoPath)) {
-                try { fs.unlinkSync(newPhotoPath); } catch (e) {}
+                try { fs.unlinkSync(newPhotoPath); } catch (e) { }
             }
             newPhotoPath = saveMediaFile(s.photo_data_url, 'students/photos', 'student_photo');
         }
@@ -944,6 +1011,12 @@ ipcMain.handle('reinstate-student', async (event, { id, new_roll }) => {
         if (!st || st.status === 'Active') return { success: false, error: 'This student is already active.' };
 
         const license = await getLicenseStatus();
+        if (license.isTrialExpired) {
+            return {
+                success: false,
+                error: 'Trial Expired: Your 2-day trial has ended. Please make payment to get the real version.'
+            };
+        }
         if (license.isTrial) {
             const countRow = await dbGet(`SELECT COUNT(*) as count FROM students WHERE class_id = ? AND status = 'Active'`, [st.class_id]);
             if (countRow && countRow.count >= 5) {
@@ -1119,6 +1192,12 @@ ipcMain.handle('add-teacher', async (event, t) => {
         if (!isNewImage(t.signature_data_url)) return { success: false, error: 'Teacher Signature is required.' };
 
         const license = await getLicenseStatus();
+        if (license.isTrialExpired) {
+            return {
+                success: false,
+                error: 'Trial Expired: Your 2-day trial has ended. Please make payment to get the real version.'
+            };
+        }
         if (license.isTrial) {
             const countRow = await dbGet(`SELECT COUNT(*) as count FROM teachers`);
             if (countRow && countRow.count >= 5) {
@@ -1178,16 +1257,16 @@ ipcMain.handle('set-teacher-classes', async (event, { teacher_id, class_ids }) =
         // Step 1: unassign this teacher from any class no longer in their selected list
         db.run(`UPDATE classes SET class_teacher_id = NULL WHERE class_teacher_id = ? ${excludeClause}`,
             [teacher_id, ...idList], (err) => {
-            if (err) return resolve({ success: false, error: err.message });
-            if (!idList.length) return resolve({ success: true });
-            // Step 2: assign this teacher to every selected class
-            const placeholders = idList.map(() => '?').join(',');
-            db.run(`UPDATE classes SET class_teacher_id = ? WHERE id IN (${placeholders})`,
-                [teacher_id, ...idList], (err2) => {
-                if (err2) resolve({ success: false, error: err2.message });
-                else resolve({ success: true });
+                if (err) return resolve({ success: false, error: err.message });
+                if (!idList.length) return resolve({ success: true });
+                // Step 2: assign this teacher to every selected class
+                const placeholders = idList.map(() => '?').join(',');
+                db.run(`UPDATE classes SET class_teacher_id = ? WHERE id IN (${placeholders})`,
+                    [teacher_id, ...idList], (err2) => {
+                        if (err2) resolve({ success: false, error: err2.message });
+                        else resolve({ success: true });
+                    });
             });
-        });
     });
 });
 
@@ -1219,12 +1298,12 @@ ipcMain.handle('update-teacher', async (event, t) => {
         // Photo update / removal
         if (t.photo_removed) {
             if (newPhotoPath && fs.existsSync(newPhotoPath)) {
-                try { fs.unlinkSync(newPhotoPath); } catch (e) {}
+                try { fs.unlinkSync(newPhotoPath); } catch (e) { }
             }
             newPhotoPath = null;
         } else if (t.photo_data_url && t.photo_data_url.startsWith('data:')) {
             if (newPhotoPath && fs.existsSync(newPhotoPath)) {
-                try { fs.unlinkSync(newPhotoPath); } catch (e) {}
+                try { fs.unlinkSync(newPhotoPath); } catch (e) { }
             }
             newPhotoPath = saveMediaFile(t.photo_data_url, 'teachers/photos', 'teacher_photo');
         }
@@ -1232,12 +1311,12 @@ ipcMain.handle('update-teacher', async (event, t) => {
         // Signature update / removal
         if (t.signature_removed) {
             if (newSigPath && fs.existsSync(newSigPath)) {
-                try { fs.unlinkSync(newSigPath); } catch (e) {}
+                try { fs.unlinkSync(newSigPath); } catch (e) { }
             }
             newSigPath = null;
         } else if (t.signature_data_url && t.signature_data_url.startsWith('data:')) {
             if (newSigPath && fs.existsSync(newSigPath)) {
-                try { fs.unlinkSync(newSigPath); } catch (e) {}
+                try { fs.unlinkSync(newSigPath); } catch (e) { }
             }
             newSigPath = saveMediaFile(t.signature_data_url, 'teachers/signatures', 'teacher_sig');
         }
@@ -1278,10 +1357,10 @@ ipcMain.handle('add-subject', async (event, data) => {
             if (existing) return resolve({ success: false, error: `Subject "${subjectName}" already exists for this class.` });
 
             db.run(`INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (?, ?, ?, ?, ?)`,
-                [classId, subjectName, data.sequence_order || 1, data.monthly_marks || null, data.yearly_marks || null], function(err2) {
-                if (err2) resolve({ success: false, error: err2.message });
-                else resolve({ success: true, id: this.lastID });
-            });
+                [classId, subjectName, data.sequence_order || 1, data.monthly_marks || null, data.yearly_marks || null], function (err2) {
+                    if (err2) resolve({ success: false, error: err2.message });
+                    else resolve({ success: true, id: this.lastID });
+                });
         });
     });
 });
@@ -1301,9 +1380,9 @@ ipcMain.handle('update-subject', async (event, data) => {
 
             db.run(`UPDATE subjects SET class_id = ?, subject_name = ?, sequence_order = ?, monthly_marks = ?, yearly_marks = ? WHERE id = ?`,
                 [classId, subjectName, data.sequence_order || 1, data.monthly_marks || null, data.yearly_marks || null, subjectId], (err2) => {
-                if (err2) resolve({ success: false, error: err2.message });
-                else resolve({ success: true });
-            });
+                    if (err2) resolve({ success: false, error: err2.message });
+                    else resolve({ success: true });
+                });
         });
     });
 });
@@ -1313,10 +1392,10 @@ ipcMain.handle('delete-teacher', async (event, id) => {
         const existingRow = await dbGet(`SELECT photo_path, signature_path FROM teachers WHERE id = ?`, [id]);
         if (existingRow) {
             if (existingRow.photo_path && fs.existsSync(existingRow.photo_path)) {
-                try { fs.unlinkSync(existingRow.photo_path); } catch (e) {}
+                try { fs.unlinkSync(existingRow.photo_path); } catch (e) { }
             }
             if (existingRow.signature_path && fs.existsSync(existingRow.signature_path)) {
-                try { fs.unlinkSync(existingRow.signature_path); } catch (e) {}
+                try { fs.unlinkSync(existingRow.signature_path); } catch (e) { }
             }
         }
         await dbRun(`UPDATE classes SET class_teacher_id = NULL WHERE class_teacher_id = ?`, [id]);
@@ -1364,7 +1443,7 @@ ipcMain.handle('get-marks-sheet', async (event, { class_id, exam_id }) => {
                 db.all(`SELECT m.student_id, m.subject_id, m.marks_obtained, m.is_present
                         FROM marks m JOIN students s ON s.id = m.student_id
                         WHERE m.exam_id = ? AND s.class_id = ?`, [exam_id, class_id], (err3, marks) => {
-                            db.all(`SELECT ss.student_id, ss.subject_name, ss.role  
+                    db.all(`SELECT ss.student_id, ss.subject_name, ss.role  
                             FROM student_subjects ss JOIN students s ON s.id = ss.student_id
                             WHERE s.class_id = ? AND s.status = 'Active'`, [class_id], (err4, studentSubjects) => {
                         resolve({
@@ -1426,9 +1505,9 @@ ipcMain.handle('save-mark', async (event, { exam_id, student_id, subject_id, val
         if (v === '') {
             db.run(`DELETE FROM marks WHERE exam_id = ? AND student_id = ? AND subject_id = ?`,
                 [exam_id, student_id, subject_id], (err) => {
-                if (err) resolve({ success: false, error: err.message });
-                else resolve({ success: true });
-            });
+                    if (err) resolve({ success: false, error: err.message });
+                    else resolve({ success: true });
+                });
             return;
         }
 
@@ -1455,9 +1534,9 @@ ipcMain.handle('save-mark', async (event, { exam_id, student_id, subject_id, val
                 ON CONFLICT(student_id, subject_id, exam_id)
                 DO UPDATE SET marks_obtained = excluded.marks_obtained, is_present = excluded.is_present`,
                 [student_id, subject_id, exam_id, marks, present], (err2) => {
-                if (err2) resolve({ success: false, error: err2.message });
-                else resolve({ success: true });
-            });
+                    if (err2) resolve({ success: false, error: err2.message });
+                    else resolve({ success: true });
+                });
         });
     });
 });
@@ -1572,6 +1651,12 @@ ipcMain.handle('generate-transcripts-pdf', async (event, { html, defaultFileName
     let pdfWin = null;
     try {
         const license = await getLicenseStatus();
+        if (license.isTrialExpired) {
+            return {
+                success: false,
+                error: 'Trial Expired: Your 2-day trial has ended. Please make payment to get the real version.'
+            };
+        }
         if (license.isTrial) {
             return {
                 success: false,
@@ -1730,7 +1815,7 @@ ipcMain.handle('generate-transcripts-pdf', async (event, { html, defaultFileName
             pdfWin = null;
         }
         if (tempFilePath && fs.existsSync(tempFilePath)) {
-            try { fs.unlinkSync(tempFilePath); } catch (e) {}
+            try { fs.unlinkSync(tempFilePath); } catch (e) { }
         }
 
         return { success: true, filePath };
@@ -1739,7 +1824,7 @@ ipcMain.handle('generate-transcripts-pdf', async (event, { html, defaultFileName
             pdfWin.destroy();
         }
         if (tempFilePath && fs.existsSync(tempFilePath)) {
-            try { fs.unlinkSync(tempFilePath); } catch (e) {}
+            try { fs.unlinkSync(tempFilePath); } catch (e) { }
         }
         console.error('generate-transcripts-pdf error:', err);
         return { success: false, error: err.message };

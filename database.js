@@ -195,16 +195,24 @@ db.serialize(() => {
         q3 TEXT, a3 TEXT,
         q4 TEXT, a4 TEXT,
         q5 TEXT, a5 TEXT,
-        license_type TEXT DEFAULT 'trial'
+        license_type TEXT DEFAULT 'trial',
+        trial_started_at TEXT
     )`);
 
-    // Ensure license_type column exists on admin_profile (self-repairing migration)
+    // Ensure license_type and trial_started_at columns exist on admin_profile (self-repairing migration)
     db.all("PRAGMA table_info(admin_profile)", [], (err, columns) => {
         const names = (columns || []).map(c => c.name);
         if (names.length > 0 && !names.includes('license_type')) {
             db.run(`ALTER TABLE admin_profile ADD COLUMN license_type TEXT DEFAULT 'trial'`, (err2) => {
                 if (!err2) {
                     console.log("✅ Added license_type column to admin_profile");
+                }
+            });
+        }
+        if (names.length > 0 && !names.includes('trial_started_at')) {
+            db.run(`ALTER TABLE admin_profile ADD COLUMN trial_started_at TEXT`, (err2) => {
+                if (!err2) {
+                    console.log("✅ Added trial_started_at column to admin_profile");
                 }
             });
         }
