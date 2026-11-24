@@ -1611,9 +1611,9 @@ let currentStudentView = 'Active';   // 'Active' | 'Graduated' | 'Removed'
 let studentListCache = [];           // the rows currently on screen (used by the row buttons)
 
 const STUDENT_VIEW_HEADERS = {
-    Active: ['Roll', 'Name', 'Class', 'Guardian Contact', 'Actions'],
-    Graduated: ['Roll', 'Name', 'Last Class', 'Guardian Contact', 'Graduated On', 'Actions'],
-    Removed: ['Roll', 'Name', 'Last Class', 'Guardian Contact', 'Dropped Out On', 'Reason', 'Actions']
+    Active: ['ID', 'Roll', 'Name', 'Class', 'Guardian Contact', 'Actions'],
+    Graduated: ['ID', 'Roll', 'Name', 'Last Class', 'Guardian Contact', 'Graduated On', 'Actions'],
+    Removed: ['ID', 'Roll', 'Name', 'Last Class', 'Guardian Contact', 'Dropped Out On', 'Reason', 'Actions']
 };
 
 const STUDENT_BTN_STYLE = 'padding:4px 8px; font-size:11px; width:auto; display:inline-flex; align-items:center; gap:4px; margin:2px 4px 2px 0; line-height:1; vertical-align:middle; ';
@@ -1669,6 +1669,7 @@ function studentRowHtml(s, view) {
             : '');
 
     let html = checkboxCell + `
+        <td><span style="font-weight:600; color:#2563eb;">${escapeHtml(s.student_id_number || '-')}</span></td>
         <td>${formatRoll(s.roll)}</td>
         <td><b>${escapeHtml(s.name || '')}</b></td>
         <td>${escapeHtml(s.class_name || '')}</td>
@@ -1688,7 +1689,7 @@ function studentRowHtml(s, view) {
         if (view === 'Removed') html += `<td>${escapeHtml(s.removal_cause || '')}</td>`;
         html += `<td class="student-action-cell" style="${actionCellDisplay}">${infoBtn}${editBtn}${reinstateBtn}</td>`;
     }
-    return `<tr>${html}</tr>`;
+    return `<tr data-name="${escapeHtml((s.name || '').toLowerCase())}" data-id="${escapeHtml((s.student_id_number || '').toLowerCase())}" data-roll="${escapeHtml(String(s.roll || '').toLowerCase())} ${escapeHtml(formatRoll(s.roll).toLowerCase())}">${html}</tr>`;
 }
 
 // Re-fetches students from the database using the selected view (tab)
@@ -1749,7 +1750,10 @@ function initStudentSearch() {
                 return;
             }
             realRowCount++;
-            const matches = !q || tr.textContent.toLowerCase().includes(q);
+            const name = tr.dataset.name || '';
+            const id = tr.dataset.id || '';
+            const roll = tr.dataset.roll || '';
+            const matches = !q || name.includes(q) || id.includes(q) || roll.includes(q);
             tr.style.display = matches ? '' : 'none';
             if (matches) matchCount++;
         });
@@ -2567,7 +2571,7 @@ async function renderTeachersTable() {
     tbody.innerHTML = cachedTeachers.map(t => {
         const assignedClasses = allClassesForTeachers.filter(c => c.class_teacher_id === t.id).map(c => c.class_name);
         return `
-        <tr>
+        <tr data-name="${escapeHtml((t.name || '').toLowerCase())}" data-id="${escapeHtml((t.teacher_id_number || '').toLowerCase())}">
             <td><span style="font-weight:600; color:#2563eb;">${escapeHtml(t.teacher_id_number || '-')}</span></td>
             <td><b>${escapeHtml(t.name || '')}</b></td>
             <td>${escapeHtml(t.title || '')}</td>
@@ -2604,7 +2608,9 @@ function initTeacherSearch() {
                 return;
             }
             realRowCount++;
-            const matches = !q || tr.textContent.toLowerCase().includes(q);
+            const name = tr.dataset.name || '';
+            const id = tr.dataset.id || '';
+            const matches = !q || name.includes(q) || id.includes(q);
             tr.style.display = matches ? '' : 'none';
             if (matches) matchCount++;
         });
