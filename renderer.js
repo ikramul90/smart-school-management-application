@@ -5669,23 +5669,83 @@ document.getElementById('details-info-modal')?.addEventListener('click', (e) => 
 document.getElementById('btn-view-privacy-policy')?.addEventListener('click', () => {
     const html = `
         <div style="font-size:13.5px; line-height:1.8; color:#0f172a;">
-            <p style="margin-top:0;"><b>Effective Date:</b> January 1, 2025</p>
-            <p>This Privacy Policy describes how <b>EduKit Solutions</b> collects, uses, and protects the information entered into this application.</p>
+            <p style="margin-top:0;">
+                <b>Provider:</b> EduKit Solutions<br>
+                <b>Version:</b> 1.0.0<br>
+                <b>Effective Date:</b> 01 December 2026
+            </p>
 
-            <h4 style="color:#1e293b; margin-bottom:4px;">1. Data Collection</h4>
-            <p>All data (student records, teacher profiles, exam results) is stored locally on your device using an encrypted SQLite database. No data is transmitted to external servers.</p>
+            <h4 style="color:#1e293b; margin-bottom:4px;">1. About this policy</h4>
+            <p>EduKit Campus is an institute management application provided by <b>EduKit Solutions</b> to help schools and educational institutes manage students, teachers, subjects, exams, marks, attendance, and transcripts. By installing or using the Software, the Institute confirms that it has read and accepted this policy. This policy works together with the EduKit Campus End-User License Agreement ("EULA"); if they conflict on how data is handled, this policy prevails.</p>
 
-            <h4 style="color:#1e293b; margin-bottom:4px;">2. Data Usage</h4>
-            <p>Collected information is used solely for school management purposes, including generating reports, transcripts, and certificates.</p>
+            <h4 style="color:#1e293b; margin-bottom:4px;">2. Who is responsible for what</h4>
+            <p>The <b>Institute</b> is the data controller—it decides what information is entered and is responsible for having the legal right and required parent/guardian consent to enter it. <b>EduKit Solutions</b> is the software provider; because data is stored locally on the Institute's computer, we do not collect or process the Institute's records in the ordinary course of use.</p>
 
-            <h4 style="color:#1e293b; margin-bottom:4px;">3. Data Security</h4>
-            <p>Access to the application is protected by an administrator password. We recommend regularly backing up your database file and keeping your device secure.</p>
+            <h4 style="color:#1e293b; margin-bottom:4px;">3. Information the Software handles</h4>
+            <ul style="margin-top:4px; padding-left:20px;">
+                <li><b>Student information:</b> Name, student ID, class and roll number, date of birth, gender, blood group, parents' names, guardian contact number, address, birth registration number, photograph, subject choices, examination marks, attendance, and graduation or drop-out records.</li>
+                <li><b>Teacher information:</b> Teacher ID, name, title, contact number, NID number, blood group, parents' names, address, photograph, signature, and class-teacher assignments.</li>
+                <li><b>Institute and administrator information:</b> Institute name, address, and logo; head teacher or principal name and signature; administrator username, password, and recovery security questions and answers.</li>
+                <li><b>License information:</b> Activation code and license or trial status.</li>
+            </ul>
+            <p>The Institute decides which optional fields to fill in, while fields marked as required must be completed to save a record.</p>
 
-            <h4 style="color:#1e293b; margin-bottom:4px;">4. Third-Party Sharing</h4>
-            <p>We do not sell, trade, or share any personal information with third parties.</p>
+            <h4 style="color:#1e293b; margin-bottom:4px;">4. Where information is stored</h4>
+            <p>All Institute records are stored locally on the computer where the Software is installed (in the Software's database and media files) and are never uploaded to our servers. The Institute controls physical and remote access to that computer and its files.</p>
 
-            <h4 style="color:#1e293b; margin-bottom:4px;">5. Contact</h4>
-            <p>For privacy-related questions, please contact us at <b>support@edukitsolutions.com</b>.</p>
+            <h4 style="color:#1e293b; margin-bottom:4px;">5. Activation and licensing</h4>
+            <p>The Software uses an activation code provided by EduKit Solutions to unlock the full version, verified offline via an encrypted verifier without any internet connection. License information is used solely to verify genuine licensing and apply trial or full license limits.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">6. How information is used</h4>
+            <p>Entered information is used strictly to run the Institute's own functions (maintaining registries, recording marks and attendance, generating transcripts and reports, and showing alerts for missing or duplicate records). We do not sell records, use them for advertising, or use them to build profiles.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">7. Our access to your information</h4>
+            <p>We do not routinely have access to the Institute's records. We may only view them if the Institute requests support (such as installation, training, data entry, migration, device transfer, or troubleshooting) and grants permission. Any copy shared for support is kept confidential and deleted once the work is finished.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">8. Sharing and disclosure</h4>
+            <p>We do not share the Institute's records or confidential information with third parties. We may name the Institute as a customer using publicly available details (name and address) in promotional materials unless asked not to. Printing transcripts, exporting records, or sharing data with parents, boards, or authorities is the Institute's own responsibility. We disclose information only if required by law or court order.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">9. Security</h4>
+            <p>The Software includes a password-protected administrator login and recovery security questions. While we take reasonable care in building the Software, security also requires the Institute to:</p>
+            <ul style="margin-top:4px; padding-left:20px;">
+                <li>Keep the computer in a secure location protected by a strong account password.</li>
+                <li>Keep the administrator username, password, and security answers private.</li>
+                <li>Restrict Software access strictly to authorized staff.</li>
+                <li>Keep the operating system and antivirus software up to date.</li>
+            </ul>
+            <p>No system is completely secure, and we cannot guarantee information will never be accessed without authorization.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">10. Backups and data loss</h4>
+            <p>Because records are stored locally, the Institute is responsible for regularly backing up the Software's database and media files. EduKit Solutions is not responsible for data loss or corruption caused by hardware failure, accidental deletion, viruses, power failure, theft, or lack of backups.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">11. Retention and deletion</h4>
+            <p>Records remain in the Software as long as the Institute keeps them and can be edited or deleted at any time. Uninstalling the Software or ending the license does not automatically delete local database or media files; the Institute must remove them manually if desired. Upon license termination, we will confirm in writing upon request that we hold no copies of your data. We are not responsible for leaks, fraud, or misuse resulting from the Institute sharing its files or leaving them on unsecure devices.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">12. Children's information</h4>
+            <p>The Software stores information about students who are children. The Institute must use this data solely for educational and administrative purposes, restrict access to authorized staff, and handle it with appropriate care.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">13. Rights of students, parents, and staff</h4>
+            <p>Students, parents, guardians, and staff may request to view, correct, or delete their held information. Because the Institute controls the records, such requests must be directed to the Institute using the Software's built-in tools.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">14. Third-party components</h4>
+            <p>The Software is built using open-source components that run locally on the Institute's computer. Their licenses and notices are listed in the <b>THIRD-PARTY-LICENSES</b> file supplied with the Software.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">15. Changes to this policy</h4>
+            <p>We may update this policy periodically, supplying the current version and updated effective date with the Software and its updates. Continued use after an update signifies acceptance of the revised policy.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">16. Governing law</h4>
+            <p>This policy is governed by the laws of Bangladesh, and any disputes will be handled by the courts of Bangladesh.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">17. Contact</h4>
+            <p style="margin-bottom:0;">
+                For questions about this policy, please contact:<br>
+                <b>EduKit Solutions</b><br>
+                <b>Email:</b> edukitsolutions@gmail.com<br>
+                <b>LinkedIn:</b> linkedin.com/company/146668574<br>
+                <b>Facebook:</b> facebook.com/EduKitSolutions<br>
+                <b>Phone:</b> +880 15702-56457<br>
+                <b>Location:</b> TB Hospital Road, Moulvibazar Sadar, Sylhet, Bangladesh
+            </p>
         </div>`;
     openDetailsInfoModal('🔒 Privacy Policy', html);
 });
@@ -5693,22 +5753,46 @@ document.getElementById('btn-view-privacy-policy')?.addEventListener('click', ()
 document.getElementById('btn-view-copyright')?.addEventListener('click', () => {
     const html = `
         <div style="font-size:13.5px; line-height:1.8; color:#0f172a;">
-            <p style="margin-top:0; font-size:15px; font-weight:700; color:#1e293b;">© 2025 EduKit Solutions. All Rights Reserved.</p>
+            <p style="margin-top:0; font-size:15px; font-weight:700; color:#1e293b;">© 2026 EduKit Solutions. All Rights Reserved.</p>
+            <p style="margin-top:0;">
+                <b>Provider:</b> EduKit Solutions<br>
+                <b>Version:</b> 1.0.0<br>
+                <b>Effective Date:</b> 01 December 2026
+            </p>
 
-            <h4 style="color:#1e293b; margin-bottom:4px;">Software License</h4>
-            <p>This software is proprietary and licensed, not sold. Your activation code grants you a non-transferable, non-exclusive license to use this software on a single device.</p>
+            <h4 style="color:#1e293b; margin-bottom:4px;">1. Copyright Ownership</h4>
+            <p>All rights, title, and interest in and to <b>EduKit Campus</b> ("Software"), including its source code, compiled binaries, database architecture, user interface design, graphics, icons, installer packages, and written documentation, are the exclusive intellectual property of <b>EduKit Solutions</b>. The Software is protected by the copyright laws of Bangladesh and applicable international copyright treaties.</p>
 
-            <h4 style="color:#1e293b; margin-bottom:4px;">Restrictions</h4>
-            <p>You may not copy, modify, distribute, reverse-engineer, or create derivative works of this software without prior written permission from EduKit Solutions.</p>
+            <h4 style="color:#1e293b; margin-bottom:4px;">2. License, Not Sale</h4>
+            <p>EduKit Campus is licensed, not sold. Purchasing a license grants the educational institution ("Institute") a limited, non-exclusive, non-transferable right to install and use the Software on <b>one (1) authorized computer</b> in accordance with the EduKit Campus End-User License Agreement ("EULA"). No ownership or copyright of the Software is transferred to the Institute.</p>
 
-            <h4 style="color:#1e293b; margin-bottom:4px;">Intellectual Property</h4>
-            <p>All designs, code, graphics, and documentation associated with this application are the exclusive intellectual property of EduKit Solutions.</p>
+            <h4 style="color:#1e293b; margin-bottom:4px;">3. Restrictions on Copying and Modification</h4>
+            <p>Except as expressly permitted in the EULA (such as making local backup copies for the Institute's own protection), no person or organization may:</p>
+            <ul style="margin-top:4px; padding-left:20px;">
+                <li>Copy, reproduce, distribute, share, rent, lease, lend, or resell the Software or its activation code;</li>
+                <li>Decompile, disassemble, reverse-engineer, modify, or create derivative works based on the Software;</li>
+                <li>Remove, hide, or alter any copyright notices, watermarks, version labels, or EduKit Solutions branding inside the Software or its generated files.</li>
+            </ul>
 
-            <h4 style="color:#1e293b; margin-bottom:4px;">Disclaimer</h4>
-            <p>This software is provided "as is" without warranty of any kind. EduKit Solutions shall not be liable for any damages arising from the use of this application.</p>
+            <h4 style="color:#1e293b; margin-bottom:4px;">4. Ownership of Institute Data and Outputs</h4>
+            <p>EduKit Solutions claims no copyright or ownership over the records entered into the Software by the Institute (including student details, teacher records, marks, attendance, or the Institute's own logo and name). The Institute retains full ownership of its data and all transcripts, mark sheets, certificates, and reports generated using that data.</p>
 
-            <h4 style="color:#1e293b; margin-bottom:4px;">Contact</h4>
-            <p>For licensing inquiries, contact <b>legal@edukitsolutions.com</b>.</p>
+            <h4 style="color:#1e293b; margin-bottom:4px;">5. Third-Party and Open-Source Software</h4>
+            <p>EduKit Campus incorporates certain third-party open-source libraries and components. Copyright for those components belongs to their respective authors and is governed by their individual open-source licenses, which are listed in the <b>THIRD-PARTY-LICENSES</b> file included with the Software.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">6. Trademarks and Branding</h4>
+            <p>The names <b>EduKit Solutions</b> and <b>EduKit Campus</b>, along with associated logos and visual branding, are proprietary to EduKit Solutions and may not be used without prior written permission.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">7. Governing Law and Contact</h4>
+            <p style="margin-bottom:0;">
+                This Copyright Policy is governed by the laws of Bangladesh. To report unauthorized copying, piracy, or to request written permissions, please contact:<br>
+                <b>EduKit Solutions</b><br>
+                <b>Email:</b> edukitsolutions@gmail.com<br>
+                <b>LinkedIn:</b> linkedin.com/company/146668574<br>
+                <b>Facebook:</b> facebook.com/EduKitSolutions<br>
+                <b>Phone:</b> +880 15702-56457<br>
+                <b>Location:</b> TB Hospital Road, Moulvibazar Sadar, Sylhet, Bangladesh
+            </p>
         </div>`;
     openDetailsInfoModal('© Copyright Notice', html);
 });
