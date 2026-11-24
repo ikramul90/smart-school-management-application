@@ -1,7 +1,7 @@
 {
-  "name": "smart-school-management-application",
+  "name": "edukit-campus",
   "version": "1.0.0",
-  "description": "This Application is developed by Ikramul ALam Chowdhury",
+  "description": "EduKit Campus by EduKit Solutions",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
@@ -13,10 +13,13 @@
     "app",
     "management",
     "admin",
-    "tcsac"
+    "EduKit Campus", 
+    "EduKit Solutions",
+    "EduKit"
   ],
   "author": "Ikramul Alam Chowdhury",
-  "license": "ISC",
+  "license": "UNLICENSED",
+  "private": true,
   "type": "commonjs",
   "dependencies": {
     "sqlite3": "^5.1.7"
@@ -26,7 +29,14 @@
     "electron-builder": "^26.18.0"
   },
   "build": {
-    "appId": "com.tcsac.schoolmanagement",
+    "appId": "com.edukitsolutions.campus",
+    "copyright": "Copyright © 2026 EduKit Solutions",
+    "extraResources": [
+      {
+        "from": "THIRD-PARTY-LICENSES.txt",
+        "to": "THIRD-PARTY-LICENSES.txt"
+      }
+    ],
     "productName": "Edukit Campus",
     "directories": {
       "output": "D:/Users/Ikramul/TCSAC",
