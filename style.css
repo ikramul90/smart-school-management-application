@@ -781,6 +781,79 @@ button:hover {
     box-sizing: border-box;
 }
 
+/* ---------- STUDENTS & TEACHERS: search field ---------- */
+.student-search-wrap,
+.teacher-search-wrap {
+    margin-bottom: 16px;
+}
+
+.student-search-box,
+.teacher-search-box {
+    position: relative;
+    max-width: 320px;
+}
+
+.student-search-box input,
+.teacher-search-box input {
+    padding: 9px 34px 9px 36px;
+    font-size: 14px;
+    background-color: var(--white);
+    color: var(--slate-800);
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.student-search-box input::placeholder,
+.teacher-search-box input::placeholder {
+    color: var(--slate-400);
+    font-weight: 400;
+}
+
+.student-search-box input:focus,
+.teacher-search-box input:focus {
+    outline: none;
+    border-color: var(--blue-500);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.student-search-icon,
+.teacher-search-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--slate-400);
+    pointer-events: none;
+    transition: color 0.2s;
+}
+
+.student-search-box:focus-within .student-search-icon,
+.teacher-search-box:focus-within .teacher-search-icon {
+    color: var(--blue-500);
+}
+
+#student-search-clear,
+#teacher-search-clear {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: var(--transparent);
+    color: var(--slate-500);
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+#student-search-clear:hover,
+#teacher-search-clear:hover {
+    background: var(--slate-100);
+    color: var(--slate-800);
+}
+
 #student-details.disabled {
     cursor: not-allowed;
     background-color: var(--slate-50) !important;
@@ -2320,6 +2393,7 @@ button:hover {
 }
 
 @media (max-width: 720px) {
+
     .tc-upload-row,
     .st-upload-row {
         grid-template-columns: 1fr;
@@ -2398,6 +2472,7 @@ button:hover {
     border-color: #475569 !important;
     color: #f8fafc !important;
 }
+
 .btn-trial-disabled:hover {
     background: #475569 !important;
 }

@@ -408,6 +408,8 @@ window.addEventListener('DOMContentLoaded', async () => {
     const adminExists = await ipcRenderer.invoke('check-admin-exists');
     await refreshLicenseStatus();
     setupTrialExpiredActions();
+    initStudentSearch();
+    initTeacherSearch();
 
     // Periodic check every 60 seconds
     setInterval(async () => {
@@ -1726,6 +1728,73 @@ window.loadStudents = async function () {
     syncPromoteTabsState();
 };
 
+function initStudentSearch() {
+    const input = document.getElementById('student-search');
+    const clearBtn = document.getElementById('student-search-clear');
+    const tbody = document.getElementById('student-table-body');
+    if (!input || !tbody) return;
+
+    function applyStudentSearch() {
+        const q = input.value.trim().toLowerCase();
+        if (clearBtn) clearBtn.style.display = q ? 'flex' : 'none';
+
+        const rows = Array.from(tbody.querySelectorAll('tr:not(.search-empty-row)'));
+        let matchCount = 0;
+        let realRowCount = 0;
+
+        rows.forEach(tr => {
+            const isDefaultEmpty = tr.cells.length === 1 && tr.cells[0].hasAttribute('colspan');
+            if (isDefaultEmpty) {
+                tr.style.display = q ? 'none' : '';
+                return;
+            }
+            realRowCount++;
+            const matches = !q || tr.textContent.toLowerCase().includes(q);
+            tr.style.display = matches ? '' : 'none';
+            if (matches) matchCount++;
+        });
+
+        const existingNoResults = tbody.querySelector('.search-empty-row');
+        if (q && matchCount === 0 && realRowCount > 0) {
+            if (!existingNoResults) {
+                const noResultsTr = document.createElement('tr');
+                noResultsTr.className = 'search-empty-row';
+                const colSpan = document.getElementById('student-table-head-row')?.children.length || 8;
+                noResultsTr.innerHTML = `<td colspan="${colSpan}" style="text-align:center; color:#64748b; padding:20px;">No students match &ldquo;${escapeHtml(q)}&rdquo;</td>`;
+                tbody.appendChild(noResultsTr);
+            }
+        } else if (existingNoResults) {
+            existingNoResults.remove();
+        }
+    }
+
+    input.addEventListener('input', applyStudentSearch);
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            input.value = '';
+            applyStudentSearch();
+        }
+    });
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            applyStudentSearch();
+            input.focus();
+        });
+    }
+
+    new MutationObserver((mutations) => {
+        const hasExternalChanges = mutations.some(m => {
+            return Array.from(m.addedNodes).some(n => !n.classList || !n.classList.contains('search-empty-row')) ||
+                   Array.from(m.removedNodes).some(n => !n.classList || !n.classList.contains('search-empty-row'));
+        });
+        if (hasExternalChanges) {
+            applyStudentSearch();
+        }
+    }).observe(tbody, { childList: true });
+}
+
 function syncPromoteTabsState() {
     document.querySelectorAll('#student-view-tabs .chip-btn').forEach(b => {
         b.removeAttribute('title');
@@ -2512,6 +2581,72 @@ async function renderTeachersTable() {
         </tr>
     `;
     }).join('');
+}
+
+function initTeacherSearch() {
+    const input = document.getElementById('teacher-search');
+    const clearBtn = document.getElementById('teacher-search-clear');
+    const tbody = document.getElementById('teacher-table-body');
+    if (!input || !tbody) return;
+
+    function applyTeacherSearch() {
+        const q = input.value.trim().toLowerCase();
+        if (clearBtn) clearBtn.style.display = q ? 'flex' : 'none';
+
+        const rows = Array.from(tbody.querySelectorAll('tr:not(.search-empty-row)'));
+        let matchCount = 0;
+        let realRowCount = 0;
+
+        rows.forEach(tr => {
+            const isDefaultEmpty = tr.cells.length === 1 && tr.cells[0].hasAttribute('colspan');
+            if (isDefaultEmpty) {
+                tr.style.display = q ? 'none' : '';
+                return;
+            }
+            realRowCount++;
+            const matches = !q || tr.textContent.toLowerCase().includes(q);
+            tr.style.display = matches ? '' : 'none';
+            if (matches) matchCount++;
+        });
+
+        const existingNoResults = tbody.querySelector('.search-empty-row');
+        if (q && matchCount === 0 && realRowCount > 0) {
+            if (!existingNoResults) {
+                const noResultsTr = document.createElement('tr');
+                noResultsTr.className = 'search-empty-row';
+                noResultsTr.innerHTML = `<td colspan="6" style="text-align:center; color:#64748b; padding:20px;">No teachers match &ldquo;${escapeHtml(q)}&rdquo;</td>`;
+                tbody.appendChild(noResultsTr);
+            }
+        } else if (existingNoResults) {
+            existingNoResults.remove();
+        }
+    }
+
+    input.addEventListener('input', applyTeacherSearch);
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            input.value = '';
+            applyTeacherSearch();
+        }
+    });
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            applyTeacherSearch();
+            input.focus();
+        });
+    }
+
+    new MutationObserver((mutations) => {
+        const hasExternalChanges = mutations.some(m => {
+            return Array.from(m.addedNodes).some(n => !n.classList || !n.classList.contains('search-empty-row')) ||
+                   Array.from(m.removedNodes).some(n => !n.classList || !n.classList.contains('search-empty-row'));
+        });
+        if (hasExternalChanges) {
+            applyTeacherSearch();
+        }
+    }).observe(tbody, { childList: true });
 }
 
 // --- TEACHER & STUDENT PHOTO & SIGNATURE UPLOAD LOGIC ---
