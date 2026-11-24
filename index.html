@@ -66,12 +66,24 @@
         <hr>
         <label>Security Questions (Max 5 for recovery)</label>
         <div class="input-group">
-            <input type="text" id="q1" value="" placeholder="Question">
-            <input type="text" id="a1" placeholder="Answer">
+            <input type="text" id="q1" placeholder="Question 1 (Required)">
+            <input type="text" id="a1" placeholder="Answer 1 (Required)">
         </div>
         <div class="input-group">
-            <input type="text" id="q2" value="" placeholder="Question">
-            <input type="text" id="a2" placeholder="Answer">
+            <input type="text" id="q2" placeholder="Question 2 (Required)">
+            <input type="text" id="a2" placeholder="Answer 2 (Required)">
+        </div>
+        <div class="input-group">
+            <input type="text" id="q3" placeholder="Question 3 (Optional)">
+            <input type="text" id="a3" placeholder="Answer 3 (Optional)">
+        </div>
+        <div class="input-group">
+            <input type="text" id="q4" placeholder="Question 4 (Optional)">
+            <input type="text" id="a4" placeholder="Answer 4 (Optional)">
+        </div>
+        <div class="input-group">
+            <input type="text" id="q5" placeholder="Question 5 (Optional)">
+            <input type="text" id="a5" placeholder="Answer 5 (Optional)">
         </div>
         <button id="btn-save-setup">Initialize System</button>
     </div>
@@ -1490,7 +1502,7 @@
                                 </h3>
                                 <button type="button" id="btn-toggle-security-questions"
                                     style="width: auto; padding: 6px 14px; font-size: 12px; background: #f1f5f9; color: #1e293b; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; font-weight: 600;">
-                                    Show
+                                    Hide
                                 </button>
                             </div>
                             <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">
@@ -1504,13 +1516,13 @@
 
                             <!-- LOCKED PLACEHOLDER MESSAGE -->
                             <div id="sec-questions-locked"
-                                style="padding: 30px 20px; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; color: #64748b; font-size: 13px;">
+                                style="display: none; padding: 30px 20px; text-align: center; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 6px; color: #64748b; font-size: 13px;">
                                 Security questions and answers are hidden to protect privacy. Click <b>"Show"</b> above
                                 to view or edit them.
                             </div>
 
                             <!-- EDITABLE QUESTIONS CONTAINER -->
-                            <div id="sec-questions-content" style="display: none;">
+                            <div id="sec-questions-content" style="display: block;">
                                 <div class="input-group">
                                     <label class="no-select">Question 1</label>
                                     <input type="text" id="admin-q1" placeholder="Enter Question 1">

@@ -684,23 +684,47 @@ async function initSchoolSetupScreen() {
 }
 
 // First-time setup form: collects the new admin's username,
-// password, and two security-question answers, then transitions to School Setup.
+// password, and custom security questions/answers, then transitions to School Setup.
 document.getElementById('btn-save-setup').addEventListener('click', async () => {
     const username = document.getElementById('setup-username').value.trim();
     const password = document.getElementById('setup-password').value.trim();
-    const a1 = document.getElementById('a1').value.trim();
-    const a2 = document.getElementById('a2').value.trim();
+    const q1 = document.getElementById('q1')?.value.trim() || '';
+    const a1 = document.getElementById('a1')?.value.trim() || '';
+    const q2 = document.getElementById('q2')?.value.trim() || '';
+    const a2 = document.getElementById('a2')?.value.trim() || '';
+    const q3 = document.getElementById('q3')?.value.trim() || '';
+    const a3 = document.getElementById('a3')?.value.trim() || '';
+    const q4 = document.getElementById('q4')?.value.trim() || '';
+    const a4 = document.getElementById('a4')?.value.trim() || '';
+    const q5 = document.getElementById('q5')?.value.trim() || '';
+    const a5 = document.getElementById('a5')?.value.trim() || '';
 
-    if (!username || !password || !a1 || !a2) {
-        document.getElementById('setup-error').innerText = "Please complete all registration fields!";
+    if (!username || !password) {
+        document.getElementById('setup-error').innerText = "Please complete admin username and password!";
         return;
+    }
+
+    if (!q1 || !a1) {
+        document.getElementById('setup-error').innerText = "Please provide at least Security Question 1 and Answer 1!";
+        return;
+    }
+
+    for (let i = 2; i <= 5; i++) {
+        const qVal = document.getElementById('q' + i)?.value.trim() || '';
+        const aVal = document.getElementById('a' + i)?.value.trim() || '';
+        if ((qVal && !aVal) || (!qVal && aVal)) {
+            document.getElementById('setup-error').innerText = `Please enter both Question and Answer for Question ${i}.`;
+            return;
+        }
     }
 
     const result = await ipcRenderer.invoke('setup-admin', {
         username, password,
-        q1: "What was your first school's name?", a1,
-        q2: "What is your favorite book?", a2,
-        q3: "", a3: "", q4: "", a4: "", q5: "", a5: "",
+        q1, a1,
+        q2, a2,
+        q3, a3,
+        q4, a4,
+        q5, a5,
         license_type: currentVerifiedLicenseType
     });
 
@@ -5452,7 +5476,7 @@ document.getElementById('btn-promote-mode')?.addEventListener('click', () => tog
 // ============================================================
 // ADMIN SETTINGS & SECURITY (Settings -> Admin Info)
 // ============================================================
-let securityQuestionsVisible = false;
+let securityQuestionsVisible = true;
 
 async function loadAdminSettingsPage() {
     // Clear password inputs and status messages
@@ -5472,6 +5496,14 @@ async function loadAdminSettingsPage() {
     if (pwSucc) pwSucc.innerText = '';
     if (secErr) secErr.innerText = '';
     if (secSucc) secSucc.innerText = '';
+
+    // Synchronize visibility state
+    const content = document.getElementById('sec-questions-content');
+    const locked = document.getElementById('sec-questions-locked');
+    const btnToggle = document.getElementById('btn-toggle-security-questions');
+    if (content) content.style.display = securityQuestionsVisible ? 'block' : 'none';
+    if (locked) locked.style.display = securityQuestionsVisible ? 'none' : 'block';
+    if (btnToggle) btnToggle.textContent = securityQuestionsVisible ? 'Hide' : 'Show';
 
     // Fetch security questions and profile data
     try {
