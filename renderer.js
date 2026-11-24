@@ -5665,6 +5665,54 @@ document.getElementById('details-info-modal')?.addEventListener('click', (e) => 
     if (e.target.id === 'details-info-modal') closeDetailsInfoModal();
 });
 
+// ── Legal Documents ──────────────────────────────────────────────
+document.getElementById('btn-view-privacy-policy')?.addEventListener('click', () => {
+    const html = `
+        <div style="font-size:13.5px; line-height:1.8; color:#0f172a;">
+            <p style="margin-top:0;"><b>Effective Date:</b> January 1, 2025</p>
+            <p>This Privacy Policy describes how <b>EduKit Solutions</b> collects, uses, and protects the information entered into this application.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">1. Data Collection</h4>
+            <p>All data (student records, teacher profiles, exam results) is stored locally on your device using an encrypted SQLite database. No data is transmitted to external servers.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">2. Data Usage</h4>
+            <p>Collected information is used solely for school management purposes, including generating reports, transcripts, and certificates.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">3. Data Security</h4>
+            <p>Access to the application is protected by an administrator password. We recommend regularly backing up your database file and keeping your device secure.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">4. Third-Party Sharing</h4>
+            <p>We do not sell, trade, or share any personal information with third parties.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">5. Contact</h4>
+            <p>For privacy-related questions, please contact us at <b>support@edukitsolutions.com</b>.</p>
+        </div>`;
+    openDetailsInfoModal('🔒 Privacy Policy', html);
+});
+
+document.getElementById('btn-view-copyright')?.addEventListener('click', () => {
+    const html = `
+        <div style="font-size:13.5px; line-height:1.8; color:#0f172a;">
+            <p style="margin-top:0; font-size:15px; font-weight:700; color:#1e293b;">© 2025 EduKit Solutions. All Rights Reserved.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">Software License</h4>
+            <p>This software is proprietary and licensed, not sold. Your activation code grants you a non-transferable, non-exclusive license to use this software on a single device.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">Restrictions</h4>
+            <p>You may not copy, modify, distribute, reverse-engineer, or create derivative works of this software without prior written permission from EduKit Solutions.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">Intellectual Property</h4>
+            <p>All designs, code, graphics, and documentation associated with this application are the exclusive intellectual property of EduKit Solutions.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">Disclaimer</h4>
+            <p>This software is provided "as is" without warranty of any kind. EduKit Solutions shall not be liable for any damages arising from the use of this application.</p>
+
+            <h4 style="color:#1e293b; margin-bottom:4px;">Contact</h4>
+            <p>For licensing inquiries, contact <b>legal@edukitsolutions.com</b>.</p>
+        </div>`;
+    openDetailsInfoModal('© Copyright Notice', html);
+});
+
 function renderInfoGrid(items) {
     return `<div style="display:grid; grid-template-columns: 140px 1fr; row-gap:10px; column-gap:12px; font-size:13.5px; line-height:1.5;">` +
         items.map(([label, val]) => `
