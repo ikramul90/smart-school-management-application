@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EduKit Solutions by Ikramul Alam Chowdhury</title>
+    <title>EduKit Campus by EduKit Solutions</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -66,12 +66,12 @@
         <hr>
         <label>Security Questions (Max 5 for recovery)</label>
         <div class="input-group">
-            <input type="text" id="q1" value="What was your first school's name?" readonly>
-            <input type="text" id="a1" placeholder="Your Answer">
+            <input type="text" id="q1" value="" placeholder="Question">
+            <input type="text" id="a1" placeholder="Answer">
         </div>
         <div class="input-group">
-            <input type="text" id="q2" value="What is your favorite book?" readonly>
-            <input type="text" id="a2" placeholder="Your Answer">
+            <input type="text" id="q2" value="" placeholder="Question">
+            <input type="text" id="a2" placeholder="Answer">
         </div>
         <button id="btn-save-setup">Initialize System</button>
     </div>
@@ -1322,7 +1322,7 @@
                             style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
                             <h3
                                 style="margin-top: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
-                                👨‍🏫 Head Teacher Information Profile
+                                Head Teacher Information Profile
                             </h3>
                             <p style="font-size: 13px; color: #64748b; margin-bottom: 15px;">
                                 Configure head teacher / principal name and signature used across transcripts and
@@ -1483,12 +1483,9 @@
                         </div>
 
                         <!-- SECURITY QUESTIONS -->
-                        <div
-                            style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                            <div
-                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <h3
-                                    style="margin: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                        <div style="background: white; padding: 22px; border-radius: 8px; border: 1px solid #cbd5e1; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <h3 style="margin: 0; color: #1e293b; font-size: 18px; display: flex; align-items: center; gap: 8px;">
                                     🛡️ Recovery Security Questions
                                 </h3>
                                 <button type="button" id="btn-toggle-security-questions"
@@ -1550,6 +1547,11 @@
                                     Save Security Questions
                                 </button>
                             </div>
+                        </div>
+
+                        <!-- Documents -->
+                        <div>
+
                         </div>
 
                     </div>
