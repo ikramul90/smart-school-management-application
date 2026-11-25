@@ -1228,12 +1228,30 @@ async function loadDashboardStats() {
 // Edit these arrays once the official curriculum is confirmed — nothing
 // else in the app needs to change when these lists are updated.
 const SUBJECT_CATALOG = {
-    playNurseryOneTwo: ["Bangla", "English", "Math", "General Knowledge", "Drawing", "Spoken", "Religious Education", "Clothes/Manner/Presence"],
-    threeFourFive: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math", "Science", "Bangladesh & Global Studies", "General Knowledge", "Drawing", "Spoken", "Religious Education", "Clothes/Manner/Presence"],
-    sixSevenEight: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math", "Science", "Bangladesh & Global Studies", "Agriculture/Home Science", "Religious Education", "ICT", "Clothes/Manner/Presence"],
-    nineTenScience: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "General Math", "Religious Education", "ICT", "Bangladesh & Global Studies", "Physics", "Chemistry", "Higher Math", "Biology", "Agriculture/Home Science", "Clothes/Manner/Presence"],
-    nineTenHumanities: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "General Math", "Religious Education", "ICT", "General Science", "History", "Geography & Environment", "Civics & Citizenship", "Economics", "Agriculture/Home Science", "Clothes/Manner/Presence"],
-    nineTenBusiness: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "General Math", "Religious Education", "ICT", "General Science", "Accounting", "Finance and Banking", "Business Entrepreneurship", "Agriculture Studies", "Home Science", "Clothes/Manner/Presence"]
+    playNurseryOneTwo: ["Bangla", "English", "Math", "General Knowledge", "Drawing", "Spoken", "Religious Studies and Moral Education", "Clothes/Manner/Presence"],
+    threeFourFive: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math", "Science", "Bangladesh & Global Studies", "General Knowledge", "Drawing", "Spoken", "Religious Studies and Moral Education", "Clothes/Manner/Presence"],
+    sixSevenEight: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math", "Science", "Bangladesh & Global Studies", "Agriculture/Home Science", "Religious Studies and Moral Education", "Information and Communication Technology", "Clothes/Manner/Presence"],
+    nineTenScience: [
+        "Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math",
+        "Information and Communication Technology", "Religious Studies and Moral Education",
+        "Physical Education, Health Science and Sports", "Career Education",
+        "Bangladesh & Global Studies", "Physics", "Chemistry", "Higher Math", "Biology",
+        "Agriculture/Home Science", "Clothes/Manner/Presence"
+    ],
+    nineTenHumanities: [
+        "Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math",
+        "Information and Communication Technology", "Religious Studies and Moral Education",
+        "Physical Education, Health Science and Sports", "Career Education",
+        "Science", "History", "Geography & Environment", "Civics & Citizenship", "Economics",
+        "Agriculture/Home Science", "Clothes/Manner/Presence"
+    ],
+    nineTenBusiness: [
+        "Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math",
+        "Information and Communication Technology", "Religious Studies and Moral Education",
+        "Physical Education, Health Science and Sports", "Career Education",
+        "Science", "Accounting", "Finance and Banking", "Business Entrepreneurship",
+        "Agriculture Studies", "Home Science", "Clothes/Manner/Presence"
+    ]
 };
 
 // Maps each exact class_name (as stored in the classes table) to its catalog list above

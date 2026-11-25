@@ -39,37 +39,90 @@ db.serialize(() => {
     classNames.forEach(name => stmt.run(name));
     stmt.finalize();
 
-    // Migrate 'Domestic Science' -> 'Home Science' in existing tables
+    // Migrate old subject names to current curriculum standards
+    db.run(`UPDATE subjects SET subject_name = 'Math' WHERE subject_name = 'General Math'`);
+    db.run(`UPDATE student_subjects SET subject_name = 'Math' WHERE subject_name = 'General Math'`);
+
+    db.run(`UPDATE subjects SET subject_name = 'Information and Communication Technology' WHERE subject_name = 'ICT'`);
+    db.run(`UPDATE student_subjects SET subject_name = 'Information and Communication Technology' WHERE subject_name = 'ICT'`);
+
+    db.run(`UPDATE subjects SET subject_name = 'Religious Studies and Moral Education' WHERE subject_name = 'Religious Education'`);
+    db.run(`UPDATE student_subjects SET subject_name = 'Religious Studies and Moral Education' WHERE subject_name = 'Religious Education'`);
+
+    db.run(`UPDATE subjects SET subject_name = 'Science' WHERE subject_name = 'General Science'`);
+    db.run(`UPDATE student_subjects SET subject_name = 'Science' WHERE subject_name = 'General Science'`);
+
     db.run(`UPDATE subjects SET subject_name = 'Agriculture/Home Science' WHERE subject_name = 'Agriculture/Domestic Science'`);
     db.run(`UPDATE student_subjects SET subject_name = 'Agriculture/Home Science' WHERE subject_name = 'Agriculture/Domestic Science'`);
 
-    // Ensure default subjects for Business Studies classes if missing
-    db.all(`SELECT id, class_name FROM classes WHERE class_name IN ('Class Nine (Business Studies)', 'Class Ten (Business Studies)')`, [], (err, bClasses) => {
-        if (!bClasses || !bClasses.length) return;
-        const bSubjects = [
-            { name: "Bangla 1st", seq: 1, m: 25, y: 100 },
-            { name: "Bangla 2nd", seq: 2, m: 25, y: 100 },
-            { name: "English 1st", seq: 3, m: 25, y: 100 },
-            { name: "English 2nd", seq: 4, m: 25, y: 100 },
-            { name: "General Math", seq: 5, m: 25, y: 100 },
-            { name: "ICT", seq: 6, m: 25, y: 100 },
-            { name: "Religious Education", seq: 7, m: 25, y: 100 },
-            { name: "General Science", seq: 8, m: 25, y: 100 },
-            { name: "Accounting", seq: 9, m: 25, y: 100 },
-            { name: "Finance and Banking", seq: 10, m: 25, y: 100 },
-            { name: "Business Entrepreneurship", seq: 11, m: 25, y: 100 },
-            { name: "Agriculture Studies", seq: 12, m: 25, y: 100 },
-            { name: "Home Science", seq: 13, m: 25, y: 100 },
-            { name: "Clothes/Manner/Presence", seq: 14, m: 25, y: 100 }
-        ];
-        bClasses.forEach(cls => {
-            db.get(`SELECT COUNT(*) as cnt FROM subjects WHERE class_id = ?`, [cls.id], (err2, row2) => {
-                if (row2 && row2.cnt === 0) {
-                    const subStmt = db.prepare(`INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (?, ?, ?, ?, ?)`);
-                    bSubjects.forEach(s => subStmt.run(cls.id, s.name, s.seq, s.m, s.y));
-                    subStmt.finalize();
-                    console.log(`🌱 Seeded subjects for ${cls.class_name}!`);
-                }
+    // Ensure all Class 9 and 10 classes have complete subject lists and accurate sequence orders
+    const NINE_TEN_CATALOG = {
+        "Class Nine (Science)": [
+            "Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math",
+            "Information and Communication Technology", "Religious Studies and Moral Education",
+            "Physical Education, Health Science and Sports", "Career Education",
+            "Bangladesh & Global Studies", "Physics", "Chemistry", "Higher Math", "Biology",
+            "Agriculture/Home Science", "Clothes/Manner/Presence"
+        ],
+        "Class Ten (Science)": [
+            "Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math",
+            "Information and Communication Technology", "Religious Studies and Moral Education",
+            "Physical Education, Health Science and Sports", "Career Education",
+            "Bangladesh & Global Studies", "Physics", "Chemistry", "Higher Math", "Biology",
+            "Agriculture/Home Science", "Clothes/Manner/Presence"
+        ],
+        "Class Nine (Humanities)": [
+            "Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math",
+            "Information and Communication Technology", "Religious Studies and Moral Education",
+            "Physical Education, Health Science and Sports", "Career Education",
+            "Science", "History", "Geography & Environment", "Civics & Citizenship", "Economics",
+            "Agriculture/Home Science", "Clothes/Manner/Presence"
+        ],
+        "Class Ten (Humanities)": [
+            "Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math",
+            "Information and Communication Technology", "Religious Studies and Moral Education",
+            "Physical Education, Health Science and Sports", "Career Education",
+            "Science", "History", "Geography & Environment", "Civics & Citizenship", "Economics",
+            "Agriculture/Home Science", "Clothes/Manner/Presence"
+        ],
+        "Class Nine (Business Studies)": [
+            "Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math",
+            "Information and Communication Technology", "Religious Studies and Moral Education",
+            "Physical Education, Health Science and Sports", "Career Education",
+            "Science", "Accounting", "Finance and Banking", "Business Entrepreneurship",
+            "Agriculture Studies", "Home Science", "Clothes/Manner/Presence"
+        ],
+        "Class Ten (Business Studies)": [
+            "Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math",
+            "Information and Communication Technology", "Religious Studies and Moral Education",
+            "Physical Education, Health Science and Sports", "Career Education",
+            "Science", "Accounting", "Finance and Banking", "Business Entrepreneurship",
+            "Agriculture Studies", "Home Science", "Clothes/Manner/Presence"
+        ]
+    };
+
+    const nineTenNames = Object.keys(NINE_TEN_CATALOG);
+    db.all(`SELECT id, class_name FROM classes WHERE class_name IN (${nineTenNames.map(() => '?').join(',')})`, nineTenNames, (err, rows) => {
+        if (!rows || !rows.length) return;
+        rows.forEach(cls => {
+            const list = NINE_TEN_CATALOG[cls.class_name];
+            if (!list) return;
+
+            db.all(`SELECT id, subject_name FROM subjects WHERE class_id = ?`, [cls.id], (err2, existingSubs) => {
+                const existingMap = {};
+                (existingSubs || []).forEach(s => { existingMap[s.subject_name] = s.id; });
+
+                list.forEach((subName, idx) => {
+                    const seq = idx + 1;
+                    if (existingMap[subName]) {
+                        db.run(`UPDATE subjects SET sequence_order = ? WHERE id = ?`, [seq, existingMap[subName]]);
+                    } else {
+                        db.run(
+                            `INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (?, ?, ?, ?, ?)`,
+                            [cls.id, subName, seq, 25, 100]
+                        );
+                    }
+                });
             });
         });
     });
