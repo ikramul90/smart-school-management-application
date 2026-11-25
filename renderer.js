@@ -1151,7 +1151,8 @@ function shortClassName(name) {
     return String(name || '')
         .replace(/^Class\s+/i, '')
         .replace('(Science)', '(Sci)')
-        .replace('(Humanities)', '(Hum)');
+        .replace('(Humanities)', '(Hum)')
+        .replace('(Business Studies)', '(Bus)');
 }
 
 // Bars start empty and grow on the next frame so the CSS transition plays.
@@ -1229,9 +1230,10 @@ async function loadDashboardStats() {
 const SUBJECT_CATALOG = {
     playNurseryOneTwo: ["Bangla", "English", "Math", "General Knowledge", "Drawing", "Spoken", "Religious Education", "Clothes/Manner/Presence"],
     threeFourFive: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math", "Science", "Bangladesh & Global Studies", "General Knowledge", "Drawing", "Spoken", "Religious Education", "Clothes/Manner/Presence"],
-    sixSevenEight: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math", "Science", "Bangladesh & Global Studies", "Agriculture/Domestic Science", "Religious Education", "ICT", "Clothes/Manner/Presence"],
-    nineTenScience: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "General Math", "Religious Education", "ICT", "Bangladesh & Global Studies", "Physics", "Chemistry", "Higher Math", "Biology", "Agriculture/Domestic Science", "Clothes/Manner/Presence"],
-    nineTenHumanities: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "General Math", "Religious Education", "ICT", "General Science", "History", "Geography & Environment", "Civics & Citizenship", "Economics", "Agriculture/Domestic Science", "Clothes/Manner/Presence"]
+    sixSevenEight: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "Math", "Science", "Bangladesh & Global Studies", "Agriculture/Home Science", "Religious Education", "ICT", "Clothes/Manner/Presence"],
+    nineTenScience: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "General Math", "Religious Education", "ICT", "Bangladesh & Global Studies", "Physics", "Chemistry", "Higher Math", "Biology", "Agriculture/Home Science", "Clothes/Manner/Presence"],
+    nineTenHumanities: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "General Math", "Religious Education", "ICT", "General Science", "History", "Geography & Environment", "Civics & Citizenship", "Economics", "Agriculture/Home Science", "Clothes/Manner/Presence"],
+    nineTenBusiness: ["Bangla 1st", "Bangla 2nd", "English 1st", "English 2nd", "General Math", "Religious Education", "ICT", "General Science", "Accounting", "Finance and Banking", "Business Entrepreneurship", "Agriculture Studies", "Home Science", "Clothes/Manner/Presence"]
 };
 
 // Maps each exact class_name (as stored in the classes table) to its catalog list above
@@ -1249,16 +1251,27 @@ const CLASS_TO_CATALOG = {
     "Class Nine (Science)": SUBJECT_CATALOG.nineTenScience,
     "Class Ten (Science)": SUBJECT_CATALOG.nineTenScience,
     "Class Nine (Humanities)": SUBJECT_CATALOG.nineTenHumanities,
-    "Class Ten (Humanities)": SUBJECT_CATALOG.nineTenHumanities
+    "Class Ten (Humanities)": SUBJECT_CATALOG.nineTenHumanities,
+    "Class Nine (Business Studies)": SUBJECT_CATALOG.nineTenBusiness,
+    "Class Ten (Business Studies)": SUBJECT_CATALOG.nineTenBusiness
 };
 
 const MAIN_SUBJECT_POOLS = {
     "Class Nine (Science)": ["Physics", "Chemistry", "Biology", "Higher Math"],
     "Class Ten (Science)": ["Physics", "Chemistry", "Biology", "Higher Math"],
     "Class Nine (Humanities)": ["History", "Geography & Environment", "Civics & Citizenship", "Economics"],
-    "Class Ten (Humanities)": ["History", "Geography & Environment", "Civics & Citizenship", "Economics"]
+    "Class Ten (Humanities)": ["History", "Geography & Environment", "Civics & Citizenship", "Economics"],
+    "Class Nine (Business Studies)": ["Accounting", "Finance and Banking", "Business Entrepreneurship"],
+    "Class Ten (Business Studies)": ["Accounting", "Finance and Banking", "Business Entrepreneurship"]
 };
-const OPTIONAL_FALLBACK_SUBJECT = "Agriculture/Domestic Science";
+const OPTIONAL_FALLBACK_SUBJECT = "Agriculture/Home Science";
+const ALL_OPTIONAL_SUBJECT_VARIANTS = [
+    "Agriculture Studies",
+    "Home Science",
+    "Agriculture/Home Science",
+    "Agriculture/Domestic Science",
+    "Domestic Science"
+];
 let allClassesForStudents = [];
 
 let allClassesCache = []; // filled by loadSubjectsPage, reused for filters + name dropdown
@@ -1564,9 +1577,12 @@ window.updateStudentSubjectSelection = function () {
     const isScience = cls.class_name === "Class Nine (Science)" || cls.class_name === "Class Ten (Science)";
     const mandatoryScience = ["Physics", "Chemistry"];
 
+    const isBusiness = cls.class_name === "Class Nine (Business Studies)" || cls.class_name === "Class Ten (Business Studies)";
+    const mandatoryBusiness = ["Accounting", "Finance and Banking", "Business Entrepreneurship"];
+
     panel.style.display = 'block';
     document.getElementById('stu-main-subjects-list').innerHTML = pool.map(subj => {
-        const isLocked = isScience && mandatoryScience.includes(subj);
+        const isLocked = (isScience && mandatoryScience.includes(subj)) || (isBusiness && mandatoryBusiness.includes(subj));
         return `
         <label style="font-weight:normal; display:flex; align-items:center; gap:5px; ${isLocked ? 'opacity:0.85; cursor:not-allowed;' : ''}">
             <input type="checkbox" class="stu-main-checkbox" value="${subj}" 
@@ -1594,28 +1610,32 @@ window.handleMainSubjectToggle = function (checkbox) {
     updateOptionalSubjectOptions();
 };
 
-// Optional dropdown = whichever pool subject wasn't picked as Main,
-// plus Agriculture/Domestic Science — only once exactly 3 are checked.
 function updateOptionalSubjectOptions() {
     const classId = document.getElementById('st-class').value;
     const cls = allClassesForStudents.find(c => String(c.id) === String(classId));
-    const pool = cls && MAIN_SUBJECT_POOLS[cls.class_name];
-    const select = document.getElementById('stu-optional-select');
-    if (!pool) return;
+    const sel = document.getElementById('stu-optional-select');
+    if (!sel || !cls) return;
 
-    const checkedMains = Array.from(document.querySelectorAll('.stu-main-checkbox:checked')).map(cb => cb.value);
-    if (checkedMains.length !== 3) {
-        select.innerHTML = '<option value="">-- pick 3 main subjects first --</option>';
-        select.disabled = true;
+    const pool = MAIN_SUBJECT_POOLS[cls.class_name] || [];
+    const checked = Array.from(document.querySelectorAll('.stu-main-checkbox:checked')).map(cb => cb.value);
+
+    if (checked.length !== 3) {
+        sel.innerHTML = '<option value="">-- pick 3 main subjects first --</option>';
         return;
     }
 
-    const leftover = pool.find(subj => !checkedMains.includes(subj));
-    const options = [leftover, OPTIONAL_FALLBACK_SUBJECT].filter(Boolean);
-    const previousValue = select.value;
-    select.disabled = false;
-    select.innerHTML = options.map(o => `<option value="${o}">${o}</option>`).join('');
-    if (options.includes(previousValue)) select.value = previousValue;
+    const isBusiness = cls.class_name === "Class Nine (Business Studies)" || cls.class_name === "Class Ten (Business Studies)";
+    let options;
+    if (isBusiness) {
+        options = ["Agriculture Studies", "Home Science"];
+    } else {
+        const leftover = pool.find(s => !checked.includes(s));
+        options = [leftover, OPTIONAL_FALLBACK_SUBJECT].filter(Boolean);
+    }
+
+    const prev = sel.value;
+    sel.innerHTML = options.map(o => `<option value="${o}">${o}</option>`).join('');
+    if (options.includes(prev)) sel.value = prev;
 }
 
 
@@ -1976,7 +1996,16 @@ window.editStudent = async function (id, classId, roll, name, bloodGroup, guardi
     });
     updateOptionalSubjectOptions();
     const optionalRow = existing.find(r => r.role === 'optional');
-    if (optionalRow) document.getElementById('stu-optional-select').value = optionalRow.subject_name;
+    if (optionalRow) {
+        const optSelect = document.getElementById('stu-optional-select');
+        let optName = optionalRow.subject_name;
+        if (optName === 'Agriculture/Domestic Science') optName = 'Agriculture/Home Science';
+        optSelect.value = optName;
+        if (!optSelect.value && optName) {
+            if (optName.includes('Agriculture')) optSelect.value = 'Agriculture Studies';
+            else if (optName.includes('Home') || optName.includes('Domestic')) optSelect.value = 'Home Science';
+        }
+    }
 };
 
 function resetStudentForm() {
@@ -2465,121 +2494,86 @@ document.getElementById('student-table-body')?.addEventListener('change', (e) =>
 //   All others    → straight single-step promotion (next class in PROMOTION_PATH)
 window.bulkPromoteSelected = async function () {
     const checked = Array.from(document.querySelectorAll('.promote-checkbox:checked'));
-    if (!checked.length) return alert('No students selected. Tick the checkboxes first.');
+    if (checked.length === 0) {
+        alert('Select at least one student to promote.');
+        return;
+    }
 
-    // Separate the checked students by class group
     const classEight = checked.filter(cb => cb.dataset.class === 'Class Eight');
-    const nineScience = checked.filter(cb => cb.dataset.class === 'Class Nine (Science)');
+    const nineSci = checked.filter(cb => cb.dataset.class === 'Class Nine (Science)');
     const nineHum = checked.filter(cb => cb.dataset.class === 'Class Nine (Humanities)');
-    const others = checked.filter(cb =>
-        !['Class Eight', 'Class Nine (Science)', 'Class Nine (Humanities)'].includes(cb.dataset.class)
-    );
+    const nineBus = checked.filter(cb => cb.dataset.class === 'Class Nine (Business Studies)');
+    const others = checked.filter(cb => ![
+        'Class Eight',
+        'Class Nine (Science)',
+        'Class Nine (Humanities)',
+        'Class Nine (Business Studies)'
+    ].includes(cb.dataset.class));
 
-    // Fetch the full classes list once so we can resolve names → IDs
-    const allClasses = await ipcRenderer.invoke('get-classes-list');
-    const classId = (name) => {
-        const c = allClasses.find(cl => cl.class_name === name);
-        return c ? c.id : null;
+    const classId = (name) => allClassesForStudents.find(c => c.class_name === name)?.id;
+
+    const buildPromotions = (cbs, targetClassName) => {
+        const targetId = classId(targetClassName);
+        if (!targetId) return [];
+        return cbs.map(cb => ({
+            id: Number(cb.dataset.id),
+            to_class_id: targetId
+        }));
     };
 
-    // Build promotions array, deferring Class Eight until we know their department
-    const buildPromotions = (cbList, toClassName) => {
-        const toId = classId(toClassName);
-        if (!toId) return [];
-        return cbList.map(cb => ({ id: Number(cb.dataset.id), to_class_id: toId }));
-    };
+    const getOtherPromotions = () => others.map(cb => {
+        const idx = allClassesForStudents.findIndex(c => c.class_name === cb.dataset.class);
+        const next = idx >= 0 ? allClassesForStudents[idx + 1] : null;
+        return next ? { id: Number(cb.dataset.id), to_class_id: next.id } : null;
+    }).filter(Boolean);
 
-    // Determine Class Eight destination first (if any are selected)
-    const runPromotion = async (promotions) => {
-        if (!promotions.length) return;
-        const res = await ipcRenderer.invoke('bulk-promote-students', { promotions });
-        if (res && !res.success && !res.promoted) {
-            alert('Promotion error: ' + res.error);
-        } else if (res && res.failed && res.failed.length) {
-            console.warn('Some promotions failed:', res.failed);
+    const executePromotion = async (promotions) => {
+        if (promotions.length === 0) {
+            alert('No eligible students selected for promotion.');
+            return { success: false };
         }
+    const res = await ipcRenderer.invoke('bulk-promote-students', { promotions });
+        if (res && res.success) {
+            togglePromoteMode();
+            await loadStudents();
+        }
+        return res;
     };
 
     if (classEight.length > 0) {
-        // Ask once for the whole Class Eight group
+        const targets = [
+            { id: classId('Class Nine (Science)'), label: 'Class Nine (Science)' },
+            { id: classId('Class Nine (Humanities)'), label: 'Class Nine (Humanities)' },
+            { id: classId('Class Nine (Business Studies)'), label: 'Class Nine (Business Studies)' }
+        ].filter(t => t.id);
+
         showStudentDialog({
             title: 'Promote Class Eight Students',
-            message: `${classEight.length} Class Eight student${classEight.length > 1 ? 's' : ''} selected. ` +
-                `Which department are they moving into?`,
-            targets: [
-                { id: classId('Class Nine (Science)'), label: 'Class Nine (Science)' },
-                { id: classId('Class Nine (Humanities)'), label: 'Class Nine (Humanities)' }
-            ].filter(t => t.id !== null),
-            confirmText: 'Promote',
-            confirmColor: '#0ea5e9',
+            message: `Choose which Class Nine group the ${classEight.length} selected Class Eight student(s) will move into (any other selected students will advance to their next class automatically).`,
+            targets,
+            confirmText: 'Promote Selected',
             onConfirm: async (v) => {
-                const eightPromotions = classEight.map(cb => ({
-                    id: Number(cb.dataset.id),
-                    to_class_id: Number(v.target_id)
-                }));
-                // Combine with the rest and fire one single IPC call
                 const allPromotions = [
-                    ...eightPromotions,
-                    ...buildPromotions(nineScience, 'Class Ten (Science)'),
+                    ...classEight.map(cb => ({ id: Number(cb.dataset.id), to_class_id: v.target_id })),
+                    ...buildPromotions(nineSci, 'Class Ten (Science)'),
                     ...buildPromotions(nineHum, 'Class Ten (Humanities)'),
-                    ...others.map(cb => {
-                        // Derive next class from the PROMOTION_PATH via the class name stored on the checkbox
-                        const next = ({
-                            'Play': 'Nursery', 'Nursery': 'Class One',
-                            'Class One': 'Class Two', 'Class Two': 'Class Three',
-                            'Class Three': 'Class Four', 'Class Four': 'Class Five',
-                            'Class Five': 'Class Six', 'Class Six': 'Class Seven',
-                            'Class Seven': 'Class Eight'
-                        })[cb.dataset.class];
-                        const toId = next ? classId(next) : null;
-                        return toId ? { id: Number(cb.dataset.id), to_class_id: toId } : null;
-                    }).filter(Boolean)
+                    ...buildPromotions(nineBus, 'Class Ten (Business Studies)'),
+                    ...getOtherPromotions()
                 ];
-                return await ipcRenderer.invoke('bulk-promote-students', { promotions: allPromotions });
-            },
-            onDone: async (v, res) => {
-                if (res && res.failed && res.failed.length) {
-                    console.warn('Some promotions failed:', res.failed);
-                }
-                promoteModeActive = false;
-                const bar = document.getElementById('promote-confirm-bar');
-                if (bar) bar.style.display = 'none';
-                const modeBtn = document.getElementById('btn-promote-mode');
-                if (modeBtn) {
-                    modeBtn.textContent = 'Promote';
-                    modeBtn.classList.remove('active');
-                }
-                await loadStudents();
+                return await executePromotion(allPromotions);
             }
         });
     } else {
-        // No Class Eight — fire directly without the dialog
         const promotions = [
-            ...buildPromotions(nineScience, 'Class Ten (Science)'),
+            ...buildPromotions(nineSci, 'Class Ten (Science)'),
             ...buildPromotions(nineHum, 'Class Ten (Humanities)'),
-            ...others.map(cb => {
-                const next = ({
-                    'Play': 'Nursery', 'Nursery': 'Class One',
-                    'Class One': 'Class Two', 'Class Two': 'Class Three',
-                    'Class Three': 'Class Four', 'Class Four': 'Class Five',
-                    'Class Five': 'Class Six', 'Class Six': 'Class Seven',
-                    'Class Seven': 'Class Eight'
-                })[cb.dataset.class];
-                const toId = next ? classId(next) : null;
-                return toId ? { id: Number(cb.dataset.id), to_class_id: toId } : null;
-            }).filter(Boolean)
+            ...buildPromotions(nineBus, 'Class Ten (Business Studies)'),
+            ...getOtherPromotions()
         ];
-
-        await runPromotion(promotions);
-        promoteModeActive = false;
-        const bar = document.getElementById('promote-confirm-bar');
-        if (bar) bar.style.display = 'none';
-        const modeBtn = document.getElementById('btn-promote-mode');
-        if (modeBtn) {
-            modeBtn.textContent = 'Promote';
-            modeBtn.classList.remove('active');
+        const res = await executePromotion(promotions);
+        if (res && !res.success && res.error) {
+            alert('Promotion failed: ' + res.error);
         }
-        await loadStudents();
     }
 };
 
@@ -3092,14 +3086,19 @@ function setCell(sheet, studentId, subjectId, value) {
 }
 
 // Nine/Ten only: a student sits a choosable subject (Physics, Biology,
-// Economics, Agriculture/Domestic Science, etc.) only if it is in their
+// Economics, Agriculture Studies, Home Science, etc.) only if it is in their
 // saved selections. Every other subject applies to all students.
 function studentTakesSubject(studentId, subjectName) {
     const pool = MAIN_SUBJECT_POOLS[currentClassName];
     if (!pool) return true;
-    const choosable = pool.concat([OPTIONAL_FALLBACK_SUBJECT]);
-    if (!choosable.includes(subjectName)) return true;
-    return (marksSheet.selMap[studentId] || []).includes(subjectName);
+    if (!isNineTenChoosable(currentClassName, subjectName)) return true;
+    const selections = marksSheet.selMap[studentId] || [];
+    if (selections.includes(subjectName)) return true;
+    if (subjectName === 'Agriculture/Domestic Science' && selections.includes('Agriculture/Home Science')) return true;
+    if (subjectName === 'Agriculture/Home Science' && selections.includes('Agriculture/Domestic Science')) return true;
+    if (subjectName === 'Home Science' && (selections.includes('Home Science') || selections.includes('Agriculture/Home Science') || selections.includes('Agriculture/Domestic Science'))) return true;
+    if (subjectName === 'Agriculture Studies' && (selections.includes('Agriculture Studies') || selections.includes('Agriculture/Home Science') || selections.includes('Agriculture/Domestic Science'))) return true;
+    return false;
 }
 
 function studentsForSubject(sub) {
@@ -3313,7 +3312,12 @@ const TRANSCRIPT_TESTS = {
     'Half Yearly': ['1st Monthly', '2nd Monthly', 'Half Yearly'],
     'Yearly': ['3rd Monthly', '4th Monthly', 'Yearly']
 };
-const TRANSCRIPT_V100_CLASSES = ['Play', 'Nursery', 'Class One', 'Class Two', 'Class Three', 'Class Four', 'Class Five', 'Class Six', 'Class Seven', 'Class Eight', 'Class Nine (Science)', 'Class Nine (Humanities)', 'Class Ten (Science)', 'Class Ten (Humanities)'];
+const TRANSCRIPT_V100_CLASSES = [
+    'Play', 'Nursery', 'Class One', 'Class Two', 'Class Three',
+    'Class Four', 'Class Five', 'Class Six', 'Class Seven', 'Class Eight',
+    'Class Nine (Science)', 'Class Nine (Humanities)', 'Class Nine (Business Studies)',
+    'Class Ten (Science)', 'Class Ten (Humanities)', 'Class Ten (Business Studies)'
+];
 
 let transcriptClasses = [];
 let transcriptSelectedClassId = null;
@@ -5213,52 +5217,66 @@ const NINE_TEN_CMP_SUBJECT = 'Clothes/Manner/Presence';
 const NINE_TEN_PAPER_PAIRS = [['Bangla 1st', 'Bangla 2nd'], ['English 1st', 'English 2nd']];
 
 function isNineTenChoosable(className, subjectName) {
+    if (!className || (!className.includes('Nine') && !className.includes('Ten'))) return false;
     const pool = MAIN_SUBJECT_POOLS[className] || [];
-    return pool.includes(subjectName) || subjectName === OPTIONAL_FALLBACK_SUBJECT;
+    if (pool.includes(subjectName)) return true;
+    if (ALL_OPTIONAL_SUBJECT_VARIANTS.includes(subjectName)) return true;
+    return false;
 }
 
 // Class-position totals of the OTHER department's students (used when "Combine departments" is ticked).
 async function loadNineTenSiblingTotals(cls, allSubjects, exams) {
-    const siblingName = cls.class_name.includes('(Science)')
-        ? cls.class_name.replace('(Science)', '(Humanities)')
-        : cls.class_name.replace('(Humanities)', '(Science)');
-    const sibling = transcriptClasses.find(c => c.class_name === siblingName);
-    if (!sibling) return [];
-
-    const subjects = (allSubjects || []).filter(s => String(s.class_id) === String(sibling.id));
-    const sheets = await Promise.all(
-        exams.map(exam => ipcRenderer.invoke('get-marks-sheet', { class_id: sibling.id, exam_id: exam.id }))
+    const isNine = cls.class_name.startsWith('Class Nine (');
+    const prefix = isNine ? 'Class Nine (' : 'Class Ten (';
+    const siblings = transcriptClasses.filter(
+        c => c.class_name.startsWith(prefix) && c.id !== cls.id
     );
+    if (!siblings.length) return [];
 
-    const selByStudent = {};
-    ((sheets[0] && sheets[0].studentSubjects) || []).forEach(r => {
-        if (!selByStudent[r.student_id]) selByStudent[r.student_id] = { mains: [], optional: null };
-        if (r.role === 'optional') selByStudent[r.student_id].optional = r.subject_name;
-        else selByStudent[r.student_id].mains.push(r.subject_name);
-    });
+    const allEntries = [];
+    for (const sibling of siblings) {
+        const subjects = (allSubjects || []).filter(s => String(s.class_id) === String(sibling.id));
+        const sheets = await Promise.all(
+            exams.map(exam => ipcRenderer.invoke('get-marks-sheet', { class_id: sibling.id, exam_id: exam.id }))
+        );
 
-    const totals = {};   // studentId -> subjectId -> total across the three exams
-    sheets.forEach(sheet => {
-        ((sheet && sheet.marks) || []).forEach(m => {
-            if (m.is_present === 0 || typeof m.marks_obtained !== 'number') return;
-            if (!totals[m.student_id]) totals[m.student_id] = {};
-            totals[m.student_id][m.subject_id] = (totals[m.student_id][m.subject_id] || 0) + m.marks_obtained;
+        const selByStudent = {};
+        ((sheets[0] && sheets[0].studentSubjects) || []).forEach(r => {
+            if (!selByStudent[r.student_id]) selByStudent[r.student_id] = { mains: [], optional: null };
+            if (r.role === 'optional') selByStudent[r.student_id].optional = r.subject_name;
+            else selByStudent[r.student_id].mains.push(r.subject_name);
         });
-    });
 
-    return ((sheets[0] && sheets[0].students) || []).map(st => {
-        const sel = selByStudent[st.id] || { mains: [], optional: null };
-        let sum = 0, has = false;
-        subjects.forEach(sub => {
-            const name = sub.subject_name;
-            if (name === NINE_TEN_CMP_SUBJECT) return;
-            // a choosable subject counts only if it is this student's Main or Optional subject
-            if (isNineTenChoosable(sibling.class_name, name) && !sel.mains.includes(name) && sel.optional !== name) return;
-            const t = totals[st.id] && totals[st.id][sub.id];
-            if (typeof t === 'number') { sum += t; has = true; }
+        const totals = {};
+        sheets.forEach(sheet => {
+            ((sheet && sheet.marks) || []).forEach(m => {
+                if (m.is_present === 0 || typeof m.marks_obtained !== 'number') return;
+                if (!totals[m.student_id]) totals[m.student_id] = {};
+                totals[m.student_id][m.subject_id] = (totals[m.student_id][m.subject_id] || 0) + m.marks_obtained;
+            });
         });
-        return { id: st.id, total: { total: sum, hasMarks: has } };
-    }).filter(e => e.total.hasMarks);
+
+        ((sheets[0] && sheets[0].students) || []).forEach(st => {
+            const sel = selByStudent[st.id] || { mains: [], optional: null };
+            let sum = 0, has = false;
+            subjects.forEach(sub => {
+                const name = sub.subject_name;
+                if (name === NINE_TEN_CMP_SUBJECT) return;
+                const isChoosable = isNineTenChoosable(sibling.class_name, name);
+                const isMain = sel.mains.includes(name);
+                const isOpt = sel.optional === name ||
+                    (sel.optional === 'Agriculture/Domestic Science' && name === 'Agriculture/Home Science') ||
+                    (sel.optional === 'Agriculture/Home Science' && name === 'Agriculture/Domestic Science') ||
+                    (name === 'Home Science' && sel.optional && (sel.optional.includes('Home') || sel.optional.includes('Domestic'))) ||
+                    (name === 'Agriculture Studies' && sel.optional && sel.optional.includes('Agri'));
+                if (isChoosable && !isMain && !isOpt) return;
+                const t = totals[st.id] && totals[st.id][sub.id];
+                if (typeof t === 'number') { sum += t; has = true; }
+            });
+            if (has) allEntries.push({ id: st.id, total: { total: sum, hasMarks: true } });
+        });
+    }
+    return allEntries;
 }
 
 // One table entry = one subject, or Bangla / English as a 2-paper pair.
@@ -5285,8 +5303,15 @@ function getNineTenLayout(studentId) {
         const name = sub.subject_name;
         if (name === NINE_TEN_CMP_SUBJECT) { cmpSub = sub; return; }
         if (isNineTenChoosable(transcriptClassName, name)) {
-            if (sel.mains.includes(name)) counted.push(sub);
-            else if (sel.optional === name) optionalSub = sub;
+            if (sel.mains.includes(name)) {
+                counted.push(sub);
+            } else if (sel.optional === name ||
+                (sel.optional === 'Agriculture/Domestic Science' && (name === 'Agriculture/Home Science' || name === 'Agriculture Studies' || name === 'Home Science')) ||
+                (sel.optional === 'Agriculture/Home Science' && (name === 'Agriculture/Domestic Science' || name === 'Agriculture Studies' || name === 'Home Science')) ||
+                (name === 'Home Science' && sel.optional && (sel.optional.includes('Home') || sel.optional.includes('Domestic'))) ||
+                (name === 'Agriculture Studies' && sel.optional && sel.optional.includes('Agri'))) {
+                optionalSub = sub;
+            }
             return;
         }
         counted.push(sub);

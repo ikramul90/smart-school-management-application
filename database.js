@@ -29,19 +29,49 @@ db.serialize(() => {
     )`);
 
     // Seed the 16 distinct school classes if they don't exist yet
-    db.get("SELECT COUNT(*) as count FROM classes", [], (err, row) => {
-        if (row && row.count === 0) {
-            const classNames = [
-                "Play", "Nursery", "Class One", "Class Two", "Class Three", 
-                "Class Four", "Class Five", "Class Six", "Class Seven", "Class Eight", 
-                "Class Nine (Science)", "Class Nine (Humanities)", 
-                "Class Ten (Science)", "Class Ten (Humanities)"
-            ];
-            const stmt = db.prepare(`INSERT INTO classes (class_name) VALUES (?)`);
-            classNames.forEach(name => stmt.run(name));
-            stmt.finalize();
-            console.log("🌱 Seeded classes successfully into database!");
-        }
+    const classNames = [
+        "Play", "Nursery", "Class One", "Class Two", "Class Three", 
+        "Class Four", "Class Five", "Class Six", "Class Seven", "Class Eight", 
+        "Class Nine (Science)", "Class Nine (Humanities)", "Class Nine (Business Studies)",
+        "Class Ten (Science)", "Class Ten (Humanities)", "Class Ten (Business Studies)"
+    ];
+    const stmt = db.prepare(`INSERT OR IGNORE INTO classes (class_name) VALUES (?)`);
+    classNames.forEach(name => stmt.run(name));
+    stmt.finalize();
+
+    // Migrate 'Domestic Science' -> 'Home Science' in existing tables
+    db.run(`UPDATE subjects SET subject_name = 'Agriculture/Home Science' WHERE subject_name = 'Agriculture/Domestic Science'`);
+    db.run(`UPDATE student_subjects SET subject_name = 'Agriculture/Home Science' WHERE subject_name = 'Agriculture/Domestic Science'`);
+
+    // Ensure default subjects for Business Studies classes if missing
+    db.all(`SELECT id, class_name FROM classes WHERE class_name IN ('Class Nine (Business Studies)', 'Class Ten (Business Studies)')`, [], (err, bClasses) => {
+        if (!bClasses || !bClasses.length) return;
+        const bSubjects = [
+            { name: "Bangla 1st", seq: 1, m: 25, y: 100 },
+            { name: "Bangla 2nd", seq: 2, m: 25, y: 100 },
+            { name: "English 1st", seq: 3, m: 25, y: 100 },
+            { name: "English 2nd", seq: 4, m: 25, y: 100 },
+            { name: "General Math", seq: 5, m: 25, y: 100 },
+            { name: "ICT", seq: 6, m: 25, y: 100 },
+            { name: "Religious Education", seq: 7, m: 25, y: 100 },
+            { name: "General Science", seq: 8, m: 25, y: 100 },
+            { name: "Accounting", seq: 9, m: 25, y: 100 },
+            { name: "Finance and Banking", seq: 10, m: 25, y: 100 },
+            { name: "Business Entrepreneurship", seq: 11, m: 25, y: 100 },
+            { name: "Agriculture Studies", seq: 12, m: 25, y: 100 },
+            { name: "Home Science", seq: 13, m: 25, y: 100 },
+            { name: "Clothes/Manner/Presence", seq: 14, m: 25, y: 100 }
+        ];
+        bClasses.forEach(cls => {
+            db.get(`SELECT COUNT(*) as cnt FROM subjects WHERE class_id = ?`, [cls.id], (err2, row2) => {
+                if (row2 && row2.cnt === 0) {
+                    const subStmt = db.prepare(`INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (?, ?, ?, ?, ?)`);
+                    bSubjects.forEach(s => subStmt.run(cls.id, s.name, s.seq, s.m, s.y));
+                    subStmt.finalize();
+                    console.log(`🌱 Seeded subjects for ${cls.class_name}!`);
+                }
+            });
+        });
     });
 
     // 2. Students Table

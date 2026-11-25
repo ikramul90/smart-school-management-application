@@ -915,11 +915,12 @@ const PROMOTION_PATH = {
     'Class Five': ['Class Six'],
     'Class Six': ['Class Seven'],
     'Class Seven': ['Class Eight'],
-    'Class Eight': ['Class Nine (Science)', 'Class Nine (Humanities)'],
+    'Class Eight': ['Class Nine (Science)', 'Class Nine (Humanities)', 'Class Nine (Business Studies)'],
     'Class Nine (Science)': ['Class Ten (Science)'],
-    'Class Nine (Humanities)': ['Class Ten (Humanities)']
+    'Class Nine (Humanities)': ['Class Ten (Humanities)'],
+    'Class Nine (Business Studies)': ['Class Ten (Business Studies)']
 };
-const GRADUATING_CLASSES = ['Class Ten (Science)', 'Class Ten (Humanities)'];
+const GRADUATING_CLASSES = ['Class Ten (Science)', 'Class Ten (Humanities)', 'Class Ten (Business Studies)'];
 
 function getStudentWithClass(id) {
     return dbGet(`SELECT students.*, classes.class_name FROM students
@@ -1120,10 +1121,28 @@ ipcMain.handle('save-student-subjects', async (event, { student_id, subjects }) 
     });
 });
 
+const CANONICAL_CLASSES = [
+    'Play', 'Nursery', 'Class One', 'Class Two', 'Class Three', 
+    'Class Four', 'Class Five', 'Class Six', 'Class Seven', 'Class Eight', 
+    'Class Nine (Science)', 'Class Nine (Humanities)', 'Class Nine (Business Studies)',
+    'Class Ten (Science)', 'Class Ten (Humanities)', 'Class Ten (Business Studies)'
+];
+
 // Helper channels to load dropdown menus dynamically
 ipcMain.handle('get-classes-list', async () => {
     return new Promise((resolve) => {
-        db.all("SELECT * FROM classes", [], (err, rows) => resolve(rows || []));
+        db.all("SELECT * FROM classes", [], (err, rows) => {
+            const list = rows || [];
+            list.sort((a, b) => {
+                const ia = CANONICAL_CLASSES.indexOf(a.class_name);
+                const ib = CANONICAL_CLASSES.indexOf(b.class_name);
+                if (ia !== -1 && ib !== -1) return ia - ib;
+                if (ia !== -1) return -1;
+                if (ib !== -1) return 1;
+                return (a.id || 0) - (b.id || 0);
+            });
+            resolve(list);
+        });
     });
 });
 
@@ -1142,12 +1161,21 @@ ipcMain.handle('get-dashboard-stats', async () => {
         const studentsRow = await dbGet(`SELECT COUNT(*) AS n FROM students WHERE status = 'Active'`);
         const teachersRow = await dbGet(`SELECT COUNT(*) AS n FROM teachers`);
         const genderRows = await dbAll(`SELECT gender, COUNT(*) AS n FROM students WHERE status = 'Active' GROUP BY gender`);
-        const studentsPerClass = await dbAll(`SELECT classes.id, classes.class_name, COUNT(students.id) AS total
+        const sortByCanonical = (arr) => (arr || []).sort((a, b) => {
+            const ia = CANONICAL_CLASSES.indexOf(a.class_name);
+            const ib = CANONICAL_CLASSES.indexOf(b.class_name);
+            if (ia !== -1 && ib !== -1) return ia - ib;
+            if (ia !== -1) return -1;
+            if (ib !== -1) return 1;
+            return (a.id || 0) - (b.id || 0);
+        });
+
+        const studentsPerClass = sortByCanonical(await dbAll(`SELECT classes.id, classes.class_name, COUNT(students.id) AS total
             FROM classes LEFT JOIN students ON students.class_id = classes.id AND students.status = 'Active'
-            GROUP BY classes.id ORDER BY classes.id`);
-        const subjectsPerClass = await dbAll(`SELECT classes.id, classes.class_name, COUNT(subjects.id) AS total
+            GROUP BY classes.id`));
+        const subjectsPerClass = sortByCanonical(await dbAll(`SELECT classes.id, classes.class_name, COUNT(subjects.id) AS total
             FROM classes LEFT JOIN subjects ON subjects.class_id = classes.id
-            GROUP BY classes.id ORDER BY classes.id`);
+            GROUP BY classes.id`));
 
         const countOf = (g) => (genderRows.find(r => r.gender === g) || { n: 0 }).n;
         const boys = countOf('Male');
