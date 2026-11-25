@@ -1561,18 +1561,30 @@ window.updateStudentSubjectSelection = function () {
         return;
     }
 
+    const isScience = cls.class_name === "Class Nine (Science)" || cls.class_name === "Class Ten (Science)";
+    const mandatoryScience = ["Physics", "Chemistry"];
+
     panel.style.display = 'block';
-    document.getElementById('stu-main-subjects-list').innerHTML = pool.map(subj => `
-        <label style="font-weight:normal; display:flex; align-items:center; gap:5px;">
-            <input type="checkbox" class="stu-main-checkbox" value="${subj}" onchange="handleMainSubjectToggle(this)"> ${subj}
+    document.getElementById('stu-main-subjects-list').innerHTML = pool.map(subj => {
+        const isLocked = isScience && mandatoryScience.includes(subj);
+        return `
+        <label style="font-weight:normal; display:flex; align-items:center; gap:5px; ${isLocked ? 'opacity:0.85; cursor:not-allowed;' : ''}">
+            <input type="checkbox" class="stu-main-checkbox" value="${subj}" 
+                ${isLocked ? 'checked disabled data-locked="true"' : ''} 
+                onchange="handleMainSubjectToggle(this)"> ${subj}
         </label>
-    `).join('');
+        `;
+    }).join('');
     updateOptionalSubjectOptions();
 };
 
 // A checked box past 3 gets auto-unchecked with a warning, so the
 // count can never exceed 3.
 window.handleMainSubjectToggle = function (checkbox) {
+    if (checkbox.dataset.locked === "true") {
+        checkbox.checked = true;
+        return;
+    }
     const checked = document.querySelectorAll('.stu-main-checkbox:checked');
     if (checked.length > 3) {
         checkbox.checked = false;
@@ -1960,7 +1972,7 @@ window.editStudent = async function (id, classId, roll, name, bloodGroup, guardi
     const existing = await ipcRenderer.invoke('get-student-subjects', id);
     existing.filter(r => r.role === 'main').forEach(r => {
         const cb = document.querySelector(`.stu-main-checkbox[value="${CSS.escape(r.subject_name)}"]`);
-        if (cb) cb.checked = true;
+        if (cb && cb.dataset.locked !== "true") cb.checked = true;
     });
     updateOptionalSubjectOptions();
     const optionalRow = existing.find(r => r.role === 'optional');

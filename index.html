@@ -767,8 +767,7 @@
                         <summary id="student-details-summary" style="font-weight:bold; cursor:pointer; color:#2563eb;">
                             Enroll New Student</summary>
                         <div class="details-collapse-wrapper">
-                            <div id="student-form"
-                                style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:10px;">
+                            <div id="student-form" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:15px; margin-top:10px;">
                                 <input type="hidden" id="st-edit-id" value="">
                                 <div><label>Student ID <span style="color:#ef4444;">*</span></label><input type="text"
                                         id="st-student-id" placeholder="e.g. S-2027-01"></div>
@@ -776,15 +775,16 @@
                                         onchange="updateStudentSubjectSelection()"></select></div>
                                 <div><label>Class Roll <span style="color:#ef4444;">*</span></label><input type="text"
                                         id="st-roll" inputmode="numeric" maxlength="3" autocomplete="off"></div>
-                                <div id="stu-subject-selection"
-                                    style="display:none; grid-column: span 3; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0;">
-                                    <label class="no-select">Main Subjects <span
-                                            style="font-weight:normal; color:#64748b;">(choose exactly 3)</span> <span
-                                            style="color:#ef4444;">*</span></label>
-                                    <div id="stu-main-subjects-list"
-                                        style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:12px;"></div>
-                                    <label class="no-select">Optional Subject <span
-                                            style="font-weight:normal; color:#64748b;">(choose 1)</span></label>
+                                        <!-- Mark -->
+                                <div id="stu-subject-selection" style="display:none; grid-column: span 3; background:#f8fafc; padding:12px; border-radius:6px; border:1px solid #e2e8f0;">
+                                    <label class="no-select">Main Subjects 
+                                        <span style="font-weight:normal; color:#64748b;">(choose exactly 3)</span> 
+                                        <span style="color:#ef4444;">*</span>
+                                    </label>
+                                    <div id="stu-main-subjects-list" style="display:flex; gap:15px; flex-wrap:wrap; margin-bottom:12px;"></div>
+                                    <label class="no-select">Optional Subject 
+                                        <span style="font-weight:normal; color:#64748b;">(choose 1)</span>
+                                    </label>
                                     <select id="stu-optional-select">
                                         <option value="">-- pick 3 main subjects first --</option>
                                     </select>
