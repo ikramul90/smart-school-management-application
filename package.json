@@ -35,7 +35,14 @@
       {
         "from": "THIRD-PARTY-LICENSES.txt",
         "to": "THIRD-PARTY-LICENSES.txt"
+      },
+      {
+        "from": "seed.sql",
+        "to": "seed.sql"
       }
+    ],
+    "asarUnpack": [
+      "seed.sql"
     ],
     "productName": "Edukit Campus",
     "directories": {

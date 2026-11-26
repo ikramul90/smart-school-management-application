@@ -442,8 +442,22 @@ db.serialize(() => {
     // 14. Auto-seed sample data (students, teachers, subjects) from seed.sql on fresh database
     db.get("SELECT COUNT(*) as count FROM students", [], (err, row) => {
         if (!err && row && row.count === 0) {
-            const seedPath = path.join(__dirname, 'seed.sql');
-            if (fs.existsSync(seedPath)) {
+            // Check possible locations for seed.sql (unpacked ASAR, resources extraResource, or local __dirname)
+            const possibleSeedPaths = [
+                path.join(__dirname, 'seed.sql'),
+                path.join(process.resourcesPath || '', 'seed.sql'),
+                path.join(__dirname.replace('app.asar', 'app.asar.unpacked'), 'seed.sql')
+            ];
+
+            let seedPath = null;
+            for (const p of possibleSeedPaths) {
+                if (p && fs.existsSync(p)) {
+                    seedPath = p;
+                    break;
+                }
+            }
+
+            if (seedPath) {
                 try {
                     const sql = fs.readFileSync(seedPath, 'utf8');
                     db.exec(sql, (execErr) => {
@@ -456,6 +470,8 @@ db.serialize(() => {
                 } catch (readErr) {
                     console.error("❌ Could not read seed.sql:", readErr);
                 }
+            } else {
+                console.warn("⚠️ seed.sql was not found in checked locations.");
             }
         }
     });
