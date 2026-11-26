@@ -1,339 +1,325 @@
--- Sample data: 5 students per class (14 classes = 70 students)
--- Change table name `students` if yours is different
+-- ============================================================
+-- EduKit Campus - Seed Database
+-- Complete starter data for all 16 classes, 200 subjects,
+-- 15 teachers, and 80 sample students (5 per class).
+-- ============================================================
 
--- Play (class_id = 1)
-INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause) VALUES
-(1, 1, 'Ayaan Rahman', 'AB+', NULL, 'Rafiq Tarek Rahman', 'Rumana Khatun', 'Rafiq Tarek Rahman', '01313389083', 'Tilagor, Sylhet', '2022-10-30', '20228637940265423', 1, 'Active', NULL),
-(2, 2, 'Rokeya Rahman', 'A+', NULL, 'Imran Shamim Rahman', 'Anika Parvin', 'Imran Shamim Rahman', '01618495931', 'Shibganj, Sylhet', '2023-10-02', '20230341316475255', 1, 'Active', NULL),
-(3, 3, 'Jannat Uddin', 'A-', NULL, 'Nasir Uddin', 'Tasfia Khatun', 'Nasir Uddin', '01450305641', 'Bondor Bazar, Sylhet', '2023-11-24', '20233953767242388', 1, 'Active', NULL),
-(4, 4, 'Rubel Kabir', 'A+', NULL, 'Sabbir Kabir', 'Tasnia Khatun', 'Sabbir Kabir', '01912269166', 'Maulavi Bazar, Sylhet', '2023-02-16', '20239784801845146', 1, 'Active', NULL),
-(5, 5, 'Arif Alam', 'O+', NULL, 'Anwar Alam', 'Rima Begum', 'Anwar Alam', '01488095701', 'Mirabazar, Sylhet', '2022-03-20', '20225430391171822', 1, 'Active', NULL);
+-- 1. Teachers
+INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES
+(1, 'Md. Rafiqul Islam', 'Mr.', NULL, 'Md. Sirajul Islam', 'Fatema Begum', NULL, '01711234567', 'B+', '1991234567890', 'Mirpur, Dhaka', 'T-2027-01'),
+(2, 'Nasrin Akter', 'Mrs.', NULL, 'Md. Abul Kalam', 'Rahela Begum', NULL, '01812345678', 'O+', '1992345678901', 'Dhanmondi, Dhaka', 'T-2027-02'),
+(3, 'Md. Shafiqul Hasan', 'Mr.', NULL, 'Md. Nurul Hasan', 'Amina Begum', NULL, '01913456789', 'A+', '1993456789012', 'Mohammadpur, Dhaka', 'T-2027-03'),
+(4, 'Sultana Parvin', 'Mrs.', NULL, 'Md. Jahurul Islam', 'Sufia Begum', NULL, '01614567890', 'AB+', '1994567890123', 'Uttara, Dhaka', 'T-2027-04'),
+(5, 'Md. Kamrul Hossain', 'Mr.', NULL, 'Md. Fazlul Hossain', 'Hasina Begum', NULL, '01715678901', 'B-', '1995678901234', 'Gulshan, Dhaka', 'T-2027-05'),
+(6, 'Roksana Begum', 'Ms.', NULL, 'Md. Abdur Rahman', 'Nazma Begum', NULL, '01816789012', 'O-', '1996789012345', 'Khilgaon, Dhaka', 'T-2027-06'),
+(7, 'Md. Zahirul Islam', 'Mr.', NULL, 'Md. Nazrul Islam', 'Moriam Begum', NULL, '01917890123', 'A-', '1997890123456', 'Rayer Bazar, Dhaka', 'T-2027-07'),
+(8, 'Sharmin Sultana', 'Mrs.', NULL, 'Md. Alauddin', 'Kohinoor Begum', NULL, '01618901234', 'B+', '1998901234567', 'Lalbagh, Dhaka', 'T-2027-08'),
+(9, 'Md. Anisur Rahman', 'Mr.', NULL, 'Md. Mizanur Rahman', 'Bilkis Begum', NULL, '01719012345', 'O+', '1999012345678', 'Demra, Dhaka', 'T-2027-09'),
+(10, 'Tahmina Khanam', 'Ms.', NULL, 'Md. Lutfur Rahman', 'Anjuara Begum', NULL, '01810123456', 'A+', '1990123456789', 'Badda, Dhaka', 'T-2027-10'),
+(11, 'Md. Saiful Islam', 'Mr.', NULL, 'Md. Touhidul Islam', 'Sahera Begum', NULL, '01911234560', 'AB-', '1991234560987', 'Jatrabari, Dhaka', 'T-2027-11'),
+(12, 'Farzana Yesmin', 'Mrs.', NULL, 'Md. Humayun Kabir', 'Layla Begum', NULL, '01612345671', 'B+', '1992345671098', 'Rampura, Dhaka', 'T-2027-12'),
+(13, 'Md. Rezaul Karim', 'Mr.', NULL, 'Md. Shamsul Karim', 'Rahima Begum', NULL, '01713456782', 'O+', '1993456782109', 'Tejgaon, Dhaka', 'T-2027-13'),
+(14, 'Moriom Akter', 'Mrs.', NULL, 'Md. Nurul Amin', 'Parul Begum', NULL, '01814567893', 'A+', '1994567893210', 'Shyamoli, Dhaka', 'T-2027-14'),
+(15, 'Md. Habibur Rahman', 'Mr.', NULL, 'Md. Idris Ali', 'Aklima Begum', NULL, '01915678904', 'AB+', '1995678904321', 'Azimpur, Dhaka', 'T-2027-15');
 
--- Nursery (class_id = 2)
-INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause) VALUES
-(16, 1, 'Puja Ahmed', 'B+', NULL, 'Imran Ahmed', 'Ishrat Khatun', 'Imran Ahmed', '01917278895', 'Subid Bazar, Sylhet', '2022-01-26', '20227986872774348', 2, 'Active', NULL),
-(17, 2, 'Tasfia Alam', 'O+', NULL, 'Salim Tarek Alam', 'Mim Akter', 'Salim Tarek Alam', '01623166587', 'Mendibag, Sylhet', '2021-03-12', '20216036690967054', 2, 'Active', NULL),
-(18, 3, 'Ishrat Kabir', 'B+', NULL, 'Ayaan Kabir', 'Rumana Sultana', 'Ayaan Kabir', '01862729806', 'Tilagor, Sylhet', '2022-01-15', '20229901627204653', 2, 'Active', NULL),
-(19, 4, 'Tasfia Choudhury', 'AB+', NULL, 'Tanvir Jahid Choudhury', 'Shirin Sultana', 'Tanvir Jahid Choudhury', '01300330923', 'Zindabazar, Sylhet', '2021-06-29', '20212719374529912', 2, 'Active', NULL),
-(20, 5, 'Mizanur Ahmed', 'O+', NULL, 'Siam Ahmed', 'Jannat Sultana', 'Siam Ahmed', '01831491905', 'Uposhohor, Sylhet', '2021-10-31', '20218651850671657', 2, 'Active', NULL);
+-- 2. Assign Class Teachers
+UPDATE classes SET class_teacher_id = 14 WHERE class_name = 'Play';
+UPDATE classes SET class_teacher_id = 14 WHERE class_name = 'Nursery';
+UPDATE classes SET class_teacher_id = 2 WHERE class_name = 'Class One';
+UPDATE classes SET class_teacher_id = 12 WHERE class_name = 'Class Two';
+UPDATE classes SET class_teacher_id = 1 WHERE class_name = 'Class Three';
+UPDATE classes SET class_teacher_id = 8 WHERE class_name = 'Class Four';
+UPDATE classes SET class_teacher_id = 3 WHERE class_name = 'Class Five';
+UPDATE classes SET class_teacher_id = 6 WHERE class_name = 'Class Six';
+UPDATE classes SET class_teacher_id = 4 WHERE class_name = 'Class Seven';
+UPDATE classes SET class_teacher_id = 9 WHERE class_name = 'Class Eight';
+UPDATE classes SET class_teacher_id = 7 WHERE class_name = 'Class Nine (Science)';
+UPDATE classes SET class_teacher_id = 10 WHERE class_name = 'Class Nine (Humanities)';
+UPDATE classes SET class_teacher_id = 5 WHERE class_name = 'Class Ten (Science)';
+UPDATE classes SET class_teacher_id = 13 WHERE class_name = 'Class Ten (Humanities)';
 
--- Class 1 (class_id = 3)
-INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause) VALUES
-(31, 1, 'Imran Uddin', 'O-', NULL, 'Salim Monir Uddin', 'Shirin Sultana', 'Salim Monir Uddin', '01305045562', 'Ambarkhana, Sylhet', '2021-03-27', '20213869222196937', 3, 'Active', NULL),
-(32, 2, 'Sajib Khan', 'B+', NULL, 'Jahid Sajib Khan', 'Lubna Begum', 'Jahid Sajib Khan', '01375946474', 'Bondor Bazar, Sylhet', '2021-12-13', '20213671369594406', 3, 'Active', NULL),
-(33, 3, 'Shamim Chowdhury', 'O+', NULL, 'Hasan Chowdhury', 'Tania Khatun', 'Hasan Chowdhury', '01521047095', 'Shibganj, Sylhet', '2020-11-21', '20202145623285884', 3, 'Active', NULL),
-(34, 4, 'Nasrin Biswas', 'B+', NULL, 'Salim Biswas', 'Maliha Begum', 'Maliha Begum', '01868516048', 'Bondor Bazar, Sylhet', '2020-04-25', '20201754965137098', 3, 'Active', NULL),
-(35, 5, 'Rokeya Khan', 'B+', NULL, 'Sajib Khan', 'Sultana Sultana', 'Sultana Sultana', '01313826758', 'Subid Bazar, Sylhet', '2020-06-04', '20206926179640537', 3, 'Active', NULL);
+-- 3. Subjects for All 16 Classes
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Play'), 'Bangla', 1, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Play'), 'English', 2, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Play'), 'Math', 3, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Play'), 'Religious Studies and Moral Education', 4, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Play'), 'General Knowledge', 5, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Play'), 'Spoken', 6, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Play'), 'Drawing', 7, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Play'), 'Clothes/Manner/Presence', 12, 50, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Play'), 'Physical Education', 13, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Nursery'), 'Bangla', 1, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Nursery'), 'English', 2, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Nursery'), 'Math', 3, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Nursery'), 'Religious Studies and Moral Education', 4, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Nursery'), 'General Knowledge', 5, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Nursery'), 'Spoken', 6, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Nursery'), 'Drawing', 7, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Nursery'), 'Clothes/Manner/Presence', 8, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class One'), 'Bangla', 1, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class One'), 'English', 2, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class One'), 'Math', 3, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class One'), 'Religious Studies and Moral Education', 4, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class One'), 'General Knowledge', 5, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class One'), 'Spoken', 6, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class One'), 'Drawing', 7, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class One'), 'Clothes/Manner/Presence', 8, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Two'), 'Bangla', 1, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Two'), 'English', 2, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Two'), 'Math', 3, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Two'), 'Religious Studies and Moral Education', 4, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Two'), 'General Knowledge', 5, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Two'), 'Spoken', 6, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Two'), 'Drawing', 7, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Two'), 'Clothes/Manner/Presence', 8, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Two'), 'Physical Education', 9, 23, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Three'), 'Bangla 1st', 1, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Three'), 'Bangla 2nd', 2, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Three'), 'English 1st', 3, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Three'), 'English 2nd', 4, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Three'), 'Math', 5, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Three'), 'Science', 6, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Three'), 'Bangladesh & Global Studies', 7, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Three'), 'Religious Studies and Moral Education', 8, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Three'), 'General Knowledge', 9, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Three'), 'Spoken', 10, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Three'), 'Drawing', 11, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Three'), 'Clothes/Manner/Presence', 12, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Four'), 'Bangla 1st', 1, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Four'), 'Bangla 2nd', 2, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Four'), 'English 1st', 3, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Four'), 'English 2nd', 4, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Four'), 'Math', 5, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Four'), 'Science', 6, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Four'), 'Bangladesh & Global Studies', 7, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Four'), 'Religious Studies and Moral Education', 8, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Four'), 'General Knowledge', 9, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Four'), 'Spoken', 10, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Four'), 'Drawing', 11, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Four'), 'Clothes/Manner/Presence', 12, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Five'), 'Bangla 1st', 1, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Five'), 'Bangla 2nd', 2, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Five'), 'English 1st', 3, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Five'), 'English 2nd', 4, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Five'), 'Math', 5, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Five'), 'Science', 6, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Five'), 'Bangladesh & Global Studies', 7, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Five'), 'Religious Studies and Moral Education', 8, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Five'), 'General Knowledge', 9, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Five'), 'Spoken', 10, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Five'), 'Drawing', 11, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Five'), 'Clothes/Manner/Presence', 12, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Six'), 'Bangla 1st', 1, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Six'), 'Bangla 2nd', 2, 25, 50, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Six'), 'English 1st', 3, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Six'), 'English 2nd', 4, 25, 50, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Six'), 'Math', 5, 50, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Six'), 'Science', 6, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Six'), 'Bangladesh & Global Studies', 7, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Six'), 'Information and Communication Technology', 8, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Six'), 'Religious Studies and Moral Education', 9, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Six'), 'Agriculture/Home Science', 10, 25, 50, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Six'), 'Clothes/Manner/Presence', 11, 25, 50, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Six'), 'Physical Education', 12, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Seven'), 'Bangla 1st', 1, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Seven'), 'Bangla 2nd', 1, 25, 50, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Seven'), 'English 1st', 3, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Seven'), 'English 2nd', 4, 25, 50, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Seven'), 'Math', 5, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Seven'), 'Science', 6, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Seven'), 'Bangladesh & Global Studies', 7, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Seven'), 'Information and Communication Technology', 8, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Seven'), 'Religious Studies and Moral Education', 9, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Seven'), 'Agriculture/Home Science', 10, 25, 50, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Seven'), 'Clothes/Manner/Presence', 11, NULL, 50, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Eight'), 'Bangla 1st', 1, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Eight'), 'Bangla 2nd', 2, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Eight'), 'English 1st', 3, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Eight'), 'English 2nd', 4, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Eight'), 'Math', 5, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Eight'), 'Science', 6, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Eight'), 'Bangladesh & Global Studies', 7, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Eight'), 'Information and Communication Technology', 8, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Eight'), 'Bangla 1st', 9, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Eight'), 'Agriculture/Home Science', 10, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Eight'), 'Clothes/Manner/Presence', 11, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Bangla 1st', 1, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Bangla 2nd', 2, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'English 1st', 3, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'English 2nd', 4, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Math', 5, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Information and Communication Technology', 6, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Religious Studies and Moral Education', 7, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Physical Education, Health Science and Sports', 8, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Career Education', 9, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Bangladesh & Global Studies', 10, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Physics', 11, 25, 100, 75, 25);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Chemistry', 12, 25, 100, 75, 25);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Higher Math', 13, 25, 100, 75, 25);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Biology', 14, 25, 100, 75, 25);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Agriculture/Home Science', 15, 25, 100, 75, 25);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Clothes/Manner/Presence', 16, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Bangla 1st', 1, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Bangla 2nd', 2, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'English 1st', 3, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'English 2nd', 4, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Math', 5, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Information and Communication Technology', 6, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Religious Studies and Moral Education', 7, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Physical Education, Health Science and Sports', 8, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Career Education', 9, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Science', 10, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'History', 11, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Geography & Environment', 12, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Civics & Citizenship', 13, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Economics', 14, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Agriculture/Home Science', 15, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Clothes/Manner/Presence', 16, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Bangla 1st', 1, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Bangla 2nd', 2, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'English 1st', 3, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'English 2nd', 4, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Math', 5, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Information and Communication Technology', 6, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Religious Studies and Moral Education', 7, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Physical Education, Health Science and Sports', 8, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Career Education', 9, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Bangladesh & Global Studies', 10, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Physics', 11, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Chemistry', 12, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Higher Math', 13, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Biology', 14, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Agriculture/Home Science', 15, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Clothes/Manner/Presence', 16, NULL, NULL, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Bangla 1st', 1, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Bangla 2nd', 2, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'English 1st', 3, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'English 2nd', 4, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Math', 5, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Information and Communication Technology', 6, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Religious Studies and Moral Education', 7, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Physical Education, Health Science and Sports', 8, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Career Education', 9, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Science', 10, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'History', 11, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Geography & Environment', 12, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Civics & Citizenship', 13, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Economics', 14, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Agriculture/Home Science', 15, 25, 100, 75, 25);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Clothes/Manner/Presence', 16, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Bangla 1st', 1, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Bangla 2nd', 2, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'English 1st', 3, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'English 2nd', 4, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Math', 5, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Information and Communication Technology', 6, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Religious Studies and Moral Education', 7, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Physical Education, Health Science and Sports', 8, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Career Education', 9, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Science', 10, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Accounting', 11, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Finance and Banking', 12, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Business Entrepreneurship', 13, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Agriculture Studies', 14, 25, 100, 75, 25);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Home Science', 15, 25, 100, 75, 25);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Clothes/Manner/Presence', 16, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Bangla 1st', 1, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Bangla 2nd', 2, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'English 1st', 3, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'English 2nd', 4, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Math', 5, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Information and Communication Technology', 6, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Religious Studies and Moral Education', 7, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Physical Education, Health Science and Sports', 8, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Career Education', 9, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Science', 10, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Accounting', 11, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Finance and Banking', 12, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Business Entrepreneurship', 13, 25, 100, NULL, NULL);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Agriculture Studies', 14, 25, 100, 75, 25);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Home Science', 15, 25, 100, 75, 25);
+INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES ((SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Clothes/Manner/Presence', 16, 25, 100, NULL, NULL);
 
--- Class 2 (class_id = 4)
-INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause) VALUES
-(46, 1, 'Jamal Mia', 'A+', NULL, 'Salim Nurul Mia', 'Samira Akter', 'Salim Nurul Mia', '01764492519', 'Pathantula, Sylhet', '2020-02-03', '20202546291486528', 4, 'Active', NULL),
-(47, 2, 'Shapla Kabir', 'B+', NULL, 'Rahim Kabir', 'Tasnia Akter', 'Rahim Kabir', '01421418880', 'Akhalia, Sylhet', '2020-09-05', '20205929622292706', 4, 'Active', NULL),
-(48, 3, 'Nusrat Khan', 'B+', NULL, 'Nayeem Khan', 'Tania Sultana', 'Tania Sultana', '01459774688', 'Lamabazar, Sylhet', '2020-08-28', '20206239240758181', 4, 'Active', NULL),
-(49, 4, 'Monir Islam', 'O+', NULL, 'Mahfuz Sohel Islam', 'Ishrat Begum', 'Ishrat Begum', '01606853615', 'Shahjalal Uposhohor, Sylhet', '2020-06-27', '20203051522047277', 4, 'Active', NULL),
-(50, 5, 'Tania Uddin', 'A+', NULL, 'Habibur Sohel Uddin', 'Puja Sultana', 'Habibur Sohel Uddin', '01469711798', 'Pathantula, Sylhet', '2019-06-04', '20190893246095396', 4, 'Active', NULL);
+-- 4. Sample Students (5 active students per class = 80 students total)
+INSERT INTO students (roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause, gender) VALUES
+(1, 'Ayaan Rahman', 'AB+', NULL, 'Rafiq Tarek Rahman', 'Rumana Khatun', 'Rafiq Tarek Rahman', '01313389083', 'Tilagor, Sylhet', '30/10/2022', '20228637940265423', (SELECT id FROM classes WHERE class_name = 'Nursery'), 'Active', NULL, 'Male'),
+(2, 'Rokeya Rahman', 'A+', NULL, 'Imran Shamim Rahman', 'Anika Parvin', 'Imran Shamim Rahman', '01618495931', 'Shibganj, Sylhet', '02/10/2023', '20230341316475255', (SELECT id FROM classes WHERE class_name = 'Nursery'), 'Active', NULL, 'Female'),
+(3, 'Jannat Uddin', 'A-', NULL, 'Nasir Uddin', 'Tasfia Khatun', 'Nasir Uddin', '01450305641', 'Bondor Bazar, Sylhet', '24/11/2023', '20233953767242388', (SELECT id FROM classes WHERE class_name = 'Nursery'), 'Active', NULL, 'Female'),
+(4, 'Rubel Kabir', 'A+', NULL, 'Sabbir Kabir', 'Tasnia Khatun', 'Sabbir Kabir', '01912269166', 'Maulavi Bazar, Sylhet', '16/02/2023', '20239784801845146', (SELECT id FROM classes WHERE class_name = 'Nursery'), 'Active', NULL, 'Male'),
+(5, 'Arif Alam', 'O+', NULL, 'Anwar Alam', 'Rima Begum', '', '01488095701', 'Mirabazar, Sylhet', '20/03/2022', '20225430391171822', (SELECT id FROM classes WHERE class_name = 'Nursery'), 'Active', NULL, 'Male'),
+(1, 'Imran Uddin', 'O-', NULL, 'Salim Monir Uddin', 'Shirin Sultana', 'Salim Monir Uddin', '01305045562', 'Ambarkhana, Sylhet', '27/03/2021', '20213869222196937', (SELECT id FROM classes WHERE class_name = 'Class One'), 'Active', NULL, 'Male'),
+(2, 'Sajib Khan', 'B+', NULL, 'Jahid Sajib Khan', 'Lubna Begum', 'Jahid Sajib Khan', '01375946474', 'Bondor Bazar, Sylhet', '13/12/2021', '20213671369594406', (SELECT id FROM classes WHERE class_name = 'Class One'), 'Active', NULL, 'Male'),
+(3, 'Shamim Chowdhury', 'O+', NULL, 'Hasan Chowdhury', 'Tania Khatun', 'Hasan Chowdhury', '01521047095', 'Shibganj, Sylhet', '21/11/2020', '20202145623285884', (SELECT id FROM classes WHERE class_name = 'Class One'), 'Active', NULL, 'Male'),
+(4, 'Nasrin Biswas', 'B+', NULL, 'Salim Biswas', 'Maliha Begum', 'Maliha Begum', '01868516048', 'Bondor Bazar, Sylhet', '25/04/2020', '20201754965137098', (SELECT id FROM classes WHERE class_name = 'Class One'), 'Active', NULL, 'Female'),
+(5, 'Rokeya Khan', 'B+', NULL, 'Sajib Khan', 'Sultana Sultana', 'Sultana Sultana', '01313826758', 'Subid Bazar, Sylhet', '04/06/2020', '20206926179640537', (SELECT id FROM classes WHERE class_name = 'Class One'), 'Active', NULL, 'Female'),
+(1, 'Jamal Mia', 'A+', NULL, 'Salim Nurul Mia', 'Samira Akter', '', '01764492519', 'Pathantula, Sylhet', '03/02/2020', '20202546291486528', (SELECT id FROM classes WHERE class_name = 'Class Two'), 'Active', NULL, 'Male'),
+(2, 'Shapla Kabir', 'B+', NULL, 'Rahim Kabir', 'Tasnia Akter', 'Rahim Kabir', '01421418880', 'Akhalia, Sylhet', '05/09/2020', '20205929622292706', (SELECT id FROM classes WHERE class_name = 'Class Two'), 'Active', NULL, 'Female'),
+(3, 'Nusrat Khan', 'B+', NULL, 'Nayeem Khan', 'Tania Sultana', 'Tania Sultana', '01459774688', 'Lamabazar, Sylhet', '28/08/2020', '20206239240758181', (SELECT id FROM classes WHERE class_name = 'Class Two'), 'Active', NULL, 'Male'),
+(4, 'Monir Islam', 'O+', NULL, 'Mahfuz Sohel Islam', 'Ishrat Begum', 'Ishrat Begum', '01606853615', 'Shahjalal Uposhohor, Sylhet', '27/06/2020', '20203051522047277', (SELECT id FROM classes WHERE class_name = 'Class Two'), 'Active', NULL, 'Male'),
+(5, 'Tania Uddin', 'A+', NULL, 'Habibur Sohel Uddin', 'Puja Sultana', 'Habibur Sohel Uddin', '01469711798', 'Pathantula, Sylhet', '04/06/2019', '20190893246095396', (SELECT id FROM classes WHERE class_name = 'Class Two'), 'Active', NULL, 'Female'),
+(1, 'Mahfuz Talukder', 'O+', NULL, 'Zahid Talukder', 'Nabila Khatun', 'Nabila Khatun', '01526949588', 'Shibganj, Sylhet', '17/06/2018', '20188794705516940', (SELECT id FROM classes WHERE class_name = 'Class Three'), 'Active', NULL, 'Male'),
+(2, 'Nayeem Khan', 'AB-', NULL, 'Tawhid Khan', 'Mahiya Khatun', 'Tawhid Khan', '01409130756', 'Kumarpara, Sylhet', '17/03/2019', '20192636897028385', (SELECT id FROM classes WHERE class_name = 'Class Three'), 'Active', NULL, 'Male'),
+(3, 'Jahid Choudhury', 'A+', NULL, 'Anwar Sajib Choudhury', 'Tasfia Akter', 'Tasfia Akter', '01584344375', 'Akhalia, Sylhet', '09/04/2019', '20197584419866524', (SELECT id FROM classes WHERE class_name = 'Class Three'), 'Active', NULL, 'Female'),
+(4, 'Tasfia Uddin', 'B+', NULL, 'Rakib Jahid Uddin', 'Mahiya Khatun', 'Rakib Jahid Uddin', '01419933083', 'Subid Bazar, Sylhet', '15/10/2019', '20193016571208267', (SELECT id FROM classes WHERE class_name = 'Class Three'), 'Active', NULL, 'Male'),
+(5, 'Karim Ali', 'A+', NULL, 'Jamal Faruk Ali', 'Rumana Parvin', 'Rumana Parvin', '01406724004', 'Zindabazar, Sylhet', '02/08/2018', '20189915478872874', (SELECT id FROM classes WHERE class_name = 'Class Three'), 'Active', NULL, 'Male'),
+(1, 'Tarek Kabir', 'O+', NULL, 'Anwar Kabir', 'Jahanara Begum', 'Anwar Kabir', '01954615679', 'Zindabazar, Sylhet', '14/11/2017', '20173341016668700', (SELECT id FROM classes WHERE class_name = 'Class Four'), 'Active', NULL, 'Male'),
+(2, 'Monir Biswas', 'O+', NULL, 'Belal Biswas', 'Jahanara Parvin', 'Jahanara Parvin', '01640148902', 'Mirabazar, Sylhet', '21/12/2017', '20175039261429396', (SELECT id FROM classes WHERE class_name = 'Class Four'), 'Active', NULL, 'Male'),
+(3, 'Ishrat Talukder', 'A+', NULL, 'Rubel Faruk Talukder', 'Rima Akter', 'Rubel Faruk Talukder', '01999650477', 'Ambarkhana, Sylhet', '08/02/2017', '20173586629619431', (SELECT id FROM classes WHERE class_name = 'Class Four'), 'Active', NULL, 'Female'),
+(4, 'Shirin Choudhury', 'A+', NULL, 'Sohel Choudhury', 'Jannat Akter', 'Sohel Choudhury', '01941212678', 'Uposhohor, Sylhet', '07/06/2017', '20178861015819956', (SELECT id FROM classes WHERE class_name = 'Class Four'), 'Active', NULL, 'Female'),
+(5, 'Nurul Choudhury', 'A+', NULL, 'Rayhan Choudhury', 'Nusrat Parvin', 'Rayhan Choudhury', '01572126464', 'Uposhohor, Sylhet', '13/03/2017', '20177154379937124', (SELECT id FROM classes WHERE class_name = 'Class Four'), 'Active', NULL, 'Male'),
+(1, 'Rafiq Miah', 'O+', NULL, 'Rubel Miah', 'Sultana Khatun', 'Rubel Miah', '01352064361', 'Mendibag, Sylhet', '01/12/2016', '20161037129387005', (SELECT id FROM classes WHERE class_name = 'Class Five'), 'Active', NULL, 'Male'),
+(2, 'Jahanara Kabir', 'O+', NULL, 'Emon Kabir', 'Nasrin Khatun', 'Emon Kabir', '01526221890', 'Bondor Bazar, Sylhet', '09/06/2016', '20169275326973112', (SELECT id FROM classes WHERE class_name = 'Class Five'), 'Active', NULL, 'Female'),
+(3, 'Shirin Choudhury', 'O+', NULL, 'Fahim Masud Choudhury', 'Halima Khatun', 'Fahim Masud Choudhury', '01894043898', 'Maulavi Bazar, Sylhet', '10/10/2016', '20163640376137918', (SELECT id FROM classes WHERE class_name = 'Class Five'), 'Active', NULL, 'Female'),
+(4, 'Tasfia Mia', 'B+', NULL, 'Rubel Mia', 'Jannat Parvin', 'Jannat Parvin', '01910910430', 'Shibganj, Sylhet', '29/08/2016', '20160684866618892', (SELECT id FROM classes WHERE class_name = 'Class Five'), 'Active', NULL, 'Female'),
+(5, 'Nasrin Uddin', 'O+', NULL, 'Habibur Uddin', 'Momena Parvin', 'Habibur Uddin', '01930316179', 'Akhalia, Sylhet', '24/12/2017', '20179042102027588', (SELECT id FROM classes WHERE class_name = 'Class Five'), 'Active', NULL, 'Female'),
+(1, 'Nasrin Khan', 'B+', NULL, 'Imran Khan', 'Sanjida Khatun', 'Sanjida Khatun', '01415704331', 'Zindabazar, Sylhet', '27/06/2015', '20155410067626765', (SELECT id FROM classes WHERE class_name = 'Class Six'), 'Active', NULL, 'Female'),
+(2, 'Rokeya Biswas', 'A+', NULL, 'Siam Biswas', 'Rumana Khatun', 'Siam Biswas', '01315262181', 'Subid Bazar, Sylhet', '11/01/2016', '20165997062962015', (SELECT id FROM classes WHERE class_name = 'Class Six'), 'Active', NULL, 'Female'),
+(3, 'Jahanara Kabir', 'B+', NULL, 'Ayaan Kabir', 'Lubna Akter', 'Ayaan Kabir', '01972050614', 'Shahjalal Uposhohor, Sylhet', '21/07/2015', '20159731032417146', (SELECT id FROM classes WHERE class_name = 'Class Six'), 'Active', NULL, 'Female'),
+(4, 'Liton Alam', 'O+', NULL, 'Ayaan Nurul Alam', 'Tahmina Akter', 'Ayaan Nurul Alam', '01674349021', 'Subid Bazar, Sylhet', '17/08/2015', '20151586938068687', (SELECT id FROM classes WHERE class_name = 'Class Six'), 'Active', NULL, 'Male'),
+(5, 'Siam Biswas', 'O+', NULL, 'Sabbir Karim Biswas', 'Rima Parvin', 'Rima Parvin', '01622332061', 'Mirabazar, Sylhet', '03/03/2015', '20156329451168685', (SELECT id FROM classes WHERE class_name = 'Class Six'), 'Active', NULL, 'Male'),
+(1, 'Rokeya Alam', 'O+', NULL, 'Mizanur Alam', 'Anika Sultana', 'Mizanur Alam', '01653001197', 'Mendibag, Sylhet', '17/04/2015', '20152181143744701', (SELECT id FROM classes WHERE class_name = 'Class Seven'), 'Active', NULL, 'Female'),
+(2, 'Imran Chowdhury', 'O+', NULL, 'Liton Chowdhury', 'Sadia Sultana', 'Sadia Sultana', '01825579415', 'Maulavi Bazar, Sylhet', '05/01/2014', '20145216674676212', (SELECT id FROM classes WHERE class_name = 'Class Seven'), 'Active', NULL, 'Male'),
+(3, 'Shamim Islam', 'O+', NULL, 'Tawhid Emon Islam', 'Afia Khatun', 'Afia Khatun', '01827716701', 'Subid Bazar, Sylhet', '17/12/2014', '20144508993588916', (SELECT id FROM classes WHERE class_name = 'Class Seven'), 'Active', NULL, 'Female'),
+(4, 'Nasir Biswas', 'A+', NULL, 'Nurul Sohel Biswas', 'Salma Begum', 'Salma Begum', '01375354083', 'Kumarpara, Sylhet', '11/09/2015', '20158663177971775', (SELECT id FROM classes WHERE class_name = 'Class Seven'), 'Active', NULL, 'Male'),
+(5, 'Nayeem Ahmed', 'B+', NULL, 'Tanvir Karim Ahmed', 'Ayesha Begum', 'Tanvir Karim Ahmed', '01875503758', 'Akhalia, Sylhet', '18/09/2015', '20159975711305548', (SELECT id FROM classes WHERE class_name = 'Class Seven'), 'Active', NULL, 'Male'),
+(1, 'Maliha Khan', 'A+', NULL, 'Fahim Khan', 'Mim Akter', 'Fahim Khan', '01947812914', 'Maulavi Bazar, Sylhet', '25/08/2014', '20142834110809969', (SELECT id FROM classes WHERE class_name = 'Class Eight'), 'Active', NULL, 'Female'),
+(2, 'Rumana Alam', 'A+', NULL, 'Ayaan Alam', 'Mahiya Khatun', 'Ayaan Alam', '01716580392', 'Shibganj, Sylhet', '10/03/2014', '20148272299275037', (SELECT id FROM classes WHERE class_name = 'Class Eight'), 'Active', NULL, 'Female'),
+(5, 'Tahmina Chowdhury', 'O+', NULL, 'Sohel Chowdhury', 'Salma Khatun', 'Salma Khatun', '01804137977', 'Zindabazar, Sylhet', '03/11/2014', '20142369292984257', (SELECT id FROM classes WHERE class_name = 'Class Eight'), 'Active', NULL, 'Female'),
+(6, 'Mahfuz Khan', 'AB+', NULL, 'Rubel Imran Khan', 'Fatema Khatun', 'Rubel Imran Khan', '01479908811', 'Kumarpara, Sylhet', '18/03/2014', '20147298068650863', (SELECT id FROM classes WHERE class_name = 'Class Eight'), 'Active', NULL, 'Male'),
+(7, 'Rumana Choudhury', 'O+', NULL, 'Siam Imran Choudhury', 'Ishrat Khatun', 'Siam Imran Choudhury', '01764300981', 'Uposhohor, Sylhet', '26/05/2013', '20138063565126944', (SELECT id FROM classes WHERE class_name = 'Class Eight'), 'Active', NULL, 'Female'),
+(1, 'Rima Miah', 'B+', NULL, 'Ayaan Miah', 'Tahmina Akter', '', '01694722569', 'Kumarpara, Sylhet', '17/08/2013', '20139611253554496', (SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Active', NULL, 'Female'),
+(2, 'Fatema Mia', 'A+', NULL, 'Zahid Mia', 'Afia Sultana', '', '01813261117', 'Akhalia, Sylhet', '30/04/2012', '20128006811492164', (SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Active', NULL, 'Female'),
+(5, 'Ayaan Khan', 'A+', NULL, 'Nayeem Khan', 'Mim Akter', '', '01322417974', 'Kumarpara, Sylhet', '31/07/2013', '20139735020802144', (SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Active', NULL, 'Male'),
+(6, 'Sultana Ahmed', 'A+', NULL, 'Sohel Abdul Ahmed', 'Sanjida Khatun', '', '01905120461', 'Akhalia, Sylhet', '10/07/2013', '20138723460136730', (SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Active', NULL, 'Female'),
+(7, 'Arif Rahman', 'A+', NULL, 'Habibur Rahman', 'Mahiya Sultana', '', '01388147435', 'Maulavi Bazar, Sylhet', '23/03/2013', '20130313650249163', (SELECT id FROM classes WHERE class_name = 'Class Nine (Science)'), 'Active', NULL, 'Male'),
+(1, 'Ishrat Miah', 'O+', NULL, 'Zahid Miah', 'Nusrat Khatun', 'Nusrat Khatun', '01316655355', 'Ambarkhana, Sylhet', '17/12/2013', '20139042597927033', (SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Active', NULL, 'Female'),
+(2, 'Rahima Uddin', 'O+', NULL, 'Jamal Tarek Uddin', 'Momena Akter', 'Jamal Tarek Uddin', '01538338848', 'Bondor Bazar, Sylhet', '19/08/2013', '20137920698042043', (SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Active', NULL, 'Male'),
+(3, 'Nabila Mia', 'B+', NULL, 'Habibur Zahid Mia', 'Tasnia Sultana', 'Tasnia Sultana', '01518449892', 'Kumarpara, Sylhet', '21/01/2013', '20136659184638655', (SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Active', NULL, 'Female'),
+(4, 'Rima Ahmed', 'A+', NULL, 'Rubel Ahmed', 'Afia Khatun', 'Rubel Ahmed', '01459136517', 'Mirabazar, Sylhet', '19/04/2014', '20147739260302992', (SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Active', NULL, 'Female'),
+(5, 'Arif Miah', 'A+', NULL, 'Tawhid Miah', 'Tasfia Khatun', 'Tasfia Khatun', '01929251881', 'Maulavi Bazar, Sylhet', '08/08/2012', '20122520566474231', (SELECT id FROM classes WHERE class_name = 'Class Nine (Humanities)'), 'Active', NULL, 'Male'),
+(1, 'Sajib Rahman', 'O+', NULL, 'Zahid Rahman', 'Halima Khatun', 'Zahid Rahman', '01509157018', 'Shibganj, Sylhet', '24/09/2012', '20124094353344857', (SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Active', NULL, 'Male'),
+(2, 'Anika Hossain', 'A+', NULL, 'Shahin Abdul Hossain', 'Rima Begum', 'Shahin Abdul Hossain', '01849321495', 'Bondor Bazar, Sylhet', '18/05/2012', '20128702070160166', (SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Active', NULL, 'Female'),
+(3, 'Anika Ali', 'B+', NULL, 'Rubel Rubel Ali', 'Puja Khatun', '', '01984872829', 'Uposhohor, Sylhet', '01/09/2013', '20139796884578317', (SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Active', NULL, 'Female'),
+(4, 'Mahiya Alam', 'A+', NULL, 'Abdul Abdul Alam', 'Puja Khatun', '', '01974064930', 'Pathantula, Sylhet', '18/12/2012', '20128536866326634', (SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Active', NULL, 'Female'),
+(5, 'Siam Talukder', 'O+', NULL, 'Tarek Talukder', 'Tahmina Begum', 'Tarek Talukder', '01658172461', 'Kumarpara, Sylhet', '28/02/2012', '20129196570132902', (SELECT id FROM classes WHERE class_name = 'Class Ten (Science)'), 'Active', NULL, 'Male'),
+(1, 'Rakib Choudhury', 'AB+', NULL, 'Shamim Choudhury', 'Sanjida Begum', '', '01393761847', 'Mendibag, Sylhet', '13/03/2011', '20118700505061387', (SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Active', NULL, 'Male'),
+(2, 'Hasan Hossain', 'B+', NULL, 'Monir Hossain', 'Nasrin Begum', '', '01703202041', 'Lamabazar, Sylhet', '30/08/2011', '20117929111799313', (SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Active', NULL, 'Male'),
+(3, 'Habibur Choudhury', 'A+', NULL, 'Siam Ayaan Choudhury', 'Halima Akter', '', '01314262582', 'Shahjalal Uposhohor, Sylhet', '31/10/2011', '20117390219620710', (SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Active', NULL, 'Male'),
+(4, 'Emon Uddin', 'AB+', NULL, 'Tawhid Uddin', 'Tania Sultana', '', '01587632909', 'Bondor Bazar, Sylhet', '16/04/2011', '20112791456083318', (SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Active', NULL, 'Male'),
+(5, 'Shapla Mia', 'O+', NULL, 'Ayaan Mia', 'Rima Khatun', '', '01927722005', 'Kumarpara, Sylhet', '28/01/2012', '20124364597010822', (SELECT id FROM classes WHERE class_name = 'Class Ten (Humanities)'), 'Active', NULL, 'Male'),
+(1, 'Aarav Ahmed', 'A+', NULL, 'Tanvir Ahmed', 'Sabrina Akter', 'Tanvir Ahmed', '01711928374', 'Tilagarh, Sylhet', '15/01/2023', '20239182736451092', (SELECT id FROM classes WHERE class_name = 'Play'), 'Active', NULL, 'Male'),
+(2, 'Zara Rahman', 'B+', NULL, 'Fahim Rahman', 'Nazia Sultana', 'Fahim Rahman', '01812938475', 'Shibganj, Sylhet', '22/03/2023', '20238192039485716', (SELECT id FROM classes WHERE class_name = 'Play'), 'Active', NULL, 'Female'),
+(3, 'Rayyan Choudhury', 'O+', NULL, 'Kamrul Choudhury', 'Rima Begum', 'Kamrul Choudhury', '01913847562', 'Zindabazar, Sylhet', '10/05/2023', '20237192039485721', (SELECT id FROM classes WHERE class_name = 'Play'), 'Active', NULL, 'Male'),
+(4, 'Inaya Kabir', 'AB+', NULL, 'Sohail Kabir', 'Tasfia Akter', 'Sohail Kabir', '01614728391', 'Subidbazar, Sylhet', '18/08/2023', '20236192039485732', (SELECT id FROM classes WHERE class_name = 'Play'), 'Active', NULL, 'Female'),
+(5, 'Zayan Khan', 'A-', NULL, 'Rezaul Khan', 'Mahmuda Khatun', 'Rezaul Khan', '01515829374', 'Ambarkhana, Sylhet', '04/11/2023', '20235192039485743', (SELECT id FROM classes WHERE class_name = 'Play'), 'Active', NULL, 'Male'),
+(1, 'Tanvir Hossain', 'B+', NULL, 'Monir Hossain', 'Rasheda Begum', 'Monir Hossain', '01712345671', 'Zindabazar, Sylhet', '14/05/2013', '20138472910384719', (SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Active', NULL, 'Male'),
+(2, 'Sadia Jahan', 'A+', NULL, 'Jahidul Islam', 'Farhana Akter', 'Jahidul Islam', '01812345672', 'Shibganj, Sylhet', '20/07/2013', '20139182736451029', (SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Active', NULL, 'Female'),
+(3, 'Arif Hasan', 'O+', NULL, 'Hasan Ali', 'Nasima Khatun', 'Hasan Ali', '01912345673', 'Ambarkhana, Sylhet', '11/03/2013', '20138271039485721', (SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Active', NULL, 'Male'),
+(4, 'Tasnim Sultana', 'AB+', NULL, 'Sultan Mahmud', 'Salma Sultana', 'Sultan Mahmud', '01612345674', 'Subidbazar, Sylhet', '05/09/2013', '20137281940381726', (SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Active', NULL, 'Female'),
+(5, 'Mehedi Hasan', 'O+', NULL, 'Kamrul Hasan', 'Shirin Akter', 'Kamrul Hasan', '01512345675', 'Tilagarh, Sylhet', '28/11/2013', '20136281940381745', (SELECT id FROM classes WHERE class_name = 'Class Nine (Business Studies)'), 'Active', NULL, 'Male'),
+(1, 'Nahid Ahmed', 'A+', NULL, 'Bashir Ahmed', 'Parveen Begum', 'Bashir Ahmed', '01719876541', 'Mirabazar, Sylhet', '18/04/2012', '20128391029384719', (SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Active', NULL, 'Male'),
+(2, 'Afsana Mimi', 'B+', NULL, 'Moinul Islam', 'Tahmina Begum', 'Moinul Islam', '01819876542', 'Uposhohor, Sylhet', '12/08/2012', '20129281940284710', (SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Active', NULL, 'Female'),
+(3, 'Rony Talukder', 'O+', NULL, 'Shahidul Talukder', 'Rehana Akter', 'Shahidul Talukder', '01919876543', 'Kumarpara, Sylhet', '25/01/2012', '20127391029485710', (SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Active', NULL, 'Male'),
+(4, 'Fariha Anjum', 'AB-', NULL, 'Abdur Rahim', 'Laila Arjumand', 'Abdur Rahim', '01619876544', 'Lamabazar, Sylhet', '30/10/2012', '20126381940381928', (SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Active', NULL, 'Female'),
+(5, 'Shafiqul Islam', 'B-', NULL, 'Ziaul Islam', 'Taslima Khatun', 'Ziaul Islam', '01519876545', 'Pathantula, Sylhet', '15/06/2012', '20125281940381920', (SELECT id FROM classes WHERE class_name = 'Class Ten (Business Studies)'), 'Active', NULL, 'Male');
 
--- Class 3 (class_id = 5)
-INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause) VALUES
-(61, 1, 'Mahfuz Talukder', 'O+', NULL, 'Zahid Talukder', 'Nabila Khatun', 'Nabila Khatun', '01526949588', 'Shibganj, Sylhet', '2018-06-17', '20188794705516940', 5, 'Active', NULL),
-(62, 2, 'Nayeem Khan', 'AB-', NULL, 'Tawhid Khan', 'Mahiya Khatun', 'Tawhid Khan', '01409130756', 'Kumarpara, Sylhet', '2019-03-17', '20192636897028385', 5, 'Active', NULL),
-(63, 3, 'Jahid Choudhury', 'A+', NULL, 'Anwar Sajib Choudhury', 'Tasfia Akter', 'Tasfia Akter', '01584344375', 'Akhalia, Sylhet', '2019-04-09', '20197584419866524', 5, 'Active', NULL),
-(64, 4, 'Tasfia Uddin', 'B+', NULL, 'Rakib Jahid Uddin', 'Mahiya Khatun', 'Rakib Jahid Uddin', '01419933083', 'Subid Bazar, Sylhet', '2019-10-15', '20193016571208267', 5, 'Active', NULL),
-(65, 5, 'Karim Ali', 'A+', NULL, 'Jamal Faruk Ali', 'Rumana Parvin', 'Rumana Parvin', '01406724004', 'Zindabazar, Sylhet', '2018-08-02', '20189915478872874', 5, 'Active', NULL);
-
--- Class 4 (class_id = 6)
-INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause) VALUES
-(76, 1, 'Tarek Kabir', 'O+', NULL, 'Anwar Kabir', 'Jahanara Begum', 'Anwar Kabir', '01954615679', 'Zindabazar, Sylhet', '2017-11-14', '20173341016668700', 6, 'Active', NULL),
-(77, 2, 'Monir Biswas', 'O+', NULL, 'Belal Biswas', 'Jahanara Parvin', 'Jahanara Parvin', '01640148902', 'Mirabazar, Sylhet', '2017-12-21', '20175039261429396', 6, 'Active', NULL),
-(78, 3, 'Ishrat Talukder', 'A+', NULL, 'Rubel Faruk Talukder', 'Rima Akter', 'Rubel Faruk Talukder', '01999650477', 'Ambarkhana, Sylhet', '2017-02-08', '20173586629619431', 6, 'Active', NULL),
-(79, 4, 'Shirin Choudhury', 'A+', NULL, 'Sohel Choudhury', 'Jannat Akter', 'Sohel Choudhury', '01941212678', 'Uposhohor, Sylhet', '2017-06-07', '20178861015819956', 6, 'Active', NULL),
-(80, 5, 'Nurul Choudhury', 'A+', NULL, 'Rayhan Choudhury', 'Nusrat Parvin', 'Rayhan Choudhury', '01572126464', 'Uposhohor, Sylhet', '2017-03-13', '20177154379937124', 6, 'Active', NULL);
-
--- Class 5 (class_id = 7)
-INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause) VALUES
-(91, 1, 'Rafiq Miah', 'O+', NULL, 'Rubel Miah', 'Sultana Khatun', 'Rubel Miah', '01352064361', 'Mendibag, Sylhet', '2016-12-01', '20161037129387005', 7, 'Active', NULL),
-(92, 2, 'Jahanara Kabir', 'O+', NULL, 'Emon Kabir', 'Nasrin Khatun', 'Emon Kabir', '01526221890', 'Bondor Bazar, Sylhet', '2016-06-09', '20169275326973112', 7, 'Active', NULL),
-(93, 3, 'Shirin Choudhury', 'O+', NULL, 'Fahim Masud Choudhury', 'Halima Khatun', 'Fahim Masud Choudhury', '01894043898', 'Maulavi Bazar, Sylhet', '2016-10-10', '20163640376137918', 7, 'Active', NULL),
-(94, 4, 'Tasfia Mia', 'B+', NULL, 'Rubel Mia', 'Jannat Parvin', 'Jannat Parvin', '01910910430', 'Shibganj, Sylhet', '2016-08-29', '20160684866618892', 7, 'Active', NULL),
-(95, 5, 'Nasrin Uddin', 'O+', NULL, 'Habibur Uddin', 'Momena Parvin', 'Habibur Uddin', '01930316179', 'Akhalia, Sylhet', '2017-12-24', '20179042102027588', 7, 'Active', NULL);
-
--- Class 6 (class_id = 8)
-INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause) VALUES
-(106, 1, 'Nasrin Khan', 'B+', NULL, 'Imran Khan', 'Sanjida Khatun', 'Sanjida Khatun', '01415704331', 'Zindabazar, Sylhet', '2015-06-27', '20155410067626765', 8, 'Active', NULL),
-(107, 2, 'Rokeya Biswas', 'A+', NULL, 'Siam Biswas', 'Rumana Khatun', 'Siam Biswas', '01315262181', 'Subid Bazar, Sylhet', '2016-01-11', '20165997062962015', 8, 'Active', NULL),
-(108, 3, 'Jahanara Kabir', 'B+', NULL, 'Ayaan Kabir', 'Lubna Akter', 'Ayaan Kabir', '01972050614', 'Shahjalal Uposhohor, Sylhet', '2015-07-21', '20159731032417146', 8, 'Active', NULL),
-(109, 4, 'Liton Alam', 'O+', NULL, 'Ayaan Nurul Alam', 'Tahmina Akter', 'Ayaan Nurul Alam', '01674349021', 'Subid Bazar, Sylhet', '2015-08-17', '20151586938068687', 8, 'Active', NULL),
-(110, 5, 'Siam Biswas', 'O+', NULL, 'Sabbir Karim Biswas', 'Rima Parvin', 'Rima Parvin', '01622332061', 'Mirabazar, Sylhet', '2015-03-03', '20156329451168685', 8, 'Active', NULL);
-
--- Class 7 (class_id = 9)
-INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause) VALUES
-(121, 1, 'Rokeya Alam', 'O+', NULL, 'Mizanur Alam', 'Anika Sultana', 'Mizanur Alam', '01653001197', 'Mendibag, Sylhet', '2015-04-17', '20152181143744701', 9, 'Active', NULL),
-(122, 2, 'Imran Chowdhury', 'O+', NULL, 'Liton Chowdhury', 'Sadia Sultana', 'Sadia Sultana', '01825579415', 'Maulavi Bazar, Sylhet', '2014-01-05', '20145216674676212', 9, 'Active', NULL),
-(123, 3, 'Shamim Islam', 'O+', NULL, 'Tawhid Emon Islam', 'Afia Khatun', 'Afia Khatun', '01827716701', 'Subid Bazar, Sylhet', '2014-12-17', '20144508993588916', 9, 'Active', NULL),
-(124, 4, 'Nasir Biswas', 'A+', NULL, 'Nurul Sohel Biswas', 'Salma Begum', 'Salma Begum', '01375354083', 'Kumarpara, Sylhet', '2015-09-11', '20158663177971775', 9, 'Active', NULL),
-(125, 5, 'Nayeem Ahmed', 'B+', NULL, 'Tanvir Karim Ahmed', 'Ayesha Begum', 'Tanvir Karim Ahmed', '01875503758', 'Akhalia, Sylhet', '2015-09-18', '20159975711305548', 9, 'Active', NULL);
-
--- Class 8 (class_id = 10)
-INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause) VALUES
-(136, 1, 'Maliha Khan', 'A+', NULL, 'Fahim Khan', 'Mim Akter', 'Fahim Khan', '01947812914', 'Maulavi Bazar, Sylhet', '2014-08-25', '20142834110809969', 10, 'Active', NULL),
-(137, 2, 'Rumana Alam', 'A+', NULL, 'Ayaan Alam', 'Mahiya Khatun', 'Ayaan Alam', '01716580392', 'Shibganj, Sylhet', '2014-03-10', '20148272299275037', 10, 'Active', NULL),
-(138, 3, 'Nabila Mia', 'B+', NULL, 'Habibur Zahid Mia', 'Tasnia Sultana', 'Tasnia Sultana', '01518449892', 'Kumarpara, Sylhet', '2013-01-21', '20136659184638655', 10, 'Active', NULL),
-(139, 4, 'Rima Ahmed', 'A+', NULL, 'Rubel Ahmed', 'Afia Khatun', 'Rubel Ahmed', '01459136517', 'Mirabazar, Sylhet', '2014-04-19', '20147739260302992', 10, 'Active', NULL),
-(140, 5, 'Tahmina Chowdhury', 'O+', NULL, 'Sohel Chowdhury', 'Salma Khatun', 'Salma Khatun', '01804137977', 'Zindabazar, Sylhet', '2014-11-03', '20142369292984257', 10, 'Active', NULL);
-
--- Class 9 (Science) (class_id = 11)
-INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause) VALUES
-(151, 1, 'Rima Miah', 'B+', NULL, 'Ayaan Miah', 'Tahmina Akter', 'Tahmina Akter', '01694722569', 'Kumarpara, Sylhet', '2013-08-17', '20139611253554496', 11, 'Active', NULL),
-(152, 2, 'Fatema Mia', 'A+', NULL, 'Zahid Mia', 'Afia Sultana', 'Zahid Mia', '01813261117', 'Akhalia, Sylhet', '2012-04-30', '20128006811492164', 11, 'Active', NULL),
-(153, 3, 'Anika Ali', 'B+', NULL, 'Rubel Rubel Ali', 'Puja Khatun', 'Rubel Rubel Ali', '01984872829', 'Uposhohor, Sylhet', '2013-09-01', '20139796884578317', 11, 'Active', NULL),
-(154, 4, 'Mahiya Alam', 'A+', NULL, 'Abdul Abdul Alam', 'Puja Khatun', 'Puja Khatun', '01974064930', 'Pathantula, Sylhet', '2012-12-18', '20128536866326634', 11, 'Active', NULL),
-(155, 5, 'Ayaan Khan', 'A+', NULL, 'Nayeem Khan', 'Mim Akter', 'Nayeem Khan', '01322417974', 'Kumarpara, Sylhet', '2013-07-31', '20139735020802144', 11, 'Active', NULL);
-
--- Class 9 (Humanities) (class_id = 12)
-INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause) VALUES
-(166, 1, 'Ishrat Miah', 'O+', NULL, 'Zahid Miah', 'Nusrat Khatun', 'Nusrat Khatun', '01316655355', 'Ambarkhana, Sylhet', '2013-12-17', '20139042597927033', 12, 'Active', NULL),
-(167, 2, 'Rahima Uddin', 'O+', NULL, 'Jamal Tarek Uddin', 'Momena Akter', 'Jamal Tarek Uddin', '01538338848', 'Bondor Bazar, Sylhet', '2013-08-19', '20137920698042043', 12, 'Active', NULL),
-(168, 3, 'Liton Alam', 'B+', NULL, 'Abdul Kamal Alam', 'Jannat Akter', 'Abdul Kamal Alam', '01863681579', 'Akhalia, Sylhet', '2012-01-10', '20128123878003845', 12, 'Active', NULL),
-(169, 4, 'Mahfuz Islam', 'B+', NULL, 'Shamim Shamim Islam', 'Sultana Khatun', 'Shamim Shamim Islam', '01608432562', 'Ambarkhana, Sylhet', '2013-02-01', '20131689363926495', 12, 'Active', NULL),
-(170, 5, 'Arif Miah', 'A+', NULL, 'Tawhid Miah', 'Tasfia Khatun', 'Tasfia Khatun', '01929251881', 'Maulavi Bazar, Sylhet', '2012-08-08', '20122520566474231', 12, 'Active', NULL);
-
--- Class 10 (Science) (class_id = 13)
-INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause) VALUES
-(181, 1, 'Sajib Rahman', 'O+', NULL, 'Zahid Rahman', 'Halima Khatun', 'Zahid Rahman', '01509157018', 'Shibganj, Sylhet', '2012-09-24', '20124094353344857', 13, 'Active', NULL),
-(182, 2, 'Anika Hossain', 'A+', NULL, 'Shahin Abdul Hossain', 'Rima Begum', 'Shahin Abdul Hossain', '01849321495', 'Bondor Bazar, Sylhet', '2012-05-18', '20128702070160166', 13, 'Active', NULL),
-(183, 3, 'Ayaan Sarker', 'A+', NULL, 'Arif Sarker', 'Maliha Khatun', 'Arif Sarker', '01371747733', 'Kumarpara, Sylhet', '2011-08-27', '20112945625577017', 13, 'Active', NULL),
-(184, 4, 'Mahfuz Sarker', 'B+', NULL, 'Salim Sarker', 'Anika Parvin', 'Salim Sarker', '01915814876', 'Uposhohor, Sylhet', '2011-07-27', '20119639382761539', 13, 'Active', NULL),
-(185, 5, 'Siam Talukder', 'O+', NULL, 'Tarek Talukder', 'Tahmina Begum', 'Tarek Talukder', '01658172461', 'Kumarpara, Sylhet', '2012-02-28', '20129196570132902', 13, 'Active', NULL);
-
--- Class 10 (Humanities) (class_id = 14)
-INSERT INTO students (id, roll, name, blood_group, photo_path, fathers_name, mothers_name, guardian_name, guardian_contact, address, dob, birth_reg_number, class_id, status, removal_cause) VALUES
-(196, 1, 'Rakib Choudhury', 'AB+', NULL, 'Shamim Choudhury', 'Sanjida Begum', 'Shamim Choudhury', '01393761847', 'Mendibag, Sylhet', '2011-03-13', '20118700505061387', 14, 'Active', NULL),
-(197, 2, 'Hasan Hossain', 'B+', NULL, 'Monir Hossain', 'Nasrin Begum', 'Nasrin Begum', '01703202041', 'Lamabazar, Sylhet', '2011-08-30', '20117929111799313', 14, 'Active', NULL),
-(198, 3, 'Habibur Choudhury', 'A+', NULL, 'Siam Ayaan Choudhury', 'Halima Akter', 'Siam Ayaan Choudhury', '01314262582', 'Shahjalal Uposhohor, Sylhet', '2011-10-31', '20117390219620710', 14, 'Active', NULL),
-(199, 4, 'Emon Uddin', 'AB+', NULL, 'Tawhid Uddin', 'Tania Sultana', 'Tawhid Uddin', '01587632909', 'Bondor Bazar, Sylhet', '2011-04-16', '20112791456083318', 14, 'Active', NULL),
-(200, 5, 'Shapla Mia', 'O+', NULL, 'Ayaan Mia', 'Rima Khatun', 'Ayaan Mia', '01927722005', 'Kumarpara, Sylhet', '2012-01-28', '20124364597010822', 14, 'Active', NULL);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- INSERT queries for subjects table
-
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (19, 8, 'Bangla 1st', 1, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (20, 8, 'Bangla 2nd', 2, 25, 50);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (21, 8, 'English 1st', 3, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (22, 8, 'English 2nd', 4, 25, 50);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (23, 8, 'Math', 5, 50, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (24, 8, 'Science', 6, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (25, 8, 'Bangladesh & Global Studies', 7, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (26, 8, 'Agriculture/Domestic Science', 10, 25, 50);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (27, 8, 'Religious Studies and Moral Education', 9, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (28, 8, 'Information and Communication Technology', 8, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (29, 8, 'Clothes/Manner/Presence', 11, 25, 50);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (30, 9, 'Bangla 1st', 1, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (31, 9, 'Bangla 2nd', 1, 25, 50);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (32, 9, 'English 1st', 3, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (33, 9, 'English 2nd', 4, 25, 50);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (34, 9, 'Math', 5, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (35, 9, 'Science', 6, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (36, 9, 'Bangladesh & Global Studies', 7, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (37, 9, 'Information and Communication Technology', 8, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (38, 9, 'Religious Studies and Moral Education', 9, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (39, 9, 'Agriculture/Home Science', 10, 25, 50);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (40, 9, 'Clothes/Manner/Presence', 11, 25, 50);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (41, 1, 'Bangla', 1, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (42, 1, 'English', 2, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (43, 1, 'Math', 3, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (44, 1, 'Religious Studies and Moral Education', 4, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (45, 1, 'General Knowledge', 5, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (46, 1, 'Spoken', 6, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (47, 1, 'Drawing', 7, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (49, 2, 'Bangla', 1, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (50, 2, 'English', 2, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (51, 2, 'Math', 3, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (52, 2, 'Religious Studies and Moral Education', 4, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (53, 2, 'General Knowledge', 5, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (54, 2, 'Spoken', 6, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (55, 2, 'Drawing', 7, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (56, 2, 'Clothes/Manner/Presence', 8, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (57, 3, 'Bangla', 1, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (58, 3, 'English', 2, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (59, 3, 'Math', 3, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (60, 3, 'Religious Studies and Moral Education', 4, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (61, 3, 'General Knowledge', 5, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (62, 3, 'Spoken', 6, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (63, 3, 'Drawing', 7, NULL, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (64, 3, 'Clothes/Manner/Presence', 8, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (65, 4, 'Bangla', 1, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (66, 4, 'English', 2, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (72, 4, 'Math', 3, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (73, 4, 'Religious Studies and Moral Education', 4, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (74, 4, 'General Knowledge', 5, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (75, 4, 'Spoken', 6, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (76, 4, 'Drawing', 7, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (77, 4, 'Clothes/Manner/Presence', 8, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (78, 5, 'Bangla 1st', 1, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (79, 5, 'Bangla 2nd', 2, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (80, 5, 'English 1st', 3, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (81, 5, 'English 2nd', 4, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (82, 5, 'Math', 5, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (83, 5, 'Science', 6, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (84, 5, 'Bangladesh & Global Studies', 7, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (85, 5, 'General Knowledge', 9, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (86, 5, 'Spoken', 10, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (87, 5, 'Drawing', 11, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (89, 5, 'Clothes/Manner/Presence', 12, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (90, 6, 'Bangla 1st', 1, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (91, 6, 'Bangla 2nd', 2, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (92, 6, 'English 1st', 3, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (93, 6, 'English 2nd', 4, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (94, 6, 'Math', 5, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (95, 6, 'Science', 6, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (96, 6, 'Bangladesh & Global Studies', 7, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (97, 6, 'General Knowledge', 9, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (98, 6, 'Religious Studies and Moral Education', 8, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (99, 5, 'Religious Studies and Moral Education', 8, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (100, 6, 'Drawing', 11, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (101, 6, 'Spoken', 10, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (103, 1, 'Clothes/Manner/Presence', 12, 50, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (105, 6, 'Clothes/Manner/Presence', 12, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (106, 10, 'Bangla 1st', 1, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (107, 10, 'Bangla 2nd', 2, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (108, 10, 'English 1st', 3, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (109, 10, 'English 2nd', 4, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (110, 10, 'Math', 5, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (111, 10, 'Science', 6, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (112, 10, 'Bangladesh & Global Studies', 7, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (113, 10, 'Information and Communication Technology', 8, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (115, 10, 'Agriculture/Home Science', 10, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (116, 10, 'Clothes/Manner/Presence', 11, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (117, 10, 'Bangla 1st', 9, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (118, 11, 'Bangla 1st', 1, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (119, 11, 'Bangla 2nd', 2, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (120, 11, 'English 1st', 3, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (121, 11, 'English 2nd', 4, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (122, 11, 'Math', 5, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (123, 11, 'Information and Communication Technology', 6, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (124, 11, 'Religious Studies and Moral Education', 7, 25, 100);
-INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (11, 'Physical Education, Health Science and Sports', 8, 25, 100);
-INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (11, 'Career Education', 9, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (125, 12, 'Bangla 1st', 1, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (126, 12, 'Bangla 2nd', 2, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (127, 12, 'English 1st', 3, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (128, 12, 'English 2nd', 4, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (129, 12, 'Math', 5, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (130, 12, 'Information and Communication Technology', 6, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (131, 12, 'Religious Studies and Moral Education', 7, 25, NULL);
-INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (12, 'Physical Education, Health Science and Sports', 8, 25, 100);
-INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (12, 'Career Education', 9, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (132, 13, 'Bangla 1st', 1, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (133, 13, 'Bangla 2nd', 2, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (134, 13, 'English 1st', 3, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (135, 13, 'English 2nd', 4, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (136, 13, 'Math', 5, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (137, 13, 'Information and Communication Technology', 6, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (138, 13, 'Religious Studies and Moral Education', 7, 25, NULL);
-INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (13, 'Physical Education, Health Science and Sports', 8, 25, 100);
-INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (13, 'Career Education', 9, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (139, 14, 'Bangla 1st', 1, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (140, 14, 'Bangla 2nd', 2, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (141, 14, 'English 1st', 3, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (142, 14, 'English 2nd', 4, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (143, 14, 'Math', 5, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (144, 14, 'Information and Communication Technology', 6, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (145, 14, 'Religious Studies and Moral Education', 7, 25, 100);
-INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (14, 'Physical Education, Health Science and Sports', 8, 25, 100);
-INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (14, 'Career Education', 9, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (146, 11, 'Physics', 11, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (147, 11, 'Chemistry', 12, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (148, 11, 'Biology', 13, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (149, 11, 'Higher Math', 14, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (150, 11, 'Agriculture/Home Science', 15, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (151, 11, 'Clothes/Manner/Presence', 16, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (152, 13, 'Physics', 11, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (153, 13, 'Chemistry', 12, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (154, 13, 'Biology', 13, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (155, 13, 'Higher Math', 14, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (156, 13, 'Agriculture/Home Science', 15, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (157, 13, 'Clothes/Manner/Presence', 16, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (158, 12, 'History', 11, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (159, 12, 'Geography & Environment', 12, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (160, 12, 'Civics & Citizenship', 13, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (161, 12, 'Economics', 14, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (162, 12, 'Agriculture/Home Science', 15, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (163, 12, 'Clothes/Manner/Presence', 16, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (164, 14, 'History', 11, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (165, 14, 'Geography & Environment', 12, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (166, 14, 'Civics & Citizenship', 13, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (167, 14, 'Economics', 14, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (168, 14, 'Agriculture/Home Science', 15, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (169, 14, 'Clothes/Manner/Presence', 16, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (171, 1, 'Physical Education', 13, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (172, 8, 'Physical Education', 12, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (174, 4, 'Physical Education', 9, 23, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (175, 7, 'Bangla 1st', 1, 25, NULL);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (176, 11, 'Bangladesh & Global Studies', 10, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (177, 12, 'Science', 10, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (178, 13, 'Bangladesh & Global Studies', 10, 25, 100);
-INSERT INTO subjects (id, class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (179, 14, 'Science', 10, 25, 100);
-
-
-
-
-
-
-
--- INSERT queries for teachers table
--- Covers all subject areas: Bangla, English, Math, Science, ICT, Religious Ed,
--- BGS, Physics, Chemistry, Biology, Higher Math, History, Geography, Civics,
--- Economics, Agriculture, Drawing, Physical Education, etc.
-
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (1, 'Md. Rafiqul Islam', 'Mr.', NULL, 'Md. Sirajul Islam', 'Fatema Begum', NULL, '01711234567', 'B+', '1991234567890', 'Mirpur, Dhaka', 'T-2027-01');
-
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (2, 'Nasrin Akter', 'Mrs.', NULL, 'Md. Abul Kalam', 'Rahela Begum', NULL, '01812345678', 'O+', '1992345678901', 'Dhanmondi, Dhaka', 'T-2027-02');
-
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (3, 'Md. Shafiqul Hasan', 'Mr.', NULL, 'Md. Nurul Hasan', 'Amina Begum', NULL, '01913456789', 'A+', '1993456789012', 'Mohammadpur, Dhaka', 'T-2027-03');
-
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (4, 'Sultana Parvin', 'Mrs.', NULL, 'Md. Jahurul Islam', 'Sufia Begum', NULL, '01614567890', 'AB+', '1994567890123', 'Uttara, Dhaka', 'T-2027-04');
-
-INSERT INTO teachers (id, name, title, signature_path, fathers_name, mothers_name, photo_path, contact_number, blood_group, nid_number, address, teacher_id_number) VALUES (5, 'Md. Kamrul Hossain', 'Mr.', NULL, 'Md. Fazlul Hossain', 'Hasina Begum', NULL, '01715678901', 'B-', '1995678901234', 'Gulshan, Dhaka', 'T-2027-05');
-
-
-
-
-
-
-
-
-
-
-
-
-
-
--- INSERT queries for classes table
--- (with class_teacher_id assigned from sample teachers)
-
-UPDATE classes SET class_teacher_id = 1 WHERE id = 1;
-UPDATE classes SET class_teacher_id = 2 WHERE id = 2;
-UPDATE classes SET class_teacher_id = 2  WHERE id = 3;
-UPDATE classes SET class_teacher_id = 4 WHERE id = 4;
-UPDATE classes SET class_teacher_id = 1  WHERE id = 5;
-UPDATE classes SET class_teacher_id = 1  WHERE id = 6;
-UPDATE classes SET class_teacher_id = 3  WHERE id = 7;
-UPDATE classes SET class_teacher_id = 3  WHERE id = 8;
-UPDATE classes SET class_teacher_id = 4  WHERE id = 9;
-UPDATE classes SET class_teacher_id = 5  WHERE id = 10;
-UPDATE classes SET class_teacher_id = 1  WHERE id = 11;
-UPDATE classes SET class_teacher_id = 2 WHERE id = 12;
-UPDATE classes SET class_teacher_id = 5  WHERE id = 13;
-UPDATE classes SET class_teacher_id = 4 WHERE id = 14;
