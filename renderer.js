@@ -683,6 +683,25 @@ async function initSchoolSetupScreen() {
     }
 }
 
+// Toggle optional security questions (Q3 - Q5) in initial setup
+const btnToggleSetupMore = document.getElementById('btn-toggle-setup-more-questions');
+const setupMoreContent = document.getElementById('setup-more-questions-content');
+const setupMoreToggleText = document.getElementById('setup-more-toggle-text');
+if (btnToggleSetupMore && setupMoreContent) {
+    btnToggleSetupMore.addEventListener('click', () => {
+        const isHidden = setupMoreContent.style.display === 'none' || !setupMoreContent.style.display;
+        if (isHidden) {
+            setupMoreContent.style.display = 'block';
+            btnToggleSetupMore.setAttribute('aria-expanded', 'true');
+            if (setupMoreToggleText) setupMoreToggleText.textContent = 'Hide Additional Questions (3 to 5)';
+        } else {
+            setupMoreContent.style.display = 'none';
+            btnToggleSetupMore.setAttribute('aria-expanded', 'false');
+            if (setupMoreToggleText) setupMoreToggleText.textContent = 'Add More Security Questions (3 to 5)';
+        }
+    });
+}
+
 // First-time setup form: collects the new admin's username,
 // password, and custom security questions/answers, then transitions to School Setup.
 document.getElementById('btn-save-setup').addEventListener('click', async () => {

@@ -18,7 +18,7 @@
         <div class="input-group">
             <label for="activation-code-input">Activation Code</label>
             <textarea id="activation-code-input" rows="4"
-                placeholder="Paste your Base32 activation code here..."></textarea>
+                placeholder="Paste your activation code here..."></textarea>
         </div>
         <button id="btn-verify-activation" type="button">Verify Code</button>
     </div>
@@ -64,7 +64,10 @@
             <input type="password" id="setup-password" placeholder="Create strong password">
         </div>
         <hr>
-        <label>Security Questions (Max 5 for recovery)</label>
+        <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px;">
+            <label style="margin-bottom: 0;">Security Questions (Recovery)</label>
+            <span style="font-size: 11px; color: #64748b;">Q1 & Q2 required</span>
+        </div>
         <div class="input-group">
             <input type="text" id="q1" placeholder="Question 1 (Required)">
             <input type="text" id="a1" placeholder="Answer 1 (Required)">
@@ -73,19 +76,39 @@
             <input type="text" id="q2" placeholder="Question 2 (Required)">
             <input type="text" id="a2" placeholder="Answer 2 (Required)">
         </div>
-        <div class="input-group">
-            <input type="text" id="q3" placeholder="Question 3 (Optional)">
-            <input type="text" id="a3" placeholder="Answer 3 (Optional)">
+
+        <!-- Collapsible Additional Questions (Q3 - Q5) -->
+        <div class="setup-optional-questions-box">
+            <button type="button" id="btn-toggle-setup-more-questions" class="setup-toggle-more-btn" aria-expanded="false">
+                <span style="display: flex; align-items: center; gap: 6px;">
+                    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="16"></line>
+                        <line x1="8" y1="12" x2="16" y2="12"></line>
+                    </svg>
+                    <span id="setup-more-toggle-text">Add More Security Questions (3 to 5)</span>
+                </span>
+                <svg id="setup-more-chevron" class="setup-chevron-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+            </button>
+            <div id="setup-more-questions-content" class="setup-more-questions-content" style="display: none;">
+                <p class="setup-optional-hint">Optional questions add an extra layer of protection if you need to recover your administrator account.</p>
+                <div class="input-group">
+                    <input type="text" id="q3" placeholder="Question 3 (Optional)">
+                    <input type="text" id="a3" placeholder="Answer 3 (Optional)">
+                </div>
+                <div class="input-group">
+                    <input type="text" id="q4" placeholder="Question 4 (Optional)">
+                    <input type="text" id="a4" placeholder="Answer 4 (Optional)">
+                </div>
+                <div class="input-group">
+                    <input type="text" id="q5" placeholder="Question 5 (Optional)">
+                    <input type="text" id="a5" placeholder="Answer 5 (Optional)">
+                </div>
+            </div>
         </div>
-        <div class="input-group">
-            <input type="text" id="q4" placeholder="Question 4 (Optional)">
-            <input type="text" id="a4" placeholder="Answer 4 (Optional)">
-        </div>
-        <div class="input-group">
-            <input type="text" id="q5" placeholder="Question 5 (Optional)">
-            <input type="text" id="a5" placeholder="Answer 5 (Optional)">
-        </div>
-        <button id="btn-save-setup">Initialize System</button>
+        <button id="btn-save-setup" style="margin-top: 15px;">Initialize System</button>
     </div>
 
     <!-- 2. MAIN LOGIN SCREEN -->
