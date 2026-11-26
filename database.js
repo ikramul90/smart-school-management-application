@@ -25,7 +25,154 @@ db.serialize(() => {
     db.run(`CREATE TABLE IF NOT EXISTS classes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         class_name TEXT NOT NULL UNIQUE,
-        department TEXT DEFAULT NULL -- 'Science', 'Humanities', or NULL
+        department TEXT DEFAULT NULL, -- 'Science', 'Humanities', or NULL
+        class_teacher_id INTEGER
+    )`);
+
+    // 2. Subjects Table (Tracks subjects per class) - Created early so migrations and checks can access it
+    db.run(`CREATE TABLE IF NOT EXISTS subjects (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        class_id INTEGER,
+        class_teacher_id INTEGER,
+        subject_name TEXT NOT NULL,
+        sequence_order INTEGER, -- To keep your exact layout order
+        monthly_marks INTEGER,
+        yearly_marks INTEGER,
+        yearly_theory_marks REAL DEFAULT NULL,
+        yearly_practical_marks REAL DEFAULT NULL,
+        FOREIGN KEY(class_id) REFERENCES classes(id)
+    )`);
+
+    // Ensure all columns exist immediately on existing tables before any queries or inserts run
+    db.run(`ALTER TABLE subjects ADD COLUMN monthly_marks INTEGER`, () => {});
+    db.run(`ALTER TABLE subjects ADD COLUMN yearly_marks INTEGER`, () => {});
+    db.run(`ALTER TABLE subjects ADD COLUMN yearly_theory_marks REAL DEFAULT NULL`, () => {});
+    db.run(`ALTER TABLE subjects ADD COLUMN yearly_practical_marks REAL DEFAULT NULL`, () => {});
+    db.run(`ALTER TABLE subjects ADD COLUMN class_teacher_id INTEGER`, () => {});
+
+    // 3. Students Table
+    db.run(`CREATE TABLE IF NOT EXISTS students (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        roll INTEGER NOT NULL,
+        name TEXT NOT NULL,
+        student_id_number TEXT,
+        blood_group TEXT,
+        photo_path TEXT,
+        fathers_name TEXT,
+        mothers_name TEXT,
+        guardian_name TEXT,
+        guardian_contact TEXT NOT NULL,
+        address TEXT,
+        dob TEXT,
+        birth_reg_number TEXT,
+        class_id INTEGER,
+        status TEXT DEFAULT 'Active', -- 'Active', 'Graduated', 'Removed'
+        removal_cause TEXT,
+        gender TEXT,
+        FOREIGN KEY(class_id) REFERENCES classes(id)
+    )`);
+
+    // 4. Teachers Table
+    db.run(`CREATE TABLE IF NOT EXISTS teachers (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        teacher_id_number TEXT,
+        name TEXT NOT NULL,
+        title TEXT,
+        signature_path TEXT,
+        fathers_name TEXT,
+        mothers_name TEXT,
+        photo_path TEXT,
+        contact_number TEXT,
+        blood_group TEXT,
+        nid_number TEXT,
+        address TEXT
+    )`);
+
+    // 5. Exams Table (Tracks individual assessment sessions)
+    db.run(`CREATE TABLE IF NOT EXISTS exams (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        year INTEGER NOT NULL,
+        exam_type TEXT NOT NULL -- '1st Monthly', 'Half Yearly', 'Yearly', etc.
+    )`);
+
+    // 6. Marks Table
+    db.run(`CREATE TABLE IF NOT EXISTS marks (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        student_id INTEGER,
+        subject_id INTEGER,
+        exam_id INTEGER,
+        marks_obtained REAL DEFAULT 0,
+        theory_marks REAL DEFAULT NULL,
+        practical_marks REAL DEFAULT NULL,
+        is_present INTEGER DEFAULT 1, -- 0 if absent, 1 if present
+        FOREIGN KEY(student_id) REFERENCES students(id),
+        FOREIGN KEY(subject_id) REFERENCES subjects(id),
+        FOREIGN KEY(exam_id) REFERENCES exams(id)
+    )`);
+
+    // Ensure theory_marks and practical_marks exist on marks table before any queries run
+    db.run(`ALTER TABLE marks ADD COLUMN theory_marks REAL DEFAULT NULL`, () => {});
+    db.run(`ALTER TABLE marks ADD COLUMN practical_marks REAL DEFAULT NULL`, () => {});
+
+    // Ensure one mark per student+subject+exam so re-saving a class updates in place
+    db.run(`CREATE UNIQUE INDEX IF NOT EXISTS idx_marks_unique ON marks (
+        student_id, subject_id, exam_id
+    )`);
+
+    // 7. Student Subjects Table (Nine/Ten Main + Optional subject selections)
+    db.run(`CREATE TABLE IF NOT EXISTS student_subjects (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        student_id INTEGER NOT NULL,
+        subject_name TEXT NOT NULL,
+        role TEXT NOT NULL, -- 'main' or 'optional'
+        FOREIGN KEY(student_id) REFERENCES students(id)
+    )`);
+
+    // 8. Student History Table
+    db.run(`CREATE TABLE IF NOT EXISTS student_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        student_id INTEGER NOT NULL,
+        action TEXT NOT NULL, -- 'Promoted', 'Graduated', 'Dropped Out', 'Reinstated'
+        from_class_id INTEGER,
+        to_class_id INTEGER,
+        roll INTEGER,
+        cause TEXT,
+        action_date TEXT DEFAULT (datetime('now', 'localtime')),
+        FOREIGN KEY(student_id) REFERENCES students(id)
+    )`);
+
+    // 9. Notifications Table
+    db.run(`CREATE TABLE IF NOT EXISTS notifications (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        key TEXT,
+        severity TEXT NOT NULL DEFAULT 'info', -- 'info', 'success', 'warning', 'error'
+        title TEXT NOT NULL,
+        message TEXT NOT NULL,
+        target TEXT,
+        created_at TEXT DEFAULT (datetime('now', 'localtime')),
+        is_read INTEGER DEFAULT 0,
+        is_dismissed INTEGER DEFAULT 0
+    )`);
+
+    // 10. Attendance tables
+    db.run(`CREATE TABLE IF NOT EXISTS attendance_working_days (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        class_id INTEGER NOT NULL,
+        year INTEGER NOT NULL,
+        term TEXT NOT NULL,
+        working_days INTEGER NOT NULL,
+        UNIQUE(class_id, year, term),
+        FOREIGN KEY(class_id) REFERENCES classes(id)
+    )`);
+
+    db.run(`CREATE TABLE IF NOT EXISTS attendance (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        student_id INTEGER NOT NULL,
+        year INTEGER NOT NULL,
+        term TEXT NOT NULL,
+        days_present INTEGER NOT NULL,
+        UNIQUE(student_id, year, term),
+        FOREIGN KEY(student_id) REFERENCES students(id)
     )`);
 
     // Seed the 16 distinct school classes if they don't exist yet
@@ -117,9 +264,10 @@ db.serialize(() => {
                     if (existingMap[subName]) {
                         db.run(`UPDATE subjects SET sequence_order = ? WHERE id = ?`, [seq, existingMap[subName]]);
                     } else {
+                        const isPr = ['Physics', 'Chemistry', 'Biology', 'Higher Math', 'Agriculture/Home Science', 'Agriculture Studies', 'Home Science'].includes(subName);
                         db.run(
-                            `INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (?, ?, ?, ?, ?)`,
-                            [cls.id, subName, seq, 25, 100]
+                            `INSERT OR IGNORE INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                            [cls.id, subName, seq, 25, 100, isPr ? 75 : null, isPr ? 25 : null]
                         );
                     }
                 });
@@ -127,54 +275,19 @@ db.serialize(() => {
         });
     });
 
-    // 2. Students Table
-    db.run(`CREATE TABLE IF NOT EXISTS students (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        roll INTEGER NOT NULL,
-        name TEXT NOT NULL,
-        student_id_number TEXT,
-        blood_group TEXT,
-        photo_path TEXT,
-        fathers_name TEXT,
-        mothers_name TEXT,
-        guardian_name TEXT,
-        guardian_contact TEXT NOT NULL,
-        address TEXT,
-        dob TEXT,
-        birth_reg_number TEXT,
-        class_id INTEGER,
-        status TEXT DEFAULT 'Active', -- 'Active', 'Graduated', 'Removed'
-        removal_cause TEXT,
-        FOREIGN KEY(class_id) REFERENCES classes(id)
-    )`);
-
-    // Ensure student_id_number column exists on students (self-repairing migration)
+    // Ensure student_id_number, photo_path, gender columns exist on students (self-repairing migration for old DBs)
     db.all("PRAGMA table_info(students)", [], (err, columns) => {
         const names = (columns || []).map(c => c.name);
         if (names.length > 0 && !names.includes('student_id_number')) {
-            db.run(`ALTER TABLE students ADD COLUMN student_id_number TEXT DEFAULT NULL`, (err2) => {
-                if (!err2) {
-                    console.log("✅ Added student_id_number column to students");
-                }
-            });
+            db.run(`ALTER TABLE students ADD COLUMN student_id_number TEXT DEFAULT NULL`);
+        }
+        if (names.length > 0 && !names.includes('photo_path')) {
+            db.run(`ALTER TABLE students ADD COLUMN photo_path TEXT`);
+        }
+        if (names.length > 0 && !names.includes('gender')) {
+            db.run(`ALTER TABLE students ADD COLUMN gender TEXT`);
         }
     });
-
-    // 3. Teachers Table
-    db.run(`CREATE TABLE IF NOT EXISTS teachers (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        teacher_id_number TEXT,
-        name TEXT NOT NULL,
-        title TEXT,
-        signature_path TEXT,
-        fathers_name TEXT,
-        mothers_name TEXT,
-        photo_path TEXT,
-        contact_number TEXT,
-        blood_group TEXT,
-        nid_number TEXT,
-        address TEXT
-    )`);
 
     // Migration: add teacher_id_number, address, photo_path, signature_path columns to teachers if they don't exist yet
     db.all("PRAGMA table_info(teachers)", [], (err, columns) => {
@@ -194,98 +307,48 @@ db.serialize(() => {
         }
     });
 
-    // Migration: ensure students table has photo_path column
-    db.all("PRAGMA table_info(students)", [], (err, columns) => {
+    // Migration: add class_teacher_id to classes if it doesn't exist yet
+    db.all("PRAGMA table_info(classes)", [], (err, columns) => {
         if (err || !columns) return;
         const columnNames = columns.map(c => c.name);
-        if (!columnNames.includes('photo_path')) {
-            db.run(`ALTER TABLE students ADD COLUMN photo_path TEXT`);
+        if (!columnNames.includes('class_teacher_id')) {
+            db.run(`ALTER TABLE classes ADD COLUMN class_teacher_id INTEGER REFERENCES teachers(id)`);
         }
     });
 
-    // 4. Subjects Table (Tracks subjects per class)
-    db.run(`CREATE TABLE IF NOT EXISTS subjects (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        class_id INTEGER,
-        subject_name TEXT NOT NULL,
-        sequence_order INTEGER, -- To keep your exact layout order
-        FOREIGN KEY(class_id) REFERENCES classes(id)
-    )`);
+    // Migration: add marks-total columns to subjects if an older database without them exists
+    db.all("PRAGMA table_info(subjects)", [], (err, columns) => {
+        if (err || !columns) return;
+        const columnNames = columns.map(c => c.name);
+        const runNext = (tasks, onComplete) => {
+            if (!tasks.length) return onComplete ? onComplete() : null;
+            const task = tasks.shift();
+            task(() => runNext(tasks, onComplete));
+        };
 
-        // Migration: add marks-total columns to subjects if they don't exist yet (safe to run every startup)
-        db.all("PRAGMA table_info(subjects)", [], (err, columns) => {
-            if (err || !columns) return;
-            const columnNames = columns.map(c => c.name);
-            const runNext = (tasks, onComplete) => {
-                if (!tasks.length) return onComplete ? onComplete() : null;
-                const task = tasks.shift();
-                task(() => runNext(tasks, onComplete));
-            };
+        const alterTasks = [];
+        if (!columnNames.includes('monthly_marks')) {
+            alterTasks.push((cb) => db.run(`ALTER TABLE subjects ADD COLUMN monthly_marks INTEGER`, cb));
+        }
+        if (!columnNames.includes('yearly_marks')) {
+            alterTasks.push((cb) => db.run(`ALTER TABLE subjects ADD COLUMN yearly_marks INTEGER`, cb));
+        }
+        if (!columnNames.includes('yearly_theory_marks')) {
+            alterTasks.push((cb) => db.run(`ALTER TABLE subjects ADD COLUMN yearly_theory_marks REAL DEFAULT NULL`, cb));
+        }
+        if (!columnNames.includes('yearly_practical_marks')) {
+            alterTasks.push((cb) => db.run(`ALTER TABLE subjects ADD COLUMN yearly_practical_marks REAL DEFAULT NULL`, cb));
+        }
 
-            const alterTasks = [];
-            if (!columnNames.includes('monthly_marks')) {
-                alterTasks.push((cb) => db.run(`ALTER TABLE subjects ADD COLUMN monthly_marks INTEGER`, cb));
-            }
-            if (!columnNames.includes('yearly_marks')) {
-                alterTasks.push((cb) => db.run(`ALTER TABLE subjects ADD COLUMN yearly_marks INTEGER`, cb));
-            }
-            if (!columnNames.includes('yearly_theory_marks')) {
-                alterTasks.push((cb) => db.run(`ALTER TABLE subjects ADD COLUMN yearly_theory_marks REAL DEFAULT NULL`, cb));
-            }
-            if (!columnNames.includes('yearly_practical_marks')) {
-                alterTasks.push((cb) => db.run(`ALTER TABLE subjects ADD COLUMN yearly_practical_marks REAL DEFAULT NULL`, cb));
-            }
-
-            runNext(alterTasks, () => {
-                // Populate default 75 theory and 25 practical for practical subjects that have yearly_marks = 100
-                db.run(`UPDATE subjects
-                        SET yearly_theory_marks = 75, yearly_practical_marks = 25
-                        WHERE (yearly_theory_marks IS NULL OR yearly_practical_marks IS NULL)
-                          AND yearly_marks = 100
-                          AND subject_name IN ('Physics', 'Chemistry', 'Biology', 'Higher Math', 'Agriculture/Home Science', 'Agriculture Studies', 'Home Science')`);
-            });
+        runNext(alterTasks, () => {
+            // Populate default 75 theory and 25 practical for practical subjects that have yearly_marks = 100
+            db.run(`UPDATE subjects
+                    SET yearly_theory_marks = 75, yearly_practical_marks = 25
+                    WHERE (yearly_theory_marks IS NULL OR yearly_practical_marks IS NULL)
+                      AND yearly_marks = 100
+                      AND subject_name IN ('Physics', 'Chemistry', 'Biology', 'Higher Math', 'Agriculture/Home Science', 'Agriculture Studies', 'Home Science')`);
         });
-
-        // Migration: add class_teacher_id to classes if it doesn't exist yet
-        db.all("PRAGMA table_info(classes)", [], (err, columns) => {
-            if (err || !columns) return;
-            const columnNames = columns.map(c => c.name);
-            if (!columnNames.includes('class_teacher_id')) {
-                db.run(`ALTER TABLE classes ADD COLUMN class_teacher_id INTEGER REFERENCES teachers(id)`);
-            }
-        });
-
-        
-        // Migration: add gender column to students if it doesn't exist yet
-        db.all("PRAGMA table_info(students)", [], (err, columns) => {
-            if (err || !columns) return;
-            const columnNames = columns.map(c => c.name);
-            if (!columnNames.includes('gender')) {
-                db.run(`ALTER TABLE students ADD COLUMN gender TEXT`);
-            }
-        });
-
-    // 5. Exams Table (Tracks individual assessment sessions)
-    db.run(`CREATE TABLE IF NOT EXISTS exams (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        year INTEGER NOT NULL,
-        exam_type TEXT NOT NULL -- '1st Monthly', 'Half Yearly', 'Yearly', etc.
-    )`);
-
-    // 6. Marks Table
-    db.run(`CREATE TABLE IF NOT EXISTS marks (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        student_id INTEGER,
-        subject_id INTEGER,
-        exam_id INTEGER,
-        marks_obtained REAL DEFAULT 0,
-        theory_marks REAL DEFAULT NULL,
-        practical_marks REAL DEFAULT NULL,
-        is_present INTEGER DEFAULT 1, -- 0 if absent, 1 if present
-        FOREIGN KEY(student_id) REFERENCES students(id),
-        FOREIGN KEY(subject_id) REFERENCES subjects(id),
-        FOREIGN KEY(exam_id) REFERENCES exams(id)
-    )`);
+    });
 
     // Migration: ensure theory_marks and practical_marks columns exist in marks table
     db.all("PRAGMA table_info(marks)", [], (err, columns) => {
