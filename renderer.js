@@ -374,7 +374,7 @@ function displaySetupWelcomeMessage(decodedText) {
 
     if (decodedText === FULL_LICENSE_TEXT) {
         welcomeBox.className = 'setup-welcome-card full-license';
-        if (welcomeTitle) welcomeTitle.innerText = "Welcome to Smart TCSAC Management Software";
+        if (welcomeTitle) welcomeTitle.innerText = "Welcome to EduKit Campus";
         if (welcomeDesc) welcomeDesc.innerText = "Activation verified successfully! Please configure your administrator profile below.\nThanks for your purchase.";
     } else {
         welcomeBox.className = 'setup-welcome-card trial-license';

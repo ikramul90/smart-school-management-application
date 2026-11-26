@@ -6,7 +6,7 @@ const db = require('./database.js');
 
 // Set Windows AppUserModelId so taskbar grouping and shortcut icon link together
 if (process.platform === 'win32') {
-    app.setAppUserModelId('com.tcsac.schoolmanagement');
+    app.setAppUserModelId('com.edukitsolutions.edukitcampus');
 }
 
 let mainWindow;
@@ -1122,8 +1122,8 @@ ipcMain.handle('save-student-subjects', async (event, { student_id, subjects }) 
 });
 
 const CANONICAL_CLASSES = [
-    'Play', 'Nursery', 'Class One', 'Class Two', 'Class Three', 
-    'Class Four', 'Class Five', 'Class Six', 'Class Seven', 'Class Eight', 
+    'Play', 'Nursery', 'Class One', 'Class Two', 'Class Three',
+    'Class Four', 'Class Five', 'Class Six', 'Class Seven', 'Class Eight',
     'Class Nine (Science)', 'Class Nine (Humanities)', 'Class Nine (Business Studies)',
     'Class Ten (Science)', 'Class Ten (Humanities)', 'Class Ten (Business Studies)'
 ];
