@@ -632,7 +632,7 @@ async function initSchoolSetupScreen() {
         if (schoolSetupLogoController && info?.logo_data_url) {
             schoolSetupLogoController.setLogo(info.logo_data_url, 'Current Logo');
         }
-    } catch (e) {}
+    } catch (e) { }
 
     if (saveBtn && !saveBtn.dataset.bound) {
         saveBtn.dataset.bound = 'true';
@@ -1550,7 +1550,7 @@ document.getElementById('btn-add-subject').addEventListener('click', async () =>
     const sequence_order = document.getElementById('sub-seq-input').value || 1;
     const monthly_marks = document.getElementById('sub-monthly-check').checked
         ? (document.getElementById('sub-monthly-input').value || null) : null;
-    
+
     let yearly_marks = null;
     let yearly_theory_marks = null;
     let yearly_practical_marks = null;
@@ -1961,7 +1961,7 @@ function initStudentSearch() {
     new MutationObserver((mutations) => {
         const hasExternalChanges = mutations.some(m => {
             return Array.from(m.addedNodes).some(n => !n.classList || !n.classList.contains('search-empty-row')) ||
-                   Array.from(m.removedNodes).some(n => !n.classList || !n.classList.contains('search-empty-row'));
+                Array.from(m.removedNodes).some(n => !n.classList || !n.classList.contains('search-empty-row'));
         });
         if (hasExternalChanges) {
             applyStudentSearch();
@@ -2646,7 +2646,7 @@ window.bulkPromoteSelected = async function () {
             alert('No eligible students selected for promotion.');
             return { success: false };
         }
-    const res = await ipcRenderer.invoke('bulk-promote-students', { promotions });
+        const res = await ipcRenderer.invoke('bulk-promote-students', { promotions });
         if (res && res.success) {
             togglePromoteMode();
             await loadStudents();
@@ -2791,7 +2791,7 @@ function initTeacherSearch() {
     new MutationObserver((mutations) => {
         const hasExternalChanges = mutations.some(m => {
             return Array.from(m.addedNodes).some(n => !n.classList || !n.classList.contains('search-empty-row')) ||
-                   Array.from(m.removedNodes).some(n => !n.classList || !n.classList.contains('search-empty-row'));
+                Array.from(m.removedNodes).some(n => !n.classList || !n.classList.contains('search-empty-row'));
         });
         if (hasExternalChanges) {
             applyTeacherSearch();
@@ -5088,6 +5088,7 @@ enableEnterNavigation(document.getElementById('login-screen'), document.getEleme
 enableEnterNavigation(document.getElementById('student-form'), document.getElementById('btn-save-student'));
 enableEnterNavigation(document.getElementById('teacher-form'), document.getElementById('btn-save-teacher'));
 enableEnterNavigation(document.getElementById('subject-form'), document.getElementById('btn-add-subject'));
+enableEnterNavigation(document.getElementById('school-setup-screen'), document.getElementById('btn-save-school-setup'));
 
 // --- NUMERIC-ONLY VALIDATION FOR SEQUENCE / MONTHLY / YEARLY FIELDS ---
 function enforceNumericInput(inputId, errorId) {
