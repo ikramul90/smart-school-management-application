@@ -69,7 +69,8 @@
       "createStartMenuShortcut": true,
       "shortcutName": "EduKit Campus",
       "installerIcon": "build/icon.ico",
-      "uninstallerIcon": "build/icon.ico"
+      "uninstallerIcon": "build/icon.ico",  
+      "license": "build/eula.rtf"
     }
   }
 }
