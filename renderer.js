@@ -1327,6 +1327,46 @@ function updateSubjectNameOptions() {
     handleSubjectNameChange();
 }
 
+const PRACTICAL_SUBJECT_NAMES = [
+    'Physics',
+    'Chemistry',
+    'Higher Math',
+    'Biology',
+    'Agriculture/Home Science',
+    'Agriculture Studies',
+    'Home Science'
+];
+
+function isPracticalSubject(subjectName) {
+    if (!subjectName) return false;
+    const norm = String(subjectName).trim().toLowerCase();
+    return PRACTICAL_SUBJECT_NAMES.some(p => p.toLowerCase() === norm);
+}
+
+function updateSubjectYearlyInputsVisibility() {
+    const nameSelect = document.getElementById('sub-name-select');
+    const customInput = document.getElementById('sub-custom-name-input');
+    const subjectName = nameSelect && nameSelect.value === '__custom__'
+        ? (customInput ? customInput.value.trim() : '')
+        : (nameSelect ? nameSelect.value.trim() : '');
+
+    const singleWrap = document.getElementById('sub-yearly-single-wrap');
+    const practicalWrap = document.getElementById('sub-yearly-practical-wrap');
+    if (!singleWrap || !practicalWrap) return;
+
+    if (isPracticalSubject(subjectName)) {
+        singleWrap.style.display = 'none';
+        practicalWrap.style.display = 'flex';
+        const thInput = document.getElementById('sub-yearly-theory-input');
+        const prInput = document.getElementById('sub-yearly-practical-input');
+        if (thInput && !thInput.value) thInput.value = '75';
+        if (prInput && !prInput.value) prInput.value = '25';
+    } else {
+        singleWrap.style.display = 'block';
+        practicalWrap.style.display = 'none';
+    }
+}
+
 function handleSubjectNameChange() {
     const nameSelect = document.getElementById('sub-name-select');
     const customWrap = document.getElementById('sub-custom-name-wrap');
@@ -1342,6 +1382,7 @@ function handleSubjectNameChange() {
         if (customInput) customInput.value = '';
         if (customErr) customErr.textContent = '';
     }
+    updateSubjectYearlyInputsVisibility();
 }
 document.getElementById('sub-class-select').addEventListener('change', updateSubjectNameOptions);
 document.getElementById('sub-name-select').addEventListener('change', handleSubjectNameChange);
@@ -1351,6 +1392,7 @@ if (customSubjectInputEl) {
     customSubjectInputEl.addEventListener('input', () => {
         const errEl = document.getElementById('sub-custom-error');
         if (errEl && customSubjectInputEl.value.trim()) errEl.textContent = '';
+        updateSubjectYearlyInputsVisibility();
     });
 }
 
@@ -1368,19 +1410,27 @@ async function renderSubjectsTable() {
     allLoadedSubjects = subjects;
     const filtered = subjectClassFilter === '' ? subjects : subjects.filter(s => String(s.class_id) === String(subjectClassFilter));
     const tbody = document.getElementById('subject-table-body');
-    tbody.innerHTML = filtered.map(s => `
+    tbody.innerHTML = filtered.map(s => {
+        let yearlyDisplay = s.yearly_marks ?? '<i style="color:gray;">—</i>';
+        if (s.yearly_marks !== null && (s.yearly_theory_marks != null || s.yearly_practical_marks != null || isPracticalSubject(s.subject_name))) {
+            const th = s.yearly_theory_marks != null ? s.yearly_theory_marks : 75;
+            const pr = s.yearly_practical_marks != null ? s.yearly_practical_marks : 25;
+            yearlyDisplay = `${s.yearly_marks} <small style="color:#64748b;">(Th: ${th}, Pr: ${pr})</small>`;
+        }
+        return `
         <tr>
             <td><span style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:4px; font-size:12px;">${s.sequence_order}</span></td>
             <td><b>${s.class_name || 'Unassigned'}</b></td>
             <td>${escapeHtml(s.subject_name)}</td>
             <td>${s.monthly_marks ?? '<i style="color:gray;">—</i>'}</td>
-            <td>${s.yearly_marks ?? '<i style="color:gray;">—</i>'}</td>
+            <td>${yearlyDisplay}</td>
             <td>
                 <button onclick="editSubject(${s.id})" style="${SUBJECT_BTN_STYLE}background:#2563eb;">${renderActionIcon(ACTION_ICONS.edit)}Edit</button>
                 <button onclick="deleteSubject(${s.id})" style="${SUBJECT_BTN_STYLE}background:#ef4444;">${renderActionIcon(ACTION_ICONS.delete)}Delete</button>
             </td>
         </tr>
-    `).join('');
+    `;
+    }).join('');
 }
 
 window.editSubject = function (id, classId, subjectName, sequence, monthlyMarks, yearlyMarks) {
@@ -1413,6 +1463,14 @@ window.editSubject = function (id, classId, subjectName, sequence, monthlyMarks,
     document.getElementById('sub-seq-input').value = s.sequence_order;
     document.getElementById('sub-monthly-input').value = s.monthly_marks || '';
     document.getElementById('sub-yearly-input').value = s.yearly_marks || '';
+
+    const thInput = document.getElementById('sub-yearly-theory-input');
+    const prInput = document.getElementById('sub-yearly-practical-input');
+    if (thInput) thInput.value = s.yearly_theory_marks != null ? s.yearly_theory_marks : (isPracticalSubject(s.subject_name) ? '75' : '');
+    if (prInput) prInput.value = s.yearly_practical_marks != null ? s.yearly_practical_marks : (isPracticalSubject(s.subject_name) ? '25' : '');
+
+    updateSubjectYearlyInputsVisibility();
+
     document.getElementById('btn-add-subject').textContent = 'Update Subject';
     document.getElementById('btn-cancel-subject').style.display = 'inline-block';
     const details = document.getElementById('subject-details');
@@ -1426,6 +1484,10 @@ function resetSubjectForm() {
     document.getElementById('sub-seq-input').value = '1';
     document.getElementById('sub-monthly-input').value = '';
     document.getElementById('sub-yearly-input').value = '';
+    const thInput = document.getElementById('sub-yearly-theory-input');
+    const prInput = document.getElementById('sub-yearly-practical-input');
+    if (thInput) thInput.value = '';
+    if (prInput) prInput.value = '';
     document.getElementById('sub-monthly-check').checked = true;
     document.getElementById('sub-yearly-check').checked = true;
     syncSubjectMarksInput('sub-monthly-check', 'sub-monthly-input', 'sub-monthly-error');
@@ -1437,6 +1499,7 @@ function resetSubjectForm() {
     const customErr = document.getElementById('sub-custom-error');
     if (customErr) customErr.textContent = '';
     updateSubjectNameOptions();
+    updateSubjectYearlyInputsVisibility();
     document.getElementById('btn-add-subject').textContent = 'Save Subject';
     document.getElementById('btn-cancel-subject').style.display = 'none';
     const subjectDetails = document.getElementById('subject-details');
@@ -1468,10 +1531,24 @@ document.getElementById('btn-add-subject').addEventListener('click', async () =>
     const sequence_order = document.getElementById('sub-seq-input').value || 1;
     const monthly_marks = document.getElementById('sub-monthly-check').checked
         ? (document.getElementById('sub-monthly-input').value || null) : null;
-    const yearly_marks = document.getElementById('sub-yearly-check').checked
-        ? (document.getElementById('sub-yearly-input').value || null) : null;
+    
+    let yearly_marks = null;
+    let yearly_theory_marks = null;
+    let yearly_practical_marks = null;
 
-    const payload = { class_id, subject_name, sequence_order, monthly_marks, yearly_marks };
+    if (document.getElementById('sub-yearly-check').checked) {
+        if (isPracticalSubject(subject_name)) {
+            const thVal = document.getElementById('sub-yearly-theory-input').value;
+            const prVal = document.getElementById('sub-yearly-practical-input').value;
+            yearly_theory_marks = thVal !== '' ? Number(thVal) : 75;
+            yearly_practical_marks = prVal !== '' ? Number(prVal) : 25;
+            yearly_marks = (yearly_theory_marks || 0) + (yearly_practical_marks || 0);
+        } else {
+            yearly_marks = document.getElementById('sub-yearly-input').value || null;
+        }
+    }
+
+    const payload = { class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks };
     const res = editId
         ? await ipcRenderer.invoke('update-subject', { ...payload, id: editId })
         : await ipcRenderer.invoke('add-subject', payload);
@@ -3097,10 +3174,39 @@ function getCell(studentId, subjectId) {
     return row && row[subjectId] !== undefined ? row[subjectId] : '';
 }
 
+function getTheoryCell(studentId, subjectId) {
+    const row = marksSheet.theoryCells && marksSheet.theoryCells[studentId];
+    return row && row[subjectId] !== undefined ? row[subjectId] : '';
+}
+
+function getPracticalCell(studentId, subjectId) {
+    const row = marksSheet.practicalCells && marksSheet.practicalCells[studentId];
+    return row && row[subjectId] !== undefined ? row[subjectId] : '';
+}
+
 function setCell(sheet, studentId, subjectId, value) {
     if (!sheet.cells[studentId]) sheet.cells[studentId] = {};
     if (value === '') delete sheet.cells[studentId][subjectId];
     else sheet.cells[studentId][subjectId] = value;
+}
+
+function setPracticalCells(sheet, studentId, subjectId, thVal, prVal, totalVal) {
+    if (!sheet.theoryCells) sheet.theoryCells = {};
+    if (!sheet.practicalCells) sheet.practicalCells = {};
+    if (!sheet.cells) sheet.cells = {};
+
+    if (!sheet.theoryCells[studentId]) sheet.theoryCells[studentId] = {};
+    if (!sheet.practicalCells[studentId]) sheet.practicalCells[studentId] = {};
+    if (!sheet.cells[studentId]) sheet.cells[studentId] = {};
+
+    if (thVal === '') delete sheet.theoryCells[studentId][subjectId];
+    else sheet.theoryCells[studentId][subjectId] = thVal;
+
+    if (prVal === '') delete sheet.practicalCells[studentId][subjectId];
+    else sheet.practicalCells[studentId][subjectId] = prVal;
+
+    if (totalVal === '') delete sheet.cells[studentId][subjectId];
+    else sheet.cells[studentId][subjectId] = totalVal;
 }
 
 // Nine/Ten only: a student sits a choosable subject (Physics, Biology,
@@ -3294,24 +3400,89 @@ async function renderAllMarksView() {
         return;
     }
 
+    const isPractical = isPracticalSubject(subject.subject_name) || (subject.yearly_theory_marks != null && subject.yearly_practical_marks != null);
+
     const byStudent = {};
-    ALL_MARKS_EXAM_TYPES.forEach(type => { byStudent[type] = {}; });
+    const byStudentTh = {};
+    const byStudentPr = {};
+    ALL_MARKS_EXAM_TYPES.forEach(type => {
+        byStudent[type] = {};
+        byStudentTh[type] = {};
+        byStudentPr[type] = {};
+    });
+
     result.marks.forEach(row => {
         if (!ALL_MARKS_EXAM_TYPES.includes(row.exam_type) || !row.student_id) return;
         byStudent[row.exam_type][row.student_id] = row.is_present === 0 ? 'A' : String(row.marks_obtained);
+        byStudentTh[row.exam_type][row.student_id] = row.is_present === 0 ? 'A' : (row.theory_marks != null ? String(row.theory_marks) : '—');
+        byStudentPr[row.exam_type][row.student_id] = row.is_present === 0 ? 'A' : (row.practical_marks != null ? String(row.practical_marks) : '—');
     });
 
-    const rows = result.students.map(st => {
-        const cells = ALL_MARKS_EXAM_TYPES.map(type => byStudent[type][st.id] || '—');
-        return `<tr><td>${formatRoll(st.roll)}</td><td>${escapeHtml(st.name)}</td>${cells.map(v => `<td class="marks-view-mark">${escapeHtml(v)}</td>`).join('')}</tr>`;
-    }).join('');
+    let theadHtml = '';
+    let rowsHtml = '';
+
+    if (isPractical) {
+        theadHtml = `
+            <thead>
+                <tr>
+                    <th rowspan="2">Roll</th>
+                    <th rowspan="2">Name</th>
+                    <th rowspan="2">1st Monthly</th>
+                    <th rowspan="2">2nd Monthly</th>
+                    <th colspan="2">Half Yearly</th>
+                    <th rowspan="2">3rd Monthly</th>
+                    <th rowspan="2">4th Monthly</th>
+                    <th colspan="2">Yearly</th>
+                </tr>
+                <tr>
+                    <th>Theory</th>
+                    <th>Practical</th>
+                    <th>Theory</th>
+                    <th>Practical</th>
+                </tr>
+            </thead>
+        `;
+
+        rowsHtml = result.students.map(st => {
+            const m1 = byStudent['1st Monthly Exam'][st.id] || '—';
+            const m2 = byStudent['2nd Monthly Exam'][st.id] || '—';
+            const hyTh = byStudentTh['Half Yearly Exam'][st.id] || (byStudent['Half Yearly Exam'][st.id] ? byStudent['Half Yearly Exam'][st.id] : '—');
+            const hyPr = byStudentPr['Half Yearly Exam'][st.id] || (byStudent['Half Yearly Exam'][st.id] === 'A' ? 'A' : '—');
+            const m3 = byStudent['3rd Monthly Exam'][st.id] || '—';
+            const m4 = byStudent['4th Monthly Exam'][st.id] || '—';
+            const yTh = byStudentTh['Yearly Exam'][st.id] || (byStudent['Yearly Exam'][st.id] ? byStudent['Yearly Exam'][st.id] : '—');
+            const yPr = byStudentPr['Yearly Exam'][st.id] || (byStudent['Yearly Exam'][st.id] === 'A' ? 'A' : '—');
+
+            return `<tr>
+                <td>${formatRoll(st.roll)}</td>
+                <td>${escapeHtml(st.name)}</td>
+                <td class="marks-view-mark">${escapeHtml(m1)}</td>
+                <td class="marks-view-mark">${escapeHtml(m2)}</td>
+                <td class="marks-view-mark">${escapeHtml(hyTh)}</td>
+                <td class="marks-view-mark">${escapeHtml(hyPr)}</td>
+                <td class="marks-view-mark">${escapeHtml(m3)}</td>
+                <td class="marks-view-mark">${escapeHtml(m4)}</td>
+                <td class="marks-view-mark">${escapeHtml(yTh)}</td>
+                <td class="marks-view-mark">${escapeHtml(yPr)}</td>
+            </tr>`;
+        }).join('');
+    } else {
+        theadHtml = `
+            <thead><tr><th>Roll</th><th>Name</th>${ALL_MARKS_EXAM_TYPES.map(type => `<th>${escapeHtml(type.replace(' Exam', ''))}</th>`).join('')}</tr></thead>
+        `;
+        rowsHtml = result.students.map(st => {
+            const cells = ALL_MARKS_EXAM_TYPES.map(type => byStudent[type][st.id] || '—');
+            return `<tr><td>${formatRoll(st.roll)}</td><td>${escapeHtml(st.name)}</td>${cells.map(v => `<td class="marks-view-mark">${escapeHtml(v)}</td>`).join('')}</tr>`;
+        }).join('');
+    }
 
     const className = cls ? cls.class_name : 'Class';
     status.textContent = `${className} — ${subject.subject_name} — ${year} (${result.students.length} active student${result.students.length === 1 ? '' : 's'})`;
+    const colSpanTotal = isPractical ? 10 : 8;
     wrap.innerHTML = `
         <table class="marks-view-table">
-            <thead><tr><th>Roll</th><th>Name</th>${ALL_MARKS_EXAM_TYPES.map(type => `<th>${escapeHtml(type.replace(' Exam', ''))}</th>`).join('')}</tr></thead>
-            <tbody>${rows || '<tr><td colspan="8">No active students in this class.</td></tr>'}</tbody>
+            ${theadHtml}
+            <tbody>${rowsHtml || `<tr><td colspan="${colSpanTotal}">No active students in this class.</td></tr>`}</tbody>
         </table>`;
 }
 
@@ -4178,9 +4349,18 @@ window.openMarksEntry = async function (classId, className) {
 // Turns the raw database rows into the in-memory structure the screen uses.
 function buildMarksSheetState(sheet, examType) {
     const cells = {};
+    const theoryCells = {};
+    const practicalCells = {};
+
     sheet.marks.forEach(m => {
         if (!cells[m.student_id]) cells[m.student_id] = {};
         cells[m.student_id][m.subject_id] = m.is_present === 0 ? 'A' : String(m.marks_obtained);
+
+        if (!theoryCells[m.student_id]) theoryCells[m.student_id] = {};
+        theoryCells[m.student_id][m.subject_id] = m.is_present === 0 ? 'A' : (m.theory_marks != null ? String(m.theory_marks) : '');
+
+        if (!practicalCells[m.student_id]) practicalCells[m.student_id] = {};
+        practicalCells[m.student_id][m.subject_id] = m.is_present === 0 ? 'A' : (m.practical_marks != null ? String(m.practical_marks) : '');
     });
 
     const selMap = {};
@@ -4198,6 +4378,8 @@ function buildMarksSheetState(sheet, examType) {
         hiddenSubjects: sheet.subjects.filter(s => totalForSubject(s, examType) === null).map(s => s.subject_name),
         missingSelections: pool ? sheet.students.filter(st => !selMap[st.id]).length : 0,
         cells,
+        theoryCells,
+        practicalCells,
         selMap
     };
 }
@@ -4227,6 +4409,10 @@ function renderMarksScreen() {
     if (!s.subjects.some(sub => sub.id === currentSubjectId)) currentSubjectId = s.subjects[0].id;
     const sub = s.subjects.find(x => x.id === currentSubjectId);
     const total = totalForSubject(sub, s.examType);
+    const isYearly = !examUsesMonthlyTotal(s.examType);
+    const isPractical = isYearly && (isPracticalSubject(sub.subject_name) || (sub.yearly_theory_marks != null && sub.yearly_practical_marks != null));
+    const thMax = sub.yearly_theory_marks != null ? sub.yearly_theory_marks : 75;
+    const prMax = sub.yearly_practical_marks != null ? sub.yearly_practical_marks : 25;
 
     let notes = '';
     if (s.missingSelections > 0) {
@@ -4236,16 +4422,24 @@ function renderMarksScreen() {
         notes += `<div class="marks-note">Not shown (no ${kind} total set): ${escapeHtml(s.hiddenSubjects.join(', '))}</div>`;
     }
 
+    const headerHtml = isPractical
+        ? `<div class="marks-row marks-row-practical marks-row-head"><span>Roll</span><span>Name</span><span>Theory (${thMax})</span><span>Practical (${prMax})</span><span>Total</span><span>Status</span></div>`
+        : `<div class="marks-row marks-row-head"><span>Roll</span><span>Name</span><span>Marks</span><span>Status</span></div>`;
+
+    const outOfText = isPractical
+        ? `out of ${total} (Theory: ${thMax}, Practical: ${prMax})`
+        : `out of ${total}`;
+
     container.innerHTML = `
         ${heading}
         <div id="subject-chips" class="chip-row"></div>
         <div class="marks-head">
-            <div><span class="marks-subject-title">${escapeHtml(sub.subject_name)}</span> <span class="marks-outof">out of ${total}</span></div>
+            <div><span class="marks-subject-title">${escapeHtml(sub.subject_name)}</span> <span class="marks-outof">${outOfText}</span></div>
             <div id="marks-progress" class="marks-progress"></div>
         </div>
         ${notes}
         <div class="marks-card">
-            <div class="marks-row marks-row-head"><span>Roll</span><span>Name</span><span>Marks</span><span>Status</span></div>
+            ${headerHtml}
             <div id="marks-rows"></div>
         </div>
         <div class="marks-foot">
@@ -4255,7 +4449,11 @@ function renderMarksScreen() {
     `;
 
     renderSubjectChips();
-    renderMarkRows(sub, total);
+    if (isPractical) {
+        renderMarkRowsPractical(sub, thMax, prMax, total);
+    } else {
+        renderMarkRows(sub, total);
+    }
     updateProgressText();
     focusFirstEmptyMark();
 }
@@ -4304,6 +4502,207 @@ function paintMarkStatus(statusEl, text, total) {
     else if (text !== '') { label = 'Entered'; cls = 'st-ok'; }
     statusEl.textContent = label;
     statusEl.className = 'marks-status ' + cls;
+}
+
+// Renders marks entry table for practical subjects (Theory + Practical columns)
+function renderMarkRowsPractical(sub, thMax, prMax, total) {
+    const rowsEl = document.getElementById('marks-rows');
+    rowsEl.innerHTML = '';
+    const list = studentsForSubject(sub);
+
+    if (!list.length) {
+        rowsEl.innerHTML = `<div class="marks-empty-row">No student in this class has been assigned ${escapeHtml(sub.subject_name)}.</div>`;
+        return;
+    }
+
+    list.forEach(st => {
+        const row = document.createElement('div');
+        row.className = 'marks-row marks-row-practical';
+        row.innerHTML = `
+            <span class="marks-roll">${formatRoll(st.roll)}</span>
+            <span class="marks-name">${escapeHtml(st.name)}</span>
+            <span><input type="text" class="mark-cell mark-cell-th" style="width:75px;" inputmode="decimal" autocomplete="off" placeholder="0-${thMax}"></span>
+            <span><input type="text" class="mark-cell mark-cell-pr" style="width:75px;" inputmode="decimal" autocomplete="off" placeholder="0-${prMax}"></span>
+            <span class="marks-practical-total" style="font-weight:600; color:#1e293b; padding-left:4px;">—</span>
+            <span class="marks-status"></span>`;
+
+        const thInput = row.querySelector('.mark-cell-th');
+        const prInput = row.querySelector('.mark-cell-pr');
+        const totalSpan = row.querySelector('.marks-practical-total');
+        const statusEl = row.querySelector('.marks-status');
+
+        thInput.dataset.student = st.id;
+        prInput.dataset.student = st.id;
+
+        const savedTh = getTheoryCell(st.id, sub.id);
+        const savedPr = getPracticalCell(st.id, sub.id);
+        const savedTotal = getCell(st.id, sub.id);
+
+        thInput.value = savedTh;
+        prInput.value = savedPr;
+        updatePracticalRowDisplay(thInput, prInput, totalSpan, statusEl, thMax, prMax, total);
+
+        [thInput, prInput].forEach(inp => {
+            inp.addEventListener('focus', () => inp.select());
+            inp.addEventListener('input', () => {
+                inp.value = sanitizeMarkInput(inp.value);
+                updatePracticalRowDisplay(thInput, prInput, totalSpan, statusEl, thMax, prMax, total);
+            });
+            inp.addEventListener('change', () => commitMarkPractical(thInput, prInput, sub, thMax, prMax, total, totalSpan, statusEl));
+        });
+
+        // Key navigation between cells and rows
+        thInput.addEventListener('keydown', async (e) => {
+            const allTh = Array.from(document.querySelectorAll('#marks-rows .mark-cell-th'));
+            const idx = allTh.indexOf(thInput);
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (allTh[idx - 1]) allTh[idx - 1].focus();
+                return;
+            }
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (allTh[idx + 1]) allTh[idx + 1].focus();
+                return;
+            }
+            if (e.key === 'Enter' || e.key === 'ArrowRight') {
+                e.preventDefault();
+                prInput.focus();
+            }
+        });
+
+        prInput.addEventListener('keydown', async (e) => {
+            const allPr = Array.from(document.querySelectorAll('#marks-rows .mark-cell-pr'));
+            const idx = allPr.indexOf(prInput);
+            if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                thInput.focus();
+                return;
+            }
+            if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                if (allPr[idx - 1]) allPr[idx - 1].focus();
+                return;
+            }
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                if (allPr[idx + 1]) allPr[idx + 1].focus();
+                return;
+            }
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const ok = await commitMarkPractical(thInput, prInput, sub, thMax, prMax, total, totalSpan, statusEl);
+                if (allPr[idx + 1]) {
+                    const allTh = Array.from(document.querySelectorAll('#marks-rows .mark-cell-th'));
+                    if (allTh[idx + 1]) allTh[idx + 1].focus();
+                } else if (ok) {
+                    goToNextSubject();
+                }
+            }
+        });
+
+        rowsEl.appendChild(row);
+    });
+}
+
+function updatePracticalRowDisplay(thInput, prInput, totalSpan, statusEl, thMax, prMax, total) {
+    const th = thInput.value.trim().toUpperCase();
+    const pr = prInput.value.trim().toUpperCase();
+
+    if (th === '' && pr === '') {
+        totalSpan.textContent = '—';
+        statusEl.textContent = 'Empty';
+        statusEl.className = 'marks-status st-empty';
+        return;
+    }
+
+    if (th === 'A' || pr === 'A') {
+        totalSpan.textContent = 'A';
+        statusEl.textContent = 'Absent';
+        statusEl.className = 'marks-status st-absent';
+        return;
+    }
+
+    const thNum = th !== '' ? parseFloat(th) : null;
+    const prNum = pr !== '' ? parseFloat(pr) : null;
+
+    if (thNum !== null && thNum > thMax) {
+        totalSpan.textContent = '—';
+        statusEl.textContent = `Th Max ${thMax}`;
+        statusEl.className = 'marks-status st-error';
+        return;
+    }
+    if (prNum !== null && prNum > prMax) {
+        totalSpan.textContent = '—';
+        statusEl.textContent = `Pr Max ${prMax}`;
+        statusEl.className = 'marks-status st-error';
+        return;
+    }
+
+    const sum = (thNum || 0) + (prNum || 0);
+    totalSpan.textContent = String(sum);
+    statusEl.textContent = 'Entered';
+    statusEl.className = 'marks-status st-ok';
+}
+
+async function commitMarkPractical(thInput, prInput, sub, thMax, prMax, total, totalSpan, statusEl) {
+    const sheet = marksSheet;
+    const studentId = Number(thInput.dataset.student);
+    const thText = normalizeMarkText(thInput.value);
+    const prText = normalizeMarkText(prInput.value);
+    thInput.value = thText;
+    prInput.value = prText;
+
+    const oldTh = getTheoryCell(studentId, sub.id);
+    const oldPr = getPracticalCell(studentId, sub.id);
+
+    if (thText === oldTh && prText === oldPr) {
+        updatePracticalRowDisplay(thInput, prInput, totalSpan, statusEl, thMax, prMax, total);
+        return true;
+    }
+
+    if (thText !== '' && thText !== 'A' && parseFloat(thText) > thMax) {
+        updatePracticalRowDisplay(thInput, prInput, totalSpan, statusEl, thMax, prMax, total);
+        setSaveStatus(`Not saved: ${sub.subject_name} Theory is out of ${thMax}.`, true);
+        return false;
+    }
+
+    if (prText !== '' && prText !== 'A' && parseFloat(prText) > prMax) {
+        updatePracticalRowDisplay(thInput, prInput, totalSpan, statusEl, thMax, prMax, total);
+        setSaveStatus(`Not saved: ${sub.subject_name} Practical is out of ${prMax}.`, true);
+        return false;
+    }
+
+    setSaveStatus('Saving…', false);
+    const res = await ipcRenderer.invoke('save-mark', {
+        exam_id: currentExam.id,
+        student_id: studentId,
+        subject_id: sub.id,
+        theory_value: thText,
+        practical_value: prText,
+        is_practical: true
+    });
+
+    if (!res || !res.success) {
+        setSaveStatus('Not saved: ' + ((res && res.error) || 'unknown error'), true);
+        return false;
+    }
+
+    let calculatedTotal = '';
+    if (thText === 'A' || prText === 'A') {
+        calculatedTotal = 'A';
+    } else if (thText !== '' || prText !== '') {
+        const sum = (thText !== '' ? parseFloat(thText) : 0) + (prText !== '' ? parseFloat(prText) : 0);
+        calculatedTotal = String(sum);
+    }
+
+    setPracticalCells(sheet, studentId, sub.id, thText, prText, calculatedTotal);
+    if (marksSheet !== sheet) return true;
+    updatePracticalRowDisplay(thInput, prInput, totalSpan, statusEl, thMax, prMax, total);
+    setSaveStatus('Saved', false);
+    renderSubjectChips();
+    updateProgressText();
+    return true;
 }
 
 // One row per student who sits this subject, with a single mark box.
@@ -4696,6 +5095,8 @@ function enforceNumericInput(inputId, errorId) {
 enforceNumericInput('sub-seq-input', 'sub-seq-error');
 enforceNumericInput('sub-monthly-input', 'sub-monthly-error');
 enforceNumericInput('sub-yearly-input', 'sub-yearly-error');
+enforceNumericInput('sub-yearly-theory-input', 'sub-yearly-theory-error');
+enforceNumericInput('sub-yearly-practical-input', 'sub-yearly-practical-error');
 
 // --- AUTO-FORMATTING FOR DD/MM/YYYY DATE INPUTS ---
 function setupDateInputFormatting(inputId) {

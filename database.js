@@ -216,12 +216,34 @@ db.serialize(() => {
         db.all("PRAGMA table_info(subjects)", [], (err, columns) => {
             if (err || !columns) return;
             const columnNames = columns.map(c => c.name);
+            const runNext = (tasks, onComplete) => {
+                if (!tasks.length) return onComplete ? onComplete() : null;
+                const task = tasks.shift();
+                task(() => runNext(tasks, onComplete));
+            };
+
+            const alterTasks = [];
             if (!columnNames.includes('monthly_marks')) {
-                db.run(`ALTER TABLE subjects ADD COLUMN monthly_marks INTEGER`);
+                alterTasks.push((cb) => db.run(`ALTER TABLE subjects ADD COLUMN monthly_marks INTEGER`, cb));
             }
             if (!columnNames.includes('yearly_marks')) {
-                db.run(`ALTER TABLE subjects ADD COLUMN yearly_marks INTEGER`);
+                alterTasks.push((cb) => db.run(`ALTER TABLE subjects ADD COLUMN yearly_marks INTEGER`, cb));
             }
+            if (!columnNames.includes('yearly_theory_marks')) {
+                alterTasks.push((cb) => db.run(`ALTER TABLE subjects ADD COLUMN yearly_theory_marks REAL DEFAULT NULL`, cb));
+            }
+            if (!columnNames.includes('yearly_practical_marks')) {
+                alterTasks.push((cb) => db.run(`ALTER TABLE subjects ADD COLUMN yearly_practical_marks REAL DEFAULT NULL`, cb));
+            }
+
+            runNext(alterTasks, () => {
+                // Populate default 75 theory and 25 practical for practical subjects that have yearly_marks = 100
+                db.run(`UPDATE subjects
+                        SET yearly_theory_marks = 75, yearly_practical_marks = 25
+                        WHERE (yearly_theory_marks IS NULL OR yearly_practical_marks IS NULL)
+                          AND yearly_marks = 100
+                          AND subject_name IN ('Physics', 'Chemistry', 'Biology', 'Higher Math', 'Agriculture/Home Science', 'Agriculture Studies', 'Home Science')`);
+            });
         });
 
         // Migration: add class_teacher_id to classes if it doesn't exist yet
@@ -257,11 +279,25 @@ db.serialize(() => {
         subject_id INTEGER,
         exam_id INTEGER,
         marks_obtained REAL DEFAULT 0,
+        theory_marks REAL DEFAULT NULL,
+        practical_marks REAL DEFAULT NULL,
         is_present INTEGER DEFAULT 1, -- 0 if absent, 1 if present
         FOREIGN KEY(student_id) REFERENCES students(id),
         FOREIGN KEY(subject_id) REFERENCES subjects(id),
         FOREIGN KEY(exam_id) REFERENCES exams(id)
     )`);
+
+    // Migration: ensure theory_marks and practical_marks columns exist in marks table
+    db.all("PRAGMA table_info(marks)", [], (err, columns) => {
+        if (err || !columns) return;
+        const columnNames = columns.map(c => c.name);
+        if (!columnNames.includes('theory_marks')) {
+            db.run(`ALTER TABLE marks ADD COLUMN theory_marks REAL DEFAULT NULL`);
+        }
+        if (!columnNames.includes('practical_marks')) {
+            db.run(`ALTER TABLE marks ADD COLUMN practical_marks REAL DEFAULT NULL`);
+        }
+    });
 
     // Ensure one mark per student+subject+exam so re-saving a class updates in place
     db.run(`CREATE UNIQUE INDEX IF NOT EXISTS idx_marks_unique ON marks (

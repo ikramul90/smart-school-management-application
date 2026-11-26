@@ -1384,8 +1384,13 @@ ipcMain.handle('add-subject', async (event, data) => {
             if (err) return resolve({ success: false, error: err.message });
             if (existing) return resolve({ success: false, error: `Subject "${subjectName}" already exists for this class.` });
 
-            db.run(`INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks) VALUES (?, ?, ?, ?, ?)`,
-                [classId, subjectName, data.sequence_order || 1, data.monthly_marks || null, data.yearly_marks || null], function (err2) {
+            const monthlyMarks = data.monthly_marks !== undefined && data.monthly_marks !== null && data.monthly_marks !== '' ? Number(data.monthly_marks) : null;
+            const yearlyMarks = data.yearly_marks !== undefined && data.yearly_marks !== null && data.yearly_marks !== '' ? Number(data.yearly_marks) : null;
+            const yearlyTheoryMarks = data.yearly_theory_marks !== undefined && data.yearly_theory_marks !== null && data.yearly_theory_marks !== '' ? Number(data.yearly_theory_marks) : null;
+            const yearlyPracticalMarks = data.yearly_practical_marks !== undefined && data.yearly_practical_marks !== null && data.yearly_practical_marks !== '' ? Number(data.yearly_practical_marks) : null;
+
+            db.run(`INSERT INTO subjects (class_id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                [classId, subjectName, data.sequence_order || 1, monthlyMarks, yearlyMarks, yearlyTheoryMarks, yearlyPracticalMarks], function (err2) {
                     if (err2) resolve({ success: false, error: err2.message });
                     else resolve({ success: true, id: this.lastID });
                 });
@@ -1406,8 +1411,13 @@ ipcMain.handle('update-subject', async (event, data) => {
             if (err) return resolve({ success: false, error: err.message });
             if (existing) return resolve({ success: false, error: `Subject "${subjectName}" already exists for this class.` });
 
-            db.run(`UPDATE subjects SET class_id = ?, subject_name = ?, sequence_order = ?, monthly_marks = ?, yearly_marks = ? WHERE id = ?`,
-                [classId, subjectName, data.sequence_order || 1, data.monthly_marks || null, data.yearly_marks || null, subjectId], (err2) => {
+            const monthlyMarks = data.monthly_marks !== undefined && data.monthly_marks !== null && data.monthly_marks !== '' ? Number(data.monthly_marks) : null;
+            const yearlyMarks = data.yearly_marks !== undefined && data.yearly_marks !== null && data.yearly_marks !== '' ? Number(data.yearly_marks) : null;
+            const yearlyTheoryMarks = data.yearly_theory_marks !== undefined && data.yearly_theory_marks !== null && data.yearly_theory_marks !== '' ? Number(data.yearly_theory_marks) : null;
+            const yearlyPracticalMarks = data.yearly_practical_marks !== undefined && data.yearly_practical_marks !== null && data.yearly_practical_marks !== '' ? Number(data.yearly_practical_marks) : null;
+
+            db.run(`UPDATE subjects SET class_id = ?, subject_name = ?, sequence_order = ?, monthly_marks = ?, yearly_marks = ?, yearly_theory_marks = ?, yearly_practical_marks = ? WHERE id = ?`,
+                [classId, subjectName, data.sequence_order || 1, monthlyMarks, yearlyMarks, yearlyTheoryMarks, yearlyPracticalMarks, subjectId], (err2) => {
                     if (err2) resolve({ success: false, error: err2.message });
                     else resolve({ success: true });
                 });
@@ -1467,8 +1477,8 @@ ipcMain.handle('get-or-create-exam', async (event, data) => {
 ipcMain.handle('get-marks-sheet', async (event, { class_id, exam_id }) => {
     return new Promise((resolve) => {
         db.all(`SELECT id, roll, name FROM students WHERE class_id = ? AND status = 'Active' ORDER BY roll`, [class_id], (err, students) => {
-            db.all(`SELECT id, subject_name, sequence_order, monthly_marks, yearly_marks FROM subjects WHERE class_id = ? ORDER BY sequence_order, id`, [class_id], (err2, subjects) => {
-                db.all(`SELECT m.student_id, m.subject_id, m.marks_obtained, m.is_present
+            db.all(`SELECT id, subject_name, sequence_order, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks FROM subjects WHERE class_id = ? ORDER BY sequence_order, id`, [class_id], (err2, subjects) => {
+                db.all(`SELECT m.student_id, m.subject_id, m.marks_obtained, m.theory_marks, m.practical_marks, m.is_present
                         FROM marks m JOIN students s ON s.id = m.student_id
                         WHERE m.exam_id = ? AND s.class_id = ?`, [exam_id, class_id], (err3, marks) => {
                     db.all(`SELECT ss.student_id, ss.subject_name, ss.role  
@@ -1504,12 +1514,12 @@ ipcMain.handle('get-all-marks-view', async (event, { year, class_id, subject_id 
                 ORDER BY roll`, [class_id], (err, students) => {
             if (err) return resolve({ success: false, error: err.message });
 
-            db.get(`SELECT id, subject_name, monthly_marks, yearly_marks
+            db.get(`SELECT id, subject_name, monthly_marks, yearly_marks, yearly_theory_marks, yearly_practical_marks
                     FROM subjects WHERE id = ? AND class_id = ?`, [subject_id, class_id], (err2, subject) => {
                 if (err2) return resolve({ success: false, error: err2.message });
                 if (!subject) return resolve({ success: false, error: 'Subject not found for this class.' });
 
-                db.all(`SELECT e.exam_type, m.student_id, m.marks_obtained, m.is_present
+                db.all(`SELECT e.exam_type, m.student_id, m.marks_obtained, m.theory_marks, m.practical_marks, m.is_present
                         FROM exams e
                         LEFT JOIN marks m ON m.exam_id = e.id AND m.subject_id = ?
                         LEFT JOIN students s ON s.id = m.student_id AND s.class_id = ?
@@ -1525,42 +1535,101 @@ ipcMain.handle('get-all-marks-view', async (event, { year, class_id, subject_id 
 });
 
 // Save ONE mark. value is: '' (clear it), 'A' (absent) or a number as text.
+// Supports practical subjects with theory_value and practical_value.
 // Rule: no row in the marks table = not entered yet.
-ipcMain.handle('save-mark', async (event, { exam_id, student_id, subject_id, value }) => {
+ipcMain.handle('save-mark', async (event, { exam_id, student_id, subject_id, value, theory_value, practical_value, is_practical }) => {
     return new Promise((resolve) => {
-        const v = String(value === undefined || value === null ? '' : value).trim().toUpperCase();
-
-        if (v === '') {
-            db.run(`DELETE FROM marks WHERE exam_id = ? AND student_id = ? AND subject_id = ?`,
-                [exam_id, student_id, subject_id], (err) => {
-                    if (err) resolve({ success: false, error: err.message });
-                    else resolve({ success: true });
-                });
-            return;
-        }
-
-        let marks = 0;
-        let present = 1;
-        if (v === 'A') {
-            present = 0;
-        } else {
-            marks = parseFloat(v);
-            if (!Number.isFinite(marks) || marks < 0) {
-                return resolve({ success: false, error: 'Invalid mark.' });
-            }
-        }
-
-        db.get(`SELECT e.exam_type, s.monthly_marks, s.yearly_marks
+        db.get(`SELECT e.exam_type, s.monthly_marks, s.yearly_marks, s.yearly_theory_marks, s.yearly_practical_marks
                 FROM exams e, subjects s WHERE e.id = ? AND s.id = ?`, [exam_id, subject_id], (err, row) => {
             if (err || !row) return resolve({ success: false, error: 'Exam or subject not found.' });
+
+            const isYearly = !row.exam_type.includes('Monthly');
+            const hasPractical = isYearly && (is_practical || (row.yearly_theory_marks != null && row.yearly_practical_marks != null));
+
+            if (hasPractical && (theory_value !== undefined || practical_value !== undefined)) {
+                const thStr = String(theory_value === undefined || theory_value === null ? '' : theory_value).trim().toUpperCase();
+                const prStr = String(practical_value === undefined || practical_value === null ? '' : practical_value).trim().toUpperCase();
+
+                // If both are empty, delete the record
+                if (thStr === '' && prStr === '') {
+                    db.run(`DELETE FROM marks WHERE exam_id = ? AND student_id = ? AND subject_id = ?`,
+                        [exam_id, student_id, subject_id], (err2) => {
+                            if (err2) resolve({ success: false, error: err2.message });
+                            else resolve({ success: true });
+                        });
+                    return;
+                }
+
+                // If either is 'A' (absent)
+                if (thStr === 'A' || prStr === 'A') {
+                    db.run(`INSERT INTO marks (student_id, subject_id, exam_id, marks_obtained, theory_marks, practical_marks, is_present)
+                        VALUES (?, ?, ?, 0, NULL, NULL, 0)
+                        ON CONFLICT(student_id, subject_id, exam_id)
+                        DO UPDATE SET marks_obtained = excluded.marks_obtained, theory_marks = excluded.theory_marks, practical_marks = excluded.practical_marks, is_present = excluded.is_present`,
+                        [student_id, subject_id, exam_id], (err2) => {
+                            if (err2) resolve({ success: false, error: err2.message });
+                            else resolve({ success: true });
+                        });
+                    return;
+                }
+
+                const thMax = row.yearly_theory_marks != null ? row.yearly_theory_marks : 75;
+                const prMax = row.yearly_practical_marks != null ? row.yearly_practical_marks : 25;
+
+                const thNum = thStr !== '' ? parseFloat(thStr) : null;
+                const prNum = prStr !== '' ? parseFloat(prStr) : null;
+
+                if (thNum !== null && (!Number.isFinite(thNum) || thNum < 0 || thNum > thMax)) {
+                    return resolve({ success: false, error: `Theory mark must be between 0 and ${thMax}.` });
+                }
+                if (prNum !== null && (!Number.isFinite(prNum) || prNum < 0 || prNum > prMax)) {
+                    return resolve({ success: false, error: `Practical mark must be between 0 and ${prMax}.` });
+                }
+
+                const totalObtained = (thNum || 0) + (prNum || 0);
+
+                db.run(`INSERT INTO marks (student_id, subject_id, exam_id, marks_obtained, theory_marks, practical_marks, is_present)
+                    VALUES (?, ?, ?, ?, ?, ?, 1)
+                    ON CONFLICT(student_id, subject_id, exam_id)
+                    DO UPDATE SET marks_obtained = excluded.marks_obtained, theory_marks = excluded.theory_marks, practical_marks = excluded.practical_marks, is_present = excluded.is_present`,
+                    [student_id, subject_id, exam_id, totalObtained, thNum, prNum], (err2) => {
+                        if (err2) resolve({ success: false, error: err2.message });
+                        else resolve({ success: true });
+                    });
+                return;
+            }
+
+            // Standard non-practical single mark handling
+            const v = String(value === undefined || value === null ? '' : value).trim().toUpperCase();
+
+            if (v === '') {
+                db.run(`DELETE FROM marks WHERE exam_id = ? AND student_id = ? AND subject_id = ?`,
+                    [exam_id, student_id, subject_id], (err2) => {
+                        if (err2) resolve({ success: false, error: err2.message });
+                        else resolve({ success: true });
+                    });
+                return;
+            }
+
+            let marks = 0;
+            let present = 1;
+            if (v === 'A') {
+                present = 0;
+            } else {
+                marks = parseFloat(v);
+                if (!Number.isFinite(marks) || marks < 0) {
+                    return resolve({ success: false, error: 'Invalid mark.' });
+                }
+            }
+
             const max = row.exam_type.includes('Monthly') ? row.monthly_marks : row.yearly_marks;
             if (present && max && marks > max) {
                 return resolve({ success: false, error: `Mark cannot be more than ${max}.` });
             }
-            db.run(`INSERT INTO marks (student_id, subject_id, exam_id, marks_obtained, is_present)
-                VALUES (?, ?, ?, ?, ?)
+            db.run(`INSERT INTO marks (student_id, subject_id, exam_id, marks_obtained, theory_marks, practical_marks, is_present)
+                VALUES (?, ?, ?, ?, NULL, NULL, ?)
                 ON CONFLICT(student_id, subject_id, exam_id)
-                DO UPDATE SET marks_obtained = excluded.marks_obtained, is_present = excluded.is_present`,
+                DO UPDATE SET marks_obtained = excluded.marks_obtained, theory_marks = excluded.theory_marks, practical_marks = excluded.practical_marks, is_present = excluded.is_present`,
                 [student_id, subject_id, exam_id, marks, present], (err2) => {
                     if (err2) resolve({ success: false, error: err2.message });
                     else resolve({ success: true });

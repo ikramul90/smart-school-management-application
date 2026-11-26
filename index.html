@@ -1172,9 +1172,21 @@
                                         type="text" id="sub-monthly-input" placeholder="e.g. 25"
                                         inputmode="numeric"><small id="sub-monthly-error" class="field-error"></small>
                                 </div>
-                                <div style="width:120px; position: relative;"><label>Yearly Total</label><input
+                                <div id="sub-yearly-single-wrap" style="width:120px; position: relative;"><label>Yearly Total</label><input
                                         type="text" id="sub-yearly-input" placeholder="e.g. 100"
                                         inputmode="numeric"><small id="sub-yearly-error" class="field-error"></small>
+                                </div>
+                                <div id="sub-yearly-practical-wrap" style="display:none; gap:8px; align-items:flex-end;">
+                                    <div style="width:105px; position: relative;">
+                                        <label>Yearly Theory</label>
+                                        <input type="text" id="sub-yearly-theory-input" placeholder="e.g. 75" inputmode="numeric">
+                                        <small id="sub-yearly-theory-error" class="field-error"></small>
+                                    </div>
+                                    <div style="width:105px; position: relative;">
+                                        <label>Yearly Practical</label>
+                                        <input type="text" id="sub-yearly-practical-input" placeholder="e.g. 25" inputmode="numeric">
+                                        <small id="sub-yearly-practical-error" class="field-error"></small>
+                                    </div>
                                 </div>
                                 <button id="btn-add-subject"
                                     style="background-color:#10b981; width:auto; padding:10px 20px;">Save
