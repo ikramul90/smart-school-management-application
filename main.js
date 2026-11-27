@@ -19,9 +19,23 @@ function createWindow() {
         icon: iconPath,
         webPreferences: {
             nodeIntegration: true,
-            contextIsolation: false
+            contextIsolation: false,
+            devTools: !app.isPackaged  // DevTools disabled in production builds
         }
     });
+
+    // Block DevTools keyboard shortcuts in production
+    if (app.isPackaged) {
+        mainWindow.webContents.on('before-input-event', (event, input) => {
+            const isF12 = input.key === 'F12';
+            const isCtrlShiftI = input.control && input.shift && input.key === 'I';
+            const isCtrlShiftJ = input.control && input.shift && input.key === 'J';
+            const isCtrlU = input.control && !input.shift && input.key === 'U';
+            if (isF12 || isCtrlShiftI || isCtrlShiftJ || isCtrlU) {
+                event.preventDefault();
+            }
+        });
+    }
 
     // Load our visual interface file
     mainWindow.loadFile('index.html');
