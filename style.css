@@ -121,10 +121,10 @@ body {
     background-color: var(--gray-bg);
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: safe center;
     min-height: 100vh;
     box-sizing: border-box;
-    padding: 32px 20px;
+    padding: 24px 20px;
     overflow-y: auto;
 }
 
@@ -136,7 +136,7 @@ body:has(#dashboard-screen[style*="display: block"]) {
 }
 
 .card {
-    margin: 0 auto;
+    margin: auto 0;
 }
 
 .no-select {
