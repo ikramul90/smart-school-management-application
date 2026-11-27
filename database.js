@@ -40,6 +40,7 @@ db.serialize(() => {
         yearly_marks INTEGER,
         yearly_theory_marks REAL DEFAULT NULL,
         yearly_practical_marks REAL DEFAULT NULL,
+        is_active INTEGER DEFAULT 1,
         FOREIGN KEY(class_id) REFERENCES classes(id)
     )`);
 
@@ -49,6 +50,8 @@ db.serialize(() => {
     db.run(`ALTER TABLE subjects ADD COLUMN yearly_theory_marks REAL DEFAULT NULL`, () => {});
     db.run(`ALTER TABLE subjects ADD COLUMN yearly_practical_marks REAL DEFAULT NULL`, () => {});
     db.run(`ALTER TABLE subjects ADD COLUMN class_teacher_id INTEGER`, () => {});
+    db.run(`ALTER TABLE subjects ADD COLUMN is_active INTEGER DEFAULT 1`, () => {});
+    db.run(`ALTER TABLE classes ADD COLUMN is_active INTEGER DEFAULT 1`, () => {});
 
     // 3. Students Table
     db.run(`CREATE TABLE IF NOT EXISTS students (
@@ -537,6 +540,19 @@ db.serialize(() => {
                 console.warn("⚠️ seed.sql was not found in checked locations.");
             }
         }
+    });
+
+    // 15. Academic Config Table (Stores yearly_exams and monthly_exams settings)
+    db.run(`CREATE TABLE IF NOT EXISTS academic_config (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        yearly_exams INTEGER DEFAULT 2,
+        monthly_exams INTEGER DEFAULT 1
+    )`, () => {
+        db.get("SELECT COUNT(*) as count FROM academic_config", [], (err2, row) => {
+            if (row && row.count === 0) {
+                db.run(`INSERT INTO academic_config (yearly_exams, monthly_exams) VALUES (?, ?)`, [2, 1]);
+            }
+        });
     });
 
     console.log("🎉 Database tables successfully initialized!");

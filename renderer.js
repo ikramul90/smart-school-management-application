@@ -25,6 +25,7 @@ const activationScreen = document.getElementById('activation-screen');
 const activationCheckingScreen = document.getElementById('activation-checking-screen');
 const setupScreen = document.getElementById('setup-screen');
 const schoolSetupScreen = document.getElementById('school-setup-screen');
+const academicSetupScreen = document.getElementById('academic-setup-screen');
 const loginScreen = document.getElementById('login-screen');
 const dashboardScreen = document.getElementById('dashboard-screen');
 
@@ -254,6 +255,7 @@ function setupTrialExpiredActions() {
                     if (res && res.success) {
                         currentVerifiedLicenseType = 'full';
                         await refreshLicenseStatus();
+    await loadAcademicScheduleConfig();
                         if (successEl) {
                             successEl.innerText = '🎉 Real Full Version activated successfully! All modules and features are now fully open.';
                             successEl.style.display = 'block';
@@ -668,9 +670,14 @@ async function initSchoolSetupScreen() {
                     okEl.style.display = 'block';
                     okEl.textContent = 'Configuration saved successfully!';
                 }
-                setTimeout(() => {
+                setTimeout(async () => {
                     if (schoolSetupScreen) schoolSetupScreen.style.display = 'none';
-                    if (loginScreen) loginScreen.style.display = 'block';
+                    if (academicSetupScreen) {
+                        academicSetupScreen.style.display = 'block';
+                        await initAcademicSetupScreen();
+                    } else if (loginScreen) {
+                        loginScreen.style.display = 'block';
+                    }
                     saveBtn.disabled = false;
                     saveBtn.textContent = 'Save Configuration';
                 }, 800);
@@ -5089,6 +5096,7 @@ enableEnterNavigation(document.getElementById('student-form'), document.getEleme
 enableEnterNavigation(document.getElementById('teacher-form'), document.getElementById('btn-save-teacher'));
 enableEnterNavigation(document.getElementById('subject-form'), document.getElementById('btn-add-subject'));
 enableEnterNavigation(document.getElementById('school-setup-screen'), document.getElementById('btn-save-school-setup'));
+enableEnterNavigation(document.getElementById('academic-setup-screen'), document.getElementById('btn-save-academic-setup'));
 
 // --- NUMERIC-ONLY VALIDATION FOR SEQUENCE / MONTHLY / YEARLY FIELDS ---
 function enforceNumericInput(inputId, errorId) {
@@ -6504,3 +6512,448 @@ window.showTeacherInfoModal = function (id) {
 
     openDetailsInfoModal(`Teacher Profile: ${t.name || 'Details'}`, bodyHtml);
 };
+
+
+// ============================================================
+// ACADEMIC SETUP SCREEN & EXAM SCHEDULE CONFIGURATION
+// ============================================================
+
+let academicConfigState = {
+    yearly_exams: 2,
+    monthly_exams: 1
+};
+
+let academicSetupInitialized = false;
+let academicSetupInitialPanelContent = {};
+let academicSetupCurrentClassId = null;
+let academicSetupDeletedCustomSubjectIds = [];
+
+function generateExamScheduleList(yearlyExams, monthlyExams) {
+    const y = Math.max(1, Math.min(4, parseInt(yearlyExams, 10) || 2));
+    const m = Math.max(1, Math.min(4, parseInt(monthlyExams, 10) || 1));
+    const ord = ['1st', '2nd', '3rd', '4th'];
+    const list = [];
+    let monthlyCount = 0;
+
+    for (let term = 1; term <= y; term++) {
+        for (let mon = 1; mon <= m; mon++) {
+            monthlyCount++;
+            const ordMonth = ord[monthlyCount - 1] || (monthlyCount + 'th');
+            list.push(ordMonth + ' Monthly Exam');
+        }
+        let yearlyName = '';
+        if (y === 2) {
+            yearlyName = term === 1 ? 'Half Yearly Exam' : 'Yearly Exam';
+        } else if (y === 1) {
+            yearlyName = 'Yearly Exam';
+        } else {
+            yearlyName = (ord[term - 1] || term + 'th') + ' Yearly Exam';
+        }
+        list.push(yearlyName);
+    }
+    return list;
+}
+
+function applyDynamicExamSchedule(yearlyExams, monthlyExams) {
+    const schedule = generateExamScheduleList(yearlyExams, monthlyExams);
+    academicConfigState.yearly_exams = parseInt(yearlyExams, 10) || 2;
+    academicConfigState.monthly_exams = parseInt(monthlyExams, 10) || 1;
+
+    // Update global ALL_MARKS_EXAM_TYPES array
+    if (typeof ALL_MARKS_EXAM_TYPES !== 'undefined') {
+        ALL_MARKS_EXAM_TYPES.length = 0;
+        schedule.forEach(e => ALL_MARKS_EXAM_TYPES.push(e));
+    }
+
+    // Update Marks Entry dropdown (exam-type-select)
+    const examSelect = document.getElementById('exam-type-select');
+    if (examSelect) {
+        const currentVal = examSelect.value;
+        examSelect.innerHTML = schedule.map(e => `<option value="${e}">${e}</option>`).join('');
+        if (schedule.includes(currentVal)) {
+            examSelect.value = currentVal;
+        } else if (schedule.length > 0) {
+            examSelect.value = schedule[0];
+        }
+    }
+}
+
+async function loadAcademicScheduleConfig() {
+    try {
+        const data = await ipcRenderer.invoke('get-academic-setup-data');
+        if (data && data.success && data.config) {
+            applyDynamicExamSchedule(data.config.yearly_exams, data.config.monthly_exams);
+        } else {
+            applyDynamicExamSchedule(2, 1);
+        }
+    } catch (e) {
+        console.error('Error loading academic config:', e);
+        applyDynamicExamSchedule(2, 1);
+    }
+}
+
+async function initAcademicSetupScreen() {
+    const form = document.getElementById('academic-setup-screen');
+    if (!form) return;
+
+    const classCountEl = document.getElementById('class-count');
+    const classChecks = form.querySelectorAll('.row-class input[type="checkbox"]');
+    const classNames = form.querySelectorAll('.row-class input[type="text"]');
+    const panelsEl = document.getElementById('sub-panels');
+    const titleEl = document.getElementById('sub-title');
+    const layout = document.getElementById('sub-layout');
+    const emptyEl = document.getElementById('sub-empty');
+    const navItems = form.querySelectorAll('.nav-item');
+    const yearlyInput = document.getElementById('yearly_exams');
+    const monthlyInput = document.getElementById('monthly_exams');
+    const termsEl = document.getElementById('preview-terms');
+    const totalEl = document.getElementById('preview-total');
+    const saveBtn = document.getElementById('btn-save-academic-setup');
+    const okMsg = document.getElementById('as-success-msg');
+
+    const idOf = el => el.name.match(/class_(\d+)_/)[1];
+    const rowsOf = id => panelsEl ? panelsEl.querySelector('.sub-rows[data-class="' + id + '"]') : null;
+    const activeIds = () => [...classChecks].filter(c => c.checked).map(idOf);
+
+    function getClassName(id) {
+        const inp = form.querySelector('input[name="class_' + id + '_name"]');
+        return inp ? (inp.value.trim() || inp.dataset.default) : '';
+    }
+
+    function countSubjects(id) {
+        const panel = rowsOf(id);
+        if (!panel) return 0;
+        let n = 0;
+        panel.querySelectorAll('.row').forEach(r => {
+            const sw = r.querySelector('input[type="checkbox"]');
+            if (!sw || sw.checked) n++;
+        });
+        return n;
+    }
+
+    function refreshLabels() {
+        navItems.forEach(n => {
+            const cid = n.dataset.class;
+            const nameEl = n.querySelector('.nav-name');
+            const cntEl = n.querySelector('.nav-count');
+            if (nameEl) nameEl.textContent = getClassName(cid);
+            if (cntEl) cntEl.textContent = countSubjects(cid);
+        });
+        if (academicSetupCurrentClassId && titleEl) {
+            titleEl.textContent = getClassName(academicSetupCurrentClassId);
+        }
+    }
+
+    function selectClass(id) {
+        academicSetupCurrentClassId = id;
+        navItems.forEach(n => n.classList.toggle('active', n.dataset.class === id));
+        if (panelsEl) {
+            panelsEl.querySelectorAll('.sub-rows').forEach(p => {
+                p.hidden = p.dataset.class !== id;
+            });
+        }
+        refreshLabels();
+    }
+
+    function syncClasses() {
+        let active = 0;
+        classChecks.forEach(cb => {
+            const row = cb.closest('.row');
+            if (row) {
+                row.classList.toggle('is-off', !cb.checked);
+                const txt = row.querySelector('input[type="text"]');
+                if (txt) txt.disabled = !cb.checked;
+            }
+            if (cb.checked) active++;
+        });
+        if (classCountEl) classCountEl.textContent = active + ' of ' + classChecks.length + ' active';
+        syncNav();
+    }
+
+    function syncNav() {
+        const act = activeIds();
+        navItems.forEach(n => {
+            n.hidden = !act.includes(n.dataset.class);
+        });
+        if (layout) layout.hidden = act.length === 0;
+        if (emptyEl) emptyEl.hidden = act.length > 0;
+        if (!act.length) {
+            academicSetupCurrentClassId = null;
+            return;
+        }
+        if (!academicSetupCurrentClassId || !act.includes(academicSetupCurrentClassId)) {
+            selectClass(act[0]);
+        } else {
+            refreshLabels();
+        }
+    }
+
+    const ord = n => ['1st', '2nd', '3rd', '4th'][n - 1] || (n + 'th');
+
+    function renderPreview() {
+        if (!yearlyInput || !monthlyInput || !termsEl || !totalEl) return;
+        const y = +yearlyInput.value, m = +monthlyInput.value;
+        let html = '';
+        for (let t = 1; t <= y; t++) {
+            let chips = '';
+            for (let i = 1; i <= m; i++) {
+                chips += '<span class="chip">Monthly ' + i + '</span><span class="arrow">&rarr;</span>';
+            }
+            let yName = (ord(t) + ' Yearly');
+            if (y === 2) yName = (t === 1 ? 'Half Yearly' : 'Yearly');
+            else if (y === 1) yName = 'Yearly';
+
+            chips += '<span class="chip yearly">' + yName + '</span>';
+            const span = 12 % y === 0 ? 'every ' + (12 / y) + ' months' : '';
+            html += '<div class="term"><div class="term-label">Term ' + t + '<small>' + span + '</small></div><div class="chips">' + chips + '</div></div>';
+        }
+        termsEl.innerHTML = html;
+        totalEl.innerHTML = '<b>' + (y * m) + '</b> monthly + <b>' + y + '</b> yearly = <b>' + (y * m + y) + '</b> exams per year';
+    }
+
+    function updateStepperState() {
+        form.querySelectorAll('.stepper button').forEach(btn => {
+            const input = document.getElementById(btn.dataset.target);
+            if (!input) return;
+            const next = +input.value + +btn.dataset.dir;
+            btn.disabled = next < +input.min || next > +input.max;
+        });
+    }
+
+    // Load initial data from DB
+    try {
+        const setupData = await ipcRenderer.invoke('get-academic-setup-data');
+        if (setupData && setupData.success) {
+            if (setupData.config) {
+                if (yearlyInput) yearlyInput.value = setupData.config.yearly_exams || 2;
+                if (monthlyInput) monthlyInput.value = setupData.config.monthly_exams || 1;
+            }
+            // Populate classes display name and active status
+            if (Array.isArray(setupData.classes)) {
+                setupData.classes.forEach(c => {
+                    const row = form.querySelector('.row-class input[data-default="' + c.class_name + '"]');
+                    if (row) {
+                        row.value = c.class_name;
+                        const cb = row.closest('.row').querySelector('input[type="checkbox"]');
+                        if (cb) cb.checked = c.is_active !== 0;
+                    }
+                });
+            }
+        }
+    } catch (e) {
+        console.error('Error fetching academic setup data:', e);
+    }
+
+    // Cache initial HTML of panels for Reset button
+    if (!academicSetupInitialPanelContent['cached'] && panelsEl) {
+        panelsEl.querySelectorAll('.sub-rows').forEach(p => {
+            academicSetupInitialPanelContent[p.dataset.class] = p.innerHTML;
+        });
+        academicSetupInitialPanelContent['cached'] = true;
+    }
+
+    if (!academicSetupInitialized) {
+        academicSetupInitialized = true;
+
+        classChecks.forEach(cb => cb.addEventListener('change', syncClasses));
+        const clsAll = document.getElementById('cls-all');
+        const clsNone = document.getElementById('cls-none');
+        if (clsAll) clsAll.addEventListener('click', () => { classChecks.forEach(c => c.checked = true); syncClasses(); });
+        if (clsNone) clsNone.addEventListener('click', () => { classChecks.forEach(c => c.checked = false); syncClasses(); });
+
+        navItems.forEach(n => n.addEventListener('click', () => selectClass(n.dataset.class)));
+        classNames.forEach(i => i.addEventListener('input', () => refreshLabels()));
+
+        if (panelsEl) {
+            panelsEl.addEventListener('change', e => {
+                if (e.target.type !== 'checkbox') return;
+                const row = e.target.closest('.row');
+                if (row) {
+                    row.classList.toggle('is-off', !e.target.checked);
+                    const inp = row.querySelector('input[type="text"]');
+                    if (inp) inp.disabled = !e.target.checked;
+                }
+                refreshLabels();
+            });
+
+            panelsEl.addEventListener('click', e => {
+                const btn = e.target.closest('.row-remove');
+                if (btn) {
+                    const row = btn.closest('.row');
+                    if (row) {
+                        const dbId = row.dataset.dbId;
+                        if (dbId) academicSetupDeletedCustomSubjectIds.push(parseInt(dbId, 10));
+                        row.remove();
+                        refreshLabels();
+                    }
+                }
+            });
+        }
+
+        const addSubjectBtn = document.getElementById('add-subject');
+        if (addSubjectBtn) {
+            addSubjectBtn.addEventListener('click', () => {
+                if (!academicSetupCurrentClassId) return;
+                const rows = rowsOf(academicSetupCurrentClassId);
+                if (!rows) return;
+                const used = [...rows.querySelectorAll('input[name*="_custom_"]')].map(i => {
+                    const m = i.name.match(/_custom_(\d+)_/);
+                    return m ? +m[1] : 0;
+                });
+                const k = (used.length ? Math.max(...used) : 0) + 1;
+                rows.insertAdjacentHTML('beforeend',
+                    '<div class="row row-subject row-custom">' +
+                      '<button type="button" class="row-remove" aria-label="Remove subject"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>' +
+                      '<span class="default-name">Custom</span>' +
+                      '<input type="text" name="class_' + academicSetupCurrentClassId + '_custom_' + k + '_name" placeholder="Subject name" autocomplete="off" aria-label="Custom subject name">' +
+                    '</div>'
+                );
+                const lastInp = rows.lastElementChild.querySelector('input');
+                if (lastInp) lastInp.focus();
+                refreshLabels();
+            });
+        }
+
+        const resetClassBtn = document.getElementById('reset-class');
+        if (resetClassBtn) {
+            resetClassBtn.addEventListener('click', () => {
+                if (!academicSetupCurrentClassId) return;
+                const rows = rowsOf(academicSetupCurrentClassId);
+                if (rows && academicSetupInitialPanelContent[academicSetupCurrentClassId]) {
+                    rows.innerHTML = academicSetupInitialPanelContent[academicSetupCurrentClassId];
+                    refreshLabels();
+                }
+            });
+        }
+
+        form.querySelectorAll('.stepper button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const input = document.getElementById(btn.dataset.target);
+                if (!input) return;
+                const next = +input.value + +btn.dataset.dir;
+                if (next < +input.min || next > +input.max) return;
+                input.value = next;
+                updateStepperState();
+                renderPreview();
+            });
+        });
+
+        if (saveBtn) {
+            saveBtn.addEventListener('click', async () => {
+                saveBtn.disabled = true;
+                saveBtn.textContent = 'Saving...';
+
+                // Collect data
+                const yearly = parseInt(yearlyInput?.value, 10) || 2;
+                const monthly = parseInt(monthlyInput?.value, 10) || 1;
+
+                const classesData = [];
+                const subjectsData = [];
+
+                // 1. Classes
+                const existingData = await ipcRenderer.invoke('get-academic-setup-data');
+                const dbClasses = (existingData && existingData.classes) || [];
+                const dbSubjects = (existingData && existingData.subjects) || [];
+
+                for (let i = 1; i <= 16; i++) {
+                    const cb = form.querySelector('input[name="class_' + i + '_enabled"]');
+                    const txt = form.querySelector('input[name="class_' + i + '_name"]');
+                    if (cb && txt) {
+                        const defaultName = txt.dataset.default;
+                        const finalName = txt.value.trim() || defaultName;
+                        const isEnabled = cb.checked;
+                        const matchCls = dbClasses.find(c => c.class_name === defaultName || c.class_name === finalName) || dbClasses[i - 1];
+                        if (matchCls) {
+                            classesData.push({
+                                id: matchCls.id,
+                                class_name: finalName,
+                                is_active: isEnabled ? 1 : 0
+                            });
+                        }
+                    }
+                }
+
+                // 2. Subjects per class
+                if (panelsEl) {
+                    panelsEl.querySelectorAll('.sub-rows').forEach(panel => {
+                        const classNum = panel.dataset.class;
+                        const clsTxt = form.querySelector('input[name="class_' + classNum + '_name"]');
+                        const defClsName = clsTxt ? clsTxt.dataset.default : '';
+                        const currentClsName = clsTxt ? (clsTxt.value.trim() || defClsName) : '';
+                        const matchCls = dbClasses.find(c => c.class_name === defClsName || c.class_name === currentClsName) || dbClasses[+classNum - 1];
+                        const classId = matchCls ? matchCls.id : null;
+
+                        if (classId) {
+                            const subRows = panel.querySelectorAll('.row');
+                            let seq = 1;
+                            subRows.forEach(row => {
+                                const cb = row.querySelector('input[type="checkbox"]');
+                                const txt = row.querySelector('input[type="text"]');
+                                if (!txt) return;
+
+                                const isCustom = row.classList.contains('row-custom');
+                                const finalSubName = txt.value.trim() || txt.dataset.default || '';
+                                const isEnabled = cb ? cb.checked : true;
+
+                                if (isCustom) {
+                                    if (finalSubName) {
+                                        subjectsData.push({
+                                            is_new: true,
+                                            class_id: classId,
+                                            subject_name: finalSubName,
+                                            sequence_order: seq++,
+                                            is_active: 1
+                                        });
+                                    }
+                                } else {
+                                    const defaultSubName = txt.dataset.default;
+                                    const matchSub = dbSubjects.find(s => s.class_id === classId && (s.subject_name === defaultSubName || s.subject_name === finalSubName));
+                                    if (matchSub) {
+                                        subjectsData.push({
+                                            id: matchSub.id,
+                                            class_id: classId,
+                                            subject_name: finalSubName,
+                                            sequence_order: seq++,
+                                            is_active: isEnabled ? 1 : 0
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+
+                const payload = {
+                    config: { yearly_exams: yearly, monthly_exams: monthly },
+                    classes: classesData,
+                    subjects: subjectsData,
+                    deleted_subject_ids: academicSetupDeletedCustomSubjectIds
+                };
+
+                const res = await ipcRenderer.invoke('save-academic-setup-data', payload);
+                if (res && res.success) {
+                    applyDynamicExamSchedule(yearly, monthly);
+                    if (okMsg) {
+                        okMsg.classList.add('show');
+                        okMsg.textContent = 'Configuration saved successfully!';
+                    }
+                    setTimeout(() => {
+                        if (academicSetupScreen) academicSetupScreen.style.display = 'none';
+                        if (loginScreen) loginScreen.style.display = 'block';
+                        saveBtn.disabled = false;
+                        saveBtn.textContent = 'Save Configuration';
+                        if (okMsg) okMsg.classList.remove('show');
+                    }, 900);
+                } else {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = 'Save Configuration';
+                    alert('Error saving academic setup: ' + ((res && res.error) || 'Unknown error'));
+                }
+            });
+        }
+    }
+
+    syncClasses();
+    updateStepperState();
+    renderPreview();
+}

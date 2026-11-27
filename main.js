@@ -471,6 +471,93 @@ ipcMain.handle('save-head-teacher-info', async (event, data) => {
     });
 });
 
+// --- ACADEMIC SETUP & CURRICULUM CONFIGURATION ---
+ipcMain.handle('get-academic-setup-data', async () => {
+    return new Promise((resolve) => {
+        db.all("SELECT id, class_name, is_active FROM classes ORDER BY id ASC", [], (err, classes) => {
+            if (err) return resolve({ success: false, error: err.message });
+            db.all("SELECT id, class_id, subject_name, sequence_order, is_active FROM subjects ORDER BY class_id ASC, sequence_order ASC, id ASC", [], (err2, subjects) => {
+                if (err2) return resolve({ success: false, error: err2.message });
+                db.get("SELECT yearly_exams, monthly_exams FROM academic_config ORDER BY id ASC LIMIT 1", [], (err3, config) => {
+                    resolve({
+                        success: true,
+                        classes: classes || [],
+                        subjects: subjects || [],
+                        config: config || { yearly_exams: 2, monthly_exams: 1 }
+                    });
+                });
+            });
+        });
+    });
+});
+
+ipcMain.handle('save-academic-setup-data', async (event, payload) => {
+    return new Promise((resolve) => {
+        db.serialize(() => {
+            db.run("BEGIN TRANSACTION");
+
+            // 1. Update academic_config (yearly and monthly exams)
+            if (payload.config) {
+                const yExams = Math.max(1, Math.min(4, parseInt(payload.config.yearly_exams, 10) || 2));
+                const mExams = Math.max(1, Math.min(4, parseInt(payload.config.monthly_exams, 10) || 1));
+                db.run(`UPDATE academic_config SET yearly_exams = ?, monthly_exams = ? WHERE id = (SELECT id FROM academic_config ORDER BY id ASC LIMIT 1)`, [yExams, mExams]);
+            }
+
+            // 2. Update classes
+            if (Array.isArray(payload.classes)) {
+                payload.classes.forEach(cls => {
+                    if (cls.id) {
+                        const isAct = cls.is_active !== undefined ? (cls.is_active ? 1 : 0) : 1;
+                        if (cls.class_name && cls.class_name.trim()) {
+                            db.run("UPDATE classes SET class_name = ?, is_active = ? WHERE id = ?", [cls.class_name.trim(), isAct, cls.id]);
+                        } else {
+                            db.run("UPDATE classes SET is_active = ? WHERE id = ?", [isAct, cls.id]);
+                        }
+                    }
+                });
+            }
+
+            // 3. Update existing subjects or add custom subjects
+            if (Array.isArray(payload.subjects)) {
+                payload.subjects.forEach(sub => {
+                    if (sub.id) {
+                        // Existing subject in DB
+                        const isAct = sub.is_active !== undefined ? (sub.is_active ? 1 : 0) : 1;
+                        if (sub.subject_name && sub.subject_name.trim()) {
+                            db.run("UPDATE subjects SET subject_name = ?, is_active = ? WHERE id = ?", [sub.subject_name.trim(), isAct, sub.id]);
+                        } else {
+                            db.run("UPDATE subjects SET is_active = ? WHERE id = ?", [isAct, sub.id]);
+                        }
+                    } else if (sub.is_new && sub.class_id && sub.subject_name && sub.subject_name.trim()) {
+                        // Custom newly added subject
+                        const sName = sub.subject_name.trim();
+                        db.run(
+                            "INSERT INTO subjects (class_id, subject_name, sequence_order, is_active, monthly_marks, yearly_marks) VALUES (?, ?, ?, 1, 25, 100)",
+                            [sub.class_id, sName, sub.sequence_order || 99]
+                        );
+                    }
+                });
+            }
+
+            // 4. Delete removed custom subjects if specified
+            if (Array.isArray(payload.deleted_subject_ids) && payload.deleted_subject_ids.length > 0) {
+                payload.deleted_subject_ids.forEach(delId => {
+                    db.run("DELETE FROM subjects WHERE id = ?", [delId]);
+                });
+            }
+
+            db.run("COMMIT", (commitErr) => {
+                if (commitErr) {
+                    db.run("ROLLBACK");
+                    return resolve({ success: false, error: commitErr.message });
+                }
+                runDataChecks();
+                resolve({ success: true });
+            });
+        });
+    });
+});
+
 // --- CORE CRUD BACKEND COMMANDS ---
 
 // 1. SUBJECTS DATABASE WORKERS
@@ -479,6 +566,7 @@ ipcMain.handle('get-subjects', async () => {
         db.all(`SELECT subjects.*, classes.class_name
                 FROM subjects
                 LEFT JOIN classes ON subjects.class_id = classes.id
+                WHERE subjects.is_active IS NULL OR subjects.is_active = 1
                 ORDER BY classes.id, subjects.sequence_order`, [], (err, rows) => {
             resolve(rows || []);
         });
@@ -1131,7 +1219,7 @@ const CANONICAL_CLASSES = [
 // Helper channels to load dropdown menus dynamically
 ipcMain.handle('get-classes-list', async () => {
     return new Promise((resolve) => {
-        db.all("SELECT * FROM classes", [], (err, rows) => {
+        db.all("SELECT * FROM classes WHERE is_active IS NULL OR is_active = 1", [], (err, rows) => {
             const list = rows || [];
             list.sort((a, b) => {
                 const ia = CANONICAL_CLASSES.indexOf(a.class_name);
@@ -1458,8 +1546,8 @@ ipcMain.handle('get-or-create-exam', async (event, data) => {
         if (!Number.isInteger(year) || year < 2000 || year > 2100) {
             return resolve({ success: false, error: 'Enter a valid year between 2000 and 2100.' });
         }
-        if (!VALID_EXAM_TYPES.includes(data.exam_type)) {
-            return resolve({ success: false, error: 'Unknown exam type.' });
+        if (!data.exam_type || typeof data.exam_type !== 'string' || !data.exam_type.trim()) {
+            return resolve({ success: false, error: 'Exam type is required.' });
         }
         db.get(`SELECT * FROM exams WHERE year = ? AND exam_type = ?`, [year, data.exam_type], (err, row) => {
             if (err) return resolve({ success: false, error: err.message });

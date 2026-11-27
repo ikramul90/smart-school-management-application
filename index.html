@@ -278,6 +278,1234 @@
         <button id="btn-save-school-setup" type="button" style="width: 100%;">Save Configuration</button>
     </div>
 
+<div id="academic-setup-screen" class="card" style="display: none; width: 720px; max-width: 100%;">
+  <h2>Academic Setup</h2>
+  <p class="subtitle">Customise subject names, class names and the exam schedule for your institute. These settings apply across transcripts and reports.</p>
+
+  <!-- ═════════ 1. CLASSES ═════════ -->
+  <div class="sec-head">
+    <div class="sec-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    </div>
+    <span class="sec-title">Classes</span>
+    <span class="sec-meta" id="class-count">16 of 16 active</span>
+  </div>
+  <p class="sec-desc">Switch off classes your institute doesn't have. You can also rename any class &mdash; leave the field empty to keep the default name.</p>
+
+  <div class="list list-classes">
+    <div class="list-head"><span>Active</span><span>Default</span><span>Display name</span></div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_1_enabled" checked aria-label="Enable Play"><span></span></label>
+          <span class="default-name" title="Play">Play</span>
+          <input type="text" name="class_1_name" placeholder="Play" data-default="Play" autocomplete="off" aria-label="Display name for Play">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_2_enabled" checked aria-label="Enable Nursery"><span></span></label>
+          <span class="default-name" title="Nursery">Nursery</span>
+          <input type="text" name="class_2_name" placeholder="Nursery" data-default="Nursery" autocomplete="off" aria-label="Display name for Nursery">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_3_enabled" checked aria-label="Enable One"><span></span></label>
+          <span class="default-name" title="One">One</span>
+          <input type="text" name="class_3_name" placeholder="One" data-default="One" autocomplete="off" aria-label="Display name for One">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_4_enabled" checked aria-label="Enable Two"><span></span></label>
+          <span class="default-name" title="Two">Two</span>
+          <input type="text" name="class_4_name" placeholder="Two" data-default="Two" autocomplete="off" aria-label="Display name for Two">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_5_enabled" checked aria-label="Enable Three"><span></span></label>
+          <span class="default-name" title="Three">Three</span>
+          <input type="text" name="class_5_name" placeholder="Three" data-default="Three" autocomplete="off" aria-label="Display name for Three">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_6_enabled" checked aria-label="Enable Four"><span></span></label>
+          <span class="default-name" title="Four">Four</span>
+          <input type="text" name="class_6_name" placeholder="Four" data-default="Four" autocomplete="off" aria-label="Display name for Four">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_7_enabled" checked aria-label="Enable Five"><span></span></label>
+          <span class="default-name" title="Five">Five</span>
+          <input type="text" name="class_7_name" placeholder="Five" data-default="Five" autocomplete="off" aria-label="Display name for Five">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_8_enabled" checked aria-label="Enable Six"><span></span></label>
+          <span class="default-name" title="Six">Six</span>
+          <input type="text" name="class_8_name" placeholder="Six" data-default="Six" autocomplete="off" aria-label="Display name for Six">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_9_enabled" checked aria-label="Enable Seven"><span></span></label>
+          <span class="default-name" title="Seven">Seven</span>
+          <input type="text" name="class_9_name" placeholder="Seven" data-default="Seven" autocomplete="off" aria-label="Display name for Seven">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_10_enabled" checked aria-label="Enable Eight"><span></span></label>
+          <span class="default-name" title="Eight">Eight</span>
+          <input type="text" name="class_10_name" placeholder="Eight" data-default="Eight" autocomplete="off" aria-label="Display name for Eight">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_11_enabled" checked aria-label="Enable Nine (Science)"><span></span></label>
+          <span class="default-name" title="Nine (Science)">Nine (Science)</span>
+          <input type="text" name="class_11_name" placeholder="Nine (Science)" data-default="Nine (Science)" autocomplete="off" aria-label="Display name for Nine (Science)">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_12_enabled" checked aria-label="Enable Nine (Humanities)"><span></span></label>
+          <span class="default-name" title="Nine (Humanities)">Nine (Humanities)</span>
+          <input type="text" name="class_12_name" placeholder="Nine (Humanities)" data-default="Nine (Humanities)" autocomplete="off" aria-label="Display name for Nine (Humanities)">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_13_enabled" checked aria-label="Enable Nine (Business Studies)"><span></span></label>
+          <span class="default-name" title="Nine (Business Studies)">Nine (Business Studies)</span>
+          <input type="text" name="class_13_name" placeholder="Nine (Business Studies)" data-default="Nine (Business Studies)" autocomplete="off" aria-label="Display name for Nine (Business Studies)">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_14_enabled" checked aria-label="Enable Ten (Science)"><span></span></label>
+          <span class="default-name" title="Ten (Science)">Ten (Science)</span>
+          <input type="text" name="class_14_name" placeholder="Ten (Science)" data-default="Ten (Science)" autocomplete="off" aria-label="Display name for Ten (Science)">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_15_enabled" checked aria-label="Enable Ten (Humanities)"><span></span></label>
+          <span class="default-name" title="Ten (Humanities)">Ten (Humanities)</span>
+          <input type="text" name="class_15_name" placeholder="Ten (Humanities)" data-default="Ten (Humanities)" autocomplete="off" aria-label="Display name for Ten (Humanities)">
+        </div>
+        <div class="row row-class">
+          <label class="switch"><input type="checkbox" name="class_16_enabled" checked aria-label="Enable Ten (Business Studies)"><span></span></label>
+          <span class="default-name" title="Ten (Business Studies)">Ten (Business Studies)</span>
+          <input type="text" name="class_16_name" placeholder="Ten (Business Studies)" data-default="Ten (Business Studies)" autocomplete="off" aria-label="Display name for Ten (Business Studies)">
+        </div>
+  </div>
+  <div class="list-actions">
+    <button class="link-btn" type="button" id="cls-all">Select all</button>
+    <span class="dot">&middot;</span>
+    <button class="link-btn" type="button" id="cls-none">Deselect all</button>
+  </div>
+
+  <hr class="divider">
+
+  <!-- ═════════ 2. SUBJECTS (per class) ════════ -->
+  <div class="sec-head">
+    <div class="sec-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    </div>
+    <span class="sec-title">Subjects</span>
+  </div>
+  <p class="sec-desc">Pick a class to edit its subjects. Only the classes switched on above appear here. Rename, switch off or add subjects for each class.</p>
+
+  <div class="sub-layout" id="sub-layout">
+    <div class="class-nav-wrap">
+      <div class="nav-head">Select class</div>
+      <div class="class-nav" id="class-nav">
+          <button type="button" class="nav-item" data-class="1"><span class="nav-name">Play</span><span class="nav-count">8</span></button>
+          <button type="button" class="nav-item" data-class="2"><span class="nav-name">Nursery</span><span class="nav-count">8</span></button>
+          <button type="button" class="nav-item" data-class="3"><span class="nav-name">One</span><span class="nav-count">8</span></button>
+          <button type="button" class="nav-item" data-class="4"><span class="nav-name">Two</span><span class="nav-count">8</span></button>
+          <button type="button" class="nav-item" data-class="5"><span class="nav-name">Three</span><span class="nav-count">12</span></button>
+          <button type="button" class="nav-item" data-class="6"><span class="nav-name">Four</span><span class="nav-count">12</span></button>
+          <button type="button" class="nav-item" data-class="7"><span class="nav-name">Five</span><span class="nav-count">12</span></button>
+          <button type="button" class="nav-item" data-class="8"><span class="nav-name">Six</span><span class="nav-count">11</span></button>
+          <button type="button" class="nav-item" data-class="9"><span class="nav-name">Seven</span><span class="nav-count">11</span></button>
+          <button type="button" class="nav-item" data-class="10"><span class="nav-name">Eight</span><span class="nav-count">11</span></button>
+          <button type="button" class="nav-item" data-class="11"><span class="nav-name">Nine (Science)</span><span class="nav-count">16</span></button>
+          <button type="button" class="nav-item" data-class="12"><span class="nav-name">Nine (Humanities)</span><span class="nav-count">16</span></button>
+          <button type="button" class="nav-item" data-class="13"><span class="nav-name">Nine (Business Studies)</span><span class="nav-count">16</span></button>
+          <button type="button" class="nav-item" data-class="14"><span class="nav-name">Ten (Science)</span><span class="nav-count">16</span></button>
+          <button type="button" class="nav-item" data-class="15"><span class="nav-name">Ten (Humanities)</span><span class="nav-count">16</span></button>
+          <button type="button" class="nav-item" data-class="16"><span class="nav-name">Ten (Business Studies)</span><span class="nav-count">16</span></button>
+      </div>
+    </div>
+
+    <div class="editor" id="sub-editor">
+      <div class="editor-top">
+        <div>
+          <span class="editor-for">Subjects for</span>
+          <span class="editor-title" id="sub-title"></span>
+        </div>
+        <div class="editor-tools">
+          <button class="link-btn" type="button" id="reset-class">Reset</button>
+        </div>
+      </div>
+
+      <div class="list list-subjects" style="border:none;border-radius:0;">
+        <div class="list-head"><span>Active</span><span>Default</span><span>Display name</span></div>
+        <div id="sub-panels">
+          <div class="sub-rows" data-class="1">
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_1_subject_1_enabled" checked aria-label="Enable Bangla"><span></span></label>
+              <span class="default-name" title="Bangla">Bangla</span>
+              <input type="text" name="class_1_subject_1_name" placeholder="Bangla" data-default="Bangla" autocomplete="off" aria-label="Display name for Bangla">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_1_subject_2_enabled" checked aria-label="Enable English"><span></span></label>
+              <span class="default-name" title="English">English</span>
+              <input type="text" name="class_1_subject_2_name" placeholder="English" data-default="English" autocomplete="off" aria-label="Display name for English">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_1_subject_3_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_1_subject_3_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_1_subject_4_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_1_subject_4_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_1_subject_5_enabled" checked aria-label="Enable General Knowledge"><span></span></label>
+              <span class="default-name" title="General Knowledge">General Knowledge</span>
+              <input type="text" name="class_1_subject_5_name" placeholder="General Knowledge" data-default="General Knowledge" autocomplete="off" aria-label="Display name for General Knowledge">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_1_subject_6_enabled" checked aria-label="Enable Spoken"><span></span></label>
+              <span class="default-name" title="Spoken">Spoken</span>
+              <input type="text" name="class_1_subject_6_name" placeholder="Spoken" data-default="Spoken" autocomplete="off" aria-label="Display name for Spoken">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_1_subject_7_enabled" checked aria-label="Enable Drawing"><span></span></label>
+              <span class="default-name" title="Drawing">Drawing</span>
+              <input type="text" name="class_1_subject_7_name" placeholder="Drawing" data-default="Drawing" autocomplete="off" aria-label="Display name for Drawing">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_1_subject_8_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_1_subject_8_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="2" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_2_subject_1_enabled" checked aria-label="Enable Bangla"><span></span></label>
+              <span class="default-name" title="Bangla">Bangla</span>
+              <input type="text" name="class_2_subject_1_name" placeholder="Bangla" data-default="Bangla" autocomplete="off" aria-label="Display name for Bangla">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_2_subject_2_enabled" checked aria-label="Enable English"><span></span></label>
+              <span class="default-name" title="English">English</span>
+              <input type="text" name="class_2_subject_2_name" placeholder="English" data-default="English" autocomplete="off" aria-label="Display name for English">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_2_subject_3_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_2_subject_3_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_2_subject_4_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_2_subject_4_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_2_subject_5_enabled" checked aria-label="Enable General Knowledge"><span></span></label>
+              <span class="default-name" title="General Knowledge">General Knowledge</span>
+              <input type="text" name="class_2_subject_5_name" placeholder="General Knowledge" data-default="General Knowledge" autocomplete="off" aria-label="Display name for General Knowledge">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_2_subject_6_enabled" checked aria-label="Enable Spoken"><span></span></label>
+              <span class="default-name" title="Spoken">Spoken</span>
+              <input type="text" name="class_2_subject_6_name" placeholder="Spoken" data-default="Spoken" autocomplete="off" aria-label="Display name for Spoken">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_2_subject_7_enabled" checked aria-label="Enable Drawing"><span></span></label>
+              <span class="default-name" title="Drawing">Drawing</span>
+              <input type="text" name="class_2_subject_7_name" placeholder="Drawing" data-default="Drawing" autocomplete="off" aria-label="Display name for Drawing">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_2_subject_8_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_2_subject_8_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="3" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_3_subject_1_enabled" checked aria-label="Enable Bangla"><span></span></label>
+              <span class="default-name" title="Bangla">Bangla</span>
+              <input type="text" name="class_3_subject_1_name" placeholder="Bangla" data-default="Bangla" autocomplete="off" aria-label="Display name for Bangla">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_3_subject_2_enabled" checked aria-label="Enable English"><span></span></label>
+              <span class="default-name" title="English">English</span>
+              <input type="text" name="class_3_subject_2_name" placeholder="English" data-default="English" autocomplete="off" aria-label="Display name for English">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_3_subject_3_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_3_subject_3_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_3_subject_4_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_3_subject_4_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_3_subject_5_enabled" checked aria-label="Enable General Knowledge"><span></span></label>
+              <span class="default-name" title="General Knowledge">General Knowledge</span>
+              <input type="text" name="class_3_subject_5_name" placeholder="General Knowledge" data-default="General Knowledge" autocomplete="off" aria-label="Display name for General Knowledge">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_3_subject_6_enabled" checked aria-label="Enable Spoken"><span></span></label>
+              <span class="default-name" title="Spoken">Spoken</span>
+              <input type="text" name="class_3_subject_6_name" placeholder="Spoken" data-default="Spoken" autocomplete="off" aria-label="Display name for Spoken">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_3_subject_7_enabled" checked aria-label="Enable Drawing"><span></span></label>
+              <span class="default-name" title="Drawing">Drawing</span>
+              <input type="text" name="class_3_subject_7_name" placeholder="Drawing" data-default="Drawing" autocomplete="off" aria-label="Display name for Drawing">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_3_subject_8_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_3_subject_8_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="4" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_4_subject_1_enabled" checked aria-label="Enable Bangla"><span></span></label>
+              <span class="default-name" title="Bangla">Bangla</span>
+              <input type="text" name="class_4_subject_1_name" placeholder="Bangla" data-default="Bangla" autocomplete="off" aria-label="Display name for Bangla">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_4_subject_2_enabled" checked aria-label="Enable English"><span></span></label>
+              <span class="default-name" title="English">English</span>
+              <input type="text" name="class_4_subject_2_name" placeholder="English" data-default="English" autocomplete="off" aria-label="Display name for English">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_4_subject_3_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_4_subject_3_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_4_subject_4_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_4_subject_4_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_4_subject_5_enabled" checked aria-label="Enable General Knowledge"><span></span></label>
+              <span class="default-name" title="General Knowledge">General Knowledge</span>
+              <input type="text" name="class_4_subject_5_name" placeholder="General Knowledge" data-default="General Knowledge" autocomplete="off" aria-label="Display name for General Knowledge">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_4_subject_6_enabled" checked aria-label="Enable Spoken"><span></span></label>
+              <span class="default-name" title="Spoken">Spoken</span>
+              <input type="text" name="class_4_subject_6_name" placeholder="Spoken" data-default="Spoken" autocomplete="off" aria-label="Display name for Spoken">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_4_subject_7_enabled" checked aria-label="Enable Drawing"><span></span></label>
+              <span class="default-name" title="Drawing">Drawing</span>
+              <input type="text" name="class_4_subject_7_name" placeholder="Drawing" data-default="Drawing" autocomplete="off" aria-label="Display name for Drawing">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_4_subject_8_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_4_subject_8_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="5" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_5_subject_1_enabled" checked aria-label="Enable Bangla 1st"><span></span></label>
+              <span class="default-name" title="Bangla 1st">Bangla 1st</span>
+              <input type="text" name="class_5_subject_1_name" placeholder="Bangla 1st" data-default="Bangla 1st" autocomplete="off" aria-label="Display name for Bangla 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_5_subject_2_enabled" checked aria-label="Enable Bangla 2nd"><span></span></label>
+              <span class="default-name" title="Bangla 2nd">Bangla 2nd</span>
+              <input type="text" name="class_5_subject_2_name" placeholder="Bangla 2nd" data-default="Bangla 2nd" autocomplete="off" aria-label="Display name for Bangla 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_5_subject_3_enabled" checked aria-label="Enable English 1st"><span></span></label>
+              <span class="default-name" title="English 1st">English 1st</span>
+              <input type="text" name="class_5_subject_3_name" placeholder="English 1st" data-default="English 1st" autocomplete="off" aria-label="Display name for English 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_5_subject_4_enabled" checked aria-label="Enable English 2nd"><span></span></label>
+              <span class="default-name" title="English 2nd">English 2nd</span>
+              <input type="text" name="class_5_subject_4_name" placeholder="English 2nd" data-default="English 2nd" autocomplete="off" aria-label="Display name for English 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_5_subject_5_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_5_subject_5_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_5_subject_6_enabled" checked aria-label="Enable Science"><span></span></label>
+              <span class="default-name" title="Science">Science</span>
+              <input type="text" name="class_5_subject_6_name" placeholder="Science" data-default="Science" autocomplete="off" aria-label="Display name for Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_5_subject_7_enabled" checked aria-label="Enable Bangladesh &amp; Global Studies"><span></span></label>
+              <span class="default-name" title="Bangladesh &amp; Global Studies">Bangladesh &amp; Global Studies</span>
+              <input type="text" name="class_5_subject_7_name" placeholder="Bangladesh &amp; Global Studies" data-default="Bangladesh &amp; Global Studies" autocomplete="off" aria-label="Display name for Bangladesh &amp; Global Studies">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_5_subject_8_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_5_subject_8_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_5_subject_9_enabled" checked aria-label="Enable General Knowledge"><span></span></label>
+              <span class="default-name" title="General Knowledge">General Knowledge</span>
+              <input type="text" name="class_5_subject_9_name" placeholder="General Knowledge" data-default="General Knowledge" autocomplete="off" aria-label="Display name for General Knowledge">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_5_subject_10_enabled" checked aria-label="Enable Spoken"><span></span></label>
+              <span class="default-name" title="Spoken">Spoken</span>
+              <input type="text" name="class_5_subject_10_name" placeholder="Spoken" data-default="Spoken" autocomplete="off" aria-label="Display name for Spoken">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_5_subject_11_enabled" checked aria-label="Enable Drawing"><span></span></label>
+              <span class="default-name" title="Drawing">Drawing</span>
+              <input type="text" name="class_5_subject_11_name" placeholder="Drawing" data-default="Drawing" autocomplete="off" aria-label="Display name for Drawing">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_5_subject_12_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_5_subject_12_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="6" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_6_subject_1_enabled" checked aria-label="Enable Bangla 1st"><span></span></label>
+              <span class="default-name" title="Bangla 1st">Bangla 1st</span>
+              <input type="text" name="class_6_subject_1_name" placeholder="Bangla 1st" data-default="Bangla 1st" autocomplete="off" aria-label="Display name for Bangla 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_6_subject_2_enabled" checked aria-label="Enable Bangla 2nd"><span></span></label>
+              <span class="default-name" title="Bangla 2nd">Bangla 2nd</span>
+              <input type="text" name="class_6_subject_2_name" placeholder="Bangla 2nd" data-default="Bangla 2nd" autocomplete="off" aria-label="Display name for Bangla 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_6_subject_3_enabled" checked aria-label="Enable English 1st"><span></span></label>
+              <span class="default-name" title="English 1st">English 1st</span>
+              <input type="text" name="class_6_subject_3_name" placeholder="English 1st" data-default="English 1st" autocomplete="off" aria-label="Display name for English 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_6_subject_4_enabled" checked aria-label="Enable English 2nd"><span></span></label>
+              <span class="default-name" title="English 2nd">English 2nd</span>
+              <input type="text" name="class_6_subject_4_name" placeholder="English 2nd" data-default="English 2nd" autocomplete="off" aria-label="Display name for English 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_6_subject_5_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_6_subject_5_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_6_subject_6_enabled" checked aria-label="Enable Science"><span></span></label>
+              <span class="default-name" title="Science">Science</span>
+              <input type="text" name="class_6_subject_6_name" placeholder="Science" data-default="Science" autocomplete="off" aria-label="Display name for Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_6_subject_7_enabled" checked aria-label="Enable Bangladesh &amp; Global Studies"><span></span></label>
+              <span class="default-name" title="Bangladesh &amp; Global Studies">Bangladesh &amp; Global Studies</span>
+              <input type="text" name="class_6_subject_7_name" placeholder="Bangladesh &amp; Global Studies" data-default="Bangladesh &amp; Global Studies" autocomplete="off" aria-label="Display name for Bangladesh &amp; Global Studies">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_6_subject_8_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_6_subject_8_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_6_subject_9_enabled" checked aria-label="Enable General Knowledge"><span></span></label>
+              <span class="default-name" title="General Knowledge">General Knowledge</span>
+              <input type="text" name="class_6_subject_9_name" placeholder="General Knowledge" data-default="General Knowledge" autocomplete="off" aria-label="Display name for General Knowledge">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_6_subject_10_enabled" checked aria-label="Enable Spoken"><span></span></label>
+              <span class="default-name" title="Spoken">Spoken</span>
+              <input type="text" name="class_6_subject_10_name" placeholder="Spoken" data-default="Spoken" autocomplete="off" aria-label="Display name for Spoken">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_6_subject_11_enabled" checked aria-label="Enable Drawing"><span></span></label>
+              <span class="default-name" title="Drawing">Drawing</span>
+              <input type="text" name="class_6_subject_11_name" placeholder="Drawing" data-default="Drawing" autocomplete="off" aria-label="Display name for Drawing">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_6_subject_12_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_6_subject_12_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="7" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_7_subject_1_enabled" checked aria-label="Enable Bangla 1st"><span></span></label>
+              <span class="default-name" title="Bangla 1st">Bangla 1st</span>
+              <input type="text" name="class_7_subject_1_name" placeholder="Bangla 1st" data-default="Bangla 1st" autocomplete="off" aria-label="Display name for Bangla 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_7_subject_2_enabled" checked aria-label="Enable Bangla 2nd"><span></span></label>
+              <span class="default-name" title="Bangla 2nd">Bangla 2nd</span>
+              <input type="text" name="class_7_subject_2_name" placeholder="Bangla 2nd" data-default="Bangla 2nd" autocomplete="off" aria-label="Display name for Bangla 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_7_subject_3_enabled" checked aria-label="Enable English 1st"><span></span></label>
+              <span class="default-name" title="English 1st">English 1st</span>
+              <input type="text" name="class_7_subject_3_name" placeholder="English 1st" data-default="English 1st" autocomplete="off" aria-label="Display name for English 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_7_subject_4_enabled" checked aria-label="Enable English 2nd"><span></span></label>
+              <span class="default-name" title="English 2nd">English 2nd</span>
+              <input type="text" name="class_7_subject_4_name" placeholder="English 2nd" data-default="English 2nd" autocomplete="off" aria-label="Display name for English 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_7_subject_5_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_7_subject_5_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_7_subject_6_enabled" checked aria-label="Enable Science"><span></span></label>
+              <span class="default-name" title="Science">Science</span>
+              <input type="text" name="class_7_subject_6_name" placeholder="Science" data-default="Science" autocomplete="off" aria-label="Display name for Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_7_subject_7_enabled" checked aria-label="Enable Bangladesh &amp; Global Studies"><span></span></label>
+              <span class="default-name" title="Bangladesh &amp; Global Studies">Bangladesh &amp; Global Studies</span>
+              <input type="text" name="class_7_subject_7_name" placeholder="Bangladesh &amp; Global Studies" data-default="Bangladesh &amp; Global Studies" autocomplete="off" aria-label="Display name for Bangladesh &amp; Global Studies">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_7_subject_8_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_7_subject_8_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_7_subject_9_enabled" checked aria-label="Enable General Knowledge"><span></span></label>
+              <span class="default-name" title="General Knowledge">General Knowledge</span>
+              <input type="text" name="class_7_subject_9_name" placeholder="General Knowledge" data-default="General Knowledge" autocomplete="off" aria-label="Display name for General Knowledge">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_7_subject_10_enabled" checked aria-label="Enable Spoken"><span></span></label>
+              <span class="default-name" title="Spoken">Spoken</span>
+              <input type="text" name="class_7_subject_10_name" placeholder="Spoken" data-default="Spoken" autocomplete="off" aria-label="Display name for Spoken">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_7_subject_11_enabled" checked aria-label="Enable Drawing"><span></span></label>
+              <span class="default-name" title="Drawing">Drawing</span>
+              <input type="text" name="class_7_subject_11_name" placeholder="Drawing" data-default="Drawing" autocomplete="off" aria-label="Display name for Drawing">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_7_subject_12_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_7_subject_12_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="8" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_8_subject_1_enabled" checked aria-label="Enable Bangla 1st"><span></span></label>
+              <span class="default-name" title="Bangla 1st">Bangla 1st</span>
+              <input type="text" name="class_8_subject_1_name" placeholder="Bangla 1st" data-default="Bangla 1st" autocomplete="off" aria-label="Display name for Bangla 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_8_subject_2_enabled" checked aria-label="Enable Bangla 2nd"><span></span></label>
+              <span class="default-name" title="Bangla 2nd">Bangla 2nd</span>
+              <input type="text" name="class_8_subject_2_name" placeholder="Bangla 2nd" data-default="Bangla 2nd" autocomplete="off" aria-label="Display name for Bangla 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_8_subject_3_enabled" checked aria-label="Enable English 1st"><span></span></label>
+              <span class="default-name" title="English 1st">English 1st</span>
+              <input type="text" name="class_8_subject_3_name" placeholder="English 1st" data-default="English 1st" autocomplete="off" aria-label="Display name for English 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_8_subject_4_enabled" checked aria-label="Enable English 2nd"><span></span></label>
+              <span class="default-name" title="English 2nd">English 2nd</span>
+              <input type="text" name="class_8_subject_4_name" placeholder="English 2nd" data-default="English 2nd" autocomplete="off" aria-label="Display name for English 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_8_subject_5_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_8_subject_5_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_8_subject_6_enabled" checked aria-label="Enable Science"><span></span></label>
+              <span class="default-name" title="Science">Science</span>
+              <input type="text" name="class_8_subject_6_name" placeholder="Science" data-default="Science" autocomplete="off" aria-label="Display name for Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_8_subject_7_enabled" checked aria-label="Enable Bangladesh &amp; Global Studies"><span></span></label>
+              <span class="default-name" title="Bangladesh &amp; Global Studies">Bangladesh &amp; Global Studies</span>
+              <input type="text" name="class_8_subject_7_name" placeholder="Bangladesh &amp; Global Studies" data-default="Bangladesh &amp; Global Studies" autocomplete="off" aria-label="Display name for Bangladesh &amp; Global Studies">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_8_subject_8_enabled" checked aria-label="Enable Information and Communication Technology"><span></span></label>
+              <span class="default-name" title="Information and Communication Technology">Information and Communication Technology</span>
+              <input type="text" name="class_8_subject_8_name" placeholder="Information and Communication Technology" data-default="Information and Communication Technology" autocomplete="off" aria-label="Display name for Information and Communication Technology">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_8_subject_9_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_8_subject_9_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_8_subject_10_enabled" checked aria-label="Enable Agriculture/Home Science"><span></span></label>
+              <span class="default-name" title="Agriculture/Home Science">Agriculture/Home Science</span>
+              <input type="text" name="class_8_subject_10_name" placeholder="Agriculture/Home Science" data-default="Agriculture/Home Science" autocomplete="off" aria-label="Display name for Agriculture/Home Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_8_subject_11_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_8_subject_11_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="9" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_9_subject_1_enabled" checked aria-label="Enable Bangla 1st"><span></span></label>
+              <span class="default-name" title="Bangla 1st">Bangla 1st</span>
+              <input type="text" name="class_9_subject_1_name" placeholder="Bangla 1st" data-default="Bangla 1st" autocomplete="off" aria-label="Display name for Bangla 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_9_subject_2_enabled" checked aria-label="Enable Bangla 2nd"><span></span></label>
+              <span class="default-name" title="Bangla 2nd">Bangla 2nd</span>
+              <input type="text" name="class_9_subject_2_name" placeholder="Bangla 2nd" data-default="Bangla 2nd" autocomplete="off" aria-label="Display name for Bangla 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_9_subject_3_enabled" checked aria-label="Enable English 1st"><span></span></label>
+              <span class="default-name" title="English 1st">English 1st</span>
+              <input type="text" name="class_9_subject_3_name" placeholder="English 1st" data-default="English 1st" autocomplete="off" aria-label="Display name for English 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_9_subject_4_enabled" checked aria-label="Enable English 2nd"><span></span></label>
+              <span class="default-name" title="English 2nd">English 2nd</span>
+              <input type="text" name="class_9_subject_4_name" placeholder="English 2nd" data-default="English 2nd" autocomplete="off" aria-label="Display name for English 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_9_subject_5_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_9_subject_5_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_9_subject_6_enabled" checked aria-label="Enable Science"><span></span></label>
+              <span class="default-name" title="Science">Science</span>
+              <input type="text" name="class_9_subject_6_name" placeholder="Science" data-default="Science" autocomplete="off" aria-label="Display name for Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_9_subject_7_enabled" checked aria-label="Enable Bangladesh &amp; Global Studies"><span></span></label>
+              <span class="default-name" title="Bangladesh &amp; Global Studies">Bangladesh &amp; Global Studies</span>
+              <input type="text" name="class_9_subject_7_name" placeholder="Bangladesh &amp; Global Studies" data-default="Bangladesh &amp; Global Studies" autocomplete="off" aria-label="Display name for Bangladesh &amp; Global Studies">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_9_subject_8_enabled" checked aria-label="Enable Information and Communication Technology"><span></span></label>
+              <span class="default-name" title="Information and Communication Technology">Information and Communication Technology</span>
+              <input type="text" name="class_9_subject_8_name" placeholder="Information and Communication Technology" data-default="Information and Communication Technology" autocomplete="off" aria-label="Display name for Information and Communication Technology">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_9_subject_9_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_9_subject_9_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_9_subject_10_enabled" checked aria-label="Enable Agriculture/Home Science"><span></span></label>
+              <span class="default-name" title="Agriculture/Home Science">Agriculture/Home Science</span>
+              <input type="text" name="class_9_subject_10_name" placeholder="Agriculture/Home Science" data-default="Agriculture/Home Science" autocomplete="off" aria-label="Display name for Agriculture/Home Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_9_subject_11_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_9_subject_11_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="10" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_10_subject_1_enabled" checked aria-label="Enable Bangla 1st"><span></span></label>
+              <span class="default-name" title="Bangla 1st">Bangla 1st</span>
+              <input type="text" name="class_10_subject_1_name" placeholder="Bangla 1st" data-default="Bangla 1st" autocomplete="off" aria-label="Display name for Bangla 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_10_subject_2_enabled" checked aria-label="Enable Bangla 2nd"><span></span></label>
+              <span class="default-name" title="Bangla 2nd">Bangla 2nd</span>
+              <input type="text" name="class_10_subject_2_name" placeholder="Bangla 2nd" data-default="Bangla 2nd" autocomplete="off" aria-label="Display name for Bangla 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_10_subject_3_enabled" checked aria-label="Enable English 1st"><span></span></label>
+              <span class="default-name" title="English 1st">English 1st</span>
+              <input type="text" name="class_10_subject_3_name" placeholder="English 1st" data-default="English 1st" autocomplete="off" aria-label="Display name for English 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_10_subject_4_enabled" checked aria-label="Enable English 2nd"><span></span></label>
+              <span class="default-name" title="English 2nd">English 2nd</span>
+              <input type="text" name="class_10_subject_4_name" placeholder="English 2nd" data-default="English 2nd" autocomplete="off" aria-label="Display name for English 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_10_subject_5_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_10_subject_5_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_10_subject_6_enabled" checked aria-label="Enable Science"><span></span></label>
+              <span class="default-name" title="Science">Science</span>
+              <input type="text" name="class_10_subject_6_name" placeholder="Science" data-default="Science" autocomplete="off" aria-label="Display name for Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_10_subject_7_enabled" checked aria-label="Enable Bangladesh &amp; Global Studies"><span></span></label>
+              <span class="default-name" title="Bangladesh &amp; Global Studies">Bangladesh &amp; Global Studies</span>
+              <input type="text" name="class_10_subject_7_name" placeholder="Bangladesh &amp; Global Studies" data-default="Bangladesh &amp; Global Studies" autocomplete="off" aria-label="Display name for Bangladesh &amp; Global Studies">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_10_subject_8_enabled" checked aria-label="Enable Information and Communication Technology"><span></span></label>
+              <span class="default-name" title="Information and Communication Technology">Information and Communication Technology</span>
+              <input type="text" name="class_10_subject_8_name" placeholder="Information and Communication Technology" data-default="Information and Communication Technology" autocomplete="off" aria-label="Display name for Information and Communication Technology">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_10_subject_9_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_10_subject_9_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_10_subject_10_enabled" checked aria-label="Enable Agriculture/Home Science"><span></span></label>
+              <span class="default-name" title="Agriculture/Home Science">Agriculture/Home Science</span>
+              <input type="text" name="class_10_subject_10_name" placeholder="Agriculture/Home Science" data-default="Agriculture/Home Science" autocomplete="off" aria-label="Display name for Agriculture/Home Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_10_subject_11_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_10_subject_11_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="11" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_1_enabled" checked aria-label="Enable Bangla 1st"><span></span></label>
+              <span class="default-name" title="Bangla 1st">Bangla 1st</span>
+              <input type="text" name="class_11_subject_1_name" placeholder="Bangla 1st" data-default="Bangla 1st" autocomplete="off" aria-label="Display name for Bangla 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_2_enabled" checked aria-label="Enable Bangla 2nd"><span></span></label>
+              <span class="default-name" title="Bangla 2nd">Bangla 2nd</span>
+              <input type="text" name="class_11_subject_2_name" placeholder="Bangla 2nd" data-default="Bangla 2nd" autocomplete="off" aria-label="Display name for Bangla 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_3_enabled" checked aria-label="Enable English 1st"><span></span></label>
+              <span class="default-name" title="English 1st">English 1st</span>
+              <input type="text" name="class_11_subject_3_name" placeholder="English 1st" data-default="English 1st" autocomplete="off" aria-label="Display name for English 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_4_enabled" checked aria-label="Enable English 2nd"><span></span></label>
+              <span class="default-name" title="English 2nd">English 2nd</span>
+              <input type="text" name="class_11_subject_4_name" placeholder="English 2nd" data-default="English 2nd" autocomplete="off" aria-label="Display name for English 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_5_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_11_subject_5_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_6_enabled" checked aria-label="Enable Information and Communication Technology"><span></span></label>
+              <span class="default-name" title="Information and Communication Technology">Information and Communication Technology</span>
+              <input type="text" name="class_11_subject_6_name" placeholder="Information and Communication Technology" data-default="Information and Communication Technology" autocomplete="off" aria-label="Display name for Information and Communication Technology">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_7_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_11_subject_7_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_8_enabled" checked aria-label="Enable Physical Education, Health Science and Sports"><span></span></label>
+              <span class="default-name" title="Physical Education, Health Science and Sports">Physical Education, Health Science and Sports</span>
+              <input type="text" name="class_11_subject_8_name" placeholder="Physical Education, Health Science and Sports" data-default="Physical Education, Health Science and Sports" autocomplete="off" aria-label="Display name for Physical Education, Health Science and Sports">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_9_enabled" checked aria-label="Enable Career Education"><span></span></label>
+              <span class="default-name" title="Career Education">Career Education</span>
+              <input type="text" name="class_11_subject_9_name" placeholder="Career Education" data-default="Career Education" autocomplete="off" aria-label="Display name for Career Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_10_enabled" checked aria-label="Enable Bangladesh &amp; Global Studies"><span></span></label>
+              <span class="default-name" title="Bangladesh &amp; Global Studies">Bangladesh &amp; Global Studies</span>
+              <input type="text" name="class_11_subject_10_name" placeholder="Bangladesh &amp; Global Studies" data-default="Bangladesh &amp; Global Studies" autocomplete="off" aria-label="Display name for Bangladesh &amp; Global Studies">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_11_enabled" checked aria-label="Enable Physics"><span></span></label>
+              <span class="default-name" title="Physics">Physics</span>
+              <input type="text" name="class_11_subject_11_name" placeholder="Physics" data-default="Physics" autocomplete="off" aria-label="Display name for Physics">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_12_enabled" checked aria-label="Enable Chemistry"><span></span></label>
+              <span class="default-name" title="Chemistry">Chemistry</span>
+              <input type="text" name="class_11_subject_12_name" placeholder="Chemistry" data-default="Chemistry" autocomplete="off" aria-label="Display name for Chemistry">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_13_enabled" checked aria-label="Enable Higher Math"><span></span></label>
+              <span class="default-name" title="Higher Math">Higher Math</span>
+              <input type="text" name="class_11_subject_13_name" placeholder="Higher Math" data-default="Higher Math" autocomplete="off" aria-label="Display name for Higher Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_14_enabled" checked aria-label="Enable Biology"><span></span></label>
+              <span class="default-name" title="Biology">Biology</span>
+              <input type="text" name="class_11_subject_14_name" placeholder="Biology" data-default="Biology" autocomplete="off" aria-label="Display name for Biology">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_15_enabled" checked aria-label="Enable Agriculture/Home Science"><span></span></label>
+              <span class="default-name" title="Agriculture/Home Science">Agriculture/Home Science</span>
+              <input type="text" name="class_11_subject_15_name" placeholder="Agriculture/Home Science" data-default="Agriculture/Home Science" autocomplete="off" aria-label="Display name for Agriculture/Home Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_11_subject_16_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_11_subject_16_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="12" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_1_enabled" checked aria-label="Enable Bangla 1st"><span></span></label>
+              <span class="default-name" title="Bangla 1st">Bangla 1st</span>
+              <input type="text" name="class_12_subject_1_name" placeholder="Bangla 1st" data-default="Bangla 1st" autocomplete="off" aria-label="Display name for Bangla 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_2_enabled" checked aria-label="Enable Bangla 2nd"><span></span></label>
+              <span class="default-name" title="Bangla 2nd">Bangla 2nd</span>
+              <input type="text" name="class_12_subject_2_name" placeholder="Bangla 2nd" data-default="Bangla 2nd" autocomplete="off" aria-label="Display name for Bangla 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_3_enabled" checked aria-label="Enable English 1st"><span></span></label>
+              <span class="default-name" title="English 1st">English 1st</span>
+              <input type="text" name="class_12_subject_3_name" placeholder="English 1st" data-default="English 1st" autocomplete="off" aria-label="Display name for English 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_4_enabled" checked aria-label="Enable English 2nd"><span></span></label>
+              <span class="default-name" title="English 2nd">English 2nd</span>
+              <input type="text" name="class_12_subject_4_name" placeholder="English 2nd" data-default="English 2nd" autocomplete="off" aria-label="Display name for English 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_5_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_12_subject_5_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_6_enabled" checked aria-label="Enable Information and Communication Technology"><span></span></label>
+              <span class="default-name" title="Information and Communication Technology">Information and Communication Technology</span>
+              <input type="text" name="class_12_subject_6_name" placeholder="Information and Communication Technology" data-default="Information and Communication Technology" autocomplete="off" aria-label="Display name for Information and Communication Technology">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_7_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_12_subject_7_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_8_enabled" checked aria-label="Enable Physical Education, Health Science and Sports"><span></span></label>
+              <span class="default-name" title="Physical Education, Health Science and Sports">Physical Education, Health Science and Sports</span>
+              <input type="text" name="class_12_subject_8_name" placeholder="Physical Education, Health Science and Sports" data-default="Physical Education, Health Science and Sports" autocomplete="off" aria-label="Display name for Physical Education, Health Science and Sports">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_9_enabled" checked aria-label="Enable Career Education"><span></span></label>
+              <span class="default-name" title="Career Education">Career Education</span>
+              <input type="text" name="class_12_subject_9_name" placeholder="Career Education" data-default="Career Education" autocomplete="off" aria-label="Display name for Career Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_10_enabled" checked aria-label="Enable Science"><span></span></label>
+              <span class="default-name" title="Science">Science</span>
+              <input type="text" name="class_12_subject_10_name" placeholder="Science" data-default="Science" autocomplete="off" aria-label="Display name for Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_11_enabled" checked aria-label="Enable History"><span></span></label>
+              <span class="default-name" title="History">History</span>
+              <input type="text" name="class_12_subject_11_name" placeholder="History" data-default="History" autocomplete="off" aria-label="Display name for History">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_12_enabled" checked aria-label="Enable Geography &amp; Environment"><span></span></label>
+              <span class="default-name" title="Geography &amp; Environment">Geography &amp; Environment</span>
+              <input type="text" name="class_12_subject_12_name" placeholder="Geography &amp; Environment" data-default="Geography &amp; Environment" autocomplete="off" aria-label="Display name for Geography &amp; Environment">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_13_enabled" checked aria-label="Enable Civics &amp; Citizenship"><span></span></label>
+              <span class="default-name" title="Civics &amp; Citizenship">Civics &amp; Citizenship</span>
+              <input type="text" name="class_12_subject_13_name" placeholder="Civics &amp; Citizenship" data-default="Civics &amp; Citizenship" autocomplete="off" aria-label="Display name for Civics &amp; Citizenship">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_14_enabled" checked aria-label="Enable Economics"><span></span></label>
+              <span class="default-name" title="Economics">Economics</span>
+              <input type="text" name="class_12_subject_14_name" placeholder="Economics" data-default="Economics" autocomplete="off" aria-label="Display name for Economics">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_15_enabled" checked aria-label="Enable Agriculture/Home Science"><span></span></label>
+              <span class="default-name" title="Agriculture/Home Science">Agriculture/Home Science</span>
+              <input type="text" name="class_12_subject_15_name" placeholder="Agriculture/Home Science" data-default="Agriculture/Home Science" autocomplete="off" aria-label="Display name for Agriculture/Home Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_12_subject_16_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_12_subject_16_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="13" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_1_enabled" checked aria-label="Enable Bangla 1st"><span></span></label>
+              <span class="default-name" title="Bangla 1st">Bangla 1st</span>
+              <input type="text" name="class_13_subject_1_name" placeholder="Bangla 1st" data-default="Bangla 1st" autocomplete="off" aria-label="Display name for Bangla 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_2_enabled" checked aria-label="Enable Bangla 2nd"><span></span></label>
+              <span class="default-name" title="Bangla 2nd">Bangla 2nd</span>
+              <input type="text" name="class_13_subject_2_name" placeholder="Bangla 2nd" data-default="Bangla 2nd" autocomplete="off" aria-label="Display name for Bangla 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_3_enabled" checked aria-label="Enable English 1st"><span></span></label>
+              <span class="default-name" title="English 1st">English 1st</span>
+              <input type="text" name="class_13_subject_3_name" placeholder="English 1st" data-default="English 1st" autocomplete="off" aria-label="Display name for English 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_4_enabled" checked aria-label="Enable English 2nd"><span></span></label>
+              <span class="default-name" title="English 2nd">English 2nd</span>
+              <input type="text" name="class_13_subject_4_name" placeholder="English 2nd" data-default="English 2nd" autocomplete="off" aria-label="Display name for English 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_5_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_13_subject_5_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_6_enabled" checked aria-label="Enable Information and Communication Technology"><span></span></label>
+              <span class="default-name" title="Information and Communication Technology">Information and Communication Technology</span>
+              <input type="text" name="class_13_subject_6_name" placeholder="Information and Communication Technology" data-default="Information and Communication Technology" autocomplete="off" aria-label="Display name for Information and Communication Technology">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_7_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_13_subject_7_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_8_enabled" checked aria-label="Enable Physical Education, Health Science and Sports"><span></span></label>
+              <span class="default-name" title="Physical Education, Health Science and Sports">Physical Education, Health Science and Sports</span>
+              <input type="text" name="class_13_subject_8_name" placeholder="Physical Education, Health Science and Sports" data-default="Physical Education, Health Science and Sports" autocomplete="off" aria-label="Display name for Physical Education, Health Science and Sports">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_9_enabled" checked aria-label="Enable Career Education"><span></span></label>
+              <span class="default-name" title="Career Education">Career Education</span>
+              <input type="text" name="class_13_subject_9_name" placeholder="Career Education" data-default="Career Education" autocomplete="off" aria-label="Display name for Career Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_10_enabled" checked aria-label="Enable Science"><span></span></label>
+              <span class="default-name" title="Science">Science</span>
+              <input type="text" name="class_13_subject_10_name" placeholder="Science" data-default="Science" autocomplete="off" aria-label="Display name for Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_11_enabled" checked aria-label="Enable Accounting"><span></span></label>
+              <span class="default-name" title="Accounting">Accounting</span>
+              <input type="text" name="class_13_subject_11_name" placeholder="Accounting" data-default="Accounting" autocomplete="off" aria-label="Display name for Accounting">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_12_enabled" checked aria-label="Enable Finance and Banking"><span></span></label>
+              <span class="default-name" title="Finance and Banking">Finance and Banking</span>
+              <input type="text" name="class_13_subject_12_name" placeholder="Finance and Banking" data-default="Finance and Banking" autocomplete="off" aria-label="Display name for Finance and Banking">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_13_enabled" checked aria-label="Enable Business Entrepreneurship"><span></span></label>
+              <span class="default-name" title="Business Entrepreneurship">Business Entrepreneurship</span>
+              <input type="text" name="class_13_subject_13_name" placeholder="Business Entrepreneurship" data-default="Business Entrepreneurship" autocomplete="off" aria-label="Display name for Business Entrepreneurship">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_14_enabled" checked aria-label="Enable Agriculture Studies"><span></span></label>
+              <span class="default-name" title="Agriculture Studies">Agriculture Studies</span>
+              <input type="text" name="class_13_subject_14_name" placeholder="Agriculture Studies" data-default="Agriculture Studies" autocomplete="off" aria-label="Display name for Agriculture Studies">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_15_enabled" checked aria-label="Enable Home Science"><span></span></label>
+              <span class="default-name" title="Home Science">Home Science</span>
+              <input type="text" name="class_13_subject_15_name" placeholder="Home Science" data-default="Home Science" autocomplete="off" aria-label="Display name for Home Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_13_subject_16_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_13_subject_16_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="14" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_1_enabled" checked aria-label="Enable Bangla 1st"><span></span></label>
+              <span class="default-name" title="Bangla 1st">Bangla 1st</span>
+              <input type="text" name="class_14_subject_1_name" placeholder="Bangla 1st" data-default="Bangla 1st" autocomplete="off" aria-label="Display name for Bangla 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_2_enabled" checked aria-label="Enable Bangla 2nd"><span></span></label>
+              <span class="default-name" title="Bangla 2nd">Bangla 2nd</span>
+              <input type="text" name="class_14_subject_2_name" placeholder="Bangla 2nd" data-default="Bangla 2nd" autocomplete="off" aria-label="Display name for Bangla 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_3_enabled" checked aria-label="Enable English 1st"><span></span></label>
+              <span class="default-name" title="English 1st">English 1st</span>
+              <input type="text" name="class_14_subject_3_name" placeholder="English 1st" data-default="English 1st" autocomplete="off" aria-label="Display name for English 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_4_enabled" checked aria-label="Enable English 2nd"><span></span></label>
+              <span class="default-name" title="English 2nd">English 2nd</span>
+              <input type="text" name="class_14_subject_4_name" placeholder="English 2nd" data-default="English 2nd" autocomplete="off" aria-label="Display name for English 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_5_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_14_subject_5_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_6_enabled" checked aria-label="Enable Information and Communication Technology"><span></span></label>
+              <span class="default-name" title="Information and Communication Technology">Information and Communication Technology</span>
+              <input type="text" name="class_14_subject_6_name" placeholder="Information and Communication Technology" data-default="Information and Communication Technology" autocomplete="off" aria-label="Display name for Information and Communication Technology">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_7_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_14_subject_7_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_8_enabled" checked aria-label="Enable Physical Education, Health Science and Sports"><span></span></label>
+              <span class="default-name" title="Physical Education, Health Science and Sports">Physical Education, Health Science and Sports</span>
+              <input type="text" name="class_14_subject_8_name" placeholder="Physical Education, Health Science and Sports" data-default="Physical Education, Health Science and Sports" autocomplete="off" aria-label="Display name for Physical Education, Health Science and Sports">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_9_enabled" checked aria-label="Enable Career Education"><span></span></label>
+              <span class="default-name" title="Career Education">Career Education</span>
+              <input type="text" name="class_14_subject_9_name" placeholder="Career Education" data-default="Career Education" autocomplete="off" aria-label="Display name for Career Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_10_enabled" checked aria-label="Enable Bangladesh &amp; Global Studies"><span></span></label>
+              <span class="default-name" title="Bangladesh &amp; Global Studies">Bangladesh &amp; Global Studies</span>
+              <input type="text" name="class_14_subject_10_name" placeholder="Bangladesh &amp; Global Studies" data-default="Bangladesh &amp; Global Studies" autocomplete="off" aria-label="Display name for Bangladesh &amp; Global Studies">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_11_enabled" checked aria-label="Enable Physics"><span></span></label>
+              <span class="default-name" title="Physics">Physics</span>
+              <input type="text" name="class_14_subject_11_name" placeholder="Physics" data-default="Physics" autocomplete="off" aria-label="Display name for Physics">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_12_enabled" checked aria-label="Enable Chemistry"><span></span></label>
+              <span class="default-name" title="Chemistry">Chemistry</span>
+              <input type="text" name="class_14_subject_12_name" placeholder="Chemistry" data-default="Chemistry" autocomplete="off" aria-label="Display name for Chemistry">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_13_enabled" checked aria-label="Enable Higher Math"><span></span></label>
+              <span class="default-name" title="Higher Math">Higher Math</span>
+              <input type="text" name="class_14_subject_13_name" placeholder="Higher Math" data-default="Higher Math" autocomplete="off" aria-label="Display name for Higher Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_14_enabled" checked aria-label="Enable Biology"><span></span></label>
+              <span class="default-name" title="Biology">Biology</span>
+              <input type="text" name="class_14_subject_14_name" placeholder="Biology" data-default="Biology" autocomplete="off" aria-label="Display name for Biology">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_15_enabled" checked aria-label="Enable Agriculture/Home Science"><span></span></label>
+              <span class="default-name" title="Agriculture/Home Science">Agriculture/Home Science</span>
+              <input type="text" name="class_14_subject_15_name" placeholder="Agriculture/Home Science" data-default="Agriculture/Home Science" autocomplete="off" aria-label="Display name for Agriculture/Home Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_14_subject_16_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_14_subject_16_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="15" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_1_enabled" checked aria-label="Enable Bangla 1st"><span></span></label>
+              <span class="default-name" title="Bangla 1st">Bangla 1st</span>
+              <input type="text" name="class_15_subject_1_name" placeholder="Bangla 1st" data-default="Bangla 1st" autocomplete="off" aria-label="Display name for Bangla 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_2_enabled" checked aria-label="Enable Bangla 2nd"><span></span></label>
+              <span class="default-name" title="Bangla 2nd">Bangla 2nd</span>
+              <input type="text" name="class_15_subject_2_name" placeholder="Bangla 2nd" data-default="Bangla 2nd" autocomplete="off" aria-label="Display name for Bangla 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_3_enabled" checked aria-label="Enable English 1st"><span></span></label>
+              <span class="default-name" title="English 1st">English 1st</span>
+              <input type="text" name="class_15_subject_3_name" placeholder="English 1st" data-default="English 1st" autocomplete="off" aria-label="Display name for English 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_4_enabled" checked aria-label="Enable English 2nd"><span></span></label>
+              <span class="default-name" title="English 2nd">English 2nd</span>
+              <input type="text" name="class_15_subject_4_name" placeholder="English 2nd" data-default="English 2nd" autocomplete="off" aria-label="Display name for English 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_5_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_15_subject_5_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_6_enabled" checked aria-label="Enable Information and Communication Technology"><span></span></label>
+              <span class="default-name" title="Information and Communication Technology">Information and Communication Technology</span>
+              <input type="text" name="class_15_subject_6_name" placeholder="Information and Communication Technology" data-default="Information and Communication Technology" autocomplete="off" aria-label="Display name for Information and Communication Technology">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_7_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_15_subject_7_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_8_enabled" checked aria-label="Enable Physical Education, Health Science and Sports"><span></span></label>
+              <span class="default-name" title="Physical Education, Health Science and Sports">Physical Education, Health Science and Sports</span>
+              <input type="text" name="class_15_subject_8_name" placeholder="Physical Education, Health Science and Sports" data-default="Physical Education, Health Science and Sports" autocomplete="off" aria-label="Display name for Physical Education, Health Science and Sports">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_9_enabled" checked aria-label="Enable Career Education"><span></span></label>
+              <span class="default-name" title="Career Education">Career Education</span>
+              <input type="text" name="class_15_subject_9_name" placeholder="Career Education" data-default="Career Education" autocomplete="off" aria-label="Display name for Career Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_10_enabled" checked aria-label="Enable Science"><span></span></label>
+              <span class="default-name" title="Science">Science</span>
+              <input type="text" name="class_15_subject_10_name" placeholder="Science" data-default="Science" autocomplete="off" aria-label="Display name for Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_11_enabled" checked aria-label="Enable History"><span></span></label>
+              <span class="default-name" title="History">History</span>
+              <input type="text" name="class_15_subject_11_name" placeholder="History" data-default="History" autocomplete="off" aria-label="Display name for History">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_12_enabled" checked aria-label="Enable Geography &amp; Environment"><span></span></label>
+              <span class="default-name" title="Geography &amp; Environment">Geography &amp; Environment</span>
+              <input type="text" name="class_15_subject_12_name" placeholder="Geography &amp; Environment" data-default="Geography &amp; Environment" autocomplete="off" aria-label="Display name for Geography &amp; Environment">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_13_enabled" checked aria-label="Enable Civics &amp; Citizenship"><span></span></label>
+              <span class="default-name" title="Civics &amp; Citizenship">Civics &amp; Citizenship</span>
+              <input type="text" name="class_15_subject_13_name" placeholder="Civics &amp; Citizenship" data-default="Civics &amp; Citizenship" autocomplete="off" aria-label="Display name for Civics &amp; Citizenship">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_14_enabled" checked aria-label="Enable Economics"><span></span></label>
+              <span class="default-name" title="Economics">Economics</span>
+              <input type="text" name="class_15_subject_14_name" placeholder="Economics" data-default="Economics" autocomplete="off" aria-label="Display name for Economics">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_15_enabled" checked aria-label="Enable Agriculture/Home Science"><span></span></label>
+              <span class="default-name" title="Agriculture/Home Science">Agriculture/Home Science</span>
+              <input type="text" name="class_15_subject_15_name" placeholder="Agriculture/Home Science" data-default="Agriculture/Home Science" autocomplete="off" aria-label="Display name for Agriculture/Home Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_15_subject_16_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_15_subject_16_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+          <div class="sub-rows" data-class="16" hidden>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_1_enabled" checked aria-label="Enable Bangla 1st"><span></span></label>
+              <span class="default-name" title="Bangla 1st">Bangla 1st</span>
+              <input type="text" name="class_16_subject_1_name" placeholder="Bangla 1st" data-default="Bangla 1st" autocomplete="off" aria-label="Display name for Bangla 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_2_enabled" checked aria-label="Enable Bangla 2nd"><span></span></label>
+              <span class="default-name" title="Bangla 2nd">Bangla 2nd</span>
+              <input type="text" name="class_16_subject_2_name" placeholder="Bangla 2nd" data-default="Bangla 2nd" autocomplete="off" aria-label="Display name for Bangla 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_3_enabled" checked aria-label="Enable English 1st"><span></span></label>
+              <span class="default-name" title="English 1st">English 1st</span>
+              <input type="text" name="class_16_subject_3_name" placeholder="English 1st" data-default="English 1st" autocomplete="off" aria-label="Display name for English 1st">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_4_enabled" checked aria-label="Enable English 2nd"><span></span></label>
+              <span class="default-name" title="English 2nd">English 2nd</span>
+              <input type="text" name="class_16_subject_4_name" placeholder="English 2nd" data-default="English 2nd" autocomplete="off" aria-label="Display name for English 2nd">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_5_enabled" checked aria-label="Enable Math"><span></span></label>
+              <span class="default-name" title="Math">Math</span>
+              <input type="text" name="class_16_subject_5_name" placeholder="Math" data-default="Math" autocomplete="off" aria-label="Display name for Math">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_6_enabled" checked aria-label="Enable Information and Communication Technology"><span></span></label>
+              <span class="default-name" title="Information and Communication Technology">Information and Communication Technology</span>
+              <input type="text" name="class_16_subject_6_name" placeholder="Information and Communication Technology" data-default="Information and Communication Technology" autocomplete="off" aria-label="Display name for Information and Communication Technology">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_7_enabled" checked aria-label="Enable Religious Studies and Moral Education"><span></span></label>
+              <span class="default-name" title="Religious Studies and Moral Education">Religious Studies and Moral Education</span>
+              <input type="text" name="class_16_subject_7_name" placeholder="Religious Studies and Moral Education" data-default="Religious Studies and Moral Education" autocomplete="off" aria-label="Display name for Religious Studies and Moral Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_8_enabled" checked aria-label="Enable Physical Education, Health Science and Sports"><span></span></label>
+              <span class="default-name" title="Physical Education, Health Science and Sports">Physical Education, Health Science and Sports</span>
+              <input type="text" name="class_16_subject_8_name" placeholder="Physical Education, Health Science and Sports" data-default="Physical Education, Health Science and Sports" autocomplete="off" aria-label="Display name for Physical Education, Health Science and Sports">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_9_enabled" checked aria-label="Enable Career Education"><span></span></label>
+              <span class="default-name" title="Career Education">Career Education</span>
+              <input type="text" name="class_16_subject_9_name" placeholder="Career Education" data-default="Career Education" autocomplete="off" aria-label="Display name for Career Education">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_10_enabled" checked aria-label="Enable Science"><span></span></label>
+              <span class="default-name" title="Science">Science</span>
+              <input type="text" name="class_16_subject_10_name" placeholder="Science" data-default="Science" autocomplete="off" aria-label="Display name for Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_11_enabled" checked aria-label="Enable Accounting"><span></span></label>
+              <span class="default-name" title="Accounting">Accounting</span>
+              <input type="text" name="class_16_subject_11_name" placeholder="Accounting" data-default="Accounting" autocomplete="off" aria-label="Display name for Accounting">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_12_enabled" checked aria-label="Enable Finance and Banking"><span></span></label>
+              <span class="default-name" title="Finance and Banking">Finance and Banking</span>
+              <input type="text" name="class_16_subject_12_name" placeholder="Finance and Banking" data-default="Finance and Banking" autocomplete="off" aria-label="Display name for Finance and Banking">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_13_enabled" checked aria-label="Enable Business Entrepreneurship"><span></span></label>
+              <span class="default-name" title="Business Entrepreneurship">Business Entrepreneurship</span>
+              <input type="text" name="class_16_subject_13_name" placeholder="Business Entrepreneurship" data-default="Business Entrepreneurship" autocomplete="off" aria-label="Display name for Business Entrepreneurship">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_14_enabled" checked aria-label="Enable Agriculture Studies"><span></span></label>
+              <span class="default-name" title="Agriculture Studies">Agriculture Studies</span>
+              <input type="text" name="class_16_subject_14_name" placeholder="Agriculture Studies" data-default="Agriculture Studies" autocomplete="off" aria-label="Display name for Agriculture Studies">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_15_enabled" checked aria-label="Enable Home Science"><span></span></label>
+              <span class="default-name" title="Home Science">Home Science</span>
+              <input type="text" name="class_16_subject_15_name" placeholder="Home Science" data-default="Home Science" autocomplete="off" aria-label="Display name for Home Science">
+            </div>
+            <div class="row row-subject">
+              <label class="switch"><input type="checkbox" name="class_16_subject_16_enabled" checked aria-label="Enable Clothes/Manner/Presence"><span></span></label>
+              <span class="default-name" title="Clothes/Manner/Presence">Clothes/Manner/Presence</span>
+              <input type="text" name="class_16_subject_16_name" placeholder="Clothes/Manner/Presence" data-default="Clothes/Manner/Presence" autocomplete="off" aria-label="Display name for Clothes/Manner/Presence">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="editor-foot">
+        <button class="add-btn" type="button" id="add-subject">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add subject
+        </button>
+        <p class="hint">Leave a field empty to keep the default name.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" id="sub-empty" hidden>No classes are switched on. Turn on at least one class above to edit its subjects.</div>
+
+  <hr class="divider">
+
+  <!-- ═════════ 3. EXAM SCHEDULE ═════════ -->
+  <div class="sec-head">
+    <div class="sec-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    </div>
+    <span class="sec-title">Exam Schedule</span>
+  </div>
+  <p class="sec-desc">Set how many yearly exams are held, and how many monthly exams come before each one.</p>
+
+  <div class="exam-grid">
+    <div class="exam-card">
+      <div class="t">Yearly exams per year</div>
+      <div class="d">e.g. 3 exams &mdash; one after every 4 months.</div>
+      <div class="stepper">
+        <button type="button" data-target="yearly_exams" data-dir="-1" aria-label="Decrease yearly exams">&minus;</button>
+        <input type="number" id="yearly_exams" name="yearly_exams" value="2" min="1" max="4" readonly aria-label="Yearly exams">
+        <button type="button" data-target="yearly_exams" data-dir="1" aria-label="Increase yearly exams">+</button>
+      </div>
+    </div>
+    <div class="exam-card">
+      <div class="t">Monthly exams before each yearly</div>
+      <div class="d">Number of monthly exams held in each term.</div>
+      <div class="stepper">
+        <button type="button" data-target="monthly_exams" data-dir="-1" aria-label="Decrease monthly exams">&minus;</button>
+        <input type="number" id="monthly_exams" name="monthly_exams" value="1" min="1" max="4" readonly aria-label="Monthly exams">
+        <button type="button" data-target="monthly_exams" data-dir="1" aria-label="Increase monthly exams">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview">
+    <div class="preview-title">Preview of the academic year</div>
+    <div id="preview-terms"></div>
+    <div class="preview-total" id="preview-total"></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="success-msg" id="as-success-msg">Configuration saved successfully.</div>
+  <button class="save-btn" id="btn-save-academic-setup" type="button">Save Configuration</button>
+  <p class="footnote">Changes apply to new transcripts and reports. This can be changed later in Settings.</p>
+</div>
+
     <!-- 3. REAL DASHBOARD & PORTAL MAIN LAYOUT -->
     <div id="dashboard-screen">
         <div>
