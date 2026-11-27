@@ -728,6 +728,29 @@ button:hover {
     color: var(--slate-400) !important;
 }
 
+/* ── Select / Deselect all buttons (Option A outlined style) ── */
+.list-select-btn {
+    width: auto;
+    padding: 8px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    background: var(--white);
+    color: var(--slate-600);
+    border: 1px solid var(--slate-300);
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background .15s, border-color .15s, color .15s;
+}
+
+.list-select-btn:hover {
+    background: var(--slate-50);
+    border-color: var(--slate-400);
+    color: var(--slate-800);
+}
+
 /* Custom floating tooltip */
 [data-tooltip] {
     position: relative;
