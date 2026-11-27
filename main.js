@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
+const { app, BrowserWindow, ipcMain, dialog, shell, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const db = require('./database.js');
@@ -17,12 +17,16 @@ function createWindow() {
         width: 1200,
         height: 800,
         icon: iconPath,
+        autoHideMenuBar: true,   // Hide the menu bar (File/Edit/View…)
         webPreferences: {
             nodeIntegration: true,
             contextIsolation: false,
             devTools: !app.isPackaged  // DevTools disabled in production builds
         }
     });
+
+    // Remove the application menu entirely (no menu even on Alt key press)
+    Menu.setApplicationMenu(null);
 
     // Block DevTools keyboard shortcuts in production
     if (app.isPackaged) {
