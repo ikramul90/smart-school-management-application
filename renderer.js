@@ -6392,10 +6392,10 @@ document.getElementById('btn-view-eula')?.addEventListener('click', () => {
 });
 
 function renderInfoGrid(items) {
-    return `<div style="display:grid; grid-template-columns: 140px 1fr; row-gap:10px; column-gap:12px; font-size:13.5px; line-height:1.5;">` +
+    return `<div style="display:grid; grid-template-columns: 130px minmax(0, 1fr); row-gap:10px; column-gap:12px; font-size:13.5px; line-height:1.5; width:100%;">` +
         items.map(([label, val]) => `
             <div style="color:#64748b; font-weight:600;">${escapeHtml(label)}:</div>
-            <div style="color:#0f172a; font-weight:500; word-break:break-word;">${val || '<i style="color:#94a3b8;">Not provided</i>'}</div>
+            <div style="color:#0f172a; font-weight:500; word-break:break-word; overflow-wrap:anywhere;">${val || '<i style="color:#94a3b8;">Not provided</i>'}</div>
         `).join('') + `</div>`;
 }
 
@@ -6489,24 +6489,42 @@ window.showTeacherInfoModal = function (id) {
 
     const photoSrc = t.photo_data_url || t.photo_path;
     const photoHtml = photoSrc
-        ? `<div style="width:130px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; border:1px solid #e2e8f0; border-radius:8px; padding:6px; background:#f8fafc; box-shadow:0 1px 3px rgba(0,0,0,0.05);">
+        ? `<div style="width:120px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; border:1px solid #e2e8f0; border-radius:8px; padding:6px; background:#f8fafc; box-shadow:0 1px 3px rgba(0,0,0,0.05); box-sizing:border-box;">
             <img src="${photoSrc}" alt="${escapeHtml(t.name || 'Teacher Photo')}" style="width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:6px; border:1px solid #cbd5e1; background:#ffffff;">
-            <span style="font-size:11px; color:#64748b; margin-top:6px; font-weight:600; text-align:center;">Teacher Photo</span>
+            <span style="font-size:11px; color:#64748b; margin-top:5px; font-weight:600; text-align:center;">Teacher Photo</span>
           </div>`
-        : `<div style="width:130px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1.5px dashed #cbd5e1; border-radius:8px; padding:12px 6px; background:#f8fafc; text-align:center; min-height:130px;">
-            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:6px;">
+        : `<div style="width:120px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1.5px dashed #cbd5e1; border-radius:8px; padding:10px 6px; background:#f8fafc; text-align:center; min-height:120px; box-sizing:border-box;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:4px;">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
             </svg>
             <span style="font-size:11px; color:#94a3b8; font-weight:500;">No Photo</span>
           </div>`;
 
+    const signSrc = t.signature_data_url || t.signature_path;
+    const signHtml = signSrc
+        ? `<div style="width:120px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; border:1px solid #e2e8f0; border-radius:8px; padding:6px; background:#f8fafc; box-shadow:0 1px 3px rgba(0,0,0,0.05); box-sizing:border-box;">
+            <div style="width:100%; height:52px; display:flex; align-items:center; justify-content:center; background:#ffffff; border-radius:6px; border:1px solid #cbd5e1; padding:2px; box-sizing:border-box; overflow:hidden;">
+                <img src="${signSrc}" alt="${escapeHtml(t.name || 'Teacher Signature')}" style="max-width:100%; max-height:100%; object-fit:contain;">
+            </div>
+            <span style="font-size:11px; color:#64748b; margin-top:5px; font-weight:600; text-align:center;">Signature</span>
+          </div>`
+        : `<div style="width:120px; flex-shrink:0; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1.5px dashed #cbd5e1; border-radius:8px; padding:8px 6px; background:#f8fafc; text-align:center; min-height:60px; box-sizing:border-box;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:2px;">
+                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+            <span style="font-size:11px; color:#94a3b8; font-weight:500;">No Signature</span>
+          </div>`;
+
     const bodyHtml = `
-        <div style="display:flex; gap:16px; align-items:flex-start;">
+        <div style="display:flex; gap:16px; align-items:flex-start; width:100%; box-sizing:border-box;">
             <div style="flex:1; min-width:0;">
                 ${renderInfoGrid(items)}
             </div>
-            ${photoHtml}
+            <div style="display:flex; flex-direction:column; gap:10px; flex-shrink:0;">
+                ${photoHtml}
+                ${signHtml}
+            </div>
         </div>
     `;
 
